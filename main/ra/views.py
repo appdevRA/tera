@@ -7,3 +7,7 @@ class TeraIndexView(View):
 	def get(self, request):
 
 		return render(request,'1.html')
+
+class TeraSearchResultsView(View):
+	def get(self,request):
+		return render(request,'3.html')	
