@@ -1,8 +1,8 @@
 
 .bg{
-	background-image: url(../images/bg.png); 
+	background-image: url(../design_images/bg.png); 
 	
-	background-size:1380px; 
+	background-size:1200px; 
 	background-position: center; 
 	background-repeat: no-repeat;
 }
@@ -12,7 +12,7 @@
 	width: 50%; 
 	height: 50px; 
 	border-radius: 50px;
-	margin-top: 2%; 
+	margin-top: 3%; 
 
 }
 
@@ -39,4 +39,36 @@
 	outline: none;
 	border-top-left-radius: 20px 20px; 
 	border-bottom-left-radius: 20px 20px
+}
+
+
+ .about{
+ 	margin-left: 70%;
+ 	background: none;
+	border: none;
+	outline: none;
+	margin-right: 4%;
+	color: #541d01;
+	font-size: 20px;
+	line-height: 60px;
+
+}
+
+.login{
+	
+	vertical-align: center;
+	border-radius: 50px; 
+	height: 35px; 
+	width: 80px; 
+	outline: none; 
+	font-size: 15px; 
+	font-weight: bold;
+	background-color: #e4d608; 
+	border-color: yellow; 
+	color: #541d01;
+
+}
+.login:hover{
+	background-color: #ccbf09;
+	transition: 0.3s; 
 }
