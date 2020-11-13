@@ -2,7 +2,7 @@
 .bg{
 	background-image: url(../design_images/bg.png); 
 	
-	background-size:1200px; 
+	background-size:100vh; 
 	background-position: center; 
 	background-repeat: no-repeat;
 }
