@@ -29,9 +29,9 @@ ul{
 	background-repeat: no-repeat;
 }
 .navigation-bar {
-    width: 100%;  /* i'm assuming full width */
-    height: 70px; /* change it to desired width */
-    background-color: #fff; /* change to desired color */
+    width: 100%;  
+    height: 70px; 
+    background-color: #fff; 
     box-shadow: 0 3px 2px  #DAA520;
 }
 .logo {
@@ -45,7 +45,7 @@ ul{
     display: inline-block;
     vertical-align: top;
     margin-right: 20px;
-    height: 80px;        /* if you want it to take the full height of the bar */
-    line-height: 75px;    /* if you want it vertically middle of the navbar */
+    height: 80px;        
+    line-height: 75px;    
 
 }
