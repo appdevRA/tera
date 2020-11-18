@@ -6,8 +6,17 @@ from django.http import HttpResponse
 class TeraIndexView(View):
 	def get(self, request):
 
-		return render(request,'1.html')
+		return render(request,'landingpage.html')
 
 class TeraSearchResultsView(View):
 	def get(self,request):
 		return render(request,'3.html')	
+
+class TeraHomepageView(View):
+	def get(self,request):
+		return render(request,'home.html')	
+
+class TeraDashboardView(View):
+	def get(self,request):
+		return render(request,'dashboard.html')
+						
