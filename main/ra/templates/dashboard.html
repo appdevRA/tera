@@ -59,7 +59,7 @@
                 <a href="#">Citations</a>
                 <input type="checkbox" id="btn-1">
                 <ul>
-                <li><a href="#">Create New</a></li>
+                <li><a href="{% url 'ra:tera_createcitation_view'%}">Create New</a></li>
                 <li><a href="#">View History</a></li>
                 </ul>
       </li>
@@ -76,7 +76,7 @@
                 <li><a href="#">Bookmarks</a></li>
                 <li><a href="#">Folders</a></li>
                 <li><a href="#">Settings</a></li>
-                <li><a href="#">Logout</a></li>
+                <li><a href="{% url 'ra:tera_index_view'%}">Logout</a></li>
                 </ul>
       </li>
       </ul>

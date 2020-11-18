@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 {% load static %}
 <html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title>Home</title>
-    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+<head>
+	<title>Create Citation</title>
+	<link rel="stylesheet" href="{% static 'css/createcitation.css' %}">
     <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
     <script src="https://kit.fontawesome.com/a076d05399.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
-  </head>
-  <body style="background-image: url({% static 'images/bg.png' %});">
-    <nav>
+
+	
+
+</head>
+
+<body style="background-image: url({% static 'images/bg.png' %});">
+	 <nav>
       <div class="logo"><a href="{% url 'ra:tera_homepage_view'%}"><img class="logo-style" src="{% static 'images/teralogo.png' %}"></a></div>
       <label for="btn" class="icon">
         <span class="fa fa-bars"></span>
@@ -25,7 +28,7 @@
                 <a href="#">Citations</a>
                 <input type="checkbox" id="btn-1">
                 <ul>
-                <li><a href="{% url 'ra:tera_createcitation_view'%}">Create New</a></li>
+                <li><a href="#">Create New</a></li>
                 <li><a href="#">View History</a></li>
                 </ul>
       </li>
@@ -47,24 +50,40 @@
       </li>
       </ul>
   </nav>
-    <div class="content">
-      <header>Exclusive Research Assistant</header>
-      <p>for Technologians</p>
-      <br>
-      <div class="search-container">
-        <div class="search">
-          <form>
-            <input type="text" name="" placeholder="Search..." class="input">
-            <button type="submit" class="button"><i class="fa fa-search" aria-hidden="true"></i></button>
-          </form>
-        </div>
-      </div>
+  <br>
+  <center>
+   <div>
+      <button>MLA</button>
+      <button>APA</button>
+      <button>IEEE</button>
+      <button>Chicago</button>
     </div>
+    <br>
+    <div class="wrapper">
+      <nav>
+        <input type="radio" name="tab" id="home" checked>
+        <input type="radio" name="tab" id="inbox">
+        <input type="radio" name="tab" id="contact">
+        <input type="radio" name="tab" id="heart">
+        <input type="radio" name="tab" id="about">
+        <label for="home" class="home"><a href="#">Journal</a></label>
+        <label for="inbox" class="inbox"><a href="#">Book</a></label>
+        <label for="contact" class="contact"><a href="#">Dissertation</a></label>
+        <label for="heart" class="heart"><a href="#">Website</a></label>
+        <label for="about" class="about"><a href="#">Other</a></label>
+        <div class="tab">
+</div>
+</nav>
+    
+</div>
+   </center>
+  
 <script>
       $('.icon').click(function(){
         $('span').toggleClass("cancel");
       });
-    </script>
-
-  </body>
+</script>
+		
+	
+</body>
 </html>

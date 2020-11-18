@@ -19,4 +19,8 @@ class TeraHomepageView(View):
 class TeraDashboardView(View):
 	def get(self,request):
 		return render(request,'dashboard.html')
+
+class TeraCreateCitationView(View):
+	def get(self,request):
+		return render(request,'createcitation.html')
 						

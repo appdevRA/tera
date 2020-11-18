@@ -7,5 +7,6 @@ urlpatterns = [
 			path('index', views.TeraIndexView.as_view(), name="tera_index_view"),
 			path('home',views.TeraHomepageView.as_view(), name="tera_homepage_view"),
 			path('dashboard',views.TeraDashboardView.as_view(), name="tera_dashboard_view"),
+			path('create_citation',views.TeraCreateCitationView.as_view(), name="tera_createcitation_view"),
 			
 ]
