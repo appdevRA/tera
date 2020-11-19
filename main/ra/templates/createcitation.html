@@ -74,9 +74,95 @@
         <div class="tab">
 </div>
 </nav>
-    
-</div>
+</div><br>
    </center>
+   <div class="main-container">
+   <div class="container">
+      <div class="text">Create Your Citation</div>
+      <form action="#">
+        <div class="form-row">
+          <div class="input-data">
+            <input type="text" required>
+            <div class="underline"></div>
+            <label for="">Author's First Name</label>
+          </div>
+          <div class="input-data">
+            <input type="text" required>
+            <div class="underline"></div>
+            <label for="">Author's Last Name</label>
+          </div>
+          <div class="input-data">
+            <input type="text" required>
+            <div class="underline"></div>
+            <label for="">Author's Middle Initial</label>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="input-data">
+            <input type="text" required>
+            <div class="underline"></div>
+            <label for="">Journal Title</label>
+          </div>
+          <div class="input-data">
+            <input type="text" required>
+            <div class="underline"></div>
+            <label for="">Article Title</label>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="input-data">
+            <input type="text" required>
+            <div class="underline"></div>
+            <label for="">Year Published</label>
+          </div>
+          <div class="input-data">
+            <input type="text" required>
+            <div class="underline"></div>
+            <label for="">Place of Publication</label>
+          </div>
+          <div class="input-data">
+            <input type="text" required>
+            <div class="underline"></div>
+            <label for="">Publisher</label>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="input-data">
+            <input type="text" required>
+            <div class="underline"></div>
+            <label for="">Date Accessed</label>
+          </div>
+          <div class="input-data">
+            <input type="text" required>
+            <div class="underline"></div>
+            <label for="">URL</label>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="input-data textarea">
+            <textarea rows="8" cols="80" required></textarea>
+            <div class="underline"></div>
+            <label for="">Add Annotation</label>
+          </div>
+        </div>
+        <div class="form-row submit-btn">
+          <div class="input-data">
+            <div class="inner"></div>
+            <input type="submit" value="submit">
+          </div>
+          <div class="input-data">
+            <div></div>
+            
+          </div>
+          <div class="input-data">
+            <div class="inner"></div>
+            <a href="{% url 'ra:tera_homepage_view'%}"><input type="button" value="cancel"></a>
+          </div>
+        </div>
+      </form>
+    </div>
+</div>
+
   
 <script>
       $('.icon').click(function(){
