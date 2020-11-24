@@ -18,4 +18,18 @@ class HomePageView(View):
 	
 		return render(request,'home.html')
 
+<<<<<<< Updated upstream
 	
+=======
+class TeraCreateCitationView(View):
+	def get(self,request):
+		return render(request,'createcitation.html')
+
+class TeraLoginView(View):
+	def get(self,request):
+		return render(request,'login.html')		
+
+class TeraGrammarView(View):
+	def get(self,request):
+		return render(request,'homecopy.html')			
+>>>>>>> Stashed changes

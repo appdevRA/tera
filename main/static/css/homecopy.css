@@ -22,15 +22,9 @@ nav:after{
 }
 nav .logo{
   float: left;
-  color: #800000;
-  font-size: 27px;
-  font-weight: 600;
-  line-height: 70px;
-  padding-left: 60px;
-}
-.logo-style{
-	height: 60px;
-	padding: 2px 10px;
+  height: 25px;
+  padding: 2px 10px;
+  
 }
 nav ul{
   float: right;
@@ -39,7 +33,7 @@ nav ul{
   position: relative;
 }
 nav ul li{
-  float:left;
+  float: left;
   display: inline-block;
   background: #fff;
   margin: 0 5px;
@@ -92,6 +86,10 @@ nav ul ul ul li{
   top: -60px;
   left: 150px;
 }
+.show, .input-checkbox{
+  display: none;
+}
+
 .fa-plus{
   font-size: 15px;
   margin-left: 40px;
@@ -103,7 +101,7 @@ nav ul ul ul li{
   }
   nav .logo{
     padding-left: 30px;
-    width: %;
+    width: 100%;
   }
   .show + a, ul{
     display: none;
@@ -206,7 +204,6 @@ p{
   outline: none;
   border: 5px solid #ffd700;
 }
-
 .button{
   position: absolute;
   right: -5px;
@@ -220,41 +217,17 @@ p{
   outline: none;
   border: none;
 }
-<<<<<<< Updated upstream:main/ra/static/css/login.css
-=======
-.search.active input{
-  border-radius: 5px 5px 0 0;
+.logo-style{
+  height: 60px;
+  padding: 2px 10px;
 }
->>>>>>> Stashed changes:main/static/css/home.css
 
-.input-icons i {
-            position: absolute;
-} 
-
-          
-.input-icons { 
-         width: 100%; 
-	 margin-bottom: 10px; 
-} 
-
-.icon { 
-       	padding: 10px; 
-	      color: maroon; 
-        min-width: 50px; 
-        text-align: center; 
-} 
-
-.input-field { 
-        width: 100%; 
-  	padding: 10px; 
-        text-align: center; 
-} 
 
 h2 { 
         color: maroon; 
 }
 
-.buttonlogin {
+.buttonlogout {
   background-color: #800000;
   border: none;
   color: white;
@@ -262,6 +235,87 @@ h2 {
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  font-size: 16px;
+  font-size: 12px;
 }
 
+.buttoncancel {
+  background-color:   #FFD700;
+  border: none;
+  color: white;
+  padding: 14px 40px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 12px;
+}
+
+.buttoncancel1 {
+  background-color:   #FFD700;
+  border: none;
+  color: white;
+  padding: 10px 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 12px;
+}
+
+.buttoncheck {
+  background-color:   #800000;
+  border: none;
+  color: white;
+  padding: 10px 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 12px;
+}
+
+.input-icons i {
+  position: absolute;
+} 
+
+          
+.input-icons { 
+  width: 100%; 
+  margin-bottom: 10px; 
+} 
+
+.icon { 
+        padding: 10px; 
+        color: maroon; 
+        min-width: 50px; 
+        text-align: center; 
+} 
+
+.input-field { 
+    width: 100%; 
+    padding: 10px; 
+    text-align: center; 
+} 
+
+h2 { 
+        color: maroon; 
+}
+
+.buttonSettings {
+  background-color:   #FFD700;
+  border: none;
+  color: white;
+  padding: 14px 30px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 12px;
+}
+
+.buttonsaveChanges {
+  background-color:   #800000;
+  border: none;
+  color: white;
+  padding: 10px 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 12px;
+}
