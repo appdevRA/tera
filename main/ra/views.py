@@ -7,3 +7,15 @@ class TeraIndexView(View):
 	def get(self, request):
 
 		return render(request,'1.html')
+
+class LandingIndexView(View):
+	def get(self, request):
+	
+		return render(request,'Login.html')
+
+class HomePageView(View):
+	def get(self, request):
+	
+		return render(request,'home.html')
+
+	

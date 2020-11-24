@@ -1,0 +1,221 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Homepage</title>
+    <link rel="stylesheet" href="home.css">
+    <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+  <!-- jQuery library -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+  <!-- Latest compiled JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js" crossorigin="anonymous" rel="stylesheet" type="text/css" ></script>
+
+    <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="{% static 'css/home.css' %}" rel="stylesheet">
+
+    <script>
+      $('.icon').click(function(){
+        $('span').toggleClass("cancel");
+      });
+    </script>
+    
+    <style>
+      body{
+    background: #f2f2f2;
+    background-image: url("{% static 'images/bg.png' %}");
+    }
+   </style>
+
+   <script>
+      $('.icon').click(function(){
+        $('span').toggleClass("cancel");
+      });
+    </script>
+
+  </head>
+ 
+  <body>
+    
+    <nav>
+      <div class="logo"><img class="logo-style" src="{% static 'images/logo1.png' %}"></div>
+      <label for="btn" class="icon">
+      </label>
+      <ul>
+      <li>
+             
+                <a href="#">Citations</a>
+                <ul>
+                <li><a href="#">Create New</a></li>
+                <li><a href="#">View History</a></li>
+                </ul>
+      </li>
+     
+      <li> <a href="" data-toggle="modal" data-target="#exampleModal">Grammar Check</a> </li>
+      <li><a href="#">Plagiarism Detection</a></li>
+
+       <li>
+                <a href="#">Profile <i class="fa fa-user" aria-hidden="true"></i></a>
+                <ul>
+                <li><a href="#">Dashboard</a></li>  
+                <li><a href="#">Bookmarks</a></li>
+                <li><a href="#">Folders</a></li>
+                <li><a href="#modalAccountSettings" data-toggle="modal" data-target="#modalAccountSettings">Settings</a></li>
+                <li><a href="#modalLogoutForm" data-toggle="modal" data-target="#modalLogoutForm" >Logout</a></li>
+                <!--
+                <li>
+                              <label for="btn-3" class="show">More +</label>
+                              <a href="#">More <span class="fa fa-plus"></span></a>
+                              <input type="checkbox" id="btn-3">
+                              <ul>
+                              <li><a href="#">Submenu-1</a></li>
+                              <li><a href="#">Submenu-2</a></li>
+                              <li><a href="#">Submenu-3</a></li>
+                              </ul>
+                </li> -->
+                </ul>
+      </li>
+      </ul>
+  </nav>
+    <div class="content">
+      <header>Exclusive Research Assistant</header>
+      <p>for Technologians</p>
+      <br>
+      <div class="search-container">
+        <div class="search">
+          <form>
+            <input type="text" name="" placeholder="Search..." class="input-search">
+            <button type="submit" class="button"><i class="fa fa-search" aria-hidden="true"></i></button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+
+<!-- logout modal -->
+<div class="modal fade" id="modalLogoutForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"  style=“color: yellow”; >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+      
+         <center> 
+          <form style="max-width:450px;margin:auto"> 
+            <h2>LOG OUT</h2> <br></br>
+
+            <b>Are you sure you want to logout?</b><br></br><br></br>
+        </form> 
+   
+        <center>
+       <button class="buttoncancel" data-dismiss="modal">CANCEL</button>
+        <button class="buttonlogout"><a href="{% url 'ra:landing_index_view'%}">LOGOUT</a></button> 
+
+      </center>
+      
+      </center> 
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- Grammar Check modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" 
+            role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                          <p></p>
+                          <center>
+                          <h3 class="modal-title" id="exampleModalLabel" style="color: #800000;">Grammar Check</h3>
+                          </center>  
+                      </div>
+
+                        <div class="modal-body" style="width: 100%;">
+                            <div style="width: 100%;">
+                                <b><label>Title:</label></b>
+                                  <input type="text" class="form-control " id="idname" placeholder="Enter title">
+                              </div>
+                        <br>
+
+                              <div style="width: 100%;">
+                       <b> <label>Textfield:</label></b>
+                                  <textarea name="name" rows="8" cols="78"> </textarea>
+                              </div>
+
+     
+                              <div class="modal-footer">
+                         <!--  <button type="button" class="btn btn-secondary" data-dismiss="modal" style="margin-left: 68%">Cancel</button>-->
+                          <button class="buttoncancel1" data-dismiss="modal" >CANCEL</button>
+                         <!-- <button type="button" class="btn btn-success"> Check </button> -->
+                          <button class="buttoncheck">CHECK</button>
+                              </div>
+                        </div>
+                      </div>
+                  </div>
+                </div>
+
+
+<!-- settings modal -->
+<div class="modal fade" id="modalAccountSettings" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"  style=“color: yellow”; >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+      
+         <center> 
+         
+          <form style="max-width:450px;margin:auto"> 
+            <h2>Account Settings</h2> 
+
+            <div class="input-icons"> 
+              <i class="fas fa-key"></i>
+  
+                <input type="text" placeholder="OLD PASSWORD" class="input-field">
+            </div> 
+            
+             <div class="input-icons"> 
+                <i class="fa fa-key"> 
+              </i> 
+                <input type="password" placeholder="NEW PASSWORD" class="input-field"> 
+            </div> 
+  
+            <div class="input-icons"> 
+                <i class="fa fa-key"> 
+              </i> 
+                <input type="password" placeholder="CONFIRM PASSWORD" class="input-field"> <br></br>
+            </div> 
+        </form>
+   
+        <center>
+       <button class="buttonSettings" data-dismiss="modal">CANCEL</button>
+       <button class="buttonlogout"><a href="{% url 'ra:landing_index_view'%}">SAVE CHANGES</a></button> 
+      </center>
+      
+      </center> 
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+  </body>
+</html>
