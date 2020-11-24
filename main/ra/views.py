@@ -43,5 +43,9 @@ class TeraLoginView(View):
 
 class TeraGrammarView(View):
 	def get(self,request):
+<<<<<<< Updated upstream
+		return render(request,'homecopy.html')			
+>>>>>>> Stashed changes
+=======
 		return render(request,'homecopy.html')			
 >>>>>>> Stashed changes
