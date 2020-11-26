@@ -11,6 +11,10 @@
 
     <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
   </head>
   <body style="background-image: url({% static 'images/bg.png' %});">
     <nav>
@@ -20,7 +24,7 @@
       </label>
       <input type="checkbox" id="btn">
       <ul>
-        <li><a href="#AboutUsModal" data-toggle="modal" data-target="#AboutUsModal">About Us</a></a></li>
+       <li><a data-toggle="modal" data-target="#myModal">About Us</a></li>
         <li><a href="#modalLoginForm" data-toggle="modal" data-target="#modalLoginForm">Login</a></li>
       </ul>
   </nav>
@@ -37,30 +41,37 @@
         </div>
       </div>
     </div>
+
+<!-- Modal -->
+  <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">About Us</h4>
+        </div>
+        <div class="modal-body">
+         <p style="font-size: 15px; text-align: justify;"><b>TERA</b> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean ac mauris urna. Nunc eget accumsan orci, vitae efficitur massa. Sed tempor faucibus lacinia. Nunc tincidunt arcu in aliquam dignissim. Etiam eu luctus odio, nec placerat risus. Mauris sed sapien odio. Duis vehicula dignissim interdum. Aliquam tempor nunc vitae neque rhoncus commodo. Aliquam malesuada elementum diam, et iaculis velit viverra vitae. Aliquam erat volutpat. Nulla ac egestas felis. Nullam ut diam sed orci varius interdum. Integer ut tincidunt velit, quis pulvinar tortor. Quisque venenatis, tellus vitae ullamcorper sollicitudin, felis ante pharetra purus, non elementum urna nunc sed purus. Donec enim augue, sodales finibus leo nec, pharetra bibendum leo.<br></br>
+
+          <b>TERA</b> Mauris volutpat mollis massa a tincidunt. Aenean sit amet elementum est. Aenean in mollis erat. Nunc et condimentum augue. Aenean ut ex ultrices, dictum nulla porta, imperdiet nisi. Morbi ac convallis lectus. Donec at nibh a ipsum consectetur consectetur. Nulla magna lectus, facilisis sit amet augue non, iaculis ultricies sapien. Integer semper lorem eget nisi scelerisque laoreet. Mauris volutpat metus eget diam eleifend, ac gravida est molestie. Sed ac ante tortor. Vestibulum ut leo quis neque commodo auctor sed vitae eros.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal" style="background-color: #800000; color: #fff">Close</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+
 <script>
       $('.icon').click(function(){
         $('span').toggleClass("cancel");
       });
     </script>
 
-  <!-- About us Modal -->
-    <div class="modal fade" id="AboutUsModal" tabindex="-1" role="dialog" aria-labelledby="AboutUsModal" aria-hidden="true" >
-      <div class="modal-dialog modal-sm" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h2 class="modal-title" id="AboutUsModal"><center>ABOUT US</center></h2>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-           &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<b>TERA</b> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean ac mauris urna. Nunc eget accumsan orci, vitae efficitur massa. Sed tempor faucibus lacinia. Nunc tincidunt arcu in aliquam dignissim. Etiam eu luctus odio, nec placerat risus. Mauris sed sapien odio. Duis vehicula dignissim interdum. Aliquam tempor nunc vitae neque rhoncus commodo. Aliquam malesuada elementum diam, et iaculis velit viverra vitae. Aliquam erat volutpat. Nulla ac egestas felis. Nullam ut diam sed orci varius interdum. Integer ut tincidunt velit, quis pulvinar tortor. Quisque venenatis, tellus vitae ullamcorper sollicitudin, felis ante pharetra purus, non elementum urna nunc sed purus. Donec enim augue, sodales finibus leo nec, pharetra bibendum leo.<br></br>
-
-            &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<b>TERA</b> Mauris volutpat mollis massa a tincidunt. Aenean sit amet elementum est. Aenean in mollis erat. Nunc et condimentum augue. Aenean ut ex ultrices, dictum nulla porta, imperdiet nisi. Morbi ac convallis lectus. Donec at nibh a ipsum consectetur consectetur. Nulla magna lectus, facilisis sit amet augue non, iaculis ultricies sapien. Integer semper lorem eget nisi scelerisque laoreet. Mauris volutpat metus eget diam eleifend, ac gravida est molestie. Sed ac ante tortor. Vestibulum ut leo quis neque commodo auctor sed vitae eros.
-          </div>
-        </div>
-      </div>
-    </div>
-
+  
   </body>
 </html>
