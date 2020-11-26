@@ -10,6 +10,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+ <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+  <!-- jQuery library -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+  <!-- Latest compiled JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js" crossorigin="anonymous" rel="stylesheet" type="text/css" ></script>
+  <link href="{% static 'css/login.css' %}" rel="stylesheet">
 
   </head>
   <body style="background-image: url({% static 'images/bg.png' %});">
@@ -20,8 +30,8 @@
       </label>
       <input type="checkbox" id="btn">
       <ul>
-      <li><a href="#">About Us</a></li>
-      <li><a href="{% url 'ra:tera_homepage_view'%}">Login</a></li>
+        <li><a href="#modalAboutusForm" data-toggle="modal" data-target="#modalAboutusForm">About Us</a></li>
+        <li><a href="#modalLoginForm" data-toggle="modal" data-target="#modalLoginForm">Login</a></li>
       </ul>
   </nav>
     <div class="content">
@@ -61,14 +71,14 @@
             <h2>LOG IN</h2> 
             <div class="input-icons"> 
                 <i class="fa fa-user icon-login"></i> 
-                <input type="text" placeholder="ID NUMBER" class="input-field"><br></br>
+                <input type="text" placeholder="ID NUMBER" class="input-field-login"><br></br>
             </div> 
   
   
             <div class="input-icons"> 
                 <i class="fa fa-key icon-login"> 
               </i> 
-                <input type="password" placeholder="PASSWORD" class="input-field"> <br></br>
+                <input type="password" placeholder="PASSWORD" class="input-field-login"> <br></br>
             </div> 
         </form> 
    
