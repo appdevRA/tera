@@ -6,46 +6,21 @@ from django.http import HttpResponse
 class TeraIndexView(View):
 	def get(self, request):
 
-		return render(request,'1.html')
+		return render(request,'landingpage.html')
 
-class LandingIndexView(View):
-	def get(self, request):
-	
-		return render(request,'Login.html')
+class TeraSearchResultsView(View):
+	def get(self,request):
+		return render(request,'3.html')	
 
-class HomePageView(View):
-	def get(self, request):
-	
-		return render(request,'home.html')
+class TeraHomepageView(View):
+	def get(self,request):
+		return render(request,'home.html')	
 
-<<<<<<< Updated upstream
-	
-=======
+class TeraDashboardView(View):
+	def get(self,request):
+		return render(request,'dashboard.html')
+
 class TeraCreateCitationView(View):
 	def get(self,request):
-		return render(request,'createcitation.html')
-
-class TeraLoginView(View):
-	def get(self,request):
-		return render(request,'login.html')		
-
-class TeraGrammarView(View):
-	def get(self,request):
-<<<<<<< Updated upstream
-		return render(request,'homecopy.html')			
->>>>>>> Stashed changes
-=======
-		return render(request,'createcitation.html')
-
-class TeraLoginView(View):
-	def get(self,request):
-		return render(request,'login.html')		
-
-class TeraGrammarView(View):
-	def get(self,request):
-<<<<<<< Updated upstream
-		return render(request,'homecopy.html')			
->>>>>>> Stashed changes
-=======
-		return render(request,'homecopy.html')			
->>>>>>> Stashed changes
+		return render(request,'createcitation.html')		
+						
