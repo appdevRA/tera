@@ -26,8 +26,21 @@
                 <a href="#">Citations</a>
                 <input type="checkbox" id="btn-1">
                 <ul>
-                <li><a href="{% url 'ra:tera_createcitation_view'%}">Create New</a></li>
-                <li><a href="#">View History</a></li>
+                <li><label for="btn-1" class="show">Create New +</label>
+                    <a href="#">Create New</a>
+                    <input type="checkbox" id="btn-1">
+                <ul>
+                  <li><a href="{% url 'ra:tera_citejournal_view'%}">Journal</a></li>
+                  <li><a href="{% url 'ra:tera_citebook_view'%}">Book</a></li>
+                  <li><a href="#">Dissertation</a></li>
+                  <li><a href="#">Other</a></li>
+                </ul>
+                  
+
+
+                </li>
+
+                <li><a href="{% url 'ra:citation-history'%}">View History</a></li>
                 </ul>
       </li>
      
@@ -40,7 +53,7 @@
                 <a href="#">Profile <i class="fa fa-user" aria-hidden="true"></i></a>
                 <input type="checkbox" id="btn-2">
                 <ul>
-                <li><a href="{% url 'ra:tera_dashboard_view'%}">Dashboard</a></li>  
+                <li><a href="{% url 'ra:tera_dashboard_view'%}">Dashboard</a></li>	
                 <li><a href="#">Bookmarks</a></li>
                 <li><a href="#">Folders</a></li>
                 <li><a href="#">Settings</a></li>
@@ -56,7 +69,11 @@
       <div class="search-container">
         <div class="search">
           <form>
-            <input type="text" name="" placeholder="Search..." class="input">
+            <a href="" target="_blank" hidden></a>
+            <input type="text" placeholder="Search (Keywords, Titles, Authors)" class="input">
+            <div class="autocom-box">
+          <!-- here list are inserted from javascript -->
+            </div>
             <button type="submit" class="button"><i class="fa fa-search" aria-hidden="true"></i></button>
           </form>
         </div>
@@ -66,7 +83,9 @@
       $('.icon').click(function(){
         $('span').toggleClass("cancel");
       });
-    </script>
+</script>
+<script  src= "{% static 'js/script.js' %}"></script>
+<script  src= "{% static 'js/suggestions.js' %}"></script>
 
   </body>
 </html>
