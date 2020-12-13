@@ -7,7 +7,7 @@
   font-family: 'Poppins', sans-serif;
 }
 body{
-  background: #f2f2f2;
+  background: #ebebeb;
   background-image: url('bg.png');
 }
 nav{
@@ -334,6 +334,8 @@ p{
     width: 50%;
     cursor: pointer;
 }
+
+
 .register .nav-tabs{
     margin-top: 3%;
     border: none;
