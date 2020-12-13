@@ -4,9 +4,9 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
-	<title>Dashboard</title>
-	<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
-	<link rel="stylesheet" href="{% static 'css/modal.css' %}">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+  <link rel="stylesheet" href="{% static 'css/modal.css' %}">
     <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
     <script src="https://kit.fontawesome.com/a076d05399.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -54,7 +54,7 @@
 {% block content %} 
 
 <body style="background-image: url({% static 'images/bg.png' %});">
-	 <nav>
+   <nav>
       <div class="logo"><a href="{% url 'ra:tera_homepage_view'%}"><img class="logo-style" src="{% static 'images/teralogo.png' %}"></a></div>
       <label for="btn" class="icon">
         <span class="fa fa-bars"></span>
@@ -93,7 +93,7 @@
                 <a href="#">Profile <i class="fa fa-user" aria-hidden="true"></i></a>
                 <input type="checkbox" id="btn-2">
                 <ul>
-                <li><a href="#">Dashboard</a></li>	
+                <li><a href="#">Dashboard</a></li>  
                 <li><a href="#">Bookmarks</a></li>
                 <li><a href="#">Folders</a></li>
                 <li><a href="#">Settings</a></li>
@@ -103,81 +103,81 @@
       </ul>
   </nav>
    
-    	<div class=" row">
-    				<p style="padding-top: 25px; padding-left: 30px; color: white; font-size: 25px">Your Folders</p>
-    				{% for folder in folders %}
-    			   <div class=" zoom column">
-				    <img src="{% static 'images/savedfolder.png' %}" alt="Snow" style="width:150%">
-				    <center><p style="padding-left:30px; color: white; font-size: 15px">{{folder.foldername}}</p></center>
-				  </div>
-				  {% endfor %}
-				  
-				   <div class="zoom column">
-				    <img src="{% static 'images/new.png' %}" alt="Mountains" style="width:150%" name="addfolder" onclick="document.getElementById('id01').style.display='block'"></
-				    <center><p style="padding-left:40px; color: white; font-size: 15px">New Folder</p></center>
-				  </div>
+      <div class=" row">
+            <p style="padding-top: 25px; padding-left: 30px; color: white; font-size: 25px">Your Folders</p>
+            {% for folder in folders %}
+             <div class=" zoom column">
+            <img src="{% static 'images/savedfolder.png' %}" alt="Snow" style="width:150%">
+            <center><p style="padding-left:30px; color: white; font-size: 15px">{{folder.foldername}}</p></center>
+          </div>
+          {% endfor %}
+          
+           <div class="zoom column">
+            <img src="{% static 'images/new.png' %}" alt="Mountains" style="width:150%" name="addfolder" onclick="document.getElementById('id01').style.display='block'"></
+            <center><p style="padding-left:40px; color: white; font-size: 15px">New Folder</p></center>
+          </div>
 
-				  
-				  <!-- The Modal -->
-					<div id="id01" class="modal">
-					  
-					  <form class="modal-content" id = "form1" action="" method="POST" autocomplete="off" enctype="multipart/form-data">
+          
+          <!-- The Modal -->
+          <div id="id01" class="modal">
+            
+            <form class="modal-content" id = "form1" action="" method="POST" autocomplete="off" enctype="multipart/form-data">
 
-					  	<span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
-					  	{% csrf_token %}
-					    <div class="container">
+              <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
+              {% csrf_token %}
+              <div class="container">
 
-					      <p style="font-size: 25px; color: #800000">Create a New Folder</p>
-					      <p style="font-size: 15px">Please provide a name for your folder.</p>
-					      <hr>
-					      <label for="foldername"><b>Folder Name</b></label>
-					      <input type="text" placeholder="Enter Folder Name" name="foldername" required>
+                <p style="font-size: 25px; color: #800000">Create a New Folder</p>
+                <p style="font-size: 15px">Please provide a name for your folder.</p>
+                <hr>
+                <label for="foldername"><b>Folder Name</b></label>
+                <input type="text" placeholder="Enter Folder Name" name="foldername" required>
 
-					      <div class="clearfix">
-					        <button type="button" onclick="document.getElementById('id01').style.display='none'" class="cancelbtn">Cancel</button>
-					        <button type="submit" class="signupbtn">Save</button>
-					      </div>
-					    </div>
-					  </form>
-					</div>
+                <div class="clearfix">
+                  <button type="button" onclick="document.getElementById('id01').style.display='none'" class="cancelbtn">Cancel</button>
+                  <button type="submit" class="signupbtn">Save</button>
+                </div>
+              </div>
+            </form>
+          </div>
 
-		</div>
+    </div>
 
 
-		<div class=" row">
-    				<p style="padding-top: 120px; padding-left: 30px; color: white; font-size: 25px">Recent Views</p>
-				  <div class="zoom column">
-				    <img src="{% static 'images/recentview.png' %}" alt="Snow" style="width:150%">
-				    <center><p style="padding-left:30px; color: white; font-size: 15px">Evolution of IT</p></center>
-				  </div>
-				  <div class="zoom column">
-				    <img src="{% static 'images/recentview.png' %}" alt="Forest" style="width:150%">
-				    <center><p style="padding-left:25px; color: white; font-size: 15px">Data Algorithms</p></center>
-				  </div>
-				  <div class="zoom column">
-				    <img src="{% static 'images/recentview.png' %}" alt="Mountains" style="width:150%">
-				    <center><p style="padding-left:25px; color: white; font-size: 15px">Pseudonyms</p></center>
-				  </div>
-				  <div class="zoom column">
-				    <img src="{% static 'images/recentview.png' %}" alt="Forest" style="width:150%">
-				    <center><p style="padding-left:25px; color: white; font-size: 15px">Research Assistance</p></center>
-				  </div>
-				   <div class="zoom column">
-				    <img src="{% static 'images/recentview.png' %}" alt="Forest" style="width:150%">
-				    <center><p style="padding-left:25px; color: white; font-size: 15px">Artificial Intelligence</p></center>
-				  </div>
-				  <div class="zoom column">
-				    <img src="{% static 'images/recentview.png' %}" alt="Mountains" style="width:150%">
-				    <center><p style="padding-left:25px; color: white; font-size: 15px">Robotics</p></center>
-				  </div>
-				   <div class="zoom column">
-				    <img src="{% static 'images/new.png' %}" alt="Mountains" style="width:150%">
-				     <center><p style="padding-left:40px; color: white; font-size: 15px">See All</p></center>
-				  </div>
-		</div>
-		</body>
+    <div class=" row">
+            <p style="padding-top: 120px; padding-left: 30px; color: white; font-size: 25px">Recent Views</p>
+          <div class="zoom column">
+            <img src="{% static 'images/recentview.png' %}" alt="Snow" style="width:150%">
+            <center><p style="padding-left:30px; color: white; font-size: 15px">Evolution of IT</p></center>
+          </div>
+          <div class="zoom column">
+            <img src="{% static 'images/recentview.png' %}" alt="Forest" style="width:150%">
+            <center><p style="padding-left:25px; color: white; font-size: 15px">Data Algorithms</p></center>
+          </div>
+          <div class="zoom column">
+            <img src="{% static 'images/recentview.png' %}" alt="Mountains" style="width:150%">
+            <center><p style="padding-left:25px; color: white; font-size: 15px">Pseudonyms</p></center>
+          </div>
+          <div class="zoom column">
+            <img src="{% static 'images/recentview.png' %}" alt="Forest" style="width:150%">
+            <center><p style="padding-left:25px; color: white; font-size: 15px">Research Assistance</p></center>
+          </div>
+           <div class="zoom column">
+            <img src="{% static 'images/recentview.png' %}" alt="Forest" style="width:150%">
+            <center><p style="padding-left:25px; color: white; font-size: 15px">Artificial Intelligence</p></center>
+          </div>
+          <div class="zoom column">
+            <img src="{% static 'images/recentview.png' %}" alt="Mountains" style="width:150%">
+            <center><p style="padding-left:25px; color: white; font-size: 15px">Robotics</p></center>
+          </div>
+           <div class="zoom column">
+            <img src="{% static 'images/new.png' %}" alt="Mountains" style="width:150%">
+             <center><p style="padding-left:40px; color: white; font-size: 15px">See All</p></center>
+          </div>
+    </div>
+    </body>
     {% endblock content %}  
-		
+    
 <script>
       $('.icon').click(function(){
         $('span').toggleClass("cancel");
@@ -194,6 +194,6 @@ window.onclick = function(event) {
   }
 }
 </script>
-		
-	
+    
+  
 

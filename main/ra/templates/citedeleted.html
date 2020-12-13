@@ -2,8 +2,8 @@
 
 {% block headerinclude %}
 
-	<title>Create Citation</title>
-	<link rel="stylesheet" href="{% static 'css/createcitation.css' %}">
+  <title>Create Citation</title>
+  <link rel="stylesheet" href="{% static 'css/createcitation.css' %}">
   <link rel="stylesheet" href="{% static 'css/modal_delete.css' %}">
     <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
     <script src="https://kit.fontawesome.com/a076d05399.js"></script>
@@ -141,7 +141,7 @@
 
 {% block content %} 
   
-	 <nav>
+   <nav>
       <div class="logo"><a href="{% url 'ra:tera_homepage_view'%}"><img class="logo-style" src="{% static 'images/teralogo.png' %}"></a></div>
       <label for="btn" class="icon">
         <span class="fa fa-bars"></span>
@@ -180,7 +180,7 @@
                 <a href="#">Profile <i class="fa fa-user" aria-hidden="true"></i></a>
                 <input type="checkbox" id="btn-2">
                 <ul>
-                <li><a href="{% url 'ra:tera_dashboard_view'%}">Dashboard</a></li>	
+                <li><a href="{% url 'ra:tera_dashboard_view'%}">Dashboard</a></li>  
                 <li><a href="#">Bookmarks</a></li>
                 <li><a href="#">Folders</a></li>
                 <li><a href="#">Settings</a></li>
@@ -255,5 +255,5 @@ window.onclick = function(event) {
   }
 }
 </script>
-		
+    
 {% endblock footerinclude %}
