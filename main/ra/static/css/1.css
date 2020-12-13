@@ -1,74 +1,18 @@
 
-.bg{
-	background-image: url(../design_images/bg.png); 
-	
-	background-size:1200px; 
-	background-position: center; 
-	background-repeat: no-repeat;
-}
 
 .search{
-	background-color: #e4d608; 
-	width: 50%; 
-	height: 50px; 
-	border-radius: 50px;
-	margin-top: 3%; 
+	background-color: #e4d608; width: 60%; height: 50px; border-radius: 50px;margin-top: 2%; 
 
 }
 
 .search:hover {
 	
 	
-	 box-shadow: 0px 0px 10px 0px black;
+	 box-shadow: 0px 0px 10px 0px #ed753d;
 	
 	transition: 0.3s; 
 }
 
 .search input{
-	text-indent: 20px;
-}
-
-.search .input1{
-	background-color: #efefef; 
-	width: 85%; 
-	height: 32px;
-	margin-top: 4px; 
-	float: left;
-	margin-left: 10px; 
-	border-color: white; 
-	outline: none;
-	border-top-left-radius: 20px 20px; 
-	border-bottom-left-radius: 20px 20px
-}
-
-
- .about{
- 	margin-left: 70%;
- 	background: none;
-	border: none;
-	outline: none;
-	margin-right: 4%;
-	color: #541d01;
-	font-size: 20px;
-	line-height: 60px;
-
-}
-
-.login{
-	
-	vertical-align: center;
-	border-radius: 50px; 
-	height: 35px; 
-	width: 80px; 
-	outline: none; 
-	font-size: 15px; 
-	font-weight: bold;
-	background-color: #e4d608; 
-	border-color: yellow; 
-	color: #541d01;
-
-}
-.login:hover{
-	background-color: #ccbf09;
-	transition: 0.3s; 
+	text-indent: 20px
 }
