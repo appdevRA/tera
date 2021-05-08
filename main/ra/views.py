@@ -43,19 +43,38 @@ class TeraSearchResultsView(View):
 
 class TeraHomepageView(View):
 	def get(self,request):
-		word = 'war'
+		word = 'computer'
 		titles = []
 		links = []
+		span = []
 		
-		url = ''
-		page = requests.get('https://www.sciencedirect.com/browse/journals-and-books?contentType=JL&searchPhrase=war'+word)
+		
+		page = requests.get("https://www.scirp.org/journal/Articles.aspx?searchCode="+word)
 		soup = BeautifulSoup(page.content, "html.parser")
+		
+		row = soup.find_all('ul')
+		#print(results)
+		for p in row:
+			sp = p.find('span')
+			if sp!= None:
 
+				titles.append(sp.find('a').text)
+
+		print(titles[1],"\n", titles[2])
+			#a = span.find('a')
+			
+			#titles.append(title.find_all('p'))
+			
+		
+		
+
+		#for result in r2:
+		#	print(result.text)
 		#titles
-		soupTitles = soup.find_all('a', class_='anchor js-publication-title')
-		print(soup.prettify)
-		for n in soupTitles:
-			print(n.text)
+		#soupTitles = soup.find_all('li', class_='publication branded u-padding-xs-ver js-publication')
+		#print(soupTitles)
+		#for n in soupTitles:
+		#	print(n.text)
 			#titles.append(n.text)
 		
 		#links
@@ -70,7 +89,7 @@ class TeraHomepageView(View):
 		
 		
 		
-		return redirect('https://www.sciencedirect.com/browse/journals-and-books?contentType=JL&searchPhrase=war')	
+		return redirect('https://www.scirp.org/journal/Articles.aspx?searchCode=computer')	
 
 class TeraDashboardView(View):
 	def get(self,request):
