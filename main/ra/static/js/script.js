@@ -12,7 +12,7 @@ inputBox.onkeyup = (e)=>{
     let emptyArray = [];
     if(userData){
         button.onclick = ()=>{
-            webLink = "https://www.google.com/search?q=" + userData;
+            webLink = "https://www.google.com/" + userData;
             linkTag.setAttribute("href", webLink);
             console.log(webLink);
             linkTag.click();
@@ -41,7 +41,7 @@ function select(element){
     let selectData = element.textContent;
     inputBox.value = selectData;
     button.onclick = ()=>{
-        webLink = "https://www.google.com/search?q=" + selectData;
+        webLink = "https://www.google.com" + selectData;
         linkTag.setAttribute("href", webLink);
         linkTag.click();
     }

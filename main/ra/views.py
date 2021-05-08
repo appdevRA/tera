@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.views.generic import View
 from django.http import HttpResponse
 from django.utils import timezone
-from .forms import CiteJournalForm, CreateFolderForm
+from .forms import CreateFolderForm
 from .models import *
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -26,12 +26,12 @@ def TeraLoginUser(request):
         if user is not None:
             login(request, user)
             return redirect('ra:tera_homepage_view')
-       
         else:
             messages.info(request, '*Incorrect username or password')
     
     context = {}
     return render(request,'login.html',context)
+
 
 class TeraSearchResultsView(View):
 	def get(self,request):
