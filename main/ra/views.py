@@ -12,6 +12,10 @@ from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from .forms import CreateUserForm
 from bs4 import BeautifulSoup
 import requests
+from selenium import webdriver
+import os
+
+
 #import urllib2 
 #import cookielib ## http.cookiejar in python3
 
@@ -49,24 +53,69 @@ class TeraHomepageView(View):
 		span = []
 		
 		
-		page = requests.get("https://www.scirp.org/journal/Articles.aspx?searchCode="+word)
-		soup = BeautifulSoup(page.content, "html.parser")
-		
-		row = soup.find_all('ul')
+
+		cookies = {
+		    'JSESSIONID': 'df0a6622ceac0af8',
+		}
+
+		headers = {
+		    'Connection': 'keep-alive',
+		    'sec-ch-ua': '^\\^',
+		    'sec-ch-ua-mobile': '?0',
+		    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36 Edg/90.0.818.56',
+		    'content-type': 'text/plain',
+		    'Accept': '*/*',
+		    'Origin': 'https://www.sciencedirect.com',
+		    'Sec-Fetch-Site': 'cross-site',
+		    'Sec-Fetch-Mode': 'cors',
+		    'Sec-Fetch-Dest': 'empty',
+		    'Referer': 'https://www.sciencedirect.com/',
+		    'Accept-Language': 'en-US,en;q=0.9',
+		}
+
+		params = (
+		    ('a', '884506234'),
+		    ('sa', '1'),
+		    ('v', '1169.7b094c0'),
+		    ('t', 'Unnamed^%^20Transaction'),
+		    ('rst', '41883'),
+		    ('ck', '1'),
+		    ('ref', 'https://www.sciencedirect.com/search?qs=computer'),
+		)
+
+		data = 'bel.6;e,\'fi,iki,2;5,\'type,\'pointerdown;6,\'fid,1.;e,\'lcp,20b,2;6,\'size,16950.;5,\'eid'
+
+		response = requests.post('https://bam.nr-data.net/events/1/7ac4127487', headers=headers, params=params, cookies=cookies, data=data)
+
+#NB. Original query string below. It seems impossible to parse and
+#reproduce query strings 100% accurately so the one below is given
+#in case the reproduced version is not "correct".
+# response = requests.post('https://bam.nr-data.net/events/1/7ac4127487?a=884506234&sa=1&v=1169.7b094c0&t=Unnamed^%^20Transaction&rst=41883&ck=1&ref=https://www.sciencedirect.com/search', headers=headers, cookies=cookies, data=data)
+
+
+		#scirp = requests.get("https://www.scirp.org/journal/Articles.aspx?searchCode="+word)
+		sciencedirect = requests.get("https://www.sciencedirect.com/", headers=headers, params=params, cookies=cookies, data=data)
+		#scirper = requests.get("https://www.springeropen.com/search?query="+word)
+		soup = BeautifulSoup(sciencedirect.content, "html.parser")
+
+		#print(soup)
+		#row = soup.find_all('ul')
 		#print(results)
-		for p in row:
-			sp = p.find('span')
-			if sp!= None:
+		#for p in row:
+		#	sp = p.find('span')
+		#	if sp!= None:
 
-				titles.append(sp.find('a').text)
+		#		titles.append(sp.find('a').text)
 
-		print(titles[1],"\n", titles[2])
+
+		t = soup.find_all('a',  'data-test:title-link')
+		print(soup)
 			#a = span.find('a')
 			
 			#titles.append(title.find_all('p'))
 			
 		
-		
+		#print(titles[0])
 
 		#for result in r2:
 		#	print(result.text)
@@ -85,11 +134,28 @@ class TeraHomepageView(View):
 		#a = requests.get("https://www.sciencedirect.com" +links[0],headers=jHeaders)
 
 		#soup = BeautifulSoup(a.content, "html.parser")
+		user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36"
+
+		self.options = webdriver.ChromeOptions()
+		self.options.headless = True
+		self.options.add_argument(f'user-agent={user_agent}')
+		self.options.add_argument("--window-size=1920,1080")
+		self.options.add_argument('--ignore-certificate-errors')
+		self.options.add_argument('--allow-running-insecure-content')
+		self.options.add_argument("--disable-extensions")
+		self.options.add_argument("--proxy-server='direct://'")
+		self.options.add_argument("--proxy-bypass-list=*")
+		self.options.add_argument("--start-maximized")
+		self.options.add_argument('--disable-gpu')
+		self.options.add_argument('--disable-dev-shm-usage')
+		self.options.add_argument('--no-sandbox')
+		self.driver = webdriver.Chrome(executable_path="chromedriver.exe", options=self.options)
 		
+		self.driver.get("google.com")
+		self.driver.get_screenshot_as_file("s.png")
 		
-		
-		
-		return redirect('https://www.scirp.org/journal/Articles.aspx?searchCode=computer')	
+		return redirect('https://www.sciencedirect.com/search?qs=computer')	
+		#return redirect('https://www.scirp.org/journal/Articles.aspx?searchCode=computer')	
 
 class TeraDashboardView(View):
 	def get(self,request):
