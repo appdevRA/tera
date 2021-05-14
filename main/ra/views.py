@@ -54,39 +54,8 @@ class TeraHomepageView(View):
 		
 		
 
-		cookies = {
-		    'JSESSIONID': 'df0a6622ceac0af8',
-		}
-
-		headers = {
-		    'Connection': 'keep-alive',
-		    'sec-ch-ua': '^\\^',
-		    'sec-ch-ua-mobile': '?0',
-		    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36 Edg/90.0.818.56',
-		    'content-type': 'text/plain',
-		    'Accept': '*/*',
-		    'Origin': 'https://www.sciencedirect.com',
-		    'Sec-Fetch-Site': 'cross-site',
-		    'Sec-Fetch-Mode': 'cors',
-		    'Sec-Fetch-Dest': 'empty',
-		    'Referer': 'https://www.sciencedirect.com/',
-		    'Accept-Language': 'en-US,en;q=0.9',
-		}
-
-		params = (
-		    ('a', '884506234'),
-		    ('sa', '1'),
-		    ('v', '1169.7b094c0'),
-		    ('t', 'Unnamed^%^20Transaction'),
-		    ('rst', '41883'),
-		    ('ck', '1'),
-		    ('ref', 'https://www.sciencedirect.com/search?qs=computer'),
-		)
-
-		data = 'bel.6;e,\'fi,iki,2;5,\'type,\'pointerdown;6,\'fid,1.;e,\'lcp,20b,2;6,\'size,16950.;5,\'eid'
-
-		response = requests.post('https://bam.nr-data.net/events/1/7ac4127487', headers=headers, params=params, cookies=cookies, data=data)
-
+		
+		
 #NB. Original query string below. It seems impossible to parse and
 #reproduce query strings 100% accurately so the one below is given
 #in case the reproduced version is not "correct".
@@ -149,10 +118,12 @@ class TeraHomepageView(View):
 		options.add_argument('--disable-gpu')
 		options.add_argument('--disable-dev-shm-usage')
 		options.add_argument('--no-sandbox')
-		driver = webdriver.Chrome(executable_path="C:\\Users\\Valued Client\\Desktop\\tera\\main\\static\\chromedriver.exe",options=options)
+		#driver = webdriver.Chrome(executable_path="C:\\Users\\Valued Client\\Desktop\\tera\\main\\static\\chromedriver88.exe",options=options)
+		driver = webdriver.Chrome(executable_path="C:\\Users\\Valued Client\\Desktop\\tera\\main\\static\\chromedriver90.exe",options=options)
+		driver.get('https://www.sciencedirect.com/search?qs='+word)
 		
-		driver.get("https://www.sciencedirect.com/search?qs=computer")
-		print(driver.title)
+		
+		print(driver.capabilities['browserVersion'])
 		
 		return redirect('https://www.sciencedirect.com/search?qs=computer')	
 		#return redirect('https://www.scirp.org/journal/Articles.aspx?searchCode=computer')	
