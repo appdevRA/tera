@@ -193,3 +193,5 @@ response = requests.post('https://id.elsevier.com/as/bGU7u/resume/as/authorizati
 #reproduce query strings 100% accurately so the one below is given
 #in case the reproduced version is not "correct".
 # response = requests.post('https://id.elsevier.com/as/bGU7u/resume/as/authorization.ping?acwCookieCreated=true&client_id=SDFE-v3&state=retryCounter%3D0%26csrfToken%3D972a0a3f-53bb-4aa0-b0d8-54b9e822fdf2%26idpPolicy%3Durn%253Acom%253Aelsevier%253Aidp%253Apolicy%253Aproduct%253Aindv_identity%26returnUrl%3D%252F%26prompt%3Dlogin%26cid%3Datp-83cb99ad-184f-41b2-9595-edae076908d1', headers=headers, cookies=cookies, data=data)
+
+
