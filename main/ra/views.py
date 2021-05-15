@@ -95,7 +95,7 @@ class TeraHomepageView(View):
 		#a = row.find('div', class_='row u-margin-l-bottom')
 		#b = a.find('div', class_='u-margin-l-top')
 		#journal.click()checkbox checkbox-small checkbox-label-indent u-clr-grey8 u-padding-xs-bottom
-		print(soup)
+		print(soup.prettify())
 		#row = soup.find_all('ul')
 		#print(results)
 		#for p in row:
