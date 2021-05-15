@@ -12,11 +12,8 @@ from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from .forms import CreateUserForm
 import bs4
 from bs4 import BeautifulSoup
-from selenium import webdriver
+
 import os
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
 import requests
 
 
@@ -75,7 +72,7 @@ class TeraHomepageView(View):
 
 		response = requests.get('https://www.sciencedirect.com/browse/journals-and-books', headers=headers)
 
-		
+		s
 		
 #NB. Original query string below. It seems impossible to parse and
 #reproduce query strings 100% accurately so the one below is given
