@@ -110,10 +110,12 @@ class TeraHomepageView(View):
 	
 		context ={
 			'springTitles': springTitles,
-			'springTitles': springTitles,
 			'springAuthors': springAuthors,
 			'springDates': springDates,
-			'springLinks': springLinks
+			'springLinks': springLinks,
+			'scienceDTitles': scienceDTitles,
+			'scienceDDescriptions': scienceDDescriptions,
+			'scienceDLinks': scienceDLinks
 		}
 
 		return render(request,'searchresults.html', context)
