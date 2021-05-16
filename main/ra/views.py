@@ -101,7 +101,7 @@ class TeraHomepageView(View):
 			p = li.div.p
 			pp = li.div.find('p', class_='u-display-inline u-clr-grey8')
 			if pp != None:
-				ppp = pp.find('span')#
+				ppp = pp.find('span')
 				scienceDDescriptions.append(p.text + " ● " + ppp.text)
 
 
@@ -110,10 +110,10 @@ class TeraHomepageView(View):
 	
 		context ={
 			'springTitles': springTitles,
-			'springTitles' = springTitles,
-			'springAuthors' = springAuthors,
-			'springDates' = springDates,
-			'springLinks' = springLinks
+			'springTitles': springTitles,
+			'springAuthors': springAuthors,
+			'springDates': springDates,
+			'springLinks': springLinks
 		}
 
 		return render(request,'searchresults.html', context)
