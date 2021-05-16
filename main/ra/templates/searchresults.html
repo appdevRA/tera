@@ -32,18 +32,37 @@
                  <li><a href="#">Recommendations</a></li>
                  <li><a href="#">Username</a></li>
               </ul>
-
            </nav>
         </div>
     </div>
  </header>
-    <div class="left-tab" style="border-right:2px #800000 solid;"></div>
-{%for title in titles %}
-              <div style="color: black"> {{title.text}}</div>
-              {% endfor %}
-    <div class="right-tab" style="border-left:2px #800000 solid;"></div>
+    <div class="left-tab" style="border-right:2px"></div>
+
+    <div class="right-tab" style="border-left:2px"></div>
+
+    <div class="wrapper">
+     <div class="main_content">
+        <div class="header">
+          <div class="wrap">
+                       <div class="search">
+                          <input type="text" class="searchTerm" placeholder="What are you looking for?">
+                          <button type="submit" class="searchButton">
+                            <i class="fa fa-search"></i>
+                         </button>
+                       </div>
+          </div>
+        </div>  
+        <!-- <div class="header">All</div> -->
+        <div class="info">
+          <div>{%for title in springTitles %}
+              <div style="color: black"> {{title}}</div>
+              {% endfor %}</div>
+         
+      </div>
+    </div>
     
 </body>
+
 
 
 <script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js"></script>

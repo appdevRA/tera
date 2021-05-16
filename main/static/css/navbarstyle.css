@@ -31,9 +31,9 @@ ul{
 /*header*/
 .header{
 	background-color: var(--color-1);
-	padding:12px 0;
+	padding-top: 10px;
 	position: relative;
-	border-bottom:1px #800000 solid;"
+
 }
 .header .logo,
 .header .nav{
