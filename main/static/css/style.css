@@ -5,6 +5,7 @@
 body{
     background-color: #ebebeb;
     font-family: 'Fira Sans', sans-serif;
+
 }
 
 .main-menu{
@@ -113,7 +114,7 @@ section.home{
     padding: 10px;
    
 }
-.middle-panel{
+.middle-tab{
     background-color: #f3f3f3;
     border-top-right-radius: 0px;
     border-bottom-right-radius: 0px;
@@ -152,6 +153,35 @@ section.home{
     position: fixed;
     top:70px;
     right:0;
+}
+.wrapper .main_content{
+  width: 60%;
+  margin-left: 90px;
+}
+
+.wrapper .header{
+   line-height: 10px;
+   width: 175vh;
+   min-height: 5vh;
+}
+
+.wrapper .info{
+  margin: 20px;
+  color: #717171;
+ 
+}
+
+.wrapper .main_content .info div{
+  margin-bottom: 20px;
+  line-height: 25px;
+   width: 170vh;
+}
+
+.wrapper .main_content .header{
+  padding: 20px;
+  background: #efefef;
+  color: #717171;
+ 
 }
 
 

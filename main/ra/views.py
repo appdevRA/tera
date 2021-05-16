@@ -20,7 +20,7 @@ import requests
 class TeraIndexView(View):
 	def get(self, request):
 
-		return render(request,'la1ndingpage.html')
+		return render(request,'landingpage.html')
 		
 def TeraLoginUser(request):
     if request.method == 'POST':
@@ -72,7 +72,7 @@ class TeraHomepageView(View):
 
 		response = requests.get('https://www.sciencedirect.com/browse/journals-and-books', headers=headers)
 
-		s
+		
 		
 #NB. Original query string below. It seems impossible to parse and
 #reproduce query strings 100% accurately so the one below is given
