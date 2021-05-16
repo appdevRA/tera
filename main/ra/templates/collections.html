@@ -34,8 +34,6 @@
                 
                 <ul>
                 <li><a href="{% url 'ra:tera_dashboard_view'%}">Dashboard</a></li>  
-                <li><a href="#">Bookmarks</a></li>
-                <li><a href="#">Folders</a></li>
                 <li><a href="{% url 'ra:tera_account_settings'%}">Settings</a></li>
                 <li><a href="#modalLogoutForm" data-toggle="modal" data-target="#modalLogoutForm" >Logout </a></li>
                 </ul>
@@ -54,7 +52,7 @@
                 <li class="menu-item"><i class="fa fa-chevron-circle-down"></i><b>My Collections </b>
                                  <i class="fa fa-plus" style="font-size:10px;" name="addfolder" onclick="document.getElementById('id01').style.display='block'"></i></li>
                                  {% for folder in folders %}
-                                    <li class="menu-item"> {{folder.foldername}}</li>
+                                    <li class="menu-item" style="padding-left: 50px;"> {{folder.foldername}} </li>
                                  {% endfor %}
                 <li class="menu-item"><i class="fa fa-chevron-circle-down"></i><b>Private Groups</b>
                                  <i class="fa fa-plus" style="font-size: 10px;"></i></li>
@@ -103,11 +101,12 @@
                   </div>
     </div>
     <div class="right-side-bar" style="border-left:2px #800000 solid;">
-      <h3 class="w3-bar-item">Menu</h3>
+      <h3 class="w3-bar-item">Details</h3>
       <ul>
-       <li> Lorem ipsum dolorem.</li>
-       <li> Lorem ipsum dolorem.</li>
-       <li> Lorem ipsum dolorem.</li>
+       <li class="menu-item"> Lorem ipsum dolorem.</li>
+       <li class="menu-item"> Lorem ipsum dolorem.</li>
+       <li class="menu-item"> Lorem ipsum dolorem.</li>
+      
       </ul>
     </div>
     
