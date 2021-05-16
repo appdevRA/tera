@@ -41,16 +41,13 @@ def TeraLoginUser(request):
 
 class TeraSearchResultsView(View):
 	def get(self,request):
-		return render(request,'3.html')	
-
-class TeraHomepageView(View):
-	def get(self,request):
-		word = 'computer'
+		word = 'war'
+		
 		springTitles = []
 		springAuthors = []
 		springDates = []
 		springLinks = []
-		
+		ctr = 1
 		scienceDTitles = []
 		scienceDDescriptions = []
 		scienceDLinks = []
@@ -68,6 +65,7 @@ class TeraHomepageView(View):
 				div = article.find('div', class_='u-mb-16')
 				a = div.h3
 				p = div.find('p', class_='c-listing__authors u-mb-0')
+				
 				springTitles.append(a.text)
 				springAuthors.append(p.text)
 				div2 = article.find('div',class_='c-meta')
@@ -107,6 +105,7 @@ class TeraHomepageView(View):
 
 			
 			scienceDLinks.append(li.a['href'])
+		
 	
 		context ={
 			'springTitles': springTitles,
@@ -115,11 +114,18 @@ class TeraHomepageView(View):
 			'springLinks': springLinks,
 			'scienceDTitles': scienceDTitles,
 			'scienceDDescriptions': scienceDDescriptions,
-			'scienceDLinks': scienceDLinks
+			'scienceDLinks': scienceDLinks,
+			'ctr': ctr
+			
 		}
 
 		return render(request,'searchresults.html', context)
-		#return redirect('https://www.scirp.org/journal/Articles.aspx?searchCode=computer')	
+		
+
+class TeraHomepageView(View):
+	def get(self,request):
+		return render(request,'3.html')	
+		
 
 class TeraDashboardView(View):
 	def get(self,request):
