@@ -168,10 +168,10 @@ section.home{
 
 .wrapper .header{
    line-height: 10px;
-   width: 185vh;
+   width: 125vh;
    min-height: 5vh;
-   margin-top: 20px;
-   z-index: -1;
+   margin-top: 10px;
+   z-index: 1;
 }
 
 .new-header .new-info{
@@ -185,19 +185,19 @@ section.home{
 
 .wrapper .info{
   z-index: 1;
-  margin: 30px;
+  margin: 15px;
   color: #717171;
  
 }
 
 .wrapper .main_content .info div{
-  margin-bottom: 20px;
-  line-height: 25px;
+  margin-bottom: 10px;
+  line-height: 15px;
    width: 170vh;
 }
 
 .wrapper .main_content .header{
-  padding: 20px;
+  padding: 10px;
   background: #efefef;
   color: #717171;
  
