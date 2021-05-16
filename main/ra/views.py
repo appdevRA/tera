@@ -28,10 +28,8 @@ class TeraIndexView(View):
 				print(word)
 				springers = []
 				springLinks = []
-				ctr = 1
-				scienceDTitles = []
-				scienceDDescriptions = []
-				scienceDLinks = []
+				
+				
 
 
 				response = requests.get('https://www.springeropen.com/search?query=' + word + '&searchType=publisherSearch')
@@ -42,7 +40,7 @@ class TeraIndexView(View):
 
 				for b in bb:
 					a =0
-					ctr = 0
+					
 					article = b.find('article')
 					if article != None:
 
@@ -59,6 +57,19 @@ class TeraIndexView(View):
 						z.append(a.a.get('href'))
 						springers.append(z)
 
+				context = {
+					'keyword': word,
+					'springers': springers,
+					'springLinks': springLinks
+					
+				}
+
+				return render(request,'searchresults.html', context)
+
+			elif 'btnJournal' in request.POST:
+				scienceDirects = []
+				scienceLinks = []
+				
 				headers = {
 				    'authority': 'www.sciencedirect.com',
 				    'sec-ch-ua': '^\\^',
@@ -80,27 +91,29 @@ class TeraIndexView(View):
 				soup2 = BeautifulSoup(response.content, 'html.parser')		
 				lli= soup2.findAll('li', class_='publication branded u-padding-xs-ver js-publication')
 				for li in lli:
+					z = []
 					scienceDTitles.append(li.a.text)
+					z.append(li.a.text)
 					p = li.div.p
 					pp = li.div.find('p', class_='u-display-inline u-clr-grey8')
 					if pp != None:
 						ppp = pp.find('span')
 						scienceDDescriptions.append(p.text + " ● " + ppp.text)
+						z.append(p.text + " ● " + ppp.text)
 
-
-					
-					scienceDLinks.append(li.a['href'])
-				
-			
-				
+					scienceLinks.append(li.a['href'])
+					scienceDirects.append(z)
 				context = {
-					'springers': springers,
-					'springLinks': springLinks
+					'keyword': word,
+					'scienceDirects': scienceDirects,
+					'scienceLinks': scienceLinks
 					
 				}
 
 				return render(request,'searchresults.html', context)
-	
+
+
+
 
 		
 		

@@ -62,7 +62,7 @@
                         <div class="search">
                           <form>
                             <a href="" target="_blank" hidden></a>
-                            <input type="text" placeholder="Search (Keywords, Titles, Authors)" class="input">
+                            <input type="text" placeholder="" class="input" value="{{ keyword }}">
                             <div class="autocom-box">
                               <!-- here list are inserted from javascript -->
                             </div>
@@ -109,6 +109,32 @@
               {% if forloop.counter == 3 %}
               <div style="color: black; font-weight: lighter;"><i>  {{ column }} </i></div>
               {% endif %}
+
+              {% endfor %}
+
+              {% endwith %}
+            {% endfor %}
+            </div>
+
+            <div>
+            {%for row in scienceDirects %}
+             
+            {% with forloop.counter as outer_counter %}
+            
+              {%for column in row %}
+              
+              {% if forloop.counter == 1 %}
+              {% for link in scienceLinks %}
+              {% if forloop.counter == outer_counter %}
+              <div style="color: black"><a href="{{link}}" > <b> {{column}} </b> </a></div>
+              {% endif %}
+              {% endfor %}
+              {% endif %}
+
+              {% if forloop.counter == 2 %}
+              <div style="color: black">  {{ column }} </div>
+              {% endif %}
+
 
               {% endfor %}
 
