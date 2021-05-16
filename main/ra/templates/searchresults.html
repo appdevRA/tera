@@ -29,7 +29,7 @@
 </style>
 <body style="background-color: #f3f3f3">
      <nav>
-      <div class="logo"><a href="{% url 'ra:tera_index_view'%}"><img class="logo-style" src="{% static 'images/teralogo.png' %}"></a></div>
+      <div class="logo"><a href="{% url 'ra:tera_homepage_view'%}"><img class="logo-style" src="{% static 'images/teralogo.png' %}"></a></div>
       <label for="btn" class="icon">
         <span class=></span>
       </label>
@@ -44,6 +44,8 @@
                 
                 <ul>
                 <li><a href="{% url 'ra:tera_dashboard_view'%}">Dashboard</a></li>  
+                <li><a href="#">Bookmarks</a></li>
+                <li><a href="#">Folders</a></li>
                 <li><a href="{% url 'ra:tera_account_settings'%}">Settings</a></li>
                 <li><a href="#modalLogoutForm" data-toggle="modal" data-target="#modalLogoutForm" >Logout </a></li>
                 </ul>
@@ -73,15 +75,20 @@
          
       </div>
         <center>
+           <form id= "form1" action = "" method = "POST" autocomplete = "off" enctype="multipart/form-data">
+            {% csrf_token %}
           <input type="button" class="filterbutton" value="Articles">
            <input type="button" class="filterbutton" value="|">
-            <input type="button" class="filterbutton" value="Journals">
+             <button type="submit" class="filterbutton" name="btnJournal" id="btnJournal" ">
+                              Journals</button>
              <input type="button" class="filterbutton" value="|">
             <input type="button" class="filterbutton" value="E-Books">
             <input type="button" class="filterbutton" value="|">
             <input type="button" class="filterbutton" value="Books">
            <input type="button" class="filterbutton" value="|">
             <input type="button" class="filterbutton" value="Dissertations">
+             <input type="hidden" class="filterbutton" name = "search" value="{{keyword}}">
+           </form>
       </center>
       <div class="info">
       
@@ -101,11 +108,11 @@
               {% endif %}
 
               {% if forloop.counter == 2 %}
-              <div style="color: black">  {{ column }} </div>
+              <div style="color: black; font-weight: lighter;font-size: 13px;margin-bottom: -5px">  {{ column }} </div>
               {% endif %}
 
               {% if forloop.counter == 3 %}
-              <div style="color: black; font-weight: lighter;"><i>  {{ column }} </i></div>
+              <div style="color: black; font-weight: lighter; font-size: 10px; padding-bottom: 25px"><i>  {{ column }} </i></div>
               {% endif %}
 
               {% endfor %}
@@ -124,13 +131,13 @@
               {% if forloop.counter == 1 %}
               {% for link in scienceLinks %}
               {% if forloop.counter == outer_counter %}
-              <div style="color: black"><a href="{{link}}" > <b> {{column}} </b> </a></div>
+              <div style="color: black"><a href="https://www.sciencedirect.com/{{link}}" > <b> {{column}} </b> </a></div>
               {% endif %}
               {% endfor %}
               {% endif %}
 
               {% if forloop.counter == 2 %}
-              <div style="color: black">  {{ column }} </div>
+              <div style="color: black;font-weight: lighter; font-size: 12px">  <i>{{ column }}</i> </div>
               {% endif %}
 
 

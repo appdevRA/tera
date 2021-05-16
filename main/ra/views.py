@@ -22,16 +22,15 @@ class TeraIndexView(View):
 		return render(request,'landingpage.html')
 
 	def post(self, request):
+		
+		
 		if request.method == 'POST':
+			word = request.POST.get("keyword")
+			
 			if 'btnSearch' in request.POST:
-				word = request.POST.get("keyword")
-				print(word)
 				springers = []
 				springLinks = []
 				
-				
-
-
 				response = requests.get('https://www.springeropen.com/search?query=' + word + '&searchType=publisherSearch')
 				soup = BeautifulSoup(response.content, 'html.parser')
 				#print(soup.prettify)
@@ -67,6 +66,7 @@ class TeraIndexView(View):
 				return render(request,'searchresults.html', context)
 
 			elif 'btnJournal' in request.POST:
+				word = request.POST.get("search")
 				scienceDirects = []
 				scienceLinks = []
 				
@@ -92,17 +92,19 @@ class TeraIndexView(View):
 				lli= soup2.findAll('li', class_='publication branded u-padding-xs-ver js-publication')
 				for li in lli:
 					z = []
-					scienceDTitles.append(li.a.text)
+					#scienceDTitles.append(li.a.text)
 					z.append(li.a.text)
 					p = li.div.p
 					pp = li.div.find('p', class_='u-display-inline u-clr-grey8')
 					if pp != None:
 						ppp = pp.find('span')
-						scienceDDescriptions.append(p.text + " ● " + ppp.text)
+						#scienceDDescriptions.append(p.text + " ● " + ppp.text)
 						z.append(p.text + " ● " + ppp.text)
 
 					scienceLinks.append(li.a['href'])
 					scienceDirects.append(z)
+				for n in scienceDirects:
+					print(n)
 				context = {
 					'keyword': word,
 					'scienceDirects': scienceDirects,
