@@ -20,7 +20,7 @@ import requests
 class TeraIndexView(View):
 	def get(self, request):
 
-		return render(request,'landingpage.html')
+		return render(request,'la1ndingpage.html')
 		
 def TeraLoginUser(request):
     if request.method == 'POST':
