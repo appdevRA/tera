@@ -34,13 +34,14 @@
       <br>
       <div class="search-container">
         <div class="search">
-          <form>
-            <a href="" target="_blank" hidden></a>
-            <input type="text" placeholder="Search (Keywords, Titles, Authors)" class="input">
+          <form id= "form1" action = "" method = "POST" autocomplete = "off" enctype="multipart/form-data">
+            {% csrf_token %}
+            <!--<a href="" target="_blank" hidden></a> -->
+            <input type="text" name="keyword" placeholder="Search (Keywords, Titles, Authors)" class="input">
             <div class="autocom-box">
           <!-- here list are inserted from javascript -->
             </div>
-            <button type="submit" class="button"><i class="fa fa-search" aria-hidden="true"></i></button>
+            <button type="submit" id ="btnSearch" name="btnSearch" class="button"><i class="fa fa-search" aria-hidden="true"></i></button>
           </form>
         </div>
       </div>
@@ -53,8 +54,8 @@
       });
 </script>
 
-<script  src= "{% static 'js/script.js' %}"></script>
-<script  src= "{% static 'js/suggestions.js' %}"></script>
+<!--<script  src= "{% static 'js/script.js' %}"></script>
+<script  src= "{% static 'js/suggestions.js' %}"></script>-->
 
   </body>
 </html>
