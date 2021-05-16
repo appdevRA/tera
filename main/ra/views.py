@@ -47,13 +47,13 @@ class TeraHomepageView(View):
 	def get(self,request):
 		word = 'computer'
 		springTitles = []
-		springAuthor = []
-		springDate = []
-		springLink = []
+		springAuthors = []
+		springDates = []
+		springLinks = []
 		
 		scienceDTitles = []
-		scienceDDescription = []
-		scienceDLink = []
+		scienceDDescriptions = []
+		scienceDLinks = []
 		
 		
 		response = requests.get('https://www.springeropen.com/search?query=' + word + '&searchType=publisherSearch')
@@ -69,10 +69,10 @@ class TeraHomepageView(View):
 				a = div.h3
 				p = div.find('p', class_='c-listing__authors u-mb-0')
 				springTitles.append(a.text)
-				springAuthor.append(p.text)
+				springAuthors.append(p.text)
 				div2 = article.find('div',class_='c-meta')
-				springDate.append(div2.text)
-				springLink.append(a.a['href'])
+				springDates.append(div2.text)
+				springLinks.append(a.a['href'])
 				#print(a.a['href'])
 		
 
@@ -93,10 +93,8 @@ class TeraHomepageView(View):
 		}
 
 		response = requests.get('https://www.sciencedirect.com/browse/journals-and-books?contentType=JL&searchPhrase=' + word, headers=headers)
-		#with open("C:\\Users\\Valued Client\\Downloads\\Browse journals and books _ ScienceDirect.com.html") as html_file:
-		soup2 = BeautifulSoup(response.content, 'html.parser')
-		#print(soup2.prettify())
 		
+		soup2 = BeautifulSoup(response.content, 'html.parser')		
 		lli= soup2.findAll('li', class_='publication branded u-padding-xs-ver js-publication')
 		for li in lli:
 			scienceDTitles.append(li.a.text)
@@ -104,114 +102,20 @@ class TeraHomepageView(View):
 			pp = li.div.find('p', class_='u-display-inline u-clr-grey8')
 			if pp != None:
 				ppp = pp.find('span')#
-				scienceDDescription.append(p.text + " ● " + ppp.text)
+				scienceDDescriptions.append(p.text + " ● " + ppp.text)
 
 
 			
-			scienceDLink.append(li.a['href'])
-		print(scienceDTitles)
-#NB. Original query string below. It seems impossible to parse and
-#reproduce query strings 100% accurately so the one below is given
-#in case the reproduced version is not "correct".
-# response = requests.post('https://bam.nr-data.net/events/1/7ac4127487?a=884506234&sa=1&v=1169.7b094c0&t=Unnamed^%^20Transaction&rst=41883&ck=1&ref=https://www.sciencedirect.com/search', headers=headers, cookies=cookies, data=data)
-
-
-		#scirp = requests.get("https://www.scirp.org/journal/Articles.aspx?searchCode="+word)
-		#url = requests.get('https://www.sciencedirect.com/browse/journals-and-books?contentType=JL' + word, headers=headers)
-		#sciencedirect = url.content
-		#soup = BeautifulSoup(url.content, 'html.parser')
-		#soup = BeautifulSoup(sciencedirect.content, "html.parser")
-		
-		#a = soup.find('div', class_='col-lg-6')
-		#b = soup.findAll('span', class_='checkbox-label-value checkbox-small checkbox-label-indent u-clr-grey8 u-padding-xs-bottom')
-
-		#c = soup.find('div', class_='checkbox-check checkbox-small checkbox-label-indent u-clr-grey8 u-padding-xs-bottom')
-		#a = row.find('div', class_='row u-margin-l-bottom')
-		#b = a.find('div', class_='u-margin-l-top')
-		#journal.click()checkbox checkbox-small checkbox-label-indent u-clr-grey8 u-padding-xs-bottom
-		#print(soup)
-		
-
-
-		#row = soup.find_all('ul')
-		#print(results)
-		#for p in row:
-		#	sp = p.find('span')
-		#	if sp!= None:
-
-		#		titles.append(sp.find('a').text)
-		
-
-		
-
-		
-		#url2 = requests.get('https://doaj.org/')
-		
-		
-		
-		#soup2 = BeautifulSoup(response.content, 'html.parser')
-		#print(soup2.prettify)
-		
-			#e = d.div
-			#f = e.h3
-			
-#NB. Original query string below. It seems impossible to parse and
-#reproduce query strings 100% accurately so the one below is given
-#in case the reproduced version is not "correct".
-# response = requests.get('https://doaj.org/query/journal/_search?ref=public_journal&callback=jQuery341010019889148834937_1621078847844&source=^%^7B^%^22query^%^22^%^3A^%^7B^%^22query_string^%^22^%^3A^%^7B^%^22query^%^22^%^3A^%^22computer^%^22^%^2C^%^22default_operator^%^22^%^3A^%^22AND^%^22^%^7D^%^7D^%^2C^%^22size^%^22^%^3A0^%^2C^%^22aggs^%^22^%^3A^%^7B^%^22language^%^22^%^3A^%^7B^%^22terms^%^22^%^3A^%^7B^%^22field^%^22^%^3A^%^22index.language.exact^%^22^%^2C^%^22size^%^22^%^3A100^%^2C^%^22order^%^22^%^3A^%^7B^%^22_count^%^22^%^3A^%^22desc^%^22^%^7D^%^7D^%^7D^%^7D^%^7D&_=1621078847861', headers=headers)
-
-
-		#t = soup.find_all('a',  'data-test:title-link')
-		#print(soup)
-			#a = span.find('a')
-			
-			#titles.append(title.find_all('p'))
-			
-		
-		#print(titles[0])
-
-		#for result in r2:
-		#	print(result.text)
-		#titles
-		#soupTitles = soup.find_all('li', class_='publication branded u-padding-xs-ver js-publication')
-		#print(soupTitles)
-		#for n in soupTitles:
-		#	print(n.text)
-			#titles.append(n.text)
-		
-		#links
-		#rLink = soup.find_all('li', class_='publication branded u-padding-xs-ver js-publication')
-		#for n in rLink:
-		#	links.append(n.find('a')['href'])
-			#print(links)
-		#a = requests.get("https://www.sciencedirect.com" +links[0],headers=jHeaders)
+			scienceDLinks.append(li.a['href'])
 	
-	#soup = BeautifulSoup(a.content, "html.parser")
-		user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36"
-		
-		
-		
 		context ={
-			'springTitles': springTitles
+			'springTitles': springTitles,
+			'springTitles' = springTitles,
+			'springAuthors' = springAuthors,
+			'springDates' = springDates,
+			'springLinks' = springLinks
 		}
-		#for title in tt:
-		#	wait = WebDriverWait(driver, 2)
-		#	element = wait.until(EC.element_to_be_clickable((By.tag, 'span')))
 
-			#titles.append(element.text)
-
-			
-
-
-
-
-		
-		
-
-		
-		
-		
-		
 		return render(request,'searchresults.html', context)
 		#return redirect('https://www.scirp.org/journal/Articles.aspx?searchCode=computer')	
 
