@@ -1,8 +1,8 @@
 /* Full-width input fields */
 input[type=text], input[type=password] {
   width: 100%;
-  padding: 15px;
-  margin: 5px 0 22px 0;
+  padding: 2px;
+  margin: 5px 0 10px 0;
   display: inline-block;
   border: none;
   background: #f1f1f1;
@@ -50,16 +50,16 @@ button:hover {
 /* The Modal (background) */
 .modal {
   display: none; /* Hidden by default */
-  position: absolute; /* Stay in place */
+  position: relative;/* Stay in place */
   z-index: 1; /* Sit on top */
   left: 0;
   top: 0;
   width: 80%; /* Full width */
-  
-  overflow: auto; /* Enable scroll if needed */
+  /*
+  overflow: auto;  Enable scroll if needed */
   
   padding-top: 50px;
-  padding-left: 250px;
+  padding-left: 50px;
 }
 
 /* Modal Content/Box */
