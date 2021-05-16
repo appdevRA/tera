@@ -20,6 +20,8 @@ body{
     position: fixed;
     top:70px;
     left:0;
+
+    z-index: -1;
    
 }
 .main-menu .logo a{
@@ -112,6 +114,7 @@ section.home{
     right:0;
 
     padding: 10px;
+    z-index: -1;
    
 }
 .middle-tab{
@@ -140,6 +143,8 @@ section.home{
     position: fixed;
     top:70px;
     left:0;
+    z-index: -1;
+
 }
 .right-tab{
     background-color: #f3f3f3;
@@ -153,20 +158,24 @@ section.home{
     position: fixed;
     top:70px;
     right:0;
+    z-index: -1;
 }
 .wrapper .main_content{
   width: 60%;
   margin-left: 90px;
+  z-index: -1;
 }
 
 .wrapper .header{
    line-height: 10px;
-   width: 175vh;
+   width: 185vh;
    min-height: 5vh;
+   margin-top: 20px;
+   z-index: -1;
 }
 
 .wrapper .info{
-  margin: 20px;
+  margin: 30px;
   color: #717171;
  
 }

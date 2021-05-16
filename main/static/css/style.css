@@ -161,8 +161,9 @@ section.home{
 
 .wrapper .header{
    line-height: 10px;
-   width: 175vh;
+    width: 185vh;
    min-height: 5vh;
+   margin-top: 20px;
 }
 
 .wrapper .info{

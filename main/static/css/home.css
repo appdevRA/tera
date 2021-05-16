@@ -13,6 +13,7 @@ body{
 nav{
   background: #fff;
   box-shadow: 0 2px 3px #ffd700;
+  z-index: 1;
 
 }
 nav:after{
