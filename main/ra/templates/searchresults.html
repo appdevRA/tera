@@ -58,11 +58,24 @@
 
                   <div class="info">
           <div>
-            {%for title in springTitles %}
-              <div style="color: black"><a href="#"> <b> {{title}} </b> </a></div>
+            {%for row in springers %}
+             
 
-              {%for author in springAuthors %}
-              <div style="color: black"> {{author}}</div>
+              {%for column in row %}
+              
+              {% if forloop.counter == 4 || forloop.counter == 1%}
+              
+              <div style="color: black"><a href="{{ column }}"> <b> {{column}} </b> </a></div>
+              {% endif %}
+
+              {% if forloop.counter == 2 %}
+              <div style="color: black">  {{ column }} </div>
+              {% endif %}
+
+              {% if forloop.counter == 3 %}
+              <div style="color: black">  {{ column }} </div>
+              {% endif %}
+
               {% endfor %}
 
               {%for date in springDates %}
