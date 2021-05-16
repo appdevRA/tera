@@ -100,7 +100,8 @@ class TeraIndexView(View):
 				}
 
 				return render(request,'searchresults.html', context)
-	def post(self, request):	
+	def post(self, request):
+		return redirect('ra:tera_homepage_view')
 
 		
 		
