@@ -20,7 +20,7 @@ import requests
 class TeraIndexView(View):
 	def get(self, request):
 
-		return render(request,'la1ndingpage.html')
+		return render(request,'landingpage.html')
 		
 def TeraLoginUser(request):
     if request.method == 'POST':
@@ -46,12 +46,34 @@ class TeraSearchResultsView(View):
 class TeraHomepageView(View):
 	def get(self,request):
 		word = 'computer'
-		titles = []
-		links = []
-		span = []
-		#bVersion = webdriver.capabilities['browserVersion']
-		#print("wala: ",bVersion)
+		springTitles = []
+		springAuthor = []
+		springDate = []
+		springLink = []
 		
+		scienceDTitles = []
+		scienceDDescription = []
+		scienceDLink = []
+		
+		
+		response = requests.get('https://www.springeropen.com/search?query=' + word + '&searchType=publisherSearch')
+		soup = BeautifulSoup(response.content, 'html.parser')
+		a= soup.find('ol', class_='c-list-group c-list-group--bordered c-list-group c-list-group--md')
+		bb = a.findAll('li', )
+		for b in bb:
+
+			article = b.find('article')
+			if article != None:
+
+				div = article.find('div', class_='u-mb-16')
+				a = div.h3
+				p = div.find('p', class_='c-listing__authors u-mb-0')
+				springTitles.append(a.text)
+				springAuthor.append(p.text)
+				div2 = article.find('div',class_='c-meta')
+				springDate.append(div2.text)
+				springLink.append(a.a['href'])
+				#print(a.a['href'])
 		
 
 		headers = {
@@ -65,15 +87,29 @@ class TeraHomepageView(View):
 		    'sec-fetch-mode': 'navigate',
 		    'sec-fetch-user': '?1',
 		    'sec-fetch-dest': 'document',
-		    'referer': 'https://www.sciencedirect.com/search?qs=',
+		    'referer': 'https://www.sciencedirect.com/search?qs=' + word,
 		    'accept-language': 'en-US,en;q=0.9',
 		    'cookie': 'EUID=75fdfe63-504d-4c8a-8180-c03a43da237c; mboxes=^%^7B^%^7D; utt=2146-84ee935a77144283645aebe835a645e74f7-M0M6; __cfduid=d581cdfc6af0612fb99bd31d759e5b2b01620472367; AMCVS_4D6368F454EC41940A4C98A6^%^40AdobeOrg=1; fingerPrintToken=0e09a4589ad201b7779dc25f995a7fcc; SD_ART_LINK_STATE=^%^3Ce^%^3E^%^3Cq^%^3Escience^%^3C^%^2Fq^%^3E^%^3Corg^%^3Ejrnl_home^%^3C^%^2Forg^%^3E^%^3Cz^%^3Erslt_list_item^%^3C^%^2Fz^%^3E^%^3Crdt^%^3E2021^%^2F05^%^2F15^%^2F04^%^3A50^%^3A21^%^3A693^%^3C^%^2Frdt^%^3E^%^3Cenc^%^3EN^%^3C^%^2Fenc^%^3E^%^3C^%^2Fe^%^3E; mbox=session^%^239105d5c237604313bfd15e5b357d8385^%^231621056083^%^7CPC^%^2370b4195123dc401fa07762b437030b81.34_0^%^231684299023; SD_REMOTEACCESS=eyJhY2NvdW50SWQiOiI3MzA5NCIsInRpbWVzdGFtcCI6MTYyMTA1NDQ3NzQzOH0=; sd_session_id=64b88bde49c1f3445e2892b333e22bd29b02gxrqa; id_ab=AEG; acw=64b88bde49c1f3445e2892b333e22bd29b02gxrqa^%^7C^%^24^%^7CC97A49C4D55825A701A2B831EFC27B1BBE7ACBC0917CEE99BCF7086A97128C0A6FD7058E53D0D47C4A4EB855974236302C20B33206EAD7F33FBA44D1BD4E4F2EB0469A67597464825D387A21AFA2E514; has_multiple_organizations=false; AMCV_4D6368F454EC41940A4C98A6^%^40AdobeOrg=-1124106680^%^7CMCIDTS^%^7C18763^%^7CMCMID^%^7C10640528059237186110715255087884724485^%^7CMCAID^%^7CNONE^%^7CMCOPTOUT-1621061687s^%^7CNONE^%^7CMCAAMLH-1621659287^%^7C3^%^7CMCAAMB-1621659287^%^7Cj8Odv6LonN4r3an7LhD3WZrU1bUpAkFkkiY1ncBR96t2PTI^%^7CMCSYNCSOP^%^7C411-18716^%^7CvVersion^%^7C5.2.0^%^7CMCCIDH^%^7C-1660478464; __cf_bm=d38428dd202136a09187f1b2037a1c4e42db6e85-1621058460-1800-AQkbFGoxqX+5uFAFIezpHTDE62JXklL30EKf0QyuJjQ2QPOI6WayDh9V7kl9hfgmOlvJqC0mjFoarFrBzKc/kLI=; MIAMISESSION=76530023-5194-4f7b-88d4-12743ae5097b:3798511713; s_pers=^%^20v8^%^3D1621058962796^%^7C1715666962796^%^3B^%^20v8_s^%^3DLess^%^2520than^%^25201^%^2520day^%^7C1621060762796^%^3B^%^20c19^%^3Dsd^%^253Asearch^%^253Aresults^%^253Aguest^%^7C1621060762801^%^3B^%^20v68^%^3D1621058913924^%^7C1621060762810^%^3B; s_sess=^%^20s_cpc^%^3D0^%^3B^%^20e78^%^3Dqs^%^253Dcomputer^%^3B^%^20c7^%^3Dcontenttype^%^253Djl^%^3B^%^20s_cc^%^3Dtrue^%^3B^%^20s_ppvl^%^3Dsd^%^25253Abrowse^%^25253Ajournalsandbooks^%^252C16^%^252C16^%^252C969^%^252C1280^%^252C969^%^252C1920^%^252C1080^%^252C1^%^252CP^%^3B^%^20s_ppv^%^3Dsd^%^25253Asearch^%^25253Aresults^%^25253Aguest^%^252C22^%^252C22^%^252C969^%^252C1280^%^252C969^%^252C1920^%^252C1080^%^252C1^%^252CP^%^3B^%^20c21^%^3Dqs^%^253Dwar^%^3B^%^20e13^%^3Dqs^%^253Dwar^%^253A1^%^3B^%^20c13^%^3Drelevance-desc^%^3B^%^20e41^%^3D1^%^3B^%^20s_sq^%^3Delsevier-global-prod^%^253D^%^252526c.^%^252526a.^%^252526activitymap.^%^252526page^%^25253Dsd^%^2525253Asearch^%^2525253Aresults^%^2525253Aguest^%^252526link^%^25253Djournals^%^25252520^%^25252526^%^25252520books^%^252526region^%^25253Dheader^%^252526pageIDType^%^25253D1^%^252526.activitymap^%^252526.a^%^252526.c^%^252526pid^%^25253Dsd^%^2525253Asearch^%^2525253Aresults^%^2525253Aguest^%^252526pidt^%^25253D1^%^252526oid^%^25253Dhttps^%^2525253A^%^2525252F^%^2525252Fwww.sciencedirect.com^%^2525252Fbrowse^%^2525252Fjournals-and-books^%^252526ot^%^25253DA^%^3B',
 		}
 
-		response = requests.get('https://www.sciencedirect.com/browse/journals-and-books', headers=headers)
+		response = requests.get('https://www.sciencedirect.com/browse/journals-and-books?contentType=JL&searchPhrase=' + word, headers=headers)
+		#with open("C:\\Users\\Valued Client\\Downloads\\Browse journals and books _ ScienceDirect.com.html") as html_file:
+		soup2 = BeautifulSoup(response.content, 'html.parser')
+		#print(soup2.prettify())
+		
+		lli= soup2.findAll('li', class_='publication branded u-padding-xs-ver js-publication')
+		for li in lli:
+			scienceDTitles.append(li.a.text)
+			p = li.div.p
+			pp = li.div.find('p', class_='u-display-inline u-clr-grey8')
+			if pp != None:
+				ppp = pp.find('span')#
+				scienceDDescription.append(p.text + " ● " + ppp.text)
 
-		
-		
+
+			
+			scienceDLink.append(li.a['href'])
+		print(scienceDTitles)
 #NB. Original query string below. It seems impossible to parse and
 #reproduce query strings 100% accurately so the one below is given
 #in case the reproduced version is not "correct".
@@ -81,8 +117,9 @@ class TeraHomepageView(View):
 
 
 		#scirp = requests.get("https://www.scirp.org/journal/Articles.aspx?searchCode="+word)
-		sciencedirect = requests.get('https://www.sciencedirect.com/browse/journals-and-books?qs=' + word, headers=headers).text
-		soup = BeautifulSoup(sciencedirect, 'html.parser')
+		#url = requests.get('https://www.sciencedirect.com/browse/journals-and-books?contentType=JL' + word, headers=headers)
+		#sciencedirect = url.content
+		#soup = BeautifulSoup(url.content, 'html.parser')
 		#soup = BeautifulSoup(sciencedirect.content, "html.parser")
 		
 		#a = soup.find('div', class_='col-lg-6')
@@ -92,7 +129,10 @@ class TeraHomepageView(View):
 		#a = row.find('div', class_='row u-margin-l-bottom')
 		#b = a.find('div', class_='u-margin-l-top')
 		#journal.click()checkbox checkbox-small checkbox-label-indent u-clr-grey8 u-padding-xs-bottom
-		print(soup.prettify())
+		#print(soup)
+		
+
+
 		#row = soup.find_all('ul')
 		#print(results)
 		#for p in row:
@@ -100,6 +140,25 @@ class TeraHomepageView(View):
 		#	if sp!= None:
 
 		#		titles.append(sp.find('a').text)
+		
+
+		
+
+		
+		#url2 = requests.get('https://doaj.org/')
+		
+		
+		
+		#soup2 = BeautifulSoup(response.content, 'html.parser')
+		#print(soup2.prettify)
+		
+			#e = d.div
+			#f = e.h3
+			
+#NB. Original query string below. It seems impossible to parse and
+#reproduce query strings 100% accurately so the one below is given
+#in case the reproduced version is not "correct".
+# response = requests.get('https://doaj.org/query/journal/_search?ref=public_journal&callback=jQuery341010019889148834937_1621078847844&source=^%^7B^%^22query^%^22^%^3A^%^7B^%^22query_string^%^22^%^3A^%^7B^%^22query^%^22^%^3A^%^22computer^%^22^%^2C^%^22default_operator^%^22^%^3A^%^22AND^%^22^%^7D^%^7D^%^2C^%^22size^%^22^%^3A0^%^2C^%^22aggs^%^22^%^3A^%^7B^%^22language^%^22^%^3A^%^7B^%^22terms^%^22^%^3A^%^7B^%^22field^%^22^%^3A^%^22index.language.exact^%^22^%^2C^%^22size^%^22^%^3A100^%^2C^%^22order^%^22^%^3A^%^7B^%^22_count^%^22^%^3A^%^22desc^%^22^%^7D^%^7D^%^7D^%^7D^%^7D&_=1621078847861', headers=headers)
 
 
 		#t = soup.find_all('a',  'data-test:title-link')
@@ -130,36 +189,10 @@ class TeraHomepageView(View):
 	#soup = BeautifulSoup(a.content, "html.parser")
 		user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36"
 		
-		#options = webdriver.ChromeOptions()
-		#options.headless = True
-		#options.add_argument(f'user-agent={user_agent}')
-		#options.add_argument("--window-size=1920,1080")
-		#options.add_argument('--ignore-certificate-errors')
-		#options.add_argument('--allow-running-insecure-content')
-		#options.add_argument("--disable-extensions")
-		#options.add_argument("--proxy-server='direct://'")
-		#options.add_argument("--proxy-bypass-list=*")
-		#options.add_argument("--start-maximized")
-		#options.add_argument('--disable-gpu')
-		#options.add_argument('--disable-dev-shm-usage')
-		#options.add_argument('--no-sandbox')
-		#try:
-		#	driver = webdriver.Chrome(executable_path="C:\\Users\\Valued Client\\Desktop\\tera\\main\\static\\chromedriver88.exe",options=options)
-		#except:
-
-		#driver = webdriver.Chrome(executable_path="C:\\Users\\Valued Client\\Desktop\\tera\\main\\static\\chromedriver90.exe", options=options)
-		#link = driver.find_element_by_link_text("Sign in")
-		#driver.
-		#driver.get('https://www.sciencedirect.com/browse/journals-and-books?contentType=JL&searchPhrase=' + word)
 		
-		#group = driver.find_element_by_id('publication-list')
-		#tt = group.find_elements_by_tag_name('span')
-
-		#for t in tt:
-		#	titles.append(t.text)
 		
 		context ={
-			'titles': titles
+			'springTitles': springTitles
 		}
 		#for title in tt:
 		#	wait = WebDriverWait(driver, 2)
@@ -173,23 +206,10 @@ class TeraHomepageView(View):
 
 
 		
-		#title.click()
-		#print(title)
-		#driver.send_keys(Keys.CONTROL,"t");
-		#email =driver.find_element_by_id('bdd-email')
-		#email.send_keys("llrc.lisa@gmail.com")
-		#enter = driver.find_element_by_id('bdd-elsPrimaryBtn')
-		#enter.click()
-		#passw = driver.find_element_by_id('bdd-password')
-		#passw.send_keys('pcieerd')
-		#enter = driver.find_element_by_id('bdd-elsPrimaryBtn')
-		#enter.click()
-		#search = driver.find_element_by_id('qs-searchbox-input')
-		#search.send_keys(word)
-		#search.send_keys(Keys.ENTER)
+		
 
 		
-		#element_enter.findElement(By.ID, 'bdd-email').sendKeys("llrc.lisa@gmail.com");
+		
 		
 		
 		return render(request,'searchresults.html', context)
