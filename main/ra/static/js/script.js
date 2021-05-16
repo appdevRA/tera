@@ -41,7 +41,7 @@ function select(element){
     let selectData = element.textContent;
     inputBox.value = selectData;
     button.onclick = ()=>{
-        webLink = "https://www.google.com" + selectData;
+        webLink = "https://www.google.com/search?q=" + selectData;
         linkTag.setAttribute("href", webLink);
         linkTag.click();
     }
