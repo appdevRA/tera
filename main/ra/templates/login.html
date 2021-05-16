@@ -22,12 +22,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.css">
     <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 </head>
-<body style="background-image: url({% static 'images/bg.png' %});">
-
-    <nav>
-      <div class="logo"><img class="logo-style" src="{% static 'images/teralogo.png' %}"></div>
-      <label for="btn" class="icon">
-    </nav>
+<body>
 
 <div class="bodystyle">
     <div class="form"><br>
@@ -58,10 +53,11 @@
         <center>
             <div class="form-row">
                 <div class="form-group col-md-6">
-                 <a type="submit" class="buttonCancellogin" style="color: #fff" href="{% url 'ra:tera_index_view'%}"> CANCEL </a> 
+                 <a type="submit" class="buttonCancellogin" style="color: #fff"> CANCEL </a> 
                 </div>
                 <div class="form-group col-md-6"> 
-                 <button type="submit" value="LOGIN" class="buttonlogin">LOGIN</button> <br><br><br>
+                   <a type="submit" class="buttonlogin" style="color: #fff" href="{% url 'ra:tera_index_view'%}"> LOGIN </a> 
+                 
                 </div> 
             </div>
 
