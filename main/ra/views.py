@@ -137,7 +137,7 @@ class TeraSearchResultsView(View):
 
 class TeraHomepageView(View):
 	def get(self,request):
-		return render(request,'3.html')	
+		return render(request,'home.html')	
 		
 
 class TeraDashboardView(View):
@@ -146,7 +146,7 @@ class TeraDashboardView(View):
 		print (qs_folders)
 			
 		context = { 'folders': qs_folders}
-		return render(request,'dashboard.html', context)
+		return render(request,'collections.html', context)
 
 	def post(self, request):
 	 	form = CreateFolderForm(request.POST)

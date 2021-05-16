@@ -56,14 +56,17 @@
                       </div>
                   </div>
 
-                  <div class="info">
+                  
+         
+      </div>
+      <div class="info">
           <div>
             {%for row in springers %}
              
 
               {%for column in row %}
               
-              {% if forloop.counter == 4 || forloop.counter == 1%}
+              {% if forloop.counter == 4 %}
               
               <div style="color: black"><a href="{{ column }}"> <b> {{column}} </b> </a></div>
               {% endif %}
@@ -84,8 +87,6 @@
 
             {% endfor %}
             </div>
-         
-      </div>
         </div>  
       </div>
     </div>
