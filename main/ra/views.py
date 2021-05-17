@@ -65,6 +65,45 @@ class TeraIndexView(View):
 
 				return render(request,'searchresults.html', context)
 
+			elif 'btnSearchbar' in request.POST:
+				word = request.POST.get("searchbar")
+				springers = []
+				springLinks = []
+				
+				response = requests.get('https://www.springeropen.com/search?query=' + word + '&searchType=publisherSearch')
+				soup = BeautifulSoup(response.content, 'html.parser')
+				#print(soup.prettify)
+				a= soup.find('ol', class_='c-list-group c-list-group--bordered c-list-group c-list-group--md')
+				bb = a.findAll('li')
+
+				for b in bb:
+					a =0
+					
+					article = b.find('article')
+					if article != None:
+
+						div = article.find('div', class_='u-mb-16')
+						a = div.h3
+						p = div.find('p', class_='c-listing__authors u-mb-0')
+						z = []
+						
+						z.append(a.text)
+						z.append(p.text)
+						div2 = article.find('div',class_='c-meta')
+						z.append(div2.text)
+						springLinks.append(a.a['href'])
+						z.append(a.a.get('href'))
+						springers.append(z)
+
+				context = {
+					'keyword': word,
+					'springers': springers,
+					'springLinks': springLinks
+					
+				}
+
+				return render(request,'searchresults.html', context)
+
 			elif 'btnJournal' in request.POST:
 				word = request.POST.get("search")
 				scienceDirects = []
@@ -113,6 +152,8 @@ class TeraIndexView(View):
 				}
 
 				return render(request,'searchresults.html', context)
+
+
 
 
 
