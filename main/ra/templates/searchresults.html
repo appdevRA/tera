@@ -17,7 +17,7 @@
   background: #f2f2f2;
   color: #800000;
   font-weight: lighter;
-  padding: 15px 15px;
+  padding: 10px 10px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
@@ -62,12 +62,14 @@
                         <div class="search">
                            <form id= "form1" action = "" method = "POST" autocomplete = "off" enctype="multipart/form-data">
                             {% csrf_token %}
-                            <input type="text" placeholder="{{ keyword }}" name = "searchbar" class="input" value="" >
+                            <input type="text" placeholder="{{ keyword }}" name = "searchbar" class="input" value="" style="width: 500%; margin-left: -200%">
                             <div class="autocom-box">
                               <!-- here list are inserted from javascript -->
                             </div>
-                            <button type="submit" class="button" style="align-items: center; padding-left: 15px;" name="btnSearchbar" id="btnSearchbar" >
-                              <i class="fa fa-search" aria-hidden="true"></i></button>
+                            
+                            <!--<button type="submit" class="button" style="align-items: center; padding-left: 15px;"  name="btnSearchbar" id="btnSearchbar" >
+                              <i class="fa fa-search" aria-hidden="true"></i></button>-->
+                              
                           </form>
                         </div>
                       </div>
@@ -79,9 +81,9 @@
             {% csrf_token %}
           <input type="button" class="filterbutton" value="Articles">
            <input type="button" class="filterbutton" value="|">
-             <button type="submit" class="filterbutton" name="btnJournal" id="btnJournal" >
-                              Journals</button>
-             <input type="button" class="filterbutton" value="|">
+             <button type="submit" class="filterbutton" name="btnJournal" id="btnJournal" > Journals</button>
+                              
+             <input type="button" class="filterbutton" value="|" >
             <input type="button" class="filterbutton" value="E-Books">
             <input type="button" class="filterbutton" value="|">
             <input type="button" class="filterbutton" value="Books">
