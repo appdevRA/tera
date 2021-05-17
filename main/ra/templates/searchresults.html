@@ -62,8 +62,7 @@
                         <div class="search">
                            <form id= "form1" action = "" method = "POST" autocomplete = "off" enctype="multipart/form-data">
                             {% csrf_token %}
-                            
-                            <input type="text" placeholder="{{ keyword }}" name = "searchbar" class="input" value="" style="margin-left: -200%; width: 300%">
+                            <input type="text" placeholder="{{ keyword }}" name = "searchbar" class="input" value="" >
                             <div class="autocom-box">
                               <!-- here list are inserted from javascript -->
                             </div>
@@ -109,7 +108,7 @@
               {% endif %}
 
               {% if forloop.counter == 2 %}
-              <div style="color: black; font-weight: lighter;font-size: 13px;margin-bottom: -5px">  {{ column }} </div>
+              <div style="color: black; font-weight: lighter;font-size: 13px;margin-bottom: 1px">  {{ column }} </div>
               {% endif %}
 
               {% if forloop.counter == 3 %}
