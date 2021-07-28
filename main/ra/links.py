@@ -8,9 +8,7 @@ import os
 import requests
 import random
         
-   
-
-def springer(word):
+def headers(): 
     ua = random.choice(userAgents)  
     headers = {
                     'user-agent': ua,
@@ -20,10 +18,15 @@ def springer(word):
                     'Upgrade-Insecure-Requests': '1',
                     "Accept-Encoding": "gzip, deflate", 
     }
+    return headers
 
-    response = requests.get('https://www.springeropen.com/search?query=' + word + '&searchType=publisherSearch', headers = headers)
+def springer():
+    
+
+    #response = requests.get('https://www.springeropen.com/search?query=' + word + '&searchType=publisherSearch', headers = headers)
+    response = requests.get('https://free-proxy-list.net/', headers = headers())
     soup = BeautifulSoup(response.content, 'html.parser')
-                #print(soup.prettify)
+    print(soup.prettify())
 
     return soup
 

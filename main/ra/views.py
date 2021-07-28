@@ -19,7 +19,7 @@ import requests
 
 class TeraIndexView(View):
 	def get(self, request):
-		
+		springer()
 		return render(request,'landingpage.html')
 
 	def post(self, request):
