@@ -5,6 +5,7 @@ from django.utils import timezone
 class User(models.Model):
 	username = models.CharField(max_length = 25, null = False)
 	password = models.CharField(max_length = 25, null = False)
+	proxy = models.CharField(max_length = 40, null = True)
 
 
 	class Meta:
@@ -28,4 +29,13 @@ class Folders (models.Model):
 	user = models.ForeignKey('User',on_delete=models.CASCADE, null = True)
 
 	class Meta:
-		db_table = "Folders"		
+		db_table = "Folders"	
+
+
+class Proxies (models.Model):
+	proxy = models.CharField(max_length = 100)
+	isUsed = models.IntegerField( default = 0)
+
+	class Meta:
+		db_table = "Proxies"
+

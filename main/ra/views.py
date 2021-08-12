@@ -15,15 +15,31 @@ from bs4 import BeautifulSoup
 from .links import *
 import os
 import requests
+#from fake_useragent import FakeUserAgent
 
 
 class TeraIndexView(View):
 	def get(self, request):
-		springer()
+		
+		
+		#proxies = proxy_generators()
+		#for proxy in proxies:  #/ saving proxies to db /
+			
+			#proxy =Proxies(proxy = proxy)
+			#proxy.save()
+		
+		proxies = Proxies.objects.filter(isUsed = 0)
+		proxyID =testProxy(proxies)
+		x = Proxies.objects.filter(id = proxyID).update(isUsed = 1)
+		
+		
+		
+		
 		return render(request,'landingpage.html')
 
 	def post(self, request):
 		
+		userProxy = User.objects.filter(id = 1).values('proxy')
 		
 		if request.method == 'POST':
 			word = request.POST.get("keyword")
@@ -32,7 +48,7 @@ class TeraIndexView(View):
 				
 				springers = []
 				springLinks = []
-				soup = springer(word)
+				soup = springer(word, userProxy[0]['proxy'])
 				a= soup.find('ol', class_='c-list-group c-list-group--bordered c-list-group c-list-group--md')
 				bb = a.findAll('li')
 
@@ -68,7 +84,7 @@ class TeraIndexView(View):
 				word = request.POST.get("searchbar")
 				springers = []
 				springLinks = []
-				soup = springer(word)
+				soup = springer(word, userProxy[0]['proxy'])
 				a= soup.find('ol', class_='c-list-group c-list-group--bordered c-list-group c-list-group--md')
 				bb = a.findAll('li')
 
