@@ -22,15 +22,18 @@ class TeraIndexView(View):
 	def get(self, request):
 		
 		
-		#proxies = proxy_generators()
+
+		#proxies = proxy_generators() / generating free proxies /
 		#for proxy in proxies:  #/ saving proxies to db /
 			
 			#proxy =Proxies(proxy = proxy)
 			#proxy.save()
 		
 		proxies = Proxies.objects.filter(isUsed = 0)
-		proxyID =testProxy(proxies)
-		x = Proxies.objects.filter(id = proxyID).update(isUsed = 1)
+		practice(testProxy(proxies))
+		#practice()
+		#print(proxyID.id)
+		#x = Proxies.objects.filter(id = proxyID.id).update(isUsed = 1)
 		
 		
 		
@@ -49,25 +52,25 @@ class TeraIndexView(View):
 				springers = []
 				springLinks = []
 				soup = springer(word, userProxy[0]['proxy'])
-				a= soup.find('ol', class_='c-list-group c-list-group--bordered c-list-group c-list-group--md')
-				bb = a.findAll('li')
+				a= soup.find('ol', class_='c-list-group c-list-group--bordered c-list-group c-list-group--md') #find ol tag where naa ang rows sa list
+				bb = a.findAll('li') #find li tag where nag contain sa 
 
 				for b in bb:
 					a =0
 					
-					article = b.find('article')
+					article = b.find('article') #find article tag
 					if article != None:
 
-						div = article.find('div', class_='u-mb-16')
-						a = div.h3
-						p = div.find('p', class_='c-listing__authors u-mb-0')
+						div = article.find('div', class_='u-mb-16') #find div tag
+						a = div.h3	# extract title
+						p = div.find('p', class_='c-listing__authors u-mb-0') 
 						z = []
 						
 						z.append(a.text)
 						z.append(p.text)
 						div2 = article.find('div',class_='c-meta')
 						z.append(div2.text)
-						springLinks.append(a.a['href'])
+						springLinks.append(a.a['href']) # extract link and store to list
 						z.append(a.a.get('href'))
 						springers.append(z)
 
@@ -165,7 +168,6 @@ class TeraIndexView(View):
 				}
 
 				return render(request,'searchresults.html', context)
-
 
 
 

@@ -8,6 +8,7 @@ import os
 import requests
 import concurrent.futures
 import random
+
 #from fake_user_agent import UserAgent
         
 
@@ -48,10 +49,6 @@ def proxy_generators():
         #print(a.readline())   / reading a line in the file/
         #rows = page.text
         
-        
-        
-        
-            
         #tr = page.findAll('tr')
         #rowCtr = 0
         
@@ -69,8 +66,62 @@ def proxy_generators():
             
             #rowCtr = rowCtr + 1
 
-     
-        
+
+def practice(p):
+    headers = {
+        'authority': 'www.sciencedirect.com',
+        'cache-control': 'max-age=0',
+        'sec-ch-ua': '^\\^Chromium^\\^;v=^\\^92^\\^, ^\\^',
+        'sec-ch-ua-mobile': '?0',
+        'upgrade-insecure-requests': '1',
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 Edg/92.0.902.67',
+        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+        'sec-fetch-site': 'cross-site',
+        'sec-fetch-mode': 'navigate',
+        'sec-fetch-user': '?1',
+        'sec-fetch-dest': 'document',
+        'referer': 'https://www.google.com/',
+        'accept-language': 'en-US,en;q=0.9',
+        'cookie': 'EUID=75fdfe63-504d-4c8a-8180-c03a43da237c; utt=2146-84ee935a77144283645aebe835a645e74f7-M0M6; AMCVS_4D6368F454EC41940A4C98A6^%^40AdobeOrg=1; fingerPrintToken=b753b259e2aba2657e4c3784de585317; mbox=session^%^23326b57dd2fc1483bab5a1a2af3874c82^%^231629010915^%^7CPC^%^2370b4195123dc401fa07762b437030b81.34_0^%^231692253855; mboxes=^%^7B^%^22universal-view-pdf^%^22^%^3A^%^7B^%^22variation^%^22^%^3A^%^22B^%^22^%^7D^%^2C^%^22article-page-remote-access-button-location-server-side-mbox^%^22^%^3A^%^7B^%^22variation^%^22^%^3A^%^22D^%^22^%^7D^%^7D; SD_ART_LINK_STATE=^%^3Ce^%^3E^%^3Cq^%^3Escience^%^3C^%^2Fq^%^3E^%^3Corg^%^3Earticle^%^3C^%^2Forg^%^3E^%^3Cz^%^3Etoolbar^%^3C^%^2Fz^%^3E^%^3Crdt^%^3E2021^%^2F08^%^2F15^%^2F06^%^3A31^%^3A05^%^3A157^%^3C^%^2Frdt^%^3E^%^3Cenc^%^3EN^%^3C^%^2Fenc^%^3E^%^3C^%^2Fe^%^3E; __cf_bm=f7d3d785a5bfafb64daa00b2762d1683e0a66a99-1629033311-1800-AeKQOtSYxn3Bn0aVsEdUvT1XlsHe9J1F0E5rwg3CDnrIBlxDZLcERUHmPCIURN9XsNXyXZFHJfLtOBTzPoxNivcICqf6fKm32qS4KGeDAKVZ; acw=1001dcc037ec17421f2977816e7bfee99943gxrqb^%^7C^%^24^%^7C388CE83E499CD5AFAE29F348DE99B6ED08FA58C7D8A84DC01F6D095BE81E60CF4DFA46DC6B978E8FF6AE2D6FC193F07DDD5621A39C5D8AA90E9169905BBD791CB0469A67597464825D387A21AFA2E514; AMCV_4D6368F454EC41940A4C98A6^%^40AdobeOrg=-1124106680^%^7CMCIDTS^%^7C18855^%^7CMCMID^%^7C10640528059237186110715255087884724485^%^7CMCAID^%^7CNONE^%^7CMCOPTOUT-1629041613s^%^7CNONE^%^7CMCAAMLH-1629639213^%^7C3^%^7CMCAAMB-1629639213^%^7Cj8Odv6LonN4r3an7LhD3WZrU1bUpAkFkkiY1ncBR96t2PTI^%^7CMCSYNCSOP^%^7C411-18716^%^7CvVersion^%^7C5.2.0^%^7CMCCIDH^%^7C-1660478464; s_pers=^%^20c19^%^3Dsd^%^253Ahome^%^253Ahpx^%^7C1629036217842^%^3B^%^20v68^%^3D1629034408059^%^7C1629036217847^%^3B^%^20v8^%^3D1629034417862^%^7C1723642417862^%^3B^%^20v8_s^%^3DLess^%^2520than^%^25201^%^2520day^%^7C1629036217862^%^3B; s_sess=^%^20s_cpc^%^3D0^%^3B^%^20e78^%^3Dqs^%^253Dwar^%^3B^%^20c7^%^3Dcontenttype^%^253Djl^%^3B^%^20c21^%^3Dqs^%^253Dcancer^%^3B^%^20e13^%^3Dqs^%^253Dcancer^%^253A1^%^3B^%^20c13^%^3Drelevance-desc^%^3B^%^20s_ppvl^%^3Dsd^%^25253Ahome^%^25253Ahpx^%^252C43^%^252C43^%^252C969^%^252C759^%^252C969^%^252C1920^%^252C1080^%^252C1^%^252CL^%^3B^%^20s_cc^%^3Dtrue^%^3B^%^20e41^%^3D1^%^3B^%^20s_sq^%^3D^%^3B^%^20s_ppv^%^3Dsd^%^25253Ahome^%^25253Ahpx^%^252C43^%^252C43^%^252C969^%^252C759^%^252C969^%^252C1920^%^252C1080^%^252C1^%^252CL^%^3B; sd_access=eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..X6VRNrAowiTBaWS3TS657w.cCEZKZWzWvC9j-kcMZ17y0RpIrjAlRYrib918jeR5X5Oar6dTY08NxfXZ3fT3_6lVAtqrQ6uJ32M7bRfdfSFIYDVmD94tS8WLplt22MEDIlbH99fe8v1OgWTYm-jf_kWGCMycBzTOeg0ChngnqCaPA.jIfhk26amDL_LgWxSuefxw; sd_session_id=c2b286dc8d60194c352990c00791d98759b5gxrqb; id_ab=IDP; has_multiple_organizations=true; MIAMISESSION=38674f6b-71c5-4e15-8cd5-244ebf7d71b6:3806487225; SD_REMOTEACCESS=eyJhY2NvdW50SWQiOiI3MzA5NCIsInRpbWVzdGFtcCI6MTYyOTAzNDQyNTc5MX0=',
+    }
+
+    response = requests.get('https://www.sciencedirect.com/search?qs=cancer&lastSelectedFacet=articleTypes&articleTypes=FLA', headers=headers, proxies={'https:': p.proxy})
+
+    soup = BeautifulSoup(response.content, 'html.parser')
+    print(soup.prettify())
+    #print(response)
+
+
+    
+def scienceDirect(p):
+    headers = {
+        'authority': 'www.sciencedirect.com',
+        'cache-control': 'max-age=0',
+        'sec-ch-ua': '^\\^Chromium^\\^;v=^\\^92^\\^, ^\\^',
+        'sec-ch-ua-mobile': '?0',
+        'upgrade-insecure-requests': '1',
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 Edg/92.0.902.67',
+        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+        'sec-fetch-site': 'cross-site',
+        'sec-fetch-mode': 'navigate',
+        'sec-fetch-user': '?1',
+        'sec-fetch-dest': 'document',
+        'referer': 'https://id.elsevier.com/',
+        'accept-language': 'en-US,en;q=0.9',
+        'cookie': 'EUID=75fdfe63-504d-4c8a-8180-c03a43da237c; utt=2146-84ee935a77144283645aebe835a645e74f7-M0M6; AMCVS_4D6368F454EC41940A4C98A6^%^40AdobeOrg=1; fingerPrintToken=b753b259e2aba2657e4c3784de585317; mbox=session^%^23326b57dd2fc1483bab5a1a2af3874c82^%^231629010915^%^7CPC^%^2370b4195123dc401fa07762b437030b81.34_0^%^231692253855; mboxes=^%^7B^%^22universal-view-pdf^%^22^%^3A^%^7B^%^22variation^%^22^%^3A^%^22B^%^22^%^7D^%^2C^%^22article-page-remote-access-button-location-server-side-mbox^%^22^%^3A^%^7B^%^22variation^%^22^%^3A^%^22D^%^22^%^7D^%^7D; SD_ART_LINK_STATE=^%^3Ce^%^3E^%^3Cq^%^3Escience^%^3C^%^2Fq^%^3E^%^3Corg^%^3Earticle^%^3C^%^2Forg^%^3E^%^3Cz^%^3Etoolbar^%^3C^%^2Fz^%^3E^%^3Crdt^%^3E2021^%^2F08^%^2F15^%^2F06^%^3A31^%^3A05^%^3A157^%^3C^%^2Frdt^%^3E^%^3Cenc^%^3EN^%^3C^%^2Fenc^%^3E^%^3C^%^2Fe^%^3E; __cf_bm=f7d3d785a5bfafb64daa00b2762d1683e0a66a99-1629033311-1800-AeKQOtSYxn3Bn0aVsEdUvT1XlsHe9J1F0E5rwg3CDnrIBlxDZLcERUHmPCIURN9XsNXyXZFHJfLtOBTzPoxNivcICqf6fKm32qS4KGeDAKVZ; acw=1001dcc037ec17421f2977816e7bfee99943gxrqb^%^7C^%^24^%^7C388CE83E499CD5AFAE29F348DE99B6ED08FA58C7D8A84DC01F6D095BE81E60CF4DFA46DC6B978E8FF6AE2D6FC193F07DDD5621A39C5D8AA90E9169905BBD791CB0469A67597464825D387A21AFA2E514; AMCV_4D6368F454EC41940A4C98A6^%^40AdobeOrg=-1124106680^%^7CMCIDTS^%^7C18855^%^7CMCMID^%^7C10640528059237186110715255087884724485^%^7CMCAID^%^7CNONE^%^7CMCOPTOUT-1629041613s^%^7CNONE^%^7CMCAAMLH-1629639213^%^7C3^%^7CMCAAMB-1629639213^%^7Cj8Odv6LonN4r3an7LhD3WZrU1bUpAkFkkiY1ncBR96t2PTI^%^7CMCSYNCSOP^%^7C411-18716^%^7CvVersion^%^7C5.2.0^%^7CMCCIDH^%^7C-1660478464; s_pers=^%^20c19^%^3Dsd^%^253Ahome^%^253Ahpx^%^7C1629036217842^%^3B^%^20v68^%^3D1629034408059^%^7C1629036217847^%^3B^%^20v8^%^3D1629034417862^%^7C1723642417862^%^3B^%^20v8_s^%^3DLess^%^2520than^%^25201^%^2520day^%^7C1629036217862^%^3B; s_sess=^%^20s_cpc^%^3D0^%^3B^%^20e78^%^3Dqs^%^253Dwar^%^3B^%^20c7^%^3Dcontenttype^%^253Djl^%^3B^%^20c21^%^3Dqs^%^253Dcancer^%^3B^%^20e13^%^3Dqs^%^253Dcancer^%^253A1^%^3B^%^20c13^%^3Drelevance-desc^%^3B^%^20s_ppvl^%^3Dsd^%^25253Ahome^%^25253Ahpx^%^252C43^%^252C43^%^252C969^%^252C759^%^252C969^%^252C1920^%^252C1080^%^252C1^%^252CL^%^3B^%^20s_cc^%^3Dtrue^%^3B^%^20e41^%^3D1^%^3B^%^20s_sq^%^3D^%^3B^%^20s_ppv^%^3Dsd^%^25253Ahome^%^25253Ahpx^%^252C43^%^252C43^%^252C969^%^252C759^%^252C969^%^252C1920^%^252C1080^%^252C1^%^252CL^%^3B; sd_access=eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..X6VRNrAowiTBaWS3TS657w.cCEZKZWzWvC9j-kcMZ17y0RpIrjAlRYrib918jeR5X5Oar6dTY08NxfXZ3fT3_6lVAtqrQ6uJ32M7bRfdfSFIYDVmD94tS8WLplt22MEDIlbH99fe8v1OgWTYm-jf_kWGCMycBzTOeg0ChngnqCaPA.jIfhk26amDL_LgWxSuefxw; sd_session_id=c2b286dc8d60194c352990c00791d98759b5gxrqb; id_ab=IDP; has_multiple_organizations=true; MIAMISESSION=38674f6b-71c5-4e15-8cd5-244ebf7d71b6:3806487225; SD_REMOTEACCESS=eyJhY2NvdW50SWQiOiI3MzA5NCIsInRpbWVzdGFtcCI6MTYyOTAzNDQyNTc5MX0=',
+    }
+
+    response = requests.get('https://www.sciencedirect.com/browse/journals-and-books?contentType=JL&searchPhrase=' + word, headers=headers, proxies={'https:': p.proxy}, timeout= 5)
+
+    soup = BeautifulSoup(response.content, 'html.parser')
+    print(soup.prettify())
+
+#NB. Original query string below. It seems impossible to parse and
+#reproduce query strings 100% accurately so the one below is given
+#in case the reproduced version is not "correct".
+# response = requests.get('https://www.sciencedirect.com/search?qs=war', headers=headers)
+
+            
 
 
 userAgents = [ 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36',
@@ -128,31 +179,24 @@ def testProxy(proxies):
     a = False
 
     while a == False:
-        p = random.choice(proxies)
+        
         try:
             #p = proxy_generator()
-            
+            p = random.choice(proxies)
             #print("Proxy currently being used: {}".format(p['proxy']))
             print(p.proxy + ': ')
             response = requests.get('https://free-proxy-list.net/', proxies={'https:':p.proxy} ,timeout=1)
             print('successful')
             a = True
-            
-            return p.id
+            return p
             
             
             # if the request is successful, no exception is raised
         except:
-            print( " Connection error ")
+            print( "                   Connection error ")
             pass
         
 
-def executor(proxylist):
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        x = False
-        while x == False:
-            a = executor.map(testProxy, proxylist)
-            x = a
 
     
 

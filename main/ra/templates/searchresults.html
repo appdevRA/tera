@@ -95,16 +95,16 @@
       <div class="info">
       
           <div>
-            {%for row in springers %}
+            {%for row in springers %} <!-- get rows of springers-->
              
-            {% with forloop.counter as outer_counter %}
+            {% with forloop.counter as outer_counter %} <!-- retrieve loop counter of rows-->
             
-              {%for column in row %}
+              {%for column in row %} <!-- access the columns of rows in springers -->
               
               {% if forloop.counter == 1 %}
               {% for link in springLinks %}
-              {% if forloop.counter == outer_counter %}
-              <div style="color: black"><a href="{{link}}" > <b> {{column}} </b> </a></div>
+              {% if forloop.counter == outer_counter %}  <!-- to prevent from displaying all the links in springlinks-->
+              <div style="color: black"><a href="{{link}}" > <b> {{column}} </b> </a></div>  <!-- display title of links -->
               {% endif %}
               {% endfor %}
               {% endif %}
