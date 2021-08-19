@@ -31,6 +31,7 @@ class TeraIndexView(View):
 		
 		proxies = Proxies.objects.filter(isUsed = 0)
 		practice(testProxy(proxies))
+		#scienceDirect(testProxy(proxies))
 		#practice()
 		#print(proxyID.id)
 		#x = Proxies.objects.filter(id = proxyID.id).update(isUsed = 1)
