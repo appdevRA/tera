@@ -23,13 +23,15 @@ class TeraIndexView(View):
 		
 		
 
-		#proxies = proxy_generators() / generating free proxies /
-		#for proxy in proxies:  #/ saving proxies to db /
+		proxies = proxy_generators() #/ generating free proxies /
+		for proxy in proxies:  #/ saving proxies to db /
 			
-			#proxy =Proxies(proxy = proxy)
-			#proxy.save()
+			proxy =Proxies(proxy = proxy)
+			proxy.save()
 		
 		#proxies = Proxies.objects.filter(isUsed = 0)
+		#a = testProxy(proxies)
+		#User.objects.filter(id = 1).update(proxy = a.proxy)
 		#practice(testProxy(proxies))
 		#scienceDirect(testProxy(proxies))
 		
