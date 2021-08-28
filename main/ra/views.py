@@ -30,9 +30,11 @@ class TeraIndexView(View):
 			#proxy.save()
 		
 		proxies = Proxies.objects.filter(isUsed = 0)
-		practice(testProxy(proxies))
+		#practice(testProxy(proxies))
 		#scienceDirect(testProxy(proxies))
-		#practice()
+		
+		practice()
+		#springer('war', testProxy(proxies))
 		#print(proxyID.id)
 		#x = Proxies.objects.filter(id = proxyID.id).update(isUsed = 1)
 		
@@ -54,7 +56,7 @@ class TeraIndexView(View):
 				springLinks = []
 				soup = springer(word, userProxy[0]['proxy'])
 				a= soup.find('ol', class_='c-list-group c-list-group--bordered c-list-group c-list-group--md') #find ol tag where naa ang rows sa list
-				bb = a.findAll('li') #find li tag where nag contain sa 
+				bb = a.findAll('li') #find li tag where nag contain sa rows
 
 				for b in bb:
 					a =0
@@ -64,7 +66,7 @@ class TeraIndexView(View):
 
 						div = article.find('div', class_='u-mb-16') #find div tag
 						a = div.h3	# extract title
-						p = div.find('p', class_='c-listing__authors u-mb-0') 
+						p = div.find('p', class_='c-listing__authors u-mb-0') #extract authors
 						z = []
 						
 						z.append(a.text)
