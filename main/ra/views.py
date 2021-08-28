@@ -29,11 +29,11 @@ class TeraIndexView(View):
 			#proxy =Proxies(proxy = proxy)
 			#proxy.save()
 		
-		proxies = Proxies.objects.filter(isUsed = 0)
+		#proxies = Proxies.objects.filter(isUsed = 0)
 		#practice(testProxy(proxies))
 		#scienceDirect(testProxy(proxies))
 		
-		practice()
+		#practice()
 		#springer('war', testProxy(proxies))
 		#print(proxyID.id)
 		#x = Proxies.objects.filter(id = proxyID.id).update(isUsed = 1)
