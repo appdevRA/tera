@@ -79,15 +79,15 @@
         <center>
            <form id= "form1" action = "" method = "POST" autocomplete = "off" enctype="multipart/form-data">
             {% csrf_token %}
-          <input type="button" class="filterbutton" value="Articles">
+          <button type="submit" class="filterbutton" name="btnArticles" id="btnArticles" > Articles</button>
            <input type="button" class="filterbutton" value="|">
              <button type="submit" class="filterbutton" name="btnJournal" id="btnJournal" > Journals</button>
                               
              <input type="button" class="filterbutton" value="|" >
-            <input type="button" class="filterbutton" value="E-Books">
+            <button type="submit" class="filterbutton" name="btnJournal" id="btnBook" > Book</button>
             <input type="button" class="filterbutton" value="|">
-            <input type="button" class="filterbutton" value="Books">
-           <input type="button" class="filterbutton" value="|">
+            
+           
             <input type="button" class="filterbutton" value="Dissertations">
              <input type="hidden" class="filterbutton" name = "search" value="{{keyword}}">
            </form>
@@ -103,18 +103,33 @@
               
               {% if forloop.counter == 1 %}
               {% for link in springLinks %}
-              {% if forloop.counter == outer_counter %}  <!-- to prevent from displaying all the links in springlinks-->
+              {% if forloop.counter == outer_counter %}
+
+              {% if type == 'book'%} 
+                <div style="color: black"><a href="https://www.springer.com{{link}}" > <b> {{column}} </b> </a></div>  <!-- to prevent from displaying all the links in at a time -->
+              {% endif %} 
+              {% if type == 'article' %}
               <div style="color: black"><a href="{{link}}" > <b> {{column}} </b> </a></div>  <!-- display title of links -->
+              {% endif %}
+              
               {% endif %}
               {% endfor %}
               {% endif %}
 
               {% if forloop.counter == 2 %}
-              <div style="color: black; font-weight: lighter;font-size: 13px;margin-bottom: 1px">  {{ column }} </div>
+              <div style="color: black; font-weight: lighter;font-size: 13px;margin-bottom: 1px">  {{ column }} </div> <!-- display author -->
               {% endif %}
 
               {% if forloop.counter == 3 %}
-              <div style="color: black; font-weight: lighter; font-size: 10px; padding-bottom: 25px"><i>  {{ column }} </i></div>
+              <div style="color: black; font-weight: lighter; font-size: 10px; padding-bottom: 25px"><i>  {{ column }} </i></div> <!-- display content type -->
+              {% endif %}
+
+              {% if forloop.counter == 4 %}
+              <div style="color: black; font-weight: lighter; font-size: 10px; padding-bottom: 25px"><i>  {{ column }} </i></div> <!-- display content type -->
+              {% endif %}
+
+              {% if forloop.counter == 5 %}
+              <div style="color: black; font-weight: lighter; font-size: 10px; padding-bottom: 25px"><i>  {{ column }} </i></div> <!-- display content type -->
               {% endif %}
 
               {% endfor %}
