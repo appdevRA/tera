@@ -10,16 +10,6 @@ import random
 import time
 
 
-#from fake_user_agent import UserAgent
-
-def springerss(word, proxy):
-    response = requests.get('https://www.springeropen.com/search?query=' + word + '&searchType=publisherSearch', headers = headers(), proxies={'https:': proxy}, timeout=5) #articles
-
-    #response = requests.get('https://www.springer.com/gp/search?query=' + word + '&submit=Submit', headers = headers(), proxies={'https:': proxy}, timeout=5) #books
-    #print(response.json())  
-    soup = BeautifulSoup(response.content, 'html.parser')
-    return soup
-
 def springer(word, proxy, refType): #articles
     
     springers = []
@@ -140,51 +130,44 @@ def proxy_generators():
             
             #rowCtr = rowCtr + 1
 
+def scirp(word, proxy, refType):
+    
+    scirp = []
+    scirpLinks = []         
+    
+    if refType == 'article':
+        response = requests.get('https://www.scirp.org/journal/articles.aspx?searchcode='+ word+'&searchfield=All&page=1&skid=59931926', headers = headers(), proxies={'https:': proxy}, timeout=5) #books                         #
+    else:
+        response = requests.get('https://www.scirp.org/journal/articles.aspx?searchcode='+ word +'&searchfield=jname&page=1&skid=0', headers = headers(), proxies={'https:': proxy}, timeout=5) #books
+    soup = BeautifulSoup(response.content, 'html.parser')
+    a=soup.find('ul', class_='list-unstyled list_link').findAll('li')
+   
+    for i in a:
+        z = []
+        x = i.find('div', class_='list_unit') #get container of rows
+        z.append(i.div.text) # get title
+        z.append(i.find('div', class_='list_author').text) #author 
+        z.append(i.find('div', class_='list_unit').text.replace('¼Œ', ' ')) #get other info
+        z.append(i.find('div', class_='list_doi').text) 
+        scirp.append(z)
+        scirpLinks.append(i.div.span.a['href'])
 
-def springerasdsad(): #books
-    with open ('C:/Users/Valued Client/Desktop/html/springerBooks.html', 'r', errors='ignore') as html_file:
-        content = html_file.read()
-        soup = BeautifulSoup(content, 'html.parser')
-        rows = soup.find('div', id='result-list')
-        springers = []
-        springLinks = []
-
-        for a in range(22):
-            z = []
-            books1 = rows.find('div', class_='result-item result-item-' + str(a) + ' result-type-book')
-            books2 = rows.find('div', class_='result-item result-item-' + str(a) + ' result-type-book last')
-            editorial = rows.find('div', class_='result-item result-item-' + str(a) + ' result-type-editorial')
-
-            if editorial != None:
-                z.append(editorial.h4.text) #title
-                z.append(editorial.div.text) #desicription
-                springLinks.append(editorial.h4.a['href'])
-                
-            elif books1 != None:
-                
-                z.append(books1.h4.text) #title
-                z.append(books1.p.text) #author
-                z.append(books1.div.text) #desicription
-                z.append(books1.find('p', class_='format').text) #format
-                z.append(books1.find('p', class_='price-container price-loaded').text) #price
-                springLinks.append(books1.h4.a['href'])
- 
-            elif books2 != None:
-                z.append(books2.h4.text) #title
-                z.append(books2.p.text) #author
-                z.append(books2.div.text) #desicription
-                z.append(books2.find('p', class_='format').text) #format
-                z.append(books2.find('p', class_='price-container price-loaded').text) #price
-                springLinks.append(books2.h4.a['href'])
-
-            springers.append(z)
-    return springers, springLinks
-
-
-                
+    return scirp, scirpLinks
 
         
+
+def practice(proxy): #books
+
+    a = 1
         
+            
+
+    #print(a)
+                    
+    #for x in z:
+        #print(x)
+        
+    
     
    
 
@@ -213,10 +196,6 @@ def scienceDirect(word,proxy, refType):
     }
 
 
-
-
-
-
     if refType == 'journal':
         response = requests.get('https://www.sciencedirect.com/browse/journals-and-books?contentType=JL&searchPhrase='+ word, headers=headers, proxies={'https:': proxy}, timeout= 5)
     else:
@@ -236,14 +215,17 @@ def scienceDirect(word,proxy, refType):
             ppp = pp.find('span')
                         #scienceDDescriptions.append(p.text + " ● " + ppp.text)
             z.append( "Journal ● " + ppp.text)
-        elif li.div.text != None:
+        else:
+            z.append( "Journal")
+        
+        if refType != 'journal':
             z.append(li.div.text)
 
 
 
         scienceLinks.append(li.a['href'])
         scienceDirects.append(z)
-
+        #print(soup.find('a', text='Sign in'))
    
     return scienceDirects, scienceLinks
 
@@ -274,8 +256,10 @@ def headers():
                     'user-agent': ua,
                     'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
                     'accept-language': 'en-US,en;q=0.9',
-                    'referer': 'https://springeropen.com/',
+                    'referer': 'https://google.com/',
                     'Upgrade-Insecure-Requests': '1',
+                     
+
                      
     }
     return headers

@@ -95,21 +95,38 @@
       <div class="info">
       
           <div>
-            {%for row in springers %} <!-- get rows of springers-->
+            {%for row in results %} <!-- get rows of springers-->
              
             {% with forloop.counter as outer_counter %} <!-- retrieve loop counter of rows-->
             
               {%for column in row %} <!-- access the columns of rows in springers -->
               
               {% if forloop.counter == 1 %}
-              {% for link in springLinks %}
+              {% for link in links %}
               {% if forloop.counter == outer_counter %}
 
-              {% if type == 'book'%} 
-                <div style="color: black"><a href="https://www.springer.com{{link}}" > <b> {{column}} </b> </a></div>  <!-- to prevent from displaying all the links in at a time -->
+              {% if type == 'scripArticle'%} 
+                <div style="color: black">
+                  <a href="https://www.scirp.org/journal/{{link}}" > <b> {{column}} </b> </a>
+                </div>  <!-- to prevent from displaying all the links in at a time -->
               {% endif %} 
+
+              {% if type == 'springerArticle'%} 
+                <div style="color: black">
+                  <a href="https://www.springer.com{{link}}" > <b> {{column}} </b> </a>
+                </div>  <!-- to prevent from displaying all the links in at a time -->
+              {% endif %} 
+
+              {% if type == 'scienceDirectJournal' %}
+              <div style="color: black">
+                <a href="https://www.sciencedirect.com/{{link}}" > <b> {{column}} </b> </a>
+              </div>  <!-- display title of links -->
+              {% endif %}
+
               {% if type == 'article' %}
-              <div style="color: black"><a href="{{link}}" > <b> {{column}} </b> </a></div>  <!-- display title of links -->
+              <div style="color: black">
+                <a href="https://www.sciencedirect.com/{{link}}" > <b> {{column}} </b> </a>
+              </div>  <!-- display title of links -->
               {% endif %}
               
               {% endif %}
@@ -149,7 +166,7 @@
               {% if forloop.counter == 1 %}
               {% for link in scienceLinks %}
               {% if forloop.counter == outer_counter %}
-              <div style="color: black"><a href="https://www.sciencedirect.com/{{link}}" > <b> {{column}} </b> </a></div>
+              <div style="color: black"><a href="" > <b> {{column}} </b> </a></div>
               {% endif %}
               {% endfor %}
               {% endif %}

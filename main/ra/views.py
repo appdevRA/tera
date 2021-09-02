@@ -29,12 +29,15 @@ class TeraIndexView(View):
 		#	proxy =Proxies(proxy = proxy)
 		#	proxy.save()
 		
-		proxies = Proxies.objects.filter(isUsed = 0)
-		a = testProxy(proxies)
-		User.objects.filter(id = 1).update(proxy = a.proxy)
-		#practice(testProxy(proxies))
-		#scienceDirect(testProxy(proxies))
+		proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
+		a = testProxy(proxies) 
+		User.objects.filter(id = 1).update(proxy = a.proxy) # set proxy to user
+
+
+		 
 		
+		#scienceDirect(testProxy(proxies))
+		#scirp('engineer', practice(testProxy(proxies)), 'a')
 		#practice()
 		#springer('war', testProxy(proxies))
 		#print(proxyID.id)
@@ -53,35 +56,41 @@ class TeraIndexView(View):
 			word = request.POST.get("keyword")
 			
 			if 'btnSearch' in request.POST:
-				print(userProxy[0]['proxy'])
-				a = springer(word,userProxy[0]['proxy'],'article')
+				refType = 'scripArticle'
+				a = scirp(word,userProxy[0]['proxy'],'article')
 				springers = a[0]	
-				springLinks = a[1]		
+				springLinks = a[1]	
+
+				
 				context = {
 					'keyword': word,
-					'springers': springers,
-					'springLinks': springLinks,
-					'type': 'article'
+					'results': springers,
+					'links': springLinks,
+					'type': refType
 				}
 
 				return render(request,'searchresults.html', context)
 
 			elif 'btnSearchbar' in request.POST:
+				refType = 'springerArticle'
 				word = request.POST.get("searchbar")
+
 				a = springer(word,userProxy[0]['proxy'], 'article')
 				springers = a[0]	
 				springLinks = a[1]		
 				context = {
 					'keyword': word,
-					'springers': springers,
-					'springLinks': springLinks,
-					'type': 'article'
+					'results': springers,
+					'links': springLinks,
+					'type': refType
 				}
 	
 				return render(request,'searchresults.html', context)
 
 			elif 'btnArticles' in request.POST:
+				refType = 'springerArticle'
 				word = request.POST.get("search")
+
 				a = springer(word,userProxy[0]['proxy'], 'book')
 				#a = springerasdsad()
 				springers = a[0]	
@@ -89,16 +98,16 @@ class TeraIndexView(View):
 
 				context = {
 					'keyword': word,
-					'springers': springers,
-					'springLinks': springLinks,
-					'type': 'book'
+					'results': springers,
+					'links': springLinks,
+					'type': refType
 				}
 
 				return render(request,'searchresults.html', context)
 
 			elif 'btnJournal' in request.POST:
 				word = request.POST.get("search")
-				
+				refType = 'scienceDirectJournal'
 
 				a = scienceDirect(word, userProxy[0]['proxy'], 'journal')
 				scienceDirects = a[0]
@@ -106,8 +115,9 @@ class TeraIndexView(View):
 				
 				context = {
 					'keyword': word,
-					'scienceDirects': scienceDirects,
-					'scienceLinks': scienceLinks
+					'results': scienceDirects,
+					'links': scienceLinks,
+					'type': refType
 					
 				}
 
@@ -115,7 +125,7 @@ class TeraIndexView(View):
 
 			elif 'btnBook' in request.POST:
 				word = request.POST.get("search")
-				
+				refType = 'SDBook'
 
 				a = scienceDirect(word, userProxy[0]['proxy'], 'book')
 				scienceDirects = a[0]
@@ -123,8 +133,9 @@ class TeraIndexView(View):
 				
 				context = {
 					'keyword': word,
-					'scienceDirects': scienceDirects,
-					'scienceLinks': scienceLinks
+					'results': scienceDirects,
+					'links': scienceLinks,
+					'type': refType
 					
 				}
 
@@ -134,26 +145,18 @@ class TeraIndexView(View):
 
 
 
+class TeraLoginUser(View): 
+
+	def get(self,request):
 		
+		return redirect('ra:tera_homepage_view')
+
+	
 		
-def TeraLoginUser(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        
-        user = authenticate(request, username=username, password=password)
-    
-        if user is not None:
-            login(request, user)
-            return redirect('ra:tera_homepage_view')
-        else:
-            messages.info(request, '*Incorrect username or password')
-    
-    context = {}
-    return render(request,'login.html',context)
 
 
 class TeraSearchResultsView(View):
+
 	def get(self,request):
 		return render(request,'home.html')	
 		
