@@ -1,0 +1,135 @@
+{% load static %}
+
+{% block headerinclude %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TERA</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbarstyle.css' %}">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="stylesheet" href="{% static 'css/modal.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400&display=swap" rel="stylesheet">
+</head>
+{% endblock headerinclude %}
+
+{% block content %} 
+<body style="background-color: #f3f3f3">
+    <nav>
+      <div class="logo"><a href="{% url 'ra:tera_index_view'%}"><img class="logo-style" src="{% static 'images/teralogo.png' %}"></a></div>
+      <label for="btn" class="icon">
+        <span class=></span>
+      </label>
+     
+      <ul>     
+      <li><a href="#">Recommendations</a></li>
+      <li><a href="#">My Collections</a></li>
+
+       <li>
+                <label for="btn-2" class="show">My Account <i class="fa fa-user" aria-hidden="true"></i></label>
+                <a href="#">My Account <i class="fa fa-user" aria-hidden="true"></i></a>
+                
+                <ul>
+                <li><a href="{% url 'ra:tera_dashboard_view'%}">Dashboard</a></li>  
+                <li><a href="{% url 'ra:tera_account_settings'%}">Settings</a></li>
+                <li><a href="#modalLogoutForm" data-toggle="modal" data-target="#modalLogoutForm" >Logout </a></li>
+                </ul>
+      </li>
+      </ul>
+  </nav>
+
+    <div class="main-menu" style="border-right:2px #800000 solid;">
+        <ul>
+            <section class="home">
+                <li class="menu-item"><i class="fa fa-bookmark"></i>All References</li>
+                <li class="menu-item"><i class="fa fa-history"></i>Recently Added</li>
+                <li class="menu-item"><i class="fa fa-bookmark"></i>Recently Read</li>
+                <li class="menu-item"><i class="fa fa-star"></i>Favorites</li>
+                <li class="menu-item"><i class="fa fa-trash"></i>Trash</li>
+                <li class="menu-item"><i class="fa fa-chevron-circle-down"></i><b>My Collections </b>
+                                 <i class="fa fa-plus" style="font-size:10px;" name="addfolder" onclick="document.getElementById('id01').style.display='block'"></i></li>
+                                 {% for folder in folders %}
+                                    <li class="menu-item" style="padding-left: 50px;"> {{folder.foldername}} </li>
+                                 {% endfor %}
+                <li class="menu-item"><i class="fa fa-chevron-circle-down"></i><b>Private Groups</b>
+                                 <i class="fa fa-plus" style="font-size: 10px;"></i></li>
+
+               </section>             
+        </ul>
+    </div>
+
+        <div class="wrapper">
+     <div class="main_content">
+      <!--
+        <div class="header" style="left: 180px; width: 20px;">
+
+          <div class="info">
+              <div>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</div>
+              <div>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</div>
+              <div>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</div>
+                 
+         
+          </div>
+
+        </div>  
+      -->
+      </div>
+       <!-- The Modal -->
+                  <div id="id01" class="modal">
+                    
+                    <form class="modal-content" id = "form1" action="" method="POST" autocomplete="off" enctype="multipart/form-data">
+
+                      <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
+                      {% csrf_token %}
+                      <div class="container">
+
+                        <p style="font-size: 25px; color: #800000">Create a New Collection</p>
+                        <p style="font-size: 15px">Please provide a name for your collection.</p>
+                        <hr>
+                        <label for="foldername"><b>Collection Name</b></label>
+                        <input type="text" placeholder="Enter Collection Name" name="foldername" required>
+
+                        <div class="clearfix">
+                          <button type="button" onclick="document.getElementById('id01').style.display='none'" class="cancelbtn">Cancel</button>
+                          <button type="submit" class="signupbtn">Save</button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+    </div>
+    <div class="right-side-bar" style="border-left:2px #800000 solid;">
+      <h3 class="w3-bar-item">Details</h3>
+      <ul>
+       <li class="menu-item"> Lorem ipsum dolorem.</li>
+       <li class="menu-item"> Lorem ipsum dolorem.</li>
+       <li class="menu-item"> Lorem ipsum dolorem.</li>
+      
+      </ul>
+    </div>
+    
+
+    
+</body>
+{% endblock content %} 
+
+<script>
+      $('.icon').click(function(){
+        $('span').toggleClass("cancel");
+      });
+</script>
+<script>
+// Get the modal
+var modal = document.getElementById('id01');
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+</script> 
+
+<script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js"></script>

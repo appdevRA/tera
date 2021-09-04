@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbarstyle.css' %}">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400&display=swap" rel="stylesheet">
+</head>
+<style>
+  .filterbutton {
+  border: none;
+  background: #f2f2f2;
+  color: #800000;
+  font-weight: lighter;
+  padding: 10px 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 2px 2px;
+  cursor: pointer;
+}
+</style>
+</style>
+<body style="background-color: #f3f3f3">
+     <nav>
+      <div class="logo"><a href="{% url 'ra:tera_homepage_view'%}"><img class="logo-style" src="{% static 'images/teralogo.png' %}"></a></div>
+      <label for="btn" class="icon">
+        <span class=></span>
+      </label>
+     
+      <ul>     
+      <li><a href="#">Recommendations</a></li>
+      <li><a href="#">Home</a></li>
+
+       <li>
+                <label for="btn-2" class="show">My Account <i class="fa fa-user" aria-hidden="true"></i></label>
+                <a href="#">My Account <i class="fa fa-user" aria-hidden="true"></i></a>
+                
+                <ul>
+                <li><a href="{% url 'ra:tera_dashboard_view'%}">Dashboard</a></li>  
+                <li><a href="#">Bookmarks</a></li>
+                <li><a href="#">Folders</a></li>
+                <li><a href="{% url 'ra:tera_account_settings'%}">Settings</a></li>
+                <li><a href="#modalLogoutForm" data-toggle="modal" data-target="#modalLogoutForm" >Logout </a></li>
+                </ul>
+      </li>
+      </ul>
+  </nav>
+    <div class="left-tab" style="border-right:2px"></div>
+
+    <div class="wrapper">
+     <div class="main_content">
+        <div class="header">
+          <div class="wrap">
+                      <div class="search-container">
+                        <div class="search">
+                           <form id= "form1" action = "" method = "POST" autocomplete = "off" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <input type="text" placeholder="" name = "searchbar" class="input" value="{{ keyword }}" style="width: 500%; margin-left: -200%">
+                            <div class="autocom-box">
+                              <!-- here list are inserted from javascript -->
+                            </div>
+                            
+                            <button type="submit" class="button" style="align-items: center; padding-left: 15px;"  name="btnSearchbar" id="btnSearchbar" >
+                              <i class="fa fa-search" aria-hidden="true"></i></button>
+                              
+
+                              
+                          </form>
+                        </div>
+                      </div>
+                  </div>  
+         
+      </div>
+        <center>
+           <form id= "form1" action = "" method = "POST" autocomplete = "off" enctype="multipart/form-data">
+            {% csrf_token %}
+          <button type="submit" class="filterbutton" name="btnArticles" id="btnArticles" > Articles</button>
+           <input type="button" class="filterbutton" value="|">
+             <button type="submit" class="filterbutton" name="btnJournal" id="btnJournal" > Journals</button>
+                              
+             <input type="button" class="filterbutton" value="|" >
+            <button type="submit" class="filterbutton" name="btnBook" id="btnBook" > Book</button>
+            <input type="button" class="filterbutton" value="|">
+            
+           
+            <input type="button" class="filterbutton" value="Dissertations">
+             <input type="hidden" class="filterbutton" name = "search" value="{{keyword}}">
+           </form>
+      </center>
+      <div class="info">
+      
+          <div>
+            {%for row in results %} <!-- get rows of springers-->
+             
+            {% with forloop.counter as outer_counter %} <!-- retrieve loop counter of rows-->
+            
+              {%for column in row %} <!-- access the columns of rows in springers -->
+              
+              {% if forloop.counter == 1 %}
+              {% for link in links %}
+              {% if forloop.counter == outer_counter %}
+
+              {% if type == 'scripArticle'%} 
+                <div style="color: black">
+                  <a href="https://www.scirp.org/journal/{{link}}" > <b> {{column}} </b> </a>
+                </div>  <!-- to prevent from displaying all the links in at a time -->
+              {% endif %} 
+
+              {% if type == 'springerArticle'%} 
+                <div style="color: black">
+                  <a href="https://www.springer.com{{link}}" > <b> {{column}} </b> </a>
+                </div>  <!-- to prevent from displaying all the links in at a time -->
+              {% endif %} 
+
+              {% if type == 'scienceDirectJournal' %}
+              <div style="color: black">
+                <a href="https://www.sciencedirect.com/{{link}}" > <b> {{column}} </b> </a>
+              </div>  <!-- display title of links -->
+              {% endif %}
+
+              {% if type == 'article' %}
+              <div style="color: black">
+                <a href="https://www.sciencedirect.com/{{link}}" > <b> {{column}} </b> </a>
+              </div>  <!-- display title of links -->
+              {% endif %}
+
+              {% if type == 'scienceDirectBook' %}
+              <div style="color: black">
+                <a href="https://www.sciencedirect.com/{{link}}" > <b> {{column}} </b> </a>
+              </div>  <!-- display title of links -->
+              {% endif %}
+              
+              
+              {% endif %}
+              {% endfor %}
+              {% endif %}
+
+              {% if forloop.counter == 2 %}
+              <div style="color: black; font-weight: lighter;font-size: 13px;margin-bottom: 1px">  {{ column }} </div> <!-- display author -->
+              {% endif %}
+
+              {% if forloop.counter == 3 %}
+              <div style="color: black; font-weight: lighter; font-size: 10px; padding-bottom: 25px"><i>  {{ column }} </i></div> <!-- display content type -->
+              {% endif %}
+
+              {% if forloop.counter == 4 %}
+              <div style="color: black; font-weight: lighter; font-size: 10px; padding-bottom: 25px"><i>  {{ column }} </i></div> <!-- display content type -->
+              {% endif %}
+
+              {% if forloop.counter == 5 %}
+              <div style="color: black; font-weight: lighter; font-size: 10px; padding-bottom: 25px"><i>  {{ column }} </i></div> <!-- display content type -->
+              {% endif %}
+
+              {% endfor %}
+
+            {% endwith %}
+
+            {% endfor %}
+            </div>
+
+            <div>
+            {%for row in scienceDirects %}
+             
+            {% with forloop.counter as outer_counter %}
+            
+              {%for column in row %}
+              
+              {% if forloop.counter == 1 %}
+              {% for link in scienceLinks %}
+              {% if forloop.counter == outer_counter %}
+              <div style="color: black"><a href="" > <b> {{column}} </b> </a></div>
+              {% endif %}
+              {% endfor %}
+              {% endif %}
+
+              {% if forloop.counter == 2 %}
+              <div style="color: black;font-weight: lighter; font-size: 12px">  <i>{{ column }}</i> </div>
+              {% endif %}
+
+
+              {% endfor %}
+
+              {% endwith %}
+            {% endfor %}
+            </div>
+        </div>  
+      </div>
+    </div>
+
+    <div class="right-tab" style="border-left:2px"></div>
+
+
+        <!-- <div class="header">All</div> -->
+        
+    </div>
+
+    
+    
+</body>
+<script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js"></script>
+</html>

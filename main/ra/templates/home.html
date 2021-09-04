@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en" dir="ltr">
+   <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <script>
+      $('.icon').click(function(){
+        $('span').toggleClass("cancel");
+      });
+    </script>
+    <script>
+    $('a[href$="#modalLogoutForm"]').on( "click", function() {
+      $('#modalLogoutForm').modal();
+   });
+  </script>
+   
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.css">
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  </head>
+   <body style="background-image: url({% static 'images/bg.png' %});">
+    <!--<body style="background-color: #781b1b"> -->
+    <nav>
+      <div class="logo"><a href="{% url 'ra:tera_homepage_view'%}"><img class="logo-style" src="{% static 'images/teralogo.png' %}"></a></div>
+      <label for="btn" class="icon">
+        <span class=></span>
+      </label>
+     
+      <ul>     
+      <li><a href="#">Recommendations</a></li>
+      <li><a href="#">Home</a></li>
+
+       <li>
+                <label for="btn-2" class="show">My Account <i class="fa fa-user" aria-hidden="true"></i></label>
+                <a href="#">My Account <i class="fa fa-user" aria-hidden="true"></i></a>
+                
+                <ul>
+                <li><a href="{% url 'ra:tera_dashboard_view'%}">Dashboard</a></li>  
+                <li><a href="#">Bookmarks</a></li>
+                <li><a href="#">Folders</a></li>
+                <li><a href="{% url 'ra:tera_account_settings'%}">Settings</a></li>
+                <li><a href="#modalLogoutForm" data-toggle="modal" data-target="#modalLogoutForm" >Logout </a></li>
+                </ul>
+      </li>
+      </ul>
+  </nav>
+    <div class="content">
+      <header>Exclusive Research Assistant</header>
+      <p>for Technologians</p>
+      <br>
+      <div class="search-container">
+        <div class="search">
+          <form>
+            <a href="" target="_blank" hidden></a>
+            <input type="text" placeholder="Search (Keywords, Titles, Authors)" class="input">
+            <div class="autocom-box">
+          <!-- here list are inserted from javascript -->
+            </div>
+            <button type="submit" class="button"><i class="fa fa-search" aria-hidden="true"></i></button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- logout modal -->
+<div class="modal fade" id="modalLogoutForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"  style=“color: yellow”; >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+      
+         <center> 
+          <form style="max-width:450px;margin:auto"> 
+            <h2>LOG OUT</h2> <br></br>
+
+            <b>Are you sure you want to logout?</b><br></br><br></br>
+        </form> 
+   
+        <center>
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                <button type=“button” class="buttoncancel" data-dismiss="modal">CANCEL</button>
+                </div>
+                <div class="form-group col-md-6"> 
+                    <button type="submit" class="buttonlogout"><a style="color: #fff" href="{% url 'ra:logout_view'%}"> LOGOUT </a> </button>
+                </div> 
+         </div>
+      </center>
+      
+      </center> 
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- Grammar Check modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <p></p>
+          <h3 class="modal-title text-center" id="exampleModalLabel" style="color: #800000;"><center>Grammar Check</center></h3>
+      </div>
+      <div class="modal-body" style="width: 100%;">
+        <div style="width: 100%;">
+          <b><label>Title:</label></b>
+          <input type="text" class="form-control " id="idname" placeholder="Enter title">
+        </div>
+        <br>
+        <div style="width: 100%;">
+          <b> <label>Textfield:</label></b>
+          <textarea name="name" class="form-control" style="width: 100%"> </textarea>
+        </div>
+      </div>
+        <div class="modal-footer">   
+          <button class="buttoncancel1" data-dismiss="modal" >CANCEL</button>
+          <button class="buttoncheck">CHECK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+<script>
+      $('.icon').click(function(){
+        $('span').toggleClass("cancel");
+      });
+</script>
+<script  src= "{% static 'js/script.js' %}"></script>
+<script  src= "{% static 'js/suggestions.js' %}"></script>
+
+  </body>
+</html>

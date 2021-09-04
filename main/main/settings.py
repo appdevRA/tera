@@ -29,7 +29,8 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 STATICFILES_DIRS = [
-    "C:/Users/jarry/Desktop/ad/tera/main/static",
+    "C:/Users/carme/OneDrive/Documents/GitHub/tera/main/ra",
+    "C:/Users/Valued Client/Desktop/tera/main/ra",
 ]
 
 # Application definition
