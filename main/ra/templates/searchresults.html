@@ -70,6 +70,8 @@
                             <button type="submit" class="button" style="align-items: center; padding-left: 15px;"  name="btnSearchbar" id="btnSearchbar" >
                               <i class="fa fa-search" aria-hidden="true"></i></button>
                               
+
+                              
                           </form>
                         </div>
                       </div>
@@ -84,7 +86,7 @@
              <button type="submit" class="filterbutton" name="btnJournal" id="btnJournal" > Journals</button>
                               
              <input type="button" class="filterbutton" value="|" >
-            <button type="submit" class="filterbutton" name="btnJournal" id="btnBook" > Book</button>
+            <button type="submit" class="filterbutton" name="btnBook" id="btnBook" > Book</button>
             <input type="button" class="filterbutton" value="|">
             
            
@@ -128,6 +130,13 @@
                 <a href="https://www.sciencedirect.com/{{link}}" > <b> {{column}} </b> </a>
               </div>  <!-- display title of links -->
               {% endif %}
+
+              {% if type == 'scienceDirectBook' %}
+              <div style="color: black">
+                <a href="https://www.sciencedirect.com/{{link}}" > <b> {{column}} </b> </a>
+              </div>  <!-- display title of links -->
+              {% endif %}
+              
               
               {% endif %}
               {% endfor %}

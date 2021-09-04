@@ -58,6 +58,8 @@ class TeraIndexView(View):
 			if 'btnSearch' in request.POST:
 				refType = 'scripArticle'
 				a = scirp(word,userProxy[0]['proxy'],'article')
+				#refType = 'springerArticle'
+				#a = springer(word,userProxy[0]['proxy'], 'article')
 				springers = a[0]	
 				springLinks = a[1]	
 
@@ -71,6 +73,7 @@ class TeraIndexView(View):
 
 				return render(request,'searchresults.html', context)
 
+			
 			elif 'btnSearchbar' in request.POST:
 				refType = 'springerArticle'
 				word = request.POST.get("searchbar")
@@ -125,7 +128,7 @@ class TeraIndexView(View):
 
 			elif 'btnBook' in request.POST:
 				word = request.POST.get("search")
-				refType = 'SDBook'
+				refType = 'scienceDirectBook'
 
 				a = scienceDirect(word, userProxy[0]['proxy'], 'book')
 				scienceDirects = a[0]

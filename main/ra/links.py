@@ -17,7 +17,7 @@ def springer(word, proxy, refType): #articles
     
     if refType == 'article':
 
-        response = requests.get('https://www.springeropen.com/search?query=' + word + '&searchType=publisherSearch', headers = headers(), proxies={'https:': proxy}, timeout=5) #articles 
+        response = requests.get('https://www.springeropen.com/search?query=' + word + '&searchType=publisherSearch', headers = headers(), proxies={'https:': proxy}, timeout=2) #articles 
         soup = BeautifulSoup(response.content, 'html.parser')
 
     
@@ -47,7 +47,7 @@ def springer(word, proxy, refType): #articles
                     
                     springers.append(z)
     else:
-        response = requests.get('https://www.springer.com/gp/search?query=' + word + '&submit=Submit', headers = headers(), proxies={'https:': proxy}, timeout=5) #books
+        response = requests.get('https://www.springer.com/gp/search?query=' + word + '&submit=Submit', headers = headers(), proxies={'https:': proxy}, timeout=2) #books
         soup = BeautifulSoup(response.content, 'html.parser')
         rows = soup.find('div', id='result-list')
         
@@ -136,9 +136,9 @@ def scirp(word, proxy, refType):
     scirpLinks = []         
     
     if refType == 'article':
-        response = requests.get('https://www.scirp.org/journal/articles.aspx?searchcode='+ word+'&searchfield=All&page=1&skid=59931926', headers = headers(), proxies={'https:': proxy}, timeout=5) #books                         #
+        response = requests.get('https://www.scirp.org/journal/articles.aspx?searchcode='+ word+'&searchfield=All&page=1&skid=59931926', headers = headers(), proxies={'https:': proxy}, timeout=2) #books                         #
     else:
-        response = requests.get('https://www.scirp.org/journal/articles.aspx?searchcode='+ word +'&searchfield=jname&page=1&skid=0', headers = headers(), proxies={'https:': proxy}, timeout=5) #books
+        response = requests.get('https://www.scirp.org/journal/articles.aspx?searchcode='+ word +'&searchfield=jname&page=1&skid=0', headers = headers(), proxies={'https:': proxy}, timeout=2) #books
     soup = BeautifulSoup(response.content, 'html.parser')
     a=soup.find('ul', class_='list-unstyled list_link').findAll('li')
    
@@ -158,7 +158,9 @@ def scirp(word, proxy, refType):
 
 def practice(proxy): #books
 
-    a = 1
+    with open ('"C:/Users/Valued Client/Desktop/html/tandfonlineArticles.html"', 'r', errors='ignore') as html_file:   
+        content = html_file.read()
+        soup = BeautifulSoup(content, 'html.parser')
         
             
 
@@ -192,13 +194,13 @@ def scienceDirect(word,proxy, refType):
     'sec-fetch-dest': 'document',
     'referer': 'https://id.elsevier.com/',
     'accept-language': 'en-US,en;q=0.9',
-    'cookie': 'EUID=75fdfe63-504d-4c8a-8180-c03a43da237c; utt=2146-84ee935a77144283645aebe835a645e74f7-M0M6; mboxes=%7B%22universal-view-pdf%22%3A%7B%22variation%22%3A%22B%22%7D%2C%22article-page-remote-access-button-location-server-side-mbox%22%3A%7B%22variation%22%3A%22D%22%7D%7D; mbox=session%23caaef878370e46848c55649e062d0920%231629869107%7CPC%2370b4195123dc401fa07762b437030b81.34_0%231693112047; AMCVS_4D6368F454EC41940A4C98A6%40AdobeOrg=1; fingerPrintToken=304bf7913ab704ec79a638d26e517201; __cf_bm=2eb341bbac40850d99d61d983fc98c4fb1b7e555-1630330507-1800-AeR2kGyV+RiD/8aC9qFGUZlzy3GykJeCrQtC7hj1AmIQXgijzHiT6FO4j1uy0pXQMCXOgGzxI4w2lcHyoxh90hONGCbtCkZVsLt2YXMnv+cp; acw=3e48fa7d9805d64b41693ab7f5916c9de7f9gxrqa%7C%24%7CFDE57228A87A1E921752A73B15806CC60269982D4900291F8E47168FD4362AB30D5534CDD14CD24C2E6E2566651B09047BABD03304DD6A6B3FBA44D1BD4E4F2EB0469A67597464825D387A21AFA2E514; sd_access=eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..uv09-FeH3kJYTB6FJ3PRBQ.Wy2wQ4ZC35w0mtcYg2mfW7RIyV3L9hW7y8mIw3Dot-W0DHm0JCqa1uI-NTtV4Mw1TXsYnB0PizuB6iAeAjfJ4nvkSkpGGznfiW7zAD7sh1d0qcBHZetXvkdB5GYw_3ST4l9Wi0LYgsXIWSTPI0Ux0w.InDQbrelQ9dNWKSIF5My7w; sd_session_id=f5ba213d23c77548428adf91c02028be90ccgxrqa; id_ab=IDP; has_multiple_organizations=true; AMCV_4D6368F454EC41940A4C98A6%40AdobeOrg=-1124106680%7CMCIDTS%7C18870%7CMCMID%7C10640528059237186110715255087884724485%7CMCAID%7CNONE%7CMCOPTOUT-1630337925s%7CNONE%7CMCAAMLH-1630935525%7C3%7CMCAAMB-1630935525%7Cj8Odv6LonN4r3an7LhD3WZrU1bUpAkFkkiY1ncBR96t2PTI%7CMCSYNCSOP%7C411-18716%7CvVersion%7C5.2.0%7CMCCIDH%7C-388222836; MIAMISESSION=f5be2c16-3f68-4de3-b140-c795b4b26ef5:3807783526; SD_REMOTEACCESS=eyJhY2NvdW50SWQiOiI3MzA5NCIsInRpbWVzdGFtcCI6MTYzMDMzMDcyNjQ0NH0=; s_pers=%20v8%3D1630330728674%7C1724938728674%3B%20v8_s%3DLess%2520than%25201%2520day%7C1630332528674%3B%20c19%3Dsd%253Ahome%253Ahpx%7C1630332528679%3B%20v68%3D1630330726557%7C1630332528693%3B; s_sess=%20s_cpc%3D0%3B%20c7%3Dcontenttype%253Djl%3B%20c21%3Dno%2520criteria%2520set%2520%25E2%2580%2593%2520all%2520results%2520returned%3B%20e13%3Dno%2520criteria%2520set%2520%25E2%2580%2593%2520all%2520results%2520returned%253A%3B%20s_sq%3D%3B%20s_ppvl%3Dsd%25253Ahome%25253Ahpx%252C43%252C43%252C969%252C759%252C969%252C1920%252C1080%252C1%252CL%3B%20e41%3D1%3B%20s_cc%3Dtrue%3B%20s_ppv%3Dsd%25253Ahome%25253Ahpx%252C43%252C43%252C969%252C759%252C969%252C1920%252C1080%252C1%252CL%3B',
+    'cookie': 'EUID=80a39c81-5643-43a6-a14d-dbdeb3ff56f9; acw=09351bde6bf54645d9782c50aec0216b3d8fgxrqb%7C%24%7C7FE5B9DF2B3037D1D537624359B49D59B548D9F405B982A584FFE088DD21B3F5910D2AC152F178678A72C4EF7F838BCFF3A6BCE916C7220C0E9169905BBD791CB0469A67597464825D387A21AFA2E514; fingerPrintToken=304bf7913ab704ec79a638d26e517201; AMCVS_4D6368F454EC41940A4C98A6%40AdobeOrg=1; mbox=session%2302abf4c3d6134b1dbb91254aec108e20%231630677951%7CPC%2302abf4c3d6134b1dbb91254aec108e20.34_0%231693920891; __cf_bm=mkqBWvPVt7LqWoplsj8oKRa4zOmQgbbP.mFFSjMq_W8-1630676090-0-Ab2T7/CPzvqT2PiDxe2vwcXqyRck184flU0KOHSLpuxb4Kv/OkQmAlUeeW1k/1yWsj1z2il0PBbVb3he/P3aKMifihTV99xGCnfKYB6WzH3V; sd_access=eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..P1c4whQcaIcZIW1VjPMdyw.07ypbH8eqzTpCvbZAxlUElHNWX05_zuLhXPG9TmPcfnXTPewtpjhmn7vlS-8GtrcJCBtOuf9-SEb3UhXj44c9KthDGtnp17rOOXu5-cFeA5tgzQG40z5ACFs-gcNb0YT8Gzd-j_t4GqF0Zotxxb6MQ.O9y8cW2ugwKQ-YO1jtIrDg; sd_session_id=2ba5055895ae144ff2087ca994c018919258gxrqb; id_ab=IDP; has_multiple_organizations=true; AMCV_4D6368F454EC41940A4C98A6%40AdobeOrg=-1124106680%7CMCIDTS%7C18873%7CMCMID%7C81261105090677501200180261852203688591%7CMCAID%7CNONE%7CMCOPTOUT-1630683383s%7CNONE%7CMCAAMLH-1631280983%7C3%7CMCAAMB-1631280983%7Cj8Odv6LonN4r3an7LhD3WZrU1bUpAkFkkiY1ncBR96t2PTI%7CMCCIDH%7C-388222836%7CvVersion%7C5.2.0; MIAMISESSION=48480567-060c-4f77-bc44-3d8dd08d5a19:3808128993; SD_REMOTEACCESS=eyJhY2NvdW50SWQiOiI3MzA5NCIsInRpbWVzdGFtcCI6MTYzMDY3NjE5MzE4Mn0=; s_pers=%20v8%3D1630676196943%7C1725284196943%3B%20v8_s%3DLess%2520than%25201%2520day%7C1630677996943%3B%20c19%3Dsd%253Abrowse%253Ajournalsandbooks%7C1630677996950%3B%20v68%3D1630676196692%7C1630677996963%3B; s_sess=%20s_cpc%3D0%3B%20c21%3Dno%2520criteria%2520set%2520%25E2%2580%2593%2520all%2520results%2520returned%3B%20e13%3Dno%2520criteria%2520set%2520%25E2%2580%2593%2520all%2520results%2520returned%253A%3B%20c7%3Dcontenttype%253Djl%3B%20s_sq%3D%3B%20s_ppvl%3Dsd%25253Abrowse%25253Ajournalsandbooks%252C11%252C11%252C969%252C1461%252C969%252C1920%252C1080%252C1%252CP%3B%20e41%3D1%3B%20s_cc%3Dtrue%3B%20s_ppv%3Dsd%25253Abrowse%25253Ajournalsandbooks%252C11%252C11%252C969%252C1007%252C969%252C1920%252C1080%252C1%252CP%3B',
     }
 
 
     if refType == 'journal':
-        response = requests.get('https://www.sciencedirect.com/browse/journals-and-books?contentType=JL&searchPhrase='+ word, headers=headers, proxies={'https:': proxy}, timeout= 5)
-    else:
+        response = requests.get('https://www.sciencedirect.com/browse/journals-and-books?contentType=JL&searchPhrase='+ word, headers=headers, proxies={'https:': proxy}, timeout= 2)
+    elif refType == 'book':
         response = requests.get('https://www.sciencedirect.com/browse/journals-and-books?contentType=BK&searchPhrase='+ word, headers=headers, proxies={'https:': proxy}, timeout= 2)
     
     soup = BeautifulSoup(response.content, 'html.parser')
@@ -211,14 +213,16 @@ def scienceDirect(word,proxy, refType):
         p = li.div.p
         pp = li.div.find('p', class_='u-display-inline u-clr-grey8')
 
-        if pp != None:
-            ppp = pp.find('span')
-                        #scienceDDescriptions.append(p.text + " ● " + ppp.text)
-            z.append( "Journal ● " + ppp.text)
-        else:
-            z.append( "Journal")
-        
-        if refType != 'journal':
+        if refType == 'journal':
+            if pp != None:
+                ppp = pp.find('span')
+                            #scienceDDescriptions.append(p.text + " ● " + ppp.text)
+                z.append( "Journal ● " + ppp.text)
+            else:
+                z.append( "Journal")
+        if refType == 'book':
+
+            z.append(li.p.text)
             z.append(li.div.text)
 
 
