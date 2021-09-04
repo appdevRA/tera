@@ -22,48 +22,49 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.css">
     <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 </head>
+
 <body style="background-image: url({% static 'images/bg.png' %});">
 
-    <nav>
-      <div class="logo"><a href="{% url 'ra:tera_homepage_view'%}"><img class="logo-style" src="{% static 'images/teralogo.png' %}"></a></div>
-      <label for="btn" class="icon">
-    </nav>
+  <nav>
+    <div class="logo"><a href="{% url 'ra:tera_homepage_view'%}"><img class="logo-style" src="{% static 'images/teralogo.png' %}"></a></div>
+    <label for="btn" class="icon">
+  </nav>
 
-    <div class="bodystyle">
-      <div class="form"><br>
-        <div class="container">
+  <div class="bodystyle">
+    <div class="form"><br>
+      <div class="container">
 
-          <div>
-           <center>
-            <form method="POST" action="" style="max-width:450px;margin:auto"> 
+        <div>
+          <center>
+            <form method="POST" action="" style="max-width:450px;margin:auto">
               {% csrf_token %}
-             <br> <h2><b>Change Password<b> </h2> <br>
+              <br> <h2><b>Change Password for {{user.username}}<b> </h2> <br>
 
-             <div class="input-icons"> 
-                  <i class="fa fa-key icon-login"> </i> 
-                  <input type="password" placeholder="Old Password" name="old_password" class="inputfield-login" autocomplete="off" required="" id="old_password"><br><br>
-            </div> 
-
-            <div class="input-icons"> 
-                  <i class="fa fa-key icon-login"> </i> 
-                  <input type="password" placeholder="New Password" name="new_password1" class="inputfield-login" autocomplete="off" required="" id="new_password1"><br><br>
-            </div> 
-  
-            <div class="input-icons"> 
-                  <i class="fa fa-key icon-login"> </i> 
-                  <input type="password" placeholder="Confirm new Passsword" name="new_password2" class="inputfield-login" autocomplete="off" required="" id="new_password2"><br><br>
-   
-                <div class="form-row">
-                <div class="form-group col-md-6"> 
-                <input type="checkbox" onclick="myFunction()"> Show Password 
+                <div class="input-icons"> 
+                  <i class="fa fa-key icon-login"> </i>
+                  <input type="password" placeholder="CurrentPassword" name="old_password" class="inputfield-login" autocomplete="off" required="" id="old_password"><br><br>
                 </div>
-      
-            </div> 
-  
+
+                <div class="input-icons">
+                  <i class="fa fa-key icon-login"> </i>
+                  <input type="password" placeholder="New Password" name="new_password1" class="inputfield-login" autocomplete="off" required="" id="new_password1"><br><br>
+                </div>
+
+                <div class="input-icons">
+                  <i class="fa fa-key icon-login"> </i>
+                  <input type="password" placeholder="Confirm Passsword" name="new_password2" class="inputfield-login" autocomplete="off" required="" id="new_password2"><br><br>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group col-md-6">
+                    <input type="checkbox" onclick="myFunction()"> Show Password 
+                  </div>
+                </div> 
+
           <center>
               <div class="form-row">
                   <div class="form-group col-md-6">
-                    <button type="submit" class="buttonCancelChanges"><a style="color: #fff" href="{% url 'ra:tera_index_view'%}"> Cancel </a> </button>
+                    <button type="button" class="buttonCancelChanges"><a style="color: #fff" href="{% url 'ra:tera_homepage_view'%}"> Cancel </a> </button>
                   </div>
                   <div class="form-group col-md-6"> 
                    <button type="submit" value="LOGIN" class="buttonSaveChanges">Save</button> <br><br><br>
@@ -74,7 +75,6 @@
           {% endfor %}
             </center>
            </form> 
-
 <script>
 function myFunction() {
   var x = document.getElementById("new_password2");
