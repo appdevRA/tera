@@ -23,18 +23,20 @@ class TeraIndexView(View):
 		
 		
 
-		#proxies = proxy_generators() #/ generating free proxies /
+		#proxies = proxy_generator() #/ generating free proxies /
 		#for proxy in proxies:  #/ saving proxies to db /
 			
 		#	proxy =Proxies(proxy = proxy)
 		#	proxy.save()
 		
+		#user = User.objects.get(username = 'tt', password = 'tt')
 		proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
-		a = testProxy(proxies) 
-		User.objects.filter(id = 1).update(proxy = a.proxy) # set proxy to user
+		a = testProxy(proxies).proxy
+		#User.objects.filter(id = 1).update(proxy = a) # set proxy to user
 
-
-		 
+		request.session['proxy'] = a
+		request.session['id'] = 1
+		#practice()
 		
 		#scienceDirect(testProxy(proxies))
 		#scirp('engineer', practice(testProxy(proxies)), 'a')
@@ -42,128 +44,118 @@ class TeraIndexView(View):
 		#springer('war', testProxy(proxies))
 		#print(proxyID.id)
 		#x = Proxies.objects.filter(id = proxyID.id).update(isUsed = 1)
-		
-		
-		
-		
 		return render(request,'landingpage.html')
 
 	def post(self, request):
-		
-		userProxy = User.objects.filter(id = 1).values('proxy')
-		
 		if request.method == 'POST':
-			word = request.POST.get("keyword")
-			
-			if 'btnSearch' in request.POST:
-				refType = 'scripArticle'
-				a = scirp(word,userProxy[0]['proxy'],'article')
-				#refType = 'springerArticle'
-				#a = springer(word,userProxy[0]['proxy'], 'article')
-				springers = a[0]	
-				springLinks = a[1]	
-
-				
-				context = {
-					'keyword': word,
-					'results': springers,
-					'links': springLinks,
-					'type': refType
-				}
-
-				return render(request,'searchresults.html', context)
-
-			
-			elif 'btnSearchbar' in request.POST:
-				refType = 'springerArticle'
-				word = request.POST.get("searchbar")
-
-				a = springer(word,userProxy[0]['proxy'], 'article')
-				springers = a[0]	
-				springLinks = a[1]		
-				context = {
-					'keyword': word,
-					'results': springers,
-					'links': springLinks,
-					'type': refType
-				}
-	
-				return render(request,'searchresults.html', context)
-
-			elif 'btnArticles' in request.POST:
-				refType = 'springerArticle'
-				word = request.POST.get("search")
-
-				a = springer(word,userProxy[0]['proxy'], 'book')
-				#a = springerasdsad()
-				springers = a[0]	
-				springLinks = a[1]	
-
-				context = {
-					'keyword': word,
-					'results': springers,
-					'links': springLinks,
-					'type': refType
-				}
-
-				return render(request,'searchresults.html', context)
-
-			elif 'btnJournal' in request.POST:
-				word = request.POST.get("search")
-				refType = 'scienceDirectJournal'
-
-				a = scienceDirect(word, userProxy[0]['proxy'], 'journal')
-				scienceDirects = a[0]
-				scienceLinks = a[1]
-				
-				context = {
-					'keyword': word,
-					'results': scienceDirects,
-					'links': scienceLinks,
-					'type': refType
-					
-				}
-
-				return render(request,'searchresults.html', context)
-
-			elif 'btnBook' in request.POST:
-				word = request.POST.get("search")
-				refType = 'scienceDirectBook'
-
-				a = scienceDirect(word, userProxy[0]['proxy'], 'book')
-				scienceDirects = a[0]
-				scienceLinks = a[1]
-				
-				context = {
-					'keyword': word,
-					'results': scienceDirects,
-					'links': scienceLinks,
-					'type': refType
-					
-				}
-
-				return render(request,'searchresults.html', context)
-
-
-
-
-
-class TeraLoginUser(View): 
-
-	def get(self,request):
-		
-		return redirect('ra:tera_homepage_view')
-
-	
+			request.session['word'] = request.POST.get("keyword")
+			return redirect('ra:search_result_view')
 		
 
 
 class TeraSearchResultsView(View):
 
 	def get(self,request):
-		return render(request,'home.html')	
+		x = True
 		
+		word = request.session.get('word')
+		refType = 'tandFonArcticle'
 		
+		a = tandFOnline(word,request.session.get('proxy') , 'article')
+
+		results = a[0]	
+		links = a[1]	
+
+						
+		context = {
+							'keyword': word,
+							'results': results,
+							'links': links,
+							'type': refType
+		}
+
+		return render(request,'searchresults.html', context)
+
+	def post(self, request):
+			
+		if 'btnSearchbar' in request.POST:
+			refType = 'springerArticle'
+			word = request.POST.get("searchbar")
+
+			a = springer(word,request.session.get('proxy'), 'article')
+			springers = a[0]	
+			springLinks = a[1]		
+			context = {
+					'keyword': word,
+					'results': springers,
+					'links': springLinks,
+					'type': refType
+			}
+	
+			return render(request,'searchresults.html', context)
+
+		elif 'btnArticles' in request.POST:
+			refType = 'springerArticle'
+			word = request.POST.get("search")
+
+			a = springer(word,request.session.get('proxy'), 'article')
+				#a = springerasdsad()
+			springers = a[0]	
+			springLinks = a[1]	
+
+			context = {
+					'keyword': word,
+					'results': springers,
+					'links': springLinks,
+					'type': refType
+			}
+
+			return render(request,'searchresults.html', context)
+
+		elif 'btnJournal' in request.POST:
+			word = request.POST.get("search")
+			refType = 'scienceDirectJournal'
+			
+			a = scienceDirect(word, request.session.get('proxy'), 'journal')
+
+			scienceDirects = a[0]
+			scienceLinks = a[1]
+				
+			context = {
+				'keyword': word,
+					'results': scienceDirects,
+					'links': scienceLinks,
+					'type': refType
+					
+			}
+
+			return render(request,'searchresults.html', context)
+
+		elif 'btnBook' in request.POST:
+			word = request.POST.get("search")
+			refType = 'scienceDirectBook'
+
+			a = scienceDirect(word, request.session.get('proxy'), 'book')
+			scienceDirects = a[0]
+			scienceLinks = a[1]
+				
+			context = {
+					'keyword': word,
+					'results': scienceDirects,
+					'links': scienceLinks,
+					'type': refType
+					
+			}
+
+			return render(request,'searchresults.html', context)
+		
+
+class TeraLoginUser(View): 
+
+	def get(self,request):
+		
+		print(request.session.get('id'))	
+		return redirect('ra:tera_homepage_view')
 
 class TeraHomepageView(View):
 	def get(self,request):

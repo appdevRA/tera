@@ -16,8 +16,19 @@ def springer(word, proxy, refType): #articles
     springLinks = []
     
     if refType == 'article':
-
-        response = requests.get('https://www.springeropen.com/search?query=' + word + '&searchType=publisherSearch', headers = headers(), proxies={'https:': proxy}, timeout=2) #articles 
+        x = False
+        while(x == False):
+            try:
+                response = requests.get('https://www.springeropen.com/search?query=' + word + '&searchType=publisherSearch', headers = headers(), proxies={'https:': proxy}, timeout=2) #articles 
+                x = True
+                
+            except requests.exceptions.Timeout:
+                response =  requests.get('https://www.springeropen.com/search?query=' + word + '&searchType=publisherSearch', headers = headers(), proxies={'https:': proxy}, timeout=2) #articles             
+                x = True
+                print('olok')
+            except requests.exceptions.ConnectionError:
+                print('besong')
+        
         soup = BeautifulSoup(response.content, 'html.parser')
 
     
@@ -47,7 +58,16 @@ def springer(word, proxy, refType): #articles
                     
                     springers.append(z)
     else:
-        response = requests.get('https://www.springer.com/gp/search?query=' + word + '&submit=Submit', headers = headers(), proxies={'https:': proxy}, timeout=2) #books
+        x = False
+        while(x == False):
+            try:
+                response = requests.get('https://www.springer.com/gp/search?query=' + word + '&submit=Submit', headers = headers(), proxies={'https:': proxy}, timeout=2) #books
+                x = True
+                
+            except requests.exceptions.Timeout:
+                response = requests.get('https://www.springer.com/gp/search?query=' + word + '&submit=Submit', headers = headers(), proxies={'https:': proxy}, timeout=2) #books
+                x = True
+        
         soup = BeautifulSoup(response.content, 'html.parser')
         rows = soup.find('div', id='result-list')
         
@@ -86,12 +106,161 @@ def springer(word, proxy, refType): #articles
     return springers, springLinks
 
 
-def proxy_generators():
+def scienceDirect(word,proxy, refType):
+    scienceDirects = []
+    scienceLinks = []
+    #ua = random.choice(userAgents) 
+
+    headers = {
+    'authority': 'www.sciencedirect.com',
+    'sec-ch-ua': '"Microsoft Edge";v="93", " Not;A Brand";v="99", "Chromium";v="93"',
+    'sec-ch-ua-mobile': '?0',
+    'sec-ch-ua-platform': '"Windows"',
+    'upgrade-insecure-requests': '1',
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.63 Safari/537.36 Edg/93.0.961.38',
+    'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+    'sec-fetch-site': 'same-origin',
+    'sec-fetch-mode': 'navigate',
+    'sec-fetch-user': '?1',
+    'sec-fetch-dest': 'document',
+    'referer': 'https://www.sciencedirect.com/science/article/pii/B9780080420165500061',
+    'accept-language': 'en-US,en;q=0.9',
+    'cookie': 'EUID=80a39c81-5643-43a6-a14d-dbdeb3ff56f9; mboxes=%7B%22universal-view-pdf%22%3A%7B%22variation%22%3A%22B%22%7D%7D; acw=130511383010d54f9128e5a178f537ab0640gxrqa%7C%24%7CBA3409B26A2914937CBC21702DCC89ACA41CD0FB169090AA2AE79E574B72F15230E933B47977B496F93D43872D37F5EE0878E8CB2B0EFF553FBA44D1BD4E4F2EB0469A67597464825D387A21AFA2E514; utt=ae01-efa25bdbb71478802a627452c2319959fc3-A; fingerPrintToken=4a7c35f82ff0bfa77f2a77051cace374; AMCVS_4D6368F454EC41940A4C98A6%40AdobeOrg=1; __cf_bm=n0lnEOz5BDR4BTjsWWbAPbwwvEaz1kXBJ.fkQoT8lzI-1630999192-0-AaXFyLxFvppOe3VbquUHlCwoYZ+OW7cAvsz4mrkRwD8CHW4b7yEU17OPnP/bR0FoEj+n3maJdiq9H0mD6+YQ4vzLyy3RzOsgVgt4fgTeoKcu; sd_access=eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..98pOyLeE7lxxfIxrJw-ceQ.9CW6OaYNExc2Y-Aa8xtVqGLd4XTgm3FUTF32Wb6XxHGEU2XqRPogGnSeJx0xKJ9aXyPThCdiAm92oCK4IWiqkx-KBYo8-POg2lfOokH_TncysfqWyfhEjZ45gUSGxedaglRrKpWen67ZeA1NMz2hsA.ec5A9p19ZOOE-RIeeAQKYA; sd_session_id=482c5b4c2181c0490439fbf3866f1559878egxrqa; id_ab=IDP; has_multiple_organizations=true; MIAMISESSION=1b6b011e-da5b-48b3-99c5-384c3fd5eb07:3808452033; SD_REMOTEACCESS=eyJhY2NvdW50SWQiOiI3MzA5NCIsInRpbWVzdGFtcCI6MTYzMDk5OTIzMzc4Mn0=; mbox=session%23af525fea8e3c4c6ea010ef3250868ce6%231631001094%7CPC%23af525fea8e3c4c6ea010ef3250868ce6.37_0%231694244034; AMCV_4D6368F454EC41940A4C98A6%40AdobeOrg=-1124106680%7CMCIDTS%7C18877%7CMCMID%7C81261105090677501200180261852203688591%7CMCAID%7CNONE%7CMCOPTOUT-1631006439s%7CNONE%7CMCAAMLH-1631604039%7C3%7CMCAAMB-1631604039%7Cj8Odv6LonN4r3an7LhD3WZrU1bUpAkFkkiY1ncBR96t2PTI%7CMCCIDH%7C-388222836%7CvVersion%7C5.2.0; s_pers=%20v8%3D1630999245603%7C1725607245603%3B%20v8_s%3DLess%2520than%25201%2520day%7C1631001045603%3B%20c19%3Dsd%253Aproduct%253Abook%253Aarticle%7C1631001045609%3B%20v68%3D1630999234079%7C1631001045616%3B; s_sess=%20s_cpc%3D0%3B%20c21%3Dqs%253Dwar%3B%20e13%3Dqs%253Dwar%253A3%3B%20c13%3Drelevance-desc%3B%20s_ppvl%3Dsd%25253Aproduct%25253Abook%25253Aarticle%252C100%252C100%252C969%252C1920%252C969%252C1920%252C1080%252C1%252CP%3B%20s_cc%3Dtrue%3B%20s_ppv%3Dsd%25253Aproduct%25253Abook%25253Aarticle%252C100%252C100%252C969%252C1007%252C969%252C1920%252C1080%252C1%252CP%3B%20e41%3D1%3B%20s_sq%3Delsevier-global-prod%253D%252526c.%252526a.%252526activitymap.%252526page%25253Dsd%2525253Aproduct%2525253Abook%2525253Aarticle%252526link%25253Dsciencedirect%252526region%25253Dheader%252526pageIDType%25253D1%252526.activitymap%252526.a%252526.c%252526pid%25253Dsd%2525253Aproduct%2525253Abook%2525253Aarticle%252526pidt%25253D1%252526oid%25253Dhttps%2525253A%2525252F%2525252Fwww.sciencedirect.com%2525252F%252526ot%25253DA%3B',
+    }
+    x = False
+    while(x == False):
+        try:
+            if refType == 'journal':
+                response = requests.get('https://www.sciencedirect.com/browse/journals-and-books?contentType=JL&searchPhrase='+ word, headers=headers, proxies={'https:': proxy}, timeout= 10)
+                x = True
+            elif refType == 'book':
+                response = requests.get('https://www.sciencedirect.com/browse/journals-and-books?contentType=BK&searchPhrase='+ word, headers=headers, proxies={'https:': proxy}, timeout= 10)
+                x = True
+        except requests.exceptions.Timeout:
+            if refType == 'journal':
+                response = requests.get('https://www.sciencedirect.com/browse/journals-and-books?contentType=JL&searchPhrase='+ word, headers=headers, proxies={'https:': proxy}, timeout= 2)
+                print('olok')
+                x = True
+            elif refType == 'book':
+                response = requests.get('https://www.sciencedirect.com/browse/journals-and-books?contentType=BK&searchPhrase='+ word, headers=headers, proxies={'https:': proxy}, timeout= 2)
+                print('olok')
+                x = True
+    
+    soup = BeautifulSoup(response.content, 'html.parser')
+    lli= soup.findAll('li', class_='publication branded u-padding-xs-ver js-publication')
+
+    for li in lli:
+        z = []
+                    #scienceDTitles.append(li.a.text)
+        z.append(li.a.text)
+        p = li.div.p
+        pp = li.div.find('p', class_='u-display-inline u-clr-grey8')
+
+        if refType == 'journal':
+            if pp != None:
+                ppp = pp.find('span')
+                            #scienceDDescriptions.append(p.text + " ● " + ppp.text)
+                z.append( "Journal ● " + ppp.text)
+            else:
+                z.append( "Journal")
+        else:
+            if(li.p.text != 'Book'):
+                z.append(li.p.text)
+            z.append(li.div.text)
 
 
-    
-    
+
+        scienceLinks.append(li.a['href'])
+        scienceDirects.append(z)
+        #print(soup.find('a', text='Sign in'))
    
+    return scienceDirects, scienceLinks
+
+
+def scirp(word, proxy, refType):
+    
+    scirp = []
+    scirpLinks = []         
+    
+    x = False
+    while(x == False):
+        try:
+            if refType == 'article':
+                response = requests.get('https://www.scirp.org/journal/articles.aspx?searchcode='+ word+'&searchfield=All&page=1&skid=59931926', headers = headers(), proxies={'https:': proxy}, timeout=1) #books                         #
+                x = True
+            else:
+                response = requests.get('https://www.scirp.org/journal/articles.aspx?searchcode='+ word +'&searchfield=jname&page=1&skid=0', headers = headers(), proxies={'https:': proxy}, timeout=1) #books
+                x = True
+        except requests.exceptions.Timeout:
+            if refType == 'article':
+                response = requests.get('https://www.scirp.org/journal/articles.aspx?searchcode='+ word+'&searchfield=All&page=1&skid=59931926', headers = headers(), proxies={'https:': proxy}, timeout=1) #books                         #
+                x = True
+            else:
+                response = requests.get('https://www.scirp.org/journal/articles.aspx?searchcode='+ word +'&searchfield=jname&page=1&skid=0', headers = headers(), proxies={'https:': proxy}, timeout=1) #books
+                x = True
+
+    soup = BeautifulSoup(response.content, 'html.parser')
+    a=soup.find('ul', class_='list-unstyled list_link').findAll('li')
+   
+    for i in a:
+        z = []
+        x = i.find('div', class_='list_unit') #get container of rows
+        z.append(i.div.text) # get title
+        z.append(i.find('div', class_='list_author').text) #author 
+        z.append(i.find('div', class_='list_unit').text.replace('¼Œ', ' ')) #get other info
+        z.append(i.find('div', class_='list_doi').text) 
+        scirp.append(z)
+        scirpLinks.append(i.div.span.a['href'])
+
+    return scirp, scirpLinks
+
+def tandFOnline(word, proxy, refType): #books
+
+    results= []
+    links = []
+        
+    
+    if refType == 'article':
+        x = False
+        #while(x == False):
+        try:
+            response = requests.get('https://www.tandfonline.com/action/doSearch?AllField=' + word, headers = headers(), proxies={'https:': proxy}, timeout=2) #books
+            x = True
+
+        except requests.exceptions.Timeout:
+            response = requests.get('https://www.tandfonline.com/action/doSearch?AllField=' + word, headers = headers(), proxies={'https:': proxy}, timeout=2) #books
+            x = True
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+        rows = soup.findAll('article', class_='searchResultItem')
+
+        for row in rows:
+            z=[]
+            z.append(row.find('a', class_='ref nowrap').text) #title
+            z.append(row.find('div', class_='author').text) #author
+            z.append(row.find('div', class_='publication-meta').text) #others
+            z.append(row.find('span', class_='publication-year').text) #date
+
+    
+            results.append(z)
+            #links.append(container.find('a', class_='ref nowrap')['href'])
+            links.append(row.find('a', class_='ref nowrap')['href'])
+
+    else:
+        x = False
+        while(x == False):
+            try:
+                response = requests.get('https://www.tandfonline.com/action/doSearch?AllField=' + word, headers = headers(), proxies={'https:': proxy}, timeout=2) #books
+                x = True
+
+            except:
+                response = requests.get('https://www.tandfonline.com/action/doSearch?AllField=' + word, headers = headers(), proxies={'https:': proxy}, timeout=2) #books
+                x = True
+
+    return results, links
+
+def proxy_generator():
+
     response = requests.get('https://free-proxy-list.net/', headers = headers())
     soup = BeautifulSoup(response.content, 'html.parser')
     
@@ -130,115 +299,6 @@ def proxy_generators():
             
             #rowCtr = rowCtr + 1
 
-def scirp(word, proxy, refType):
-    
-    scirp = []
-    scirpLinks = []         
-    
-    if refType == 'article':
-        response = requests.get('https://www.scirp.org/journal/articles.aspx?searchcode='+ word+'&searchfield=All&page=1&skid=59931926', headers = headers(), proxies={'https:': proxy}, timeout=2) #books                         #
-    else:
-        response = requests.get('https://www.scirp.org/journal/articles.aspx?searchcode='+ word +'&searchfield=jname&page=1&skid=0', headers = headers(), proxies={'https:': proxy}, timeout=2) #books
-    soup = BeautifulSoup(response.content, 'html.parser')
-    a=soup.find('ul', class_='list-unstyled list_link').findAll('li')
-   
-    for i in a:
-        z = []
-        x = i.find('div', class_='list_unit') #get container of rows
-        z.append(i.div.text) # get title
-        z.append(i.find('div', class_='list_author').text) #author 
-        z.append(i.find('div', class_='list_unit').text.replace('¼Œ', ' ')) #get other info
-        z.append(i.find('div', class_='list_doi').text) 
-        scirp.append(z)
-        scirpLinks.append(i.div.span.a['href'])
-
-    return scirp, scirpLinks
-
-        
-
-def practice(proxy): #books
-
-    with open ('"C:/Users/Valued Client/Desktop/html/tandfonlineArticles.html"', 'r', errors='ignore') as html_file:   
-        content = html_file.read()
-        soup = BeautifulSoup(content, 'html.parser')
-        
-            
-
-    #print(a)
-                    
-    #for x in z:
-        #print(x)
-        
-    
-    
-   
-
-
-    
-def scienceDirect(word,proxy, refType):
-    scienceDirects = []
-    scienceLinks = []
-    #ua = random.choice(userAgents) 
-
-    headers = {
-    'authority': 'www.sciencedirect.com',
-    'cache-control': 'max-age=0',
-    'sec-ch-ua': '"Chromium";v="92", " Not A;Brand";v="99", "Microsoft Edge";v="92"',
-    'sec-ch-ua-mobile': '?0',
-    'upgrade-insecure-requests': '1',
-    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36 Edg/92.0.902.84',
-    'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-    'sec-fetch-site': 'cross-site',
-    'sec-fetch-mode': 'navigate',
-    'sec-fetch-user': '?1',
-    'sec-fetch-dest': 'document',
-    'referer': 'https://id.elsevier.com/',
-    'accept-language': 'en-US,en;q=0.9',
-    'cookie': 'EUID=80a39c81-5643-43a6-a14d-dbdeb3ff56f9; acw=09351bde6bf54645d9782c50aec0216b3d8fgxrqb%7C%24%7C7FE5B9DF2B3037D1D537624359B49D59B548D9F405B982A584FFE088DD21B3F5910D2AC152F178678A72C4EF7F838BCFF3A6BCE916C7220C0E9169905BBD791CB0469A67597464825D387A21AFA2E514; fingerPrintToken=304bf7913ab704ec79a638d26e517201; AMCVS_4D6368F454EC41940A4C98A6%40AdobeOrg=1; mbox=session%2302abf4c3d6134b1dbb91254aec108e20%231630677951%7CPC%2302abf4c3d6134b1dbb91254aec108e20.34_0%231693920891; __cf_bm=mkqBWvPVt7LqWoplsj8oKRa4zOmQgbbP.mFFSjMq_W8-1630676090-0-Ab2T7/CPzvqT2PiDxe2vwcXqyRck184flU0KOHSLpuxb4Kv/OkQmAlUeeW1k/1yWsj1z2il0PBbVb3he/P3aKMifihTV99xGCnfKYB6WzH3V; sd_access=eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..P1c4whQcaIcZIW1VjPMdyw.07ypbH8eqzTpCvbZAxlUElHNWX05_zuLhXPG9TmPcfnXTPewtpjhmn7vlS-8GtrcJCBtOuf9-SEb3UhXj44c9KthDGtnp17rOOXu5-cFeA5tgzQG40z5ACFs-gcNb0YT8Gzd-j_t4GqF0Zotxxb6MQ.O9y8cW2ugwKQ-YO1jtIrDg; sd_session_id=2ba5055895ae144ff2087ca994c018919258gxrqb; id_ab=IDP; has_multiple_organizations=true; AMCV_4D6368F454EC41940A4C98A6%40AdobeOrg=-1124106680%7CMCIDTS%7C18873%7CMCMID%7C81261105090677501200180261852203688591%7CMCAID%7CNONE%7CMCOPTOUT-1630683383s%7CNONE%7CMCAAMLH-1631280983%7C3%7CMCAAMB-1631280983%7Cj8Odv6LonN4r3an7LhD3WZrU1bUpAkFkkiY1ncBR96t2PTI%7CMCCIDH%7C-388222836%7CvVersion%7C5.2.0; MIAMISESSION=48480567-060c-4f77-bc44-3d8dd08d5a19:3808128993; SD_REMOTEACCESS=eyJhY2NvdW50SWQiOiI3MzA5NCIsInRpbWVzdGFtcCI6MTYzMDY3NjE5MzE4Mn0=; s_pers=%20v8%3D1630676196943%7C1725284196943%3B%20v8_s%3DLess%2520than%25201%2520day%7C1630677996943%3B%20c19%3Dsd%253Abrowse%253Ajournalsandbooks%7C1630677996950%3B%20v68%3D1630676196692%7C1630677996963%3B; s_sess=%20s_cpc%3D0%3B%20c21%3Dno%2520criteria%2520set%2520%25E2%2580%2593%2520all%2520results%2520returned%3B%20e13%3Dno%2520criteria%2520set%2520%25E2%2580%2593%2520all%2520results%2520returned%253A%3B%20c7%3Dcontenttype%253Djl%3B%20s_sq%3D%3B%20s_ppvl%3Dsd%25253Abrowse%25253Ajournalsandbooks%252C11%252C11%252C969%252C1461%252C969%252C1920%252C1080%252C1%252CP%3B%20e41%3D1%3B%20s_cc%3Dtrue%3B%20s_ppv%3Dsd%25253Abrowse%25253Ajournalsandbooks%252C11%252C11%252C969%252C1007%252C969%252C1920%252C1080%252C1%252CP%3B',
-    }
-
-
-    if refType == 'journal':
-        response = requests.get('https://www.sciencedirect.com/browse/journals-and-books?contentType=JL&searchPhrase='+ word, headers=headers, proxies={'https:': proxy}, timeout= 2)
-    elif refType == 'book':
-        response = requests.get('https://www.sciencedirect.com/browse/journals-and-books?contentType=BK&searchPhrase='+ word, headers=headers, proxies={'https:': proxy}, timeout= 2)
-    
-    soup = BeautifulSoup(response.content, 'html.parser')
-    lli= soup.findAll('li', class_='publication branded u-padding-xs-ver js-publication')
-
-    for li in lli:
-        z = []
-                    #scienceDTitles.append(li.a.text)
-        z.append(li.a.text)
-        p = li.div.p
-        pp = li.div.find('p', class_='u-display-inline u-clr-grey8')
-
-        if refType == 'journal':
-            if pp != None:
-                ppp = pp.find('span')
-                            #scienceDDescriptions.append(p.text + " ● " + ppp.text)
-                z.append( "Journal ● " + ppp.text)
-            else:
-                z.append( "Journal")
-        if refType == 'book':
-
-            z.append(li.p.text)
-            z.append(li.div.text)
-
-
-
-        scienceLinks.append(li.a['href'])
-        scienceDirects.append(z)
-        #print(soup.find('a', text='Sign in'))
-   
-    return scienceDirects, scienceLinks
-
-#NB. Original query string below. It seems impossible to parse and
-#reproduce query strings 100% accurately so the one below is given
-#in case the reproduced version is not "correct".
-# response = requests.get('https://www.sciencedirect.com/search?qs=war', headers=headers)
-
-            
 
 
 userAgents = [ 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36',
@@ -261,36 +321,11 @@ def headers():
                     'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
                     'accept-language': 'en-US,en;q=0.9',
                     'referer': 'https://google.com/',
-                    'Upgrade-Insecure-Requests': '1',
-                     
-
-                     
+                    'Upgrade-Insecure-Requests': '1',          
     }
     return headers
 
 
-def proxy_generator():
-    #response = requests.get("https://free-proxy-list.net/")
-    #soup = BeautifulSoup(response.content, 'html.parser')
-    #page= soup.find(text = "15")
-    #page.click()
-    proxies = []
-    with open('C:/Users/Valued Client/Desktop/proxies.txt', 'r') as f:
-        for line in f:
-            proxies.append('https://' + line[:-1])
-            #a = line
-            
-        
-
-    proxy = random.choice(proxies)
-    return proxy
-        
-        
-
-    
-    
-    #proxy = {'https': choice(list(map(lambda x:x[0]+':'+x[1], list(zip(map(lambda x:x.text, soup.findAll('td')[::8]), map(lambda x:x.text, soup.findAll('td')[1::8]))))))}
-    
     
 
 def testProxy(proxies):

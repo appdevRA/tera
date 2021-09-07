@@ -107,29 +107,29 @@
               {% for link in links %}
               {% if forloop.counter == outer_counter %}
 
-              {% if type == 'scripArticle'%} 
-                <div style="color: black">
-                  <a href="https://www.scirp.org/journal/{{link}}" > <b> {{column}} </b> </a>
-                </div>  <!-- to prevent from displaying all the links in at a time -->
-              {% endif %} 
+              
 
               {% if type == 'springerArticle'%} 
                 <div style="color: black">
+                  <a href="{{link}}" > <b> {{column}} </b> </a>
+                </div>  <!-- to prevent from displaying all the links in at a time -->
+              {% endif %}   
+
+
+              {% if type == 'springerBook'%} 
+                <div style="color: black">
                   <a href="https://www.springer.com{{link}}" > <b> {{column}} </b> </a>
                 </div>  <!-- to prevent from displaying all the links in at a time -->
-              {% endif %} 
+              {% endif %}
+
 
               {% if type == 'scienceDirectJournal' %}
               <div style="color: black">
                 <a href="https://www.sciencedirect.com/{{link}}" > <b> {{column}} </b> </a>
               </div>  <!-- display title of links -->
               {% endif %}
+              
 
-              {% if type == 'article' %}
-              <div style="color: black">
-                <a href="https://www.sciencedirect.com/{{link}}" > <b> {{column}} </b> </a>
-              </div>  <!-- display title of links -->
-              {% endif %}
 
               {% if type == 'scienceDirectBook' %}
               <div style="color: black">
@@ -137,6 +137,19 @@
               </div>  <!-- display title of links -->
               {% endif %}
               
+
+              {% if type == 'scripArticle'%} 
+                <div style="color: black">
+                  <a href="https://www.scirp.org/journal/{{link}}" > <b> {{column}} </b> </a>
+                </div>  <!-- to prevent from displaying all the links in at a time -->
+              {% endif %} 
+              
+
+              {% if type == 'tandFonArcticle' %}
+              <div style="color: black">
+                <a href="https://www.tandfonline.com{{link}}" > <b> {{column}} </b> </a>
+              </div>  <!-- display title of links -->
+              {% endif %}
               
               {% endif %}
               {% endfor %}
