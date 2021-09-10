@@ -56,17 +56,13 @@ class TeraIndexView(View):
 class TeraSearchResultsView(View):
 
 	def get(self,request):
-		x = True
 		
 		word = request.session.get('word')
-		refType = 'tandFonArcticle'
-		
-		a = tandFOnline(word,request.session.get('proxy') , 'article')
-
+		refType = 'tandFonJournal'
+		proxy = request.session.get('proxy')
+		a = tandFOnline(word, proxy , 'article')
 		results = a[0]	
-		links = a[1]	
-
-						
+		links = a[1]				
 		context = {
 							'keyword': word,
 							'results': results,
@@ -79,10 +75,11 @@ class TeraSearchResultsView(View):
 	def post(self, request):
 			
 		if 'btnSearchbar' in request.POST:
-			refType = 'springerArticle'
 			word = request.POST.get("searchbar")
+			refType = 'tandFonJournal'
+			proxy = request.session.get('proxy')
 
-			a = springer(word,request.session.get('proxy'), 'article')
+			a = tandFOnline(word, proxy , 'book')
 			springers = a[0]	
 			springLinks = a[1]		
 			context = {
