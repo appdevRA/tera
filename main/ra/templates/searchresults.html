@@ -156,6 +156,12 @@
                 <a href="https://www.tandfonline.com{{link}}" > <b> {{column}} </b> </a>
               </div>  <!-- display title of links -->
               {% endif %}
+
+              {% if type == 'pubmedArticle' %}
+              <div style="color: black">
+                <a href="https://www.ncbi.nlm.nih.gov{{link}}" > <b> {{column}} </b> </a>
+              </div>  <!-- display title of links -->
+              {% endif %}
               
               {% endif %}
               {% endfor %}
@@ -184,31 +190,7 @@
             {% endfor %}
             </div>
 
-            <div>
-            {%for row in scienceDirects %}
-             
-            {% with forloop.counter as outer_counter %}
             
-              {%for column in row %}
-              
-              {% if forloop.counter == 1 %}
-              {% for link in scienceLinks %}
-              {% if forloop.counter == outer_counter %}
-              <div style="color: black"><a href="" > <b> {{column}} </b> </a></div>
-              {% endif %}
-              {% endfor %}
-              {% endif %}
-
-              {% if forloop.counter == 2 %}
-              <div style="color: black;font-weight: lighter; font-size: 12px">  <i>{{ column }}</i> </div>
-              {% endif %}
-
-
-              {% endfor %}
-
-              {% endwith %}
-            {% endfor %}
-            </div>
         </div>  
       </div>
     </div>

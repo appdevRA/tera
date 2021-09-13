@@ -30,13 +30,15 @@ class TeraIndexView(View):
 		#	proxy.save()
 		
 		#user = User.objects.get(username = 'tt', password = 'tt')
+		
 		proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
 		a = testProxy(proxies).proxy
+		
 		#User.objects.filter(id = 1).update(proxy = a) # set proxy to user
 
 		request.session['proxy'] = a
 		request.session['id'] = 1
-		#practice()
+		#practice('book')
 		
 		#scienceDirect(testProxy(proxies))
 		#scirp('engineer', practice(testProxy(proxies)), 'a')
@@ -76,10 +78,10 @@ class TeraSearchResultsView(View):
 			
 		if 'btnSearchbar' in request.POST:
 			word = request.POST.get("searchbar")
-			refType = 'tandFonJournal'
+			refType = 'pubmedArticle'
 			proxy = request.session.get('proxy')
 
-			a = tandFOnline(word, proxy , 'book')
+			a = practice(word, proxy , 'article')
 			springers = a[0]	
 			springLinks = a[1]		
 			context = {

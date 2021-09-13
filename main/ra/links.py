@@ -141,6 +141,8 @@ def scienceDirect(word,proxy, refType):
             elif refType == 'book':
                 response = requests.get('https://www.sciencedirect.com/browse/journals-and-books?contentType=BK&searchPhrase='+ word, headers=headers, proxies={'https:': proxy}, timeout= 5)
                 x = True
+        except ConnectionError:
+                print('connection error')
         except ConnectTimeout: 
             if refType == 'journal':
                 response = requests.get('https://www.sciencedirect.com/browse/journals-and-books?contentType=JL&searchPhrase='+ word, headers=headers, proxies={'https:': proxy}, timeout= 5)
@@ -150,8 +152,6 @@ def scienceDirect(word,proxy, refType):
                 response = requests.get('https://www.sciencedirect.com/browse/journals-and-books?contentType=BK&searchPhrase='+ word, headers=headers, proxies={'https:': proxy}, timeout= 5)
                 x = True
                 print('connection timeout')
-        except ConnectionError:
-                print('connection error')
         
     
     soup = BeautifulSoup(response.content, 'html.parser')
@@ -194,14 +194,14 @@ def scirp(word, proxy, refType):
     while(x == False):
         try:
             if refType == 'article':
-                response = requests.get('https://www.scirp.org/journal/articles.aspx?searchcode='+ word+'&searchfield=All&page=1&skid=59931926', headers = headers(), proxies={'https:': proxy}, timeout=3) #books                         #
+                response = requests.get('https://www.scirp.org/journal/articles.aspx?searchcode='+ word+'&searchfield=All&page=1&skid=59931926', headers = headers(), proxies={'https:': proxy}, timeout=4) #books                         #
                 x = True
             else:
                 response = requests.get('https://www.scirp.org/journal/articles.aspx?searchcode='+ word +'&searchfield=jname&page=1&skid=0', headers = headers(), proxies={'https:': proxy}, timeout=3) #books
                 x = True
         except ConnectTimeout:
             if refType == 'article':
-                response = requests.get('https://www.scirp.org/journal/articles.aspx?searchcode='+ word+'&searchfield=All&page=1&skid=59931926', headers = headers(), proxies={'https:': proxy}, timeout=3) #books                         #
+                response = requests.get('https://www.scirp.org/journal/articles.aspx?searchcode='+ word+'&searchfield=All&page=1&skid=59931926', headers = headers(), proxies={'https:': proxy}, timeout=4) #books                         #
                 x = True
             else:
                 response = requests.get('https://www.scirp.org/journal/articles.aspx?searchcode='+ word +'&searchfield=jname&page=1&skid=0', headers = headers(), proxies={'https:': proxy}, timeout=3) #books
@@ -290,17 +290,61 @@ def tandFOnline(word, proxy, refType): #books
 
     
 
-def practice():
-    with open ('C:/Users/Valued Client/Desktop/html/tandfonlineJournals.html', 'r', errors='ignore') as html_file:
-        content = html_file.read()
-        soup = BeautifulSoup(content, 'html.parser')
+def practice(word, proxy, refType):
+    results = []
+    links = []
+    x = False
+    while(x == False):
+        try:
+            if refType == 'article':
+                response = requests.get('https://www.ncbi.nlm.nih.gov/pmc/?term='+ word, headers = headers(), proxies={'https:': proxy}, timeout=3) #books                                       
+                x = True
+            else:
+                response = requests.get('https://www.ncbi.nlm.nih.gov/books/?term='+ word, headers = headers(), proxies={'https:': proxy}, timeout=3) #books 
+                x = True
+        except ConnectTimeout:
+            if refType == 'article': 
+                response = requests.get('https://www.ncbi.nlm.nih.gov/pmc/?term='+ word, headers = headers(), proxies={'https:': proxy}, timeout=3) #books 
+                x = True
+            else:
+                response = requests.get('https://www.ncbi.nlm.nih.gov/books/?term='+ word, headers = headers(), proxies={'https:': proxy}, timeout=3) #books   
+                x = True
+        except ConnectionError:
+                print('connection error')
 
-        a =soup.findAll('li', class_='searchResultItem browse-result')
-
-        for b in a:
+    soup = BeautifulSoup(response.content, 'html.parser')
+    rows = soup.findAll('div', class_='rslt')
+        
+    if refType == 'article':
+        for row in rows:
             z = []
-            print(b.find('a', class_='ref')['href']) #title
-            z.append(b.find('h3').text)
+            
+            z.append(row.find('div', class_='title').a.text)
+            z.append(row.find('div', class_='desc').text)
+            z.append(row.find('div', class_='details').text)
+            z.append(row.find('div', class_='resc').text)
+
+            results.append(z)
+            links.append(row.find('div', class_='title').a['href'])
+
+       
+    else:
+        for row in rows:
+            z = []
+            z.append(row.find('div', class_='rsltcont').p.text.replace('â€“', '-').replace('.','')) #title
+            if row.find('div', class_='rsltcont').find('p', class_='desc').text != '': 
+                z.append(row.find('div', class_='rsltcont').find('p', class_='desc').text)  #description
+            z.append(row.find('div', class_='rsltcont').find('p', class_='details').text.replace('.','')) #place
+            
+
+            results.append(z)
+            links.append(row.find('div', class_='rsltcont').p.a['href'])
+
+    
+    return results, links
+
+        
+        
             
 
 
