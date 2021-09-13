@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
 </head>
 <style>
   .filterbutton {
@@ -70,8 +71,6 @@
                             <button type="submit" class="button" style="align-items: center; padding-left: 15px;"  name="btnSearchbar" id="btnSearchbar" >
                               <i class="fa fa-search" aria-hidden="true"></i></button>
                               
-
-                              
                           </form>
                         </div>
                       </div>
@@ -81,15 +80,15 @@
         <center>
            <form id= "form1" action = "" method = "POST" autocomplete = "off" enctype="multipart/form-data">
             {% csrf_token %}
-          <button type="submit" class="filterbutton" name="btnArticles" id="btnArticles" > Articles</button>
+          <input type="button" class="filterbutton" value="Articles">
            <input type="button" class="filterbutton" value="|">
              <button type="submit" class="filterbutton" name="btnJournal" id="btnJournal" > Journals</button>
                               
              <input type="button" class="filterbutton" value="|" >
-            <button type="submit" class="filterbutton" name="btnBook" id="btnBook" > Book</button>
+            <input type="button" class="filterbutton" value="E-Books">
             <input type="button" class="filterbutton" value="|">
-            
-           
+            <input type="button" class="filterbutton" value="Books">
+           <input type="button" class="filterbutton" value="|">
             <input type="button" class="filterbutton" value="Dissertations">
              <input type="hidden" class="filterbutton" name = "search" value="{{keyword}}">
            </form>
@@ -97,90 +96,26 @@
       <div class="info">
       
           <div>
-            {%for row in results %} <!-- get rows of springers-->
+            {%for row in springers %} <!-- get rows of springers-->
              
             {% with forloop.counter as outer_counter %} <!-- retrieve loop counter of rows-->
             
               {%for column in row %} <!-- access the columns of rows in springers -->
               
               {% if forloop.counter == 1 %}
-              {% for link in links %}
-              {% if forloop.counter == outer_counter %}
-
-              
-
-              {% if type == 'springerArticle'%} 
-                <div style="color: black">
-                  <a href="{{link}}" > <b> {{column}} </b> </a>
-                </div>  <!-- to prevent from displaying all the links in at a time -->
-              {% endif %}   
-
-
-              {% if type == 'springerBook'%} 
-                <div style="color: black">
-                  <a href="https://www.springer.com{{link}}" > <b> {{column}} </b> </a>
-                </div>  <!-- to prevent from displaying all the links in at a time -->
-              {% endif %}
-
-
-              {% if type == 'scienceDirectJournal' %}
-              <div style="color: black">
-                <a href="https://www.sciencedirect.com/{{link}}" > <b> {{column}} </b> </a>
-              </div>  <!-- display title of links -->
-              {% endif %}
-              
-
-
-              {% if type == 'scienceDirectBook' %}
-              <div style="color: black">
-                <a href="https://www.sciencedirect.com/{{link}}" > <b> {{column}} </b> </a>
-              </div>  <!-- display title of links -->
-              {% endif %}
-              
-
-              {% if type == 'scripArticle'%} 
-                <div style="color: black">
-                  <a href="https://www.scirp.org/journal/{{link}}" > <b> {{column}} </b> </a>
-                </div>  <!-- to prevent from displaying all the links in at a time -->
-              {% endif %} 
-              
-
-              {% if type == 'tandFonArcticle' %}
-              <div style="color: black">
-                <a href="https://www.tandfonline.com{{link}}" > <b> {{column}} </b> </a>
-              </div>  <!-- display title of links -->
-              {% endif %}
-
-              {% if type == 'tandFonJournal' %}
-              <div style="color: black">
-                <a href="https://www.tandfonline.com{{link}}" > <b> {{column}} </b> </a>
-              </div>  <!-- display title of links -->
-              {% endif %}
-
-              {% if type == 'pubmedArticle' %}
-              <div style="color: black">
-                <a href="https://www.ncbi.nlm.nih.gov{{link}}" > <b> {{column}} </b> </a>
-              </div>  <!-- display title of links -->
-              {% endif %}
-              
+              {% for link in springLinks %}
+              {% if forloop.counter == outer_counter %}  <!-- to prevent from displaying all the links in springlinks-->
+              <div style="color: black"><a href="{{link}}" > <b> {{column}} </b> </a></div>  <!-- display title of links -->
               {% endif %}
               {% endfor %}
               {% endif %}
 
               {% if forloop.counter == 2 %}
-              <div style="color: black; font-weight: lighter;font-size: 13px;margin-bottom: 1px">  {{ column }} </div> <!-- display author -->
+              <div style="color: black; font-weight: lighter;font-size: 13px;margin-bottom: 1px">  {{ column }} </div>
               {% endif %}
 
               {% if forloop.counter == 3 %}
-              <div style="color: black; font-weight: lighter; font-size: 10px; padding-bottom: 25px"><i>  {{ column }} </i></div> <!-- display content type -->
-              {% endif %}
-
-              {% if forloop.counter == 4 %}
-              <div style="color: black; font-weight: lighter; font-size: 10px; padding-bottom: 25px"><i>  {{ column }} </i></div> <!-- display content type -->
-              {% endif %}
-
-              {% if forloop.counter == 5 %}
-              <div style="color: black; font-weight: lighter; font-size: 10px; padding-bottom: 25px"><i>  {{ column }} </i></div> <!-- display content type -->
+              <div style="color: black; font-weight: lighter; font-size: 10px; padding-bottom: 25px"><i>  {{ column }} </i></div>
               {% endif %}
 
               {% endfor %}
@@ -190,9 +125,64 @@
             {% endfor %}
             </div>
 
+            <div>
+            {%for row in scienceDirects %}
+             
+            {% with forloop.counter as outer_counter %}
             
-        </div>  
-      </div>
+              {%for column in row %}
+              
+              {% if forloop.counter == 1 %}
+              {% for link in scienceLinks %}
+              {% if forloop.counter == outer_counter %}
+              <div style="color: black"><a href="https://www.sciencedirect.com/{{link}}" > <b> {{column}} </b> </a></div>
+              {% endif %}
+              {% endfor %}
+              {% endif %}
+
+              {% if forloop.counter == 2 %}
+              <div style="color: black;font-weight: lighter; font-size: 12px">  <i>{{ column }}</i> </div>
+              {% endif %}
+
+
+              {% endfor %}
+
+              {% endwith %}
+            {% endfor %}
+            </div>
+        </div> 
+
+          <div class="pagination">
+
+            <div class="perpage" id="example_length">
+              <label>Show 
+                <select name="example_length" aria-controls="example" class="page active">
+                  <option value="10">10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+              entries</label>
+            </div>
+
+            <ul class="ulclass">
+               <!-- <li class="btn prev"><span><i class="fas fa-angle-left"></i>Prev</span></li>
+                <li class="numb active"><span>1</span></li>
+                <li class="numb"><span>2</span></li>
+                <li class="dots"><span>...</span></li>
+                <li class="numb"><span>4</span></li>
+                <li class="numb"><span>5</span></li>
+                <li class="dots"><span>...</span></li>
+                <li class="numb"><span>7</span></li>
+                <li class="btn next"><span>Next<i class="fas fa-angle-right"></i></span></li> -->
+            </ul>
+          </div>
+
+          <script  src= "{% static 'js/script.js' %}"></script>
+
+      
+
+      </div> <!-- main content end -->
     </div>
 
     <div class="right-tab" style="border-left:2px"></div>
@@ -200,7 +190,7 @@
 
         <!-- <div class="header">All</div> -->
         
-    </div>
+  
 
     
     
