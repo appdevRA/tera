@@ -143,20 +143,21 @@
                   <a href="https://www.scirp.org/journal/{{link}}" > <b> {{column}} </b> </a>
                 </div>  <!-- to prevent from displaying all the links in at a time -->
               {% endif %} 
+
+              {% if type == 'scripJournal'%} 
+                <div style="color: black">
+                  <a href="https://www.scirp.org/journal/{{link}}" > <b> {{column}} </b> </a>
+                </div>  <!-- to prevent from displaying all the links in at a time -->
+              {% endif %} 
               
 
-              {% if type == 'tandFonArcticle' %}
+              {% if type == 'tandFon' %}
               <div style="color: black">
                 <a href="https://www.tandfonline.com{{link}}" > <b> {{column}} </b> </a>
               </div>  <!-- display title of links -->
               {% endif %}
 
-              {% if type == 'tandFonJournal' %}
-              <div style="color: black">
-                <a href="https://www.tandfonline.com{{link}}" > <b> {{column}} </b> </a>
-              </div>  <!-- display title of links -->
-              {% endif %}
-
+              
               {% if type == 'pubmedArticle' %}
               <div style="color: black">
                 <a href="https://www.ncbi.nlm.nih.gov{{link}}" > <b> {{column}} </b> </a>

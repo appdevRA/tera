@@ -13,14 +13,13 @@ from .forms import CreateUserForm
 import bs4
 from bs4 import BeautifulSoup
 from .links import *
-import os
 import requests
+from django.core import serializers
 #from fake_useragent import FakeUserAgent
 
 
 class TeraIndexView(View):
 	def get(self, request):
-		
 		
 
 		#proxies = proxy_generator() #/ generating free proxies /
@@ -32,10 +31,10 @@ class TeraIndexView(View):
 		#user = User.objects.get(username = 'tt', password = 'tt')
 		
 		proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
-		a = testProxy(proxies).proxy
+		a = testProxy(proxies, 1).proxy
 		
 		#User.objects.filter(id = 1).update(proxy = a) # set proxy to user
-
+		
 		request.session['proxy'] = a
 		request.session['id'] = 1
 		#practice('book')
@@ -56,13 +55,21 @@ class TeraIndexView(View):
 
 
 class TeraSearchResultsView(View):
+	
 
 	def get(self,request):
-		
+		proxies = Proxies.objects.filter(isUsed = 0)
 		word = request.session.get('word')
 		refType = 'tandFonJournal'
 		proxy = request.session.get('proxy')
 		a = tandFOnline(word, proxy , 'article')
+
+		while (a == False):
+
+			proxy = testProxy(proxies, 1).proxy
+			request.session['proxy'] = proxy
+			a = tandFOnline(word, proxy , 'article')
+		
 		results = a[0]	
 		links = a[1]				
 		context = {
@@ -75,13 +82,22 @@ class TeraSearchResultsView(View):
 		return render(request,'searchresults.html', context)
 
 	def post(self, request):
-			
+
+		proxies = Proxies.objects.filter(isUsed = 0)
+
 		if 'btnSearchbar' in request.POST:
 			word = request.POST.get("searchbar")
-			refType = 'pubmedArticle'
+			refType = 'tandFon'
 			proxy = request.session.get('proxy')
 
-			a = practice(word, proxy , 'article')
+			a = tandFOnline(word, proxy , 'journal')
+
+			while (a == False):
+				proxy = testProxy(proxies, 1).proxy
+				request.session['proxy'] = proxy
+				a = tandFOnline(word, proxy , 'journal')
+
+
 			springers = a[0]	
 			springLinks = a[1]		
 			context = {
@@ -98,7 +114,15 @@ class TeraSearchResultsView(View):
 			word = request.POST.get("search")
 
 			a = springer(word,request.session.get('proxy'), 'article')
-				#a = springerasdsad()
+			
+			while (a == False):
+				proxy = testProxy(proxies, 1).proxy
+				request.session['proxy'] = proxy
+				a = springer(word, proxy , 'article')
+			
+			scienceDirects = a[0]
+			scienceLinks = a[1]
+
 			springers = a[0]	
 			springLinks = a[1]	
 
@@ -117,6 +141,12 @@ class TeraSearchResultsView(View):
 			
 			a = scienceDirect(word, request.session.get('proxy'), 'journal')
 
+
+			while (a == False):
+				proxy = testProxy(proxies, 1).proxy
+				request.session['proxy'] = proxy
+				a = scienceDirect(word, proxy , 'journal')
+
 			scienceDirects = a[0]
 			scienceLinks = a[1]
 				
@@ -132,11 +162,20 @@ class TeraSearchResultsView(View):
 
 		elif 'btnBook' in request.POST:
 			word = request.POST.get("search")
-			refType = 'scienceDirectBook'
+			refType = 'scripArticle'
 
-			a = scienceDirect(word, request.session.get('proxy'), 'book')
+			a = scirp(word, request.session.get('proxy'), 'article')
+
+
+			while (a == False):
+				proxy = testProxy(proxies, 1).proxy
+				request.session['proxy'] = proxy
+				a = scirp(word, proxy , 'article')
+			
 			scienceDirects = a[0]
 			scienceLinks = a[1]
+
+			
 				
 			context = {
 					'keyword': word,
