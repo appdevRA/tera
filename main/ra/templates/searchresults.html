@@ -84,12 +84,17 @@
         <center>
            <form id= "form1" action = "" method = "POST" autocomplete = "off" enctype="multipart/form-data">
             {% csrf_token %}
+
+          <button type="submit" class="filterbutton" name="btnArticles" id="btnArticles" > All</button>
+           <input type="button" class="filterbutton" value="|">
+
           <button type="submit" class="filterbutton" name="btnArticles" id="btnArticles" > Articles</button>
            <input type="button" class="filterbutton" value="|">
-             <button type="submit" class="filterbutton" name="btnJournal" id="btnJournal" > Journals</button>
-                              
-             <input type="button" class="filterbutton" value="|" >
-            <button type="submit" class="filterbutton" name="btnBook" id="btnBook" > Book</button>
+
+          <button type="submit" class="filterbutton" name="btnJournal" id="btnJournal" > Journals</button>
+            <input type="button" class="filterbutton" value="|" >
+
+          <button type="submit" class="filterbutton" name="btnBook" id="btnBook" > Book</button>
             <input type="button" class="filterbutton" value="|">
             
            
