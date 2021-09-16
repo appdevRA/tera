@@ -33,11 +33,11 @@ class TeraIndexView(View):
 		proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
 		a = testProxy(proxies, 1).proxy
 		
-		#User.objects.filter(id = 1).update(proxy = a) # set proxy to user
+		# #User.objects.filter(id = 1).update(proxy = a) # set proxy to user
 		
-		request.session['proxy'] = a
-		request.session['id'] = 1
-		#practice('book')
+		#request.session['proxy'] = a
+		#request.session['id'] = 1
+		
 		
 		#scienceDirect(testProxy(proxies))
 		#scirp('engineer', practice(testProxy(proxies)), 'a')
@@ -60,15 +60,16 @@ class TeraSearchResultsView(View):
 	def get(self,request):
 		proxies = Proxies.objects.filter(isUsed = 0)
 		word = request.session.get('word')
-		refType = 'tandFonJournal'
+		refType = 'doab'
 		proxy = request.session.get('proxy')
-		a = tandFOnline(word, proxy , 'article')
+
+		a = practice(word, proxy, 'book')
 
 		while (a == False):
 
 			proxy = testProxy(proxies, 1).proxy
 			request.session['proxy'] = proxy
-			a = tandFOnline(word, proxy , 'article')
+			a = practice(word, proxy , 'book')
 		
 		results = a[0]	
 		links = a[1]				

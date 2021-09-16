@@ -163,6 +163,30 @@
                 <a href="https://www.ncbi.nlm.nih.gov{{link}}" > <b> {{column}} </b> </a>
               </div>  <!-- display title of links -->
               {% endif %}
+
+              {% if type == 'herdin' %}
+              <div style="color: black">
+                <a href="https://www.herdin.ph{{link}}" > <b> {{column}} </b> </a>
+              </div>  <!-- display title of links -->
+              {% endif %}
+
+              {% if type == 'zlibraryBook' %}
+              <div style="color: black">
+                <a href="https://1lib.ph{{link}}" > <b> {{column}} </b> </a>
+              </div>  <!-- display title of links -->
+              {% endif %}
+
+              {% if type == 'zlibraryArticle' %}
+              <div style="color: black">
+                <a href="https://booksc.org{{link}}" > <b> {{column}} </b> </a>
+              </div>  <!-- display title of links -->
+              {% endif %}
+
+              {% if type == 'doab' %}
+              <div style="color: black">
+                <a href="https://booksc.org{{link}}" > <b> {{column}} </b> </a>
+              </div>  <!-- display title of links -->
+              {% endif %}
               
               {% endif %}
               {% endfor %}

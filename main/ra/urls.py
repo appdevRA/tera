@@ -16,4 +16,5 @@ urlpatterns = [
 			path('citation_history/',views.CitationHistory.as_view(), name="citation-history"),
 			path('citation_history/',views.CitationDeleteView.as_view(), name="deletion_confirmation"),
 			path('search',views.TeraSearchResultsView.as_view(), name="search_result_view"),
+			
 			]	
