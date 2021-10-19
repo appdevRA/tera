@@ -545,8 +545,9 @@ def doab(word, proxy,refType):
     
 
     
-def practice
-
+def practice():
+    print("wala")
+    
 
 
 def proxy_generator():
