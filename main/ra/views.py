@@ -63,13 +63,13 @@ class TeraSearchResultsView(View):
 		refType = 'doab'
 		proxy = request.session.get('proxy')
 
-		a = practice(word, proxy, 'book')
+		a = springer(word, proxy, 'book')
 
 		while (a == False):
 
 			proxy = testProxy(proxies, 1).proxy
 			request.session['proxy'] = proxy
-			a = practice(word, proxy , 'book')
+			a = springer(word, proxy , 'book')
 		
 		results = a[0]	
 		links = a[1]				
@@ -88,7 +88,7 @@ class TeraSearchResultsView(View):
 
 		if 'btnSearchbar' in request.POST:
 			word = request.POST.get("searchbar")
-			refType = 'tandFon'
+			refType = 'tandFonJournal'
 			proxy = request.session.get('proxy')
 
 			a = tandFOnline(word, proxy , 'journal')

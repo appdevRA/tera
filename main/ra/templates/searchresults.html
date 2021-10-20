@@ -56,22 +56,22 @@
       </ul>
   </nav>
     <div class="left-tab" style="border-right:2px"></div>
-
+<br><br>
     <div class="wrapper">
      <div class="main_content">
         <div class="header">
           <div class="wrap">
                       <div class="search-container">
-                        <div class="search">
+                        <div >
                            <form id= "form1" action = "" method = "POST" autocomplete = "off" enctype="multipart/form-data">
                             {% csrf_token %}
-                            <input type="text" placeholder="" name = "searchbar" class="input" value="{{ keyword }}" style="width: 600%; margin-left: -200%">
-                            <div class="autocom-box">
-                              <!-- here list are inserted from javascript -->
-                            </div>
+                            <input type="text" placeholder="" name = "searchbar" class="input" value="{{ keyword }}" style="width: 170%; height: 120%; margin-left: -50%; border-color: #f3f3f3; background-color: #f3f3f3">
+                           <!--  <div class="autocom-box">
+                              here list are inserted from javascript
+                            </div> -->
                             
-                            <button type="submit" class="button" style="align-items: center; padding-left: 15px;"  name="btnSearchbar" id="btnSearchbar" >
-                              <i class="fa fa-search" aria-hidden="true"></i></button>
+                            <button type="submit" class="button" style=" margin-top: .5%; margin-right: 61% ;background: none"  name="btnSearchbar" id="btnSearchbar" >
+                              <i class="fa fa-search" aria-hidden="true" style=" margin-left: 5%; margin-top: 13%; border-bottom-color: #ff0000"></i></button>
                               
 
                               
@@ -106,9 +106,10 @@
       
           <div>
             {%for row in results %} <!-- get rows of springers-->
-             
             {% with forloop.counter as outer_counter %} <!-- retrieve loop counter of rows-->
             
+            {% if outer_counter <= 10 %}
+
               {%for column in row %} <!-- access the columns of rows in springers -->
               
               {% if forloop.counter == 1 %}
@@ -116,103 +117,89 @@
               {% if forloop.counter == outer_counter %}
 
           
-              {% if type == 'springerArticle'%} 
-                <div>
-                  <a href="{{link}}" > <b> {{column}} </b> </a>
-                </div>  <!-- to prevent from displaying all the links in at a time -->
-              {% endif %}   
+             
+                      {% if type == 'springerArticle'%} 
+                        <div>
+                          <a href="{{link}}" > <b> {{column}} </b> </a>
+                        </div>  <!-- to prevent from displaying all the links in at a time -->
+                      {% endif %}   
 
 
-              {% if type == 'springerBook'%} 
-                <div>
-                  <a href="https://www.springer.com{{link}}" > <b> {{column}} </b> </a>
-                </div>  <!-- to prevent from displaying all the links in at a time -->
-              {% endif %}
+                      {% if type == 'springerBook'%} 
+                        <div>
+                          <a href="https://www.springer.com{{link}}" > <b> {{column}} </b> </a>
+                        </div>  <!-- to prevent from displaying all the links in at a time -->
+                      {% endif %}
 
 
-              {% if type == 'scienceDirectJournal' %}
-              <div>
-                <a href="https://www.sciencedirect.com/{{link}}" > <b> {{column}} </b> </a>
-              </div>  <!-- display title of links -->
-              {% endif %}
-              
+                      {% if type == 'scienceDirectJournal' %}
+                      <div>
+                        <a href="https://www.sciencedirect.com/{{link}}" > <b> {{column}} </b> </a>
+                      </div>  <!-- display title of links -->
+                      {% endif %}
+                      
 
 
-              {% if type == 'scienceDirectBook' %}
-              <div>
-                <a href="https://www.sciencedirect.com/{{link}}" > <b> {{column}} </b> </a>
-              </div>  <!-- display title of links -->
-              {% endif %}
-              
+                      {% if type == 'scienceDirectBook' %}
+                      <div>
+                        <a href="https://www.sciencedirect.com/{{link}}" > <b> {{column}} </b> </a>
+                      </div>  <!-- display title of links -->
+                      {% endif %}
+                      
 
-              {% if type == 'scripArticle'%} 
-                <div>
-                  <a href="https://www.scirp.org/journal/{{link}}" > <b> {{column}} </b> </a>
-                </div>  <!-- to prevent from displaying all the links in at a time -->
-              {% endif %} 
-              
+                      {% if type == 'scripArticle'%} 
+                        <div>
+                          <a href="https://www.scirp.org/journal/{{link}}" > <b> {{column}} </b> </a>
+                        </div>  <!-- to prevent from displaying all the links in at a time -->
+                      {% endif %} 
+                      
 
-              {% if type == 'tandFonArcticle' %}
-              <div>
-                <a href="https://www.tandfonline.com{{link}}" > <b> {{column}} </b> </a>
-              </div>  <!-- display title of links -->
-              {% endif %}
+                      {% if type == 'tandFonArcticle' %}
+                      <div>
+                        <a href="https://www.tandfonline.com{{link}}" > <b> {{column}} </b> </a>
+                      </div>  <!-- display title of links -->
+                      {% endif %}
 
-              {% if type == 'tandFonJournal' %}
-              <div style="color: black">
-                <a href="https://www.tandfonline.com{{link}}" > <b> {{column}} </b> </a>
-              </div>  <!-- display title of links -->
-              {% endif %}
+                      {% if type == 'tandFonJournal' %}
+                      <div style="color: black">
+                        <a href="https://www.tandfonline.com{{link}}" > <b> {{column}} </b> </a>
+                      </div>  <!-- display title of links -->
+                      {% endif %}
+
+                      {% if type == 'doab' %}
+                      <div style="color: black">
+                        <a href="https://doabooks.org{{link}}" > <b> {{column}} </b> </a>
+                      </div>  <!-- display title of links -->
+                      {% endif %}
               
               {% endif %}
               {% endfor %}
               {% endif %}
 
-              {% if forloop.counter == 2 %}
-              <div style="font-weight: lighter;font-size: 13px;margin-bottom: 1px">  {{ column }} </div> <!-- display author -->
-              {% endif %}
+                      {% if forloop.counter == 2 %}
+                      <div style="font-weight: lighter;font-size: 13px;margin-bottom: 1px">  {{ column }} </div> <!-- display author -->
+                      {% endif %}
 
-              {% if forloop.counter == 3 %}
-              <div style="font-weight: lighter; font-size: 10px; margin-bottom:0"><i>  {{ column }} </i></div> <!-- display content type -->
-              {% endif %}
+                      {% if forloop.counter == 3 %}
+                      <div style="font-weight: lighter; font-size: 10px; margin-bottom:0"><i>  {{ column }} </i></div> <!-- display content type -->
+                      {% endif %}
 
-              {% if forloop.counter == 4 %}
-              <div style="font-weight: lighter; font-size: 10px; padding-bottom: 25px"><i>  {{ column }} </i></div> <!-- display content type -->
-              {% endif %}
+                      {% if forloop.counter == 4 %}
+                      <div style="font-weight: lighter; font-size: 10px; padding-bottom: 25px"><i>  {{ column }} </i></div> <!-- display content type -->
+                      {% endif %}
 
-              {% if forloop.counter == 5 %}
-              <div style="font-weight: lighter; font-size: 10px; padding-bottom: 25px"><i>  {{ column }} </i></div> <!-- display content type -->
-              {% endif %}
+                      {% if forloop.counter == 5 %}
+                      <div style="font-weight: lighter; font-size: 10px; padding-bottom: 25px"><i>  {{ column }} </i></div> <!-- display content type -->
+                      {% endif %}
 
               {% endfor %}
-            
+              {% endif %}
             {% endwith %}
 
             {% endfor %}
             
-            {%for row in scienceDirects %}
-             
-            {% with forloop.counter as outer_counter %}
+
             
-              {%for column in row %}
-              
-              {% if forloop.counter == 1 %}
-              {% for link in scienceLinks %}
-              {% if forloop.counter == outer_counter %}
-              <div style="color: black"><a href="" > <b> {{column}} </b> </a></div>
-              {% endif %}
-              {% endfor %}
-              {% endif %}
-
-              {% if forloop.counter == 2 %}
-              <div style="color: black;font-weight: lighter; font-size: 12px">  <i>{{ column }}</i> </div>
-              {% endif %}
-
-
-              {% endfor %}
-
-              {% endwith %}
-            {% endfor %}
             </div>
         </div>  
       </div>

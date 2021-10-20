@@ -112,6 +112,7 @@ def springer(word, proxy, refType): #articles
 
                 springers.append(z)
 
+    
     return springers, springLinks
 
 
@@ -123,11 +124,11 @@ def scienceDirect(word,proxy, refType):
     headers = {
     'authority': 'www.sciencedirect.com',
     'cache-control': 'max-age=0',
-    'sec-ch-ua': '"Microsoft Edge";v="93", " Not;A Brand";v="99", "Chromium";v="93"',
+    'sec-ch-ua': '"Chromium";v="94", "Microsoft Edge";v="94", ";Not A Brand";v="99"',
     'sec-ch-ua-mobile': '?0',
     'sec-ch-ua-platform': '"Windows"',
     'upgrade-insecure-requests': '1',
-    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.63 Safari/537.36 Edg/93.0.961.38',
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36 Edg/94.0.992.50',
     'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
     'sec-fetch-site': 'cross-site',
     'sec-fetch-mode': 'navigate',
@@ -135,8 +136,8 @@ def scienceDirect(word,proxy, refType):
     'sec-fetch-dest': 'document',
     'referer': 'https://id.elsevier.com/',
     'accept-language': 'en-US,en;q=0.9',
-    'cookie': 'EUID=80a39c81-5643-43a6-a14d-dbdeb3ff56f9; mboxes=%7B%22universal-view-pdf%22%3A%7B%22variation%22%3A%22B%22%7D%7D; utt=ae01-efa25bdbb71478802a627452c2319959fc3-A; __cf_bm=Cs3AllVLvfExI.GD9S4YrOjA7KKpAZMsvwss2c_gRBQ-1631066905-0-Ab63xE2w0UU0/Jov8DAGqKwjeWjuvVBiSoc241moMepvXFJxc4cbwD8pFL1i8nOas29TvVqcN++WQC1nKFDkrM1p9fbnjoPe01oAE8oc0X0l; fingerPrintToken=4a7c35f82ff0bfa77f2a77051cace374; acw=3bc2ead93a0ea54e245b60947fce7822e6d0gxrqa%7C%24%7CCC8D6A441741955B0496C5C0029BEB33E459BC75294B406422D12FA5EED074331B812E9FC23CEF97D38B5F5C03AFFB1DFF0197EF7049CD583FBA44D1BD4E4F2EB0469A67597464825D387A21AFA2E514; AMCVS_4D6368F454EC41940A4C98A6%40AdobeOrg=1; mbox=session%231777de9d91174694b72619ed2c22deea%231631068782%7CPC%231777de9d91174694b72619ed2c22deea.37_0%231694311722; sd_access=eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..UB275g-40bVgfsqkN9FDHQ.q7ZbARkzP1lIvVdviGHYy1Lcu-a3HtMrw4-8DDzyIhfsBLhAGmJ9R6I9gY1DF4xqd-HF4G5loABeoJtUBWHgLIf1AgpRQpXfvycQ_6jYFb2LcOOKBJmVquXtcI-p-fM_pmIu0c2P3ARetnysOo43WQ.WSOQZdxDeStJd73AMSP3CQ; sd_session_id=269052942e4b304813685ea259926c78f5aegxrqa; id_ab=IDP; has_multiple_organizations=true; MIAMISESSION=e2da1f14-4d22-4756-ae1d-bfd060718d7a:3808519743; SD_REMOTEACCESS=eyJhY2NvdW50SWQiOiI3MzA5NCIsInRpbWVzdGFtcCI6MTYzMTA2Njk0MzU3Mn0=; s_pers=%20v8%3D1631066946556%7C1725674946556%3B%20v8_s%3DLess%2520than%25201%2520day%7C1631068746556%3B%20c19%3Dsd%253Ahome%253Ahpx%7C1631068746576%3B%20v68%3D1631066943693%7C1631068746594%3B; AMCV_4D6368F454EC41940A4C98A6%40AdobeOrg=-1124106680%7CMCIDTS%7C18879%7CMCMID%7C81261105090677501200180261852203688591%7CMCAID%7CNONE%7CMCOPTOUT-1631074146s%7CNONE%7CMCAAMLH-1631671746%7C3%7CMCAAMB-1631671746%7Cj8Odv6LonN4r3an7LhD3WZrU1bUpAkFkkiY1ncBR96t2PTI%7CMCCIDH%7C-388222836%7CvVersion%7C5.2.0; s_sess=%20s_sq%3D%3B%20s_ppvl%3D%3B%20e41%3D1%3B%20s_cpc%3D0%3B%20s_cc%3Dtrue%3B%20s_ppv%3Dsd%25253Ahome%25253Ahpx%252C22%252C22%252C969%252C1456%252C969%252C1920%252C1080%252C1%252CP%3B',
-    }
+    'cookie': 'EUID=80a39c81-5643-43a6-a14d-dbdeb3ff56f9; mboxes=%7B%22universal-view-pdf%22%3A%7B%22variation%22%3A%22B%22%7D%7D; utt=ae01-efa25bdbb71478802a627452c2319959fc3-A; acw=5d1cdce83ec8304d8068af9-6c583c186dcagxrqb%7C%24%7C7CA41A20BFA2C07A84D675BD5F111A415C3C53A91C92691ED528DFF306AE4B899493A1D62A849F4FBB07278403CAE6F6DEE126DB0DC891D10E9169905BBD791CB0469A67597464825D387A21AFA2E514; AMCVS_4D6368F454EC41940A4C98A6%40AdobeOrg=1; fingerPrintToken=7631a3a3ad37712500188ed350c5ea69; __cf_bm=mizJQkMUL_q_8PVF_L.HeILxfVm_hrV0P2GzPPgSQ2A-1634652896-0-ATT4YKhXMGxnu+JYKueEZSygqt5psFECltLnyIWDLkjjsCflBzc8vUERAIAFgufaGbbI6n7z86jVoHRmu4MyAT/MzSBrncKaj2FxJmEZVrx5; mbox=session%2312615284f2634c109a0e60a30b3b5f6a%231634654763%7CPC%2312615284f2634c109a0e60a30b3b5f6a.34_0%231697897703; sd_access=eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..hJJHvZ6hiPgjGXOrHtKDVA.NvY4b6fKH0AR6-6ufJ8KLnDKuq146W5jmrYLDpyzzzMw2N5JD7d1JE-fBTeciwpM9p9ekc6y6q1LybTa_2RFkqtCY0WEVt0Lm9WUmEaeH95KpxX9_44bHjAOMpjk930ltCl2CzGAFjIRWZ0jwcOslw.6idS905U8j3vfuC0xdyslA; sd_session_id=c5c28e8b9a68a74f236b1844a99c13c9980dgxrqb; id_ab=IDP; has_multiple_organizations=true; MIAMISESSION=69f45c87-b450-4634-aca4-c0203bbf1c39:3812105771; SD_REMOTEACCESS=eyJhY2NvdW50SWQiOiI3MzA5NCIsInRpbWVzdGFtcCI6MTYzNDY1Mjk3MjUyMH0=; AMCV_4D6368F454EC41940A4C98A6%40AdobeOrg=-2121179033%7CMCIDTS%7C18920%7CMCMID%7C81261105090677501200180261852203688591%7CMCAID%7CNONE%7CMCOPTOUT-1634660178s%7CNONE%7CMCAAMLH-1635257778%7C3%7CMCAAMB-1635257778%7Cj8Odv6LonN4r3an7LhD3WZrU1bUpAkFkkiY1ncBR96t2PTI%7CvVersion%7C5.3.0%7CMCCIDH%7C-388222836; s_pers=%20v8%3D1634652991473%7C1729260991473%3B%20v8_s%3DLess%2520than%25201%2520day%7C1634654791473%3B%20c19%3Dsd%253Ahome%253Ahpx%7C1634654791478%3B%20v68%3D1634652972551%7C1634654791483%3B; s_sess=%20s_cpc%3D0%3B%20s_ppvl%3Dsd%25253Aproduct%25253Aaccess%25253Aintermediate-sign-in%252C100%252C100%252C969%252C1920%252C969%252C1920%252C1080%252C1%252CP%3B%20s_cc%3Dtrue%3B%20e41%3D1%3B%20s_ppv%3Dsd%25253Ahome%25253Ahpx%252C22%252C22%252C969%252C1456%252C969%252C1920%252C1080%252C1%252CP%3B',
+}
     x = False
     while(x == False):
         try:
@@ -183,7 +184,9 @@ def scienceDirect(word,proxy, refType):
 
         scienceLinks.append(li.a['href'])
         scienceDirects.append(z)
-        #print(soup.find('a', text='Sign in'))
+
+        if(soup.find('a', text='Sign in')):
+            print("Cookies expired")
    
     return scienceDirects, scienceLinks
 
