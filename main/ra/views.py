@@ -9,8 +9,9 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
-from .forms import CreateUserForm
-import bs4
+
+from .forms import LoginUser
+
 from bs4 import BeautifulSoup
 from .links import *
 import requests
@@ -18,6 +19,36 @@ from django.core import serializers
 #from fake_useragent import FakeUserAgent
 
 
+
+class TeraLoginUser(View): 
+
+	def get(self,request):
+		
+		if( request.session.get('id') != None):
+			return redirect("ra:tera_index_view")
+		else:
+			return render(request,'login.html')	
+
+
+	def post(self, request):
+		
+		if request.method == 'POST':
+			
+			
+			uname = request.POST.get('username')
+			passw = request.POST.get('password')
+			try:
+				user = User.objects.get(username = uname, password = passw)
+				request.session['id'] = user.id
+				print()
+				return redirect("ra:tera_index_view")
+			except:
+				return HttpResponse("Invalid username or password. ")
+					
+		
+		    # 
+		# else:
+			
 class TeraIndexView(View):
 	def get(self, request):
 		
@@ -33,7 +64,7 @@ class TeraIndexView(View):
 		proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
 		a = testProxy(proxies, 1).proxy
 		
-		# #User.objects.filter(id = 1).update(proxy = a) # set proxy to user
+		User.objects.filter(id = request.session['id']).update(proxy = a) # set proxy to user
 		
 		#request.session['proxy'] = a
 		#request.session['id'] = 1
@@ -189,12 +220,7 @@ class TeraSearchResultsView(View):
 			return render(request,'searchresults.html', context)
 		
 
-class TeraLoginUser(View): 
 
-	def get(self,request):
-		
-		print(request.session.get('id'))	
-		return redirect('ra:tera_homepage_view')
 
 class TeraHomepageView(View):
 	def get(self,request):
