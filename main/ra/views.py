@@ -29,28 +29,11 @@ from django.utils.decorators import method_decorator
 class TeraIndexView(View):
 	def get(self, request):
 		
-
 		#proxies = proxy_generators() / generating free proxies /
 		#for proxy in proxies:  #/ saving proxies to db /
 			
 			#proxy =Proxies(proxy = proxy)
 			#proxy.save()
-
-		
-
-		#proxies = proxy_generators() #/ generating free proxies /
-		#for proxy in proxies:  #/ saving proxies to db /
-			
-		#	proxy =Proxies(proxy = proxy)
-		#	proxy.save()
-		
-		proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
-		a = testProxy(proxies) 
-		User.objects.filter(id = 1).update(proxy = a.proxy) # set proxy to user
-
-
-		 
-
 		
 		proxies = Proxies.objects.filter(isUsed = 0)
 		practice(testProxy(proxies))
@@ -72,7 +55,6 @@ class TeraIndexView(View):
 			word = request.POST.get("keyword")
 			
 			if 'btnSearch' in request.POST:
-m
 				
 				springers = []
 				springLinks = []
@@ -104,60 +86,9 @@ m
 					'springers': springers,
 					'springLinks': springLinks
 					
-
-				refType = 'scripArticle'
-				a = scirp(word,userProxy[0]['proxy'],'article')
-				#refType = 'springerArticle'
-				#a = springer(word,userProxy[0]['proxy'], 'article')
-				springers = a[0]	
-				springLinks = a[1]	
-
-				
-				context = {
-					'keyword': word,
-					'results': springers,
-					'links': springLinks,
-					'type': refType
 				}
 
 				return render(request,'searchresults.html', context)
-
-			
-			elif 'btnSearchbar' in request.POST:
-				refType = 'springerArticle'
-				word = request.POST.get("searchbar")
-
-				a = springer(word,userProxy[0]['proxy'], 'article')
-				springers = a[0]	
-				springLinks = a[1]		
-				context = {
-					'keyword': word,
-					'results': springers,
-					'links': springLinks,
-					'type': refType
-				}
-	
-				return render(request,'searchresults.html', context)
-
-			elif 'btnArticles' in request.POST:
-				refType = 'springerArticle'
-				word = request.POST.get("search")
-
-				a = springer(word,userProxy[0]['proxy'], 'book')
-				#a = springerasdsad()
-				springers = a[0]	
-				springLinks = a[1]	
-
-				context = {
-					'keyword': word,
-					'results': springers,
-					'links': springLinks,
-					'type': refType
-
-				}
-
-				return render(request,'searchresults.html', context)
-
 
 			elif 'btnSearchbar' in request.POST:
 				word = request.POST.get("searchbar")
@@ -236,34 +167,6 @@ m
 					scienceDirects.append(z)
 				for n in scienceDirects:
 					print(n)
-
-			elif 'btnJournal' in request.POST:
-				word = request.POST.get("search")
-				refType = 'scienceDirectJournal'
-
-				a = scienceDirect(word, userProxy[0]['proxy'], 'journal')
-				scienceDirects = a[0]
-				scienceLinks = a[1]
-				
-				context = {
-					'keyword': word,
-					'results': scienceDirects,
-					'links': scienceLinks,
-					'type': refType
-					
-				}
-
-				return render(request,'searchresults.html', context)
-
-			elif 'btnBook' in request.POST:
-				word = request.POST.get("search")
-				refType = 'scienceDirectBook'
-
-				a = scienceDirect(word, userProxy[0]['proxy'], 'book')
-				scienceDirects = a[0]
-				scienceLinks = a[1]
-				
-
 				context = {
 					'keyword': word,
 					'scienceDirects': scienceDirects,
@@ -271,16 +174,7 @@ m
 					
 				}
 
-
 				return render(request,'searchresults.html', context)
-
-
-				return render(request,'searchresults.html', context)
-
-
-
-
-
 
 class TeraLoginUser(View):                                         
 	def get(self,request):
@@ -313,21 +207,6 @@ class TeraSearchResultsView(View):
 		return render(request,'home.html')	
 		
 		
-
-		return redirect('ra:tera_homepage_view')
-
-	
-		
-
-
-class TeraSearchResultsView(View):
-
-	def get(self,request):
-		return render(request,'home.html')	
-		
-		
-
-
 class TeraHomepageView(View):
 	def get(self,request):
 		return render(request,'home.html')	
@@ -451,3 +330,7 @@ class TeraAccountSettingsView(View):
 			'form': form
 			})
 
+
+class TeraAdminView(View):
+	def get(self,request):
+		return render(request,'admin.html')	
