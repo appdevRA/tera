@@ -2,6 +2,7 @@
         #content = html_file.read()
         #print(content)
         #soup = BeautifulSoup(content, 'html.parser')
+        #
 import bs4
 from bs4 import BeautifulSoup
 import os
@@ -11,7 +12,29 @@ import random
 import time
 
 
-def springer(word, proxy, refType): #articles
+
+
+
+def scrape(word, proxy, refType, pageNumber, site):
+
+
+    if site == 'springer open':
+        return springer(word, proxy, refType,pageNumber)
+    elif site == 'science direct':
+        return scienceDirect(word, proxy, refType, pageNumber)
+    elif site == 'scirp':
+        return scirp(word, proxy, refType, pageNumber)
+    elif site == 'tandfonline':
+        return tandFOnline(word, proxy, refType, pageNumber)
+    elif site == 'herdin':
+        return herdin(word, proxy, refType, pageNumber)
+
+
+
+
+
+
+def springer(word, proxy, refType, pageNumber): # INDEX 1 STARTING SA PAGINATION DIRI
     
     springers = []
     springLinks = []
@@ -20,7 +43,7 @@ def springer(word, proxy, refType): #articles
         x = False
         while(x == False):
             try:
-                response = requests.get('https://www.springeropen.com/search?query=' + word + '&searchType=publisherSearch', headers = headers(), proxies={'https:': proxy}, timeout=2) #articles 
+                response = requests.get('https://www.springeropen.com/search?searchType=publisherSearch&sort=Relevance&query=' + word +'&page='+ str(pageNumber), headers = headers(), proxies={'https:': proxy}, timeout=2) #articles 
                 x = True
             except ConnectionError:
                 print('Connection Error')
@@ -64,7 +87,7 @@ def springer(word, proxy, refType): #articles
         x = False
         while(x == False):
             try:
-                response = requests.get('https://www.springer.com/gp/search?query=' + word + '&submit=Submit', headers = headers(), proxies={'https:': proxy}, timeout=2) #books
+                response = requests.get('https://www.springer.com/gp/search?page='+ str(pageNumber) +'&query='+ word+'&submit=Submit', headers = headers(), proxies={'https:': proxy}, timeout=2) #books
                 x = True
                 
             except ConnectionError:
@@ -116,7 +139,9 @@ def springer(word, proxy, refType): #articles
     return springers, springLinks
 
 
-def scienceDirect(word,proxy, refType):
+
+
+def scienceDirect(word,proxy, refType, pageNumber):
     scienceDirects = []
     scienceLinks = []
     #ua = random.choice(userAgents) 
@@ -137,7 +162,7 @@ def scienceDirect(word,proxy, refType):
     'referer': 'https://id.elsevier.com/',
     'accept-language': 'en-US,en;q=0.9',
     'cookie': 'EUID=80a39c81-5643-43a6-a14d-dbdeb3ff56f9; mboxes=%7B%22universal-view-pdf%22%3A%7B%22variation%22%3A%22B%22%7D%7D; utt=ae01-efa25bdbb71478802a627452c2319959fc3-A; acw=5d1cdce83ec8304d8068af9-6c583c186dcagxrqb%7C%24%7C7CA41A20BFA2C07A84D675BD5F111A415C3C53A91C92691ED528DFF306AE4B899493A1D62A849F4FBB07278403CAE6F6DEE126DB0DC891D10E9169905BBD791CB0469A67597464825D387A21AFA2E514; AMCVS_4D6368F454EC41940A4C98A6%40AdobeOrg=1; fingerPrintToken=7631a3a3ad37712500188ed350c5ea69; __cf_bm=mizJQkMUL_q_8PVF_L.HeILxfVm_hrV0P2GzPPgSQ2A-1634652896-0-ATT4YKhXMGxnu+JYKueEZSygqt5psFECltLnyIWDLkjjsCflBzc8vUERAIAFgufaGbbI6n7z86jVoHRmu4MyAT/MzSBrncKaj2FxJmEZVrx5; mbox=session%2312615284f2634c109a0e60a30b3b5f6a%231634654763%7CPC%2312615284f2634c109a0e60a30b3b5f6a.34_0%231697897703; sd_access=eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..hJJHvZ6hiPgjGXOrHtKDVA.NvY4b6fKH0AR6-6ufJ8KLnDKuq146W5jmrYLDpyzzzMw2N5JD7d1JE-fBTeciwpM9p9ekc6y6q1LybTa_2RFkqtCY0WEVt0Lm9WUmEaeH95KpxX9_44bHjAOMpjk930ltCl2CzGAFjIRWZ0jwcOslw.6idS905U8j3vfuC0xdyslA; sd_session_id=c5c28e8b9a68a74f236b1844a99c13c9980dgxrqb; id_ab=IDP; has_multiple_organizations=true; MIAMISESSION=69f45c87-b450-4634-aca4-c0203bbf1c39:3812105771; SD_REMOTEACCESS=eyJhY2NvdW50SWQiOiI3MzA5NCIsInRpbWVzdGFtcCI6MTYzNDY1Mjk3MjUyMH0=; AMCV_4D6368F454EC41940A4C98A6%40AdobeOrg=-2121179033%7CMCIDTS%7C18920%7CMCMID%7C81261105090677501200180261852203688591%7CMCAID%7CNONE%7CMCOPTOUT-1634660178s%7CNONE%7CMCAAMLH-1635257778%7C3%7CMCAAMB-1635257778%7Cj8Odv6LonN4r3an7LhD3WZrU1bUpAkFkkiY1ncBR96t2PTI%7CvVersion%7C5.3.0%7CMCCIDH%7C-388222836; s_pers=%20v8%3D1634652991473%7C1729260991473%3B%20v8_s%3DLess%2520than%25201%2520day%7C1634654791473%3B%20c19%3Dsd%253Ahome%253Ahpx%7C1634654791478%3B%20v68%3D1634652972551%7C1634654791483%3B; s_sess=%20s_cpc%3D0%3B%20s_ppvl%3Dsd%25253Aproduct%25253Aaccess%25253Aintermediate-sign-in%252C100%252C100%252C969%252C1920%252C969%252C1920%252C1080%252C1%252CP%3B%20s_cc%3Dtrue%3B%20e41%3D1%3B%20s_ppv%3Dsd%25253Ahome%25253Ahpx%252C22%252C22%252C969%252C1456%252C969%252C1920%252C1080%252C1%252CP%3B',
-}
+    }
     x = False
     while(x == False):
         try:
@@ -185,13 +210,13 @@ def scienceDirect(word,proxy, refType):
         scienceLinks.append(li.a['href'])
         scienceDirects.append(z)
 
-        if(soup.find('a', text='Sign in')):
-            print("Cookies expired")
+    if(soup.find('a', text='Sign in')):
+        print("Cookies expired")
    
     return scienceDirects, scienceLinks
 
 
-def scirp(word, proxy, refType):
+def scirp(word, proxy, refType, pageNumber):
     
     scirp = []
     scirpLinks = []         
@@ -223,7 +248,7 @@ def scirp(word, proxy, refType):
         z = []
         x = i.find('div', class_='list_unit') #get container of rows
         z.append(i.div.text) # get title
-        z.append(i.find('div', class_='list_author').text) #author 
+        z.append(i.find('div', class_='txt5').text) #author 
         z.append(i.find('div', class_='list_unit').text.replace('¼Œ', ' ')) #get other info
         z.append(i.find('div', class_='list_doi').text) 
         scirp.append(z)
@@ -231,7 +256,14 @@ def scirp(word, proxy, refType):
 
     return scirp, scirpLinks
 
-def tandFOnline(word, proxy, refType): #books
+
+
+
+
+
+
+
+def tandFOnline(word, proxy, refType, pageNumber): # INDEX ZERO MAG START ILANG PAGE
 
     results= []
     links = []
@@ -243,7 +275,7 @@ def tandFOnline(word, proxy, refType): #books
         while(x == False):
             
             try:
-                response = requests.get('https://www.tandfonline.com/action/doSearch?AllField=' + word, headers = headers(), proxies={'https:': proxy}, timeout=3) # article
+                response = requests.get('https://www.tandfonline.com/action/doSearch?AllField='+ word +'&pageSize=10&subjectTitle=&startPage='+ str(pageNumber), headers = headers(), proxies={'https:': proxy}, timeout=3) # article
                 x = True
             except ConnectionError:
                 print('Connection Error')
@@ -275,7 +307,7 @@ def tandFOnline(word, proxy, refType): #books
         while(x == False):
             
             try:
-                response = requests.get('https://www.tandfonline.com/action/doSearch?AllField='+ word +'&startPage=&target=titleSearch&content=title' , headers = headers(), proxies={'https:': proxy}, timeout=3) # journals
+                response = requests.get('https://www.tandfonline.com/action/doSearch?AllField='+ word +'&target=titleSearch&content=title&pageSize=10&subjectTitle=&startPage='+str(pageNumber) , headers = headers(), proxies={'https:': proxy}, timeout=3) # journals
                 x = True
             except ConnectionError:
                 print('Connection Error')
@@ -285,7 +317,7 @@ def tandFOnline(word, proxy, refType): #books
                 print('Connect Timeout')
                 
             except ReadTimeout:
-                print('except')
+                print('Read Timeout')
 
         soup = BeautifulSoup(response.content, 'html.parser')
         rows =soup.findAll('li', class_='searchResultItem browse-result')
@@ -304,7 +336,7 @@ def tandFOnline(word, proxy, refType): #books
         while(x == False):
             
             try:
-                response = requests.get('https://www.tandfonline.com/action/doSearch?AllField='+ word +'&startPage=&content=db&target=database' , headers = headers(), proxies={'https:': proxy}, timeout=3) # journals
+                response = requests.get('https://www.tandfonline.com/action/doSearch?AllField='+ word +'&content=db&target=database&pageSize=10&subjectTitle=&startPage='+ str(pageNumber) , headers = headers(), proxies={'https:': proxy}, timeout=3) # journals
                 x = True
             except ConnectionError:
                 print('Connection Error')
@@ -332,80 +364,29 @@ def tandFOnline(word, proxy, refType): #books
 
     
 
-def pubmed(word, proxy, refType):
-    results = []
-    links = []
-    x = False
-    while(x == False):
-        try:
-            if refType == 'article':
-                response = requests.get('https://www.ncbi.nlm.nih.gov/pmc/?term='+ word, headers = headers(), proxies={'https:': proxy}, timeout=3) #article                                       
-                x = True
-            else:
-                response = requests.get('https://www.ncbi.nlm.nih.gov/books/?term='+ word, headers = headers(), proxies={'https:': proxy}, timeout=3) #books 
-                x = True
-        except ConnectionError:
-            print('Connection Error')
-            return False
 
-        except ConnectTimeout:
-            print('Connect Timeout')
-                
-        except ReadTimeout:
-            print('except')
-
-    soup = BeautifulSoup(response.content, 'html.parser')
-    rows = soup.findAll('div', class_='rslt')
-        
-    if refType == 'article':
-        for row in rows:
-            z = []
-            
-            z.append(row.find('div', class_='title').a.text)
-            z.append(row.find('div', class_='desc').text)
-            z.append(row.find('div', class_='details').text)
-            z.append(row.find('div', class_='resc').text)
-
-            results.append(z)
-            links.append(row.find('div', class_='title').a['href'])
-
-       
-    else:
-        for row in rows:
-            z = []
-            z.append(row.find('div', class_='rsltcont').p.text.replace('â€“', '-').replace('.','')) #title
-            if row.find('div', class_='rsltcont').find('p', class_='desc').text != '': 
-                z.append(row.find('div', class_='rsltcont').find('p', class_='desc').text)  #description
-            z.append(row.find('div', class_='rsltcont').find('p', class_='details').text.replace('.','')) #place
-            
-
-            results.append(z)
-            links.append(row.find('div', class_='rsltcont').p.a['href'])
-
-    
-    return results, links
 
         
-def herdin(word, proxy,refType):
+def herdin(word, proxy,refType, pageNumber): # INDEX ZERO ANG STARTING SA ILA PAGINATION
     results = []
     links = []
     x = False
     while(x == False):
         try:
             if refType == 'journal':
-                response = requests.get('https://www.herdin.ph/index.php?option=com_herdin&view=publiclistowp&layout=list&type=researches&searchstr='+ word +'&res_source=journal&start=0', headers = headers(), proxies={'https:': proxy}, timeout=3) #article                                       
+                response = requests.get('https://www.herdin.ph/index.php?option=com_herdin&view=publiclistowp&layout=list&type=researches&searchstr='+ word +'&res_source=journal&start=' + pageNumber, headers = headers(), proxies={'https:': proxy}, timeout=3) #article                                       
                 x = True
             elif refType == 'book' :
-                response = requests.get('https://www.herdin.ph/index.php?option=com_herdin&view=publiclistowp&layout=list&type=researches&searchstr='+ word + '&res_source=book&start=0', headers = headers(), proxies={'https:': proxy}, timeout=3) #books 
+                response = requests.get('https://www.herdin.ph/index.php?option=com_herdin&view=publiclistowp&layout=list&type=researches&searchstr='+ word + '&res_source=book&start=' + pageNumber, headers = headers(), proxies={'https:': proxy}, timeout=3) #books 
                 x = True
             elif refType == 'research project' :
-                response = requests.get('https://www.herdin.ph/index.php?option=com_herdin&view=publiclistowp&layout=list&type=researches&searchstr='+ word + '&res_source=research_project&start=0', headers = headers(), proxies={'https:': proxy}, timeout=3) #books 
+                response = requests.get('https://www.herdin.ph/index.php?option=com_herdin&view=publiclistowp&layout=list&type=researches&searchstr='+ word + '&res_source=research_project&start=' + pageNumber, headers = headers(), proxies={'https:': proxy}, timeout=3) #books 
                 x = True
             elif refType == 'resident research' :
-                response = requests.get('https://www.herdin.ph/index.php?option=com_herdin&view=publiclistowp&layout=list&type=researches&searchstr='+ word + '&res_source=resident_research&start=0', headers = headers(), proxies={'https:': proxy}, timeout=3) #books 
+                response = requests.get('https://www.herdin.ph/index.php?option=com_herdin&view=publiclistowp&layout=list&type=researches&searchstr='+ word + '&res_source=resident_research&start=0'+ pageNumber, headers = headers(), proxies={'https:': proxy}, timeout=3) #books 
                 x = True
             elif refType == 'thesis' :
-                response = requests.get('https://www.herdin.ph/index.php?option=com_herdin&view=publiclistowp&layout=list&type=researches&searchstr='+ word + '&res_source=thesis/dissertation&start=0', headers = headers(), proxies={'https:': proxy}, timeout=3) #books 
+                response = requests.get('https://www.herdin.ph/index.php?option=com_herdin&view=publiclistowp&layout=list&type=researches&searchstr='+ word + '&res_source=thesis/dissertation&start=0' + pageNumber, headers = headers(), proxies={'https:': proxy}, timeout=3) #books 
                 x = True
 
         except ConnectionError:
@@ -444,7 +425,7 @@ def herdin(word, proxy,refType):
     return results, links
 
 
-def zLibrary(word, proxy,refType):
+def zLibrary(word, proxy,refType, pageNumber):
 
     results = []
     links = []
@@ -548,14 +529,12 @@ def doab(word, proxy,refType):
     
 
     
-def practice():
-    print("wala")
-    
 
 
-def proxy_generator():
 
-    response = requests.get('https://free-proxy-list.net/', headers = headers())
+def proxy_generator1():
+
+    response = requests.get('https://www.proxynova.com/proxy-server-list/country-ph/', headers = headers())
     soup = BeautifulSoup(response.content, 'html.parser')
     
         
@@ -563,16 +542,76 @@ def proxy_generator():
     a =page.text
     proxies = a[75:].split("\n")
     #print(proxies)
-
+    print(proxies)
     return proxies
 
+
+def proxy_generator2():
+    proxies = []
+    
+    for x in range(20):
+        
+        headers = {
+        'authority': 'www.proxyhub.me',
+        'cache-control': 'max-age=0',
+        'sec-ch-ua': '"Chromium";v="94", "Microsoft Edge";v="94", ";Not A Brand";v="99"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"Windows"',
+        'upgrade-insecure-requests': '1',
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36 Edg/94.0.992.50',
+        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+        'sec-fetch-site': 'same-origin',
+        'sec-fetch-mode': 'navigate',
+        'sec-fetch-user': '?1',
+        'sec-fetch-dest': 'document',
+        'referer': 'https://www.proxyhub.me/en/ph-https-proxy-list.html',
+        'accept-language': 'en-US,en;q=0.9',
+        'cookie': '__gads=ID=6c6661a0f109efd0-2246a8b0b9cc0070:T=1634804154:RT=1634804154:S=ALNI_MZZ5TnlvEI8S1B6-41Yln5ggLyG4A; page='+ str(x+1) +'; anonymity=all',
+        }
+
+        response = requests.get('https://www.proxyhub.me/en/ph-https-proxy-list.html', headers = headers)
+        soup = BeautifulSoup(response.content, 'html.parser')
+     
+        rows = soup.find('tbody').findAll('tr')
+         
+        for row in rows:
+            z = []
+            x = 0
+            columns = row.findAll('td')
+            for column in columns:
+                if x >= 2:
+                    break
+                
+                z.append(column.text.replace(' ', '').replace('\n', ''))
+                if(z[0] != '' and len(z) == 1):
+                    z.append(":")
+                x += 1
+           
+            if len(z) > 1: 
+                proxies.append(''.join(z)) 
+        print("Number of proxies extracted: ",len(proxies))
+        time.sleep(10)
+       
+
+    proxyList = list(dict.fromkeys(proxies))
+    print(proxyList[91])
+
+    return proxyList
+    
+
+   
+
+    
+
     #with open('C:/Users/Valued Client/Desktop/proxies.txt', 'w') as file:    / writing in a file /
+    
     #with open ('C:/Users/Valued Client/Desktop/free proxy.html', 'r', errors='ignore') as html_file:   / opening a file /
             #content = html_file.read()
             #soup = BeautifulSoup(content, 'html.parser')
+
         #response = requests.get("https://free-proxy-list.net/")
         #soup = BeautifulSoup(response.content, 'html.parser')
-
+        ##mylist = list(dict.fromkeys(mylist))
         #print(a.readline())   / reading a line in the file/
         #rows = page.text
         
@@ -595,17 +634,6 @@ def proxy_generator():
 
 
 
-userAgents = [ 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36',
-                'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.106 Safari/537.36'
-                'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36',
-                'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36',
-                'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36',
-                'Mozilla/5.0 (Windows NT 5.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36',
-                'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36',
-                'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36',
-                'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36',
-                'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.140 Safari/537.36',                
-                ]
 
 
 def headers(): 
@@ -622,7 +650,7 @@ def headers():
 
     
 
-def testProxy(proxies, kind):
+def testProxy(proxies):
     a = False
 
     while a == False:
@@ -632,12 +660,12 @@ def testProxy(proxies, kind):
             p = random.choice(proxies)
             
             
-            if kind == 1:
-                print(p.proxy + ': ')
-                response = requests.get('https://free-proxy-list.net/', proxies={'https:':p.proxy} ,timeout=1)
-            else:
-                print(p + ': ')
-                response = requests.get('https://free-proxy-list.net/', proxies={'https:':p} ,timeout=1)
+            # if kind == 1:
+            print(p.proxy + ': ')
+            response = requests.get('https://google.com/', proxies={'https:':p.proxy} ,timeout=1)
+            # else:
+            #     print(p + ': ')
+            #     response = requests.get('https://free-proxy-list.net/', proxies={'https:':p} ,timeout=1)
             print('successful')
             a = True
             return p
@@ -649,7 +677,17 @@ def testProxy(proxies, kind):
             pass
         
 
-
+userAgents = [ 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36',
+                'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.106 Safari/537.36'
+                'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36',
+                'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36',
+                'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36',
+                'Mozilla/5.0 (Windows NT 5.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36',
+                'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36',
+                'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36',
+                'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36',
+                'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.140 Safari/537.36',                
+                ]
     
 
 

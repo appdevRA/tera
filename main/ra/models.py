@@ -39,3 +39,12 @@ class Proxies (models.Model):
 	class Meta:
 		db_table = "Proxies"
 
+
+class Bookmarks (models.Model):
+	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE, related_name = "User")
+	link = models.CharField(max_length = 500)
+	dateAdded = models.DateField(default = datetime.now())
+	isRemoved = models.BooleanField(default = False)
+
+	class Meta:
+		db_table = "Bookmarks"

@@ -19,7 +19,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('tera/', include('ra.urls', namespace = 'ra')),
+    path('tera', include('ra.urls', namespace = 'ra')),
 ]
 
 
