@@ -47,7 +47,20 @@
 
 function reply_click(clicked_id)
   {
-      alert(clicked_id);
+    
+
+        $.ajax({
+                      type:"POST",
+                      url:"",
+
+                      data:{
+                        link: clicked_id,
+                        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                      }
+        });
+             
+            
+         
   }
          // $(document).ready(function() {
          //     $("#bookmarkForm").submit(function(event){

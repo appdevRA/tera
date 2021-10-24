@@ -28,7 +28,7 @@ class practice(View):
 		return render(request,'practice.html',context)
 
 	def post(self, request):
-		if request.method == 'POST':
+		if request.method == 'POST' and request.is_ajax():
 			
 			link = request.POST['link']
 			
@@ -39,11 +39,11 @@ class practice(View):
 			# print(link.keys())
 			# Bookmarks.objects.create(user = User.objects.get(id=request.session.get('id')),link = link)
 			
-			
+			print(link)
 			# link = request.POST['link']
 
 			
-			return HttpResponse('')
+			return render(request,'login.html')	
 		
 		
 
@@ -51,7 +51,7 @@ class practice(View):
 class TeraLoginUser(View): 
 
 	def get(self,request):
-
+		request.session['id'] = None
 		# proxies = proxy_generator2() #/ generating free proxies /
 		# for proxy in proxies:  #/ saving proxies to db /
 			
@@ -78,7 +78,7 @@ class TeraLoginUser(View):
 				user = User.objects.get(username = uname, password = passw)
 				request.session['id'] = user.id
 				
-				return redirect("ra:bookmark")
+				return redirect("ra:index_view")
 			except:
 				return HttpResponse("Invalid username or password. ")
 					
@@ -259,20 +259,18 @@ class TeraSearchResultsView(View):
 			return render(request,'searchresults.html', context)
 
 
-		elif request.method == 'POST':
+		elif request.method == 'POST' and request.is_ajax():
 			
 			link = request.POST['link']
-		
-			# if len(link) > 1:
-			# 	counter = request.POST['counter']
-			#if len(link) <2:
-			# print(counter)
-			# print(link.keys())
-			# Bookmarks.objects.create(user = User.objects.get(id=request.session.get('id')),link = link)
 			
-			
-			# link = request.POST['link']
+			string = link.split('||')
+			site = string[0]
+			title = string[1].replace('\n','')
+			link = string[2]
 
+			
+			Bookmarks.objects.create(user = User.objects.get(id=request.session.get('id')), siteName=site, title=title, link = link)
+			
 			
 			return HttpResponse('')
 

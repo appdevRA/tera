@@ -118,17 +118,17 @@
       <br><br>
           <div style="margin-left: 12%">
 
-            {%for row in results %} <!-- get rows of springers-->
-             
-            {% with forloop.counter as outer_counter %} <!-- retrieve loop counter of rows-->
+            {%for row in results %} <!-- get a row from all the rows of extracted result from the site-->
+            {% with forloop.counter as outer_counter %} <!-- retrieve loop counter of the row-->
             
-            {% if outer_counter <= 100 %}
+            {% if outer_counter <= 100 %}  <!-- for displaying number of results in the page -->
 
-              {%for column in row %} <!-- access the columns of rows in springers -->
+              {%for column in row %} <!-- access the columns of a row in the result -->
               
               {% if forloop.counter == 1 %}
+
               {% for link in links %}
-              {% if forloop.counter == outer_counter %}
+              {% if forloop.counter == outer_counter %} <!-- to prevent from displaying all the links at a time -->
 
           
               
@@ -136,25 +136,15 @@
                         <div>
                           <a href="{{link}}" > <b> {{column}} </b> </a>
 
-                          <form id="bookmarkForm" method="POST" action="">
-                             {% csrf_token %}
-
-                              <input id="link" name="bookmarkLink" value="{{link}}" class="bookmarkLink"  hidden="true">
-                               <input id="counter"  value="{{outer_counter}}"  hidden="true">
-                              <input type="submit" value="Bookmark" style="font-size: 10px; border-width: 0; ">
-                          </form>
-                        </div>  <!-- to prevent from displaying all the links in at a time -->
+                        <button id="springer||{{column}}||{{link}}"class=""onClick="reply_click(this.id)">Bookmark</button>
+                        </div> 
                       {% endif %}   
 
 
                       {% if type == 'springer book'%} 
                         <div>
                           <a href="https://www.springer.com{{link}}" > <b> {{column}} </b>  </a>
-                          <!-- <form method="post" action="">
-                             {% csrf_token %}
-                              <input type="" name="bookmarkLink" value="{{column}}" class="bookmarkLink"  hidden="true">
-                              <input type="submit" class="Bookmark" name="btnBookmark" value="Bookmark" style="font-size: 10px; border-width: 0; ">
-                          </form> -->
+                          <button id="springer||{{column}}||https://www.springer.com{{link}}"class=""onClick="reply_click(this.id)">Bookmark</button>
                         </div>  <!-- to prevent from displaying all the links in at a time -->
                       {% endif %}
 
@@ -162,6 +152,7 @@
                       {% if type == 'scienceDirectJournal' %}
                       <div>
                         <a href="https://www.sciencedirect.com/{{link}}" > <b> {{column}} </b> </a>
+                        <button id="science direct||{{column}}||https://www.sciencedirect.com/{{link}}" onClick="reply_click(this.id)">Bookmark</button>
                       </div>  <!-- display title of links -->
                       {% endif %}
                       
@@ -170,6 +161,7 @@
                       {% if type == 'scienceDirectBook' %}
                       <div>
                         <a href="https://www.sciencedirect.com/{{link}}" > <b> {{column}} </b> </a>
+                        <button id="science direct||{{column}}||https://www.sciencedirect.com/{{link}}" onClick="reply_click(this.id)">Bookmark</button>
                       </div>  <!-- display title of links -->
                       {% endif %}
                       
@@ -177,6 +169,7 @@
                       {% if type == 'scirp article'%} 
                         <div>
                           <a href="https://www.scirp.org/journal/{{link}}" > <b> {{column}} </b> </a>
+                          <button id="scirp||{{column}}||https://www.scirp.org/journal/{{link}}" onClick="reply_click(this.id)">Bookmark</button>
                         </div>  <!-- to prevent from displaying all the links in at a time -->
                       {% endif %} 
                       
@@ -184,17 +177,15 @@
                       {% if type == 'tandfon article' %}
                       <div>
                         <a href="https://www.tandfonline.com{{link}}" > <b> {{column}} </b> </a>
+                        <button id="tandfon||{{column}}||https://www.tandfonline.com{{link}}" onClick="reply_click(this.id)">Bookmark</button>
                       </div>  <!-- display title of links -->
                       {% endif %}
 
                       {% if type == 'tandfon journal' %}
                       <div >
                         <a href="https://www.tandfonline.com{{link}}" > <b> {{column}} </b> </a>
-                       <!--  <form method="post" action="">
-                             {% csrf_token %}
-                              <input type="" name="bookmarkLink" value="{{column}}" class="bookmarkLink"  hidden="true">
-                              <input type="submit" class="Bookmark" name="btnBookmark" value="Bookmark" style="font-size: 10px; border-width: 0; ">
-                          </form> -->
+                        <button id="tandfon||{{column}}||https://www.tandfonline.com{{link}}" onClick="reply_click(this.id)">Bookmark</button>
+                       
                       </div>  <!-- display title of links -->
                       {% endif %}
 
@@ -202,42 +193,21 @@
                       {% if type == 'tandfon database' %}
                       <div >
                         <a href="https://www.tandfonline.com{{link}}" > <b> {{column}} </b> </a>
-                       <!--  <form method="post" action="">
-                             {% csrf_token %}
-                              <input type="" name="bookmarkLink" value="{{column}}" class="bookmarkLink"  hidden="true">
-                              <input type="submit" class="Bookmark" name="btnBookmark" value="Bookmark" style="font-size: 10px; border-width: 0; ">
-                          </form> -->
-                      </div>  <!-- display title of links -->
-                      {% endif %}
-
-                      {% if type == 'doab' %}
-                      <div >
-                        <a href="https://doabooks.org{{link}}" > <b> {{column}} </b> </a>
+                      <button id="tandfon||{{column}}||https://www.tandfonline.com{{link}}" onClick="reply_click(this.id)">Bookmark</button>
                       </div>  <!-- display title of links -->
                       {% endif %}
 
 
-                      {% if type == 'pubmed' %}
-                      <div >
-                        <a href="https://www.ncbi.nlm.nih.gov{{link}}" > <b> {{column}} </b> </a>
-                       <!--  <form method="post" action="">
-                             {% csrf_token %}
-                              <input type="" name="bookmarkLink" value="{{column}}" class="bookmarkLink"  hidden="true">
-                              <input type="submit" class="Bookmark" name="btnBookmark" value="Bookmark" style="font-size: 10px; border-width: 0; ">
-                          </form> -->
-                      </div>  <!-- display title of links -->
-                      {% endif %}
+
+
 
 
 
                       {% if type == 'herdinJournal' %}
                       <div >
                         <a href="https://www.ncbi.nlm.nih.gov{{link}}" > <b> {{column}} </b> </a>
-                       <!--  <form method="post" action="">
-                             {% csrf_token %}
-                              <input type="" name="bookmarkLink" value="{{column}}" class="bookmarkLink"  hidden="true">
-                              <input type="submit" class="Bookmark" name="btnBookmark" value="Bookmark" style="font-size: 10px; border-width: 0; ">
-                          </form> -->
+                        <button id="herdin||{{column}}||https://www.ncbi.nlm.nih.gov{{link}}" onClick="reply_click(this.id)">
+                       
                       </div>  <!-- display title of links -->
                       {% endif %}
               
@@ -288,7 +258,7 @@
 </html>
 
 
-
+<!-- 
 <script type="text/javascript">
          $(document).ready(function() {
              $("#bookmarkForm").submit(function(event){
@@ -306,4 +276,20 @@
              });
              return false;
           });
-      </script>
+      </script> -->
+
+<script type="text/javascript">
+  
+function reply_click(clicked_id){
+      
+        $.ajax({
+                      type:"POST",
+                      url:"",
+
+                      data:{
+                        link: clicked_id,
+                        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                      }
+        });      
+}
+</script>
