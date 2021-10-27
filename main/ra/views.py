@@ -85,8 +85,7 @@ class TeraLoginUser(View):
 				return HttpResponse("Invalid username or password. ")
 					
 		
-		    # 
-		# else:
+		 
 			
 class TeraIndexView(View):
 	def get(self, request):
@@ -97,24 +96,15 @@ class TeraIndexView(View):
 			
 		#	proxy =Proxies(proxy = proxy)
 		#	proxy.save()
-		
-		#user = User.objects.get(username = 'tt', password = 'tt')
-		
 		proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
 		a = testProxy(proxies).proxy
-		
-		User.objects.filter(id = request.session.get('id')).update(proxy = a) # set proxy to user
-		
-		#request.session['proxy'] = a
+		request.session['proxy'] = a
 		#request.session['id'] = 1
 		context ={
 			"user_id": request.session.get('id')
 		}
 		
-		#scienceDirect(testProxy(proxies))
-		#scirp('engineer', practice(testProxy(proxies)), 'a')
-		#practice()
-		#springer('war', testProxy(proxies))
+	
 		#print(proxyID.id)
 		#x = Proxies.objects.filter(id = proxyID.id).update(isUsed = 1)
 		return render(request,'landingpage.html',context)
@@ -125,6 +115,10 @@ class TeraIndexView(View):
 			request.session['previousPage'] = request.POST['previousPage']
 			print(request.session.get('previousPage'))
 			return redirect('ra:tera_login_view')
+
+		elif 'btnLogout' in request.POST:
+			request.session['id'] = 0
+			return redirect("ra:index_view")
 
 		elif 'btnSearch' in request.POST:
 			request.session['word'] = request.POST.get("keyword")
@@ -141,7 +135,7 @@ class TeraSearchResultsView(View):
 		proxies = Proxies.objects.filter(isUsed = 0)
 		word = request.session.get('word')
 		refType = 'springer article'
-		
+		print(request.session.get('proxy'))
 
 		a = scrape(word,request.session.get('proxy') , 'article',1, 'springer open')
 		# a = springer(word,request.session.get('proxy') , 'article',1)
@@ -164,12 +158,9 @@ class TeraSearchResultsView(View):
 
 	def post(self, request):
 
-		if 'buttonLogin' in request.POST:
-			request.session['previousPage'] = request.POST['previousPage']
-			print(request.session.get('previousPage'))
-			return redirect('ra:tera_login_view')
+		
 
-		elif 'btnSearchbar' in request.POST:
+		if 'btnSearchbar' in request.POST:
 			word = request.POST.get("searchbar")
 			refType = 'springer article'
 			
@@ -292,9 +283,14 @@ class TeraSearchResultsView(View):
 			
 			return HttpResponse('')
 
+		elif 'buttonLogin' in request.POST:
+			request.session['previousPage'] = request.POST['previousPage']
+			print(request.session.get('previousPage'))
+			return redirect('ra:tera_login_view')
+
 		elif 'btnLogout' in request.POST:
 			request.session['id'] = 0
-			return redirect("ra:" + request.session.get('previousPage'))
+			return redirect("ra:search_result_view")
 			
 
 		
@@ -314,8 +310,10 @@ class TeraDashboardView(View):
 			if request.session.get('id') != 0:
 				return render(request,'collections.html', context)
 			else:
+				reques.session['previousPage'] = 'tera_dashboard_view'
 				return redirect('ra:tera_login_view')
 		except:
+			reques.session['previousPage'] = 'tera_dashboard_view'
 			return redirect('ra:tera_login_view')
 
 	def post(self, request):
