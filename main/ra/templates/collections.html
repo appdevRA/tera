@@ -71,13 +71,16 @@
             {% for row in bookmarks %}
               <!-- {{ row.title }} {{ row.siteName }} {{ row.dateAdded }} -->
               {% if row.siteName == 'springer' %}
-              <a href="{{row.link}}" target="_blank"><div><img class="logo-style" src="{% static 'images/springerLogo.PNG' %}" style="height: 15px">  &nbsp; &nbsp; {{row.title}}  </div></a> <br><br><br>
+              <a>
+                <div><img class="logo-style" src="{% static 'images/springerLogo.PNG' %}" style="height: 15px;">  &nbsp; &nbsp; {{row.title}} &nbsp; &nbsp; <a href="{{row.link}}" target="_blank" ><i class="fa fa-eye"></i></a> <a><i class="fa fa-trash"></i></a> </div> 
+              </a> 
+              <br><br><br>
               {% endif %}
 
               {% endfor %}
              
               
-                 
+                <!-- <i class="fa fa-trash"> -->
          
           </div>
 

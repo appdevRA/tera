@@ -102,7 +102,8 @@ class TeraIndexView(View):
 		proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
 		a = testProxy(proxies).proxy
 		
-		User.objects.filter(id = request.session['id']).update(proxy = a) # set proxy to user
+		request.session['proxy'] = a
+		# User.objects.filter(id = request.session['id']).update(proxy = a) # set proxy to user
 		
 		#request.session['proxy'] = a
 		#request.session['id'] = 1
