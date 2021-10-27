@@ -16,19 +16,19 @@
         $('span').toggleClass("cancel");
       });
     </script>
-    <script>
-    $('a[href$="#modalLogoutForm"]').on( "click", function() {
+    <!-- <script>
+    $href$="#modalLogoutForm"]').on( "click", function() {
       $('#modalLogoutForm').modal();
-   });
-  </script>
+   });('a[
+  </script> -->
    
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
-    <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+     <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"/>
+    <!--<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.css">
-    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet"> -->
 
   </head>
    <body style="background-image: url({% static 'images/bg.png' %});">
@@ -51,7 +51,7 @@
                 <li><a href="#">Bookmarks</a></li>
                 <li><a href="#">Folders</a></li>
                 <li><a href="{% url 'ra:tera_account_settings'%}">Settings</a></li>
-                <li><a href="#" data-toggle="modal" data-target="#" >Logout </a></li>
+                <li><a href="#modalLogoutForm" data-toggle="modal" data-target="#modalLogoutForm" onC>Logout </a></li>
                 </ul>
       </li>
       </ul>
@@ -149,3 +149,9 @@
 
   </body>
 </html>
+
+<script type="text/javascript">
+  
+  document.getElementById("exampleModal").showModal(); 
+
+</script>

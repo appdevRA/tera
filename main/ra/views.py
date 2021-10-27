@@ -160,14 +160,13 @@ class TeraSearchResultsView(View):
 							'type': refType,
 							'user_id': request.session.get('id')
 		}
-
 		return render(request,'searchresults.html', context)
 
 	def post(self, request):
 
 		if 'buttonLogin' in request.POST:
 			request.session['previousPage'] = request.POST['previousPage']
-			print("btnLogin clicked")
+			print(request.session.get('previousPage'))
 			return redirect('ra:tera_login_view')
 
 		elif 'btnSearchbar' in request.POST:
@@ -306,7 +305,11 @@ class TeraDashboardView(View):
 		
 			
 		context = { 'bookmarks': userbookmarks}
-		return render(request,'collections.html', context)
+		try:
+			if request.session.get('id') != 0:
+				return render(request,'collections.html', context)
+		except:
+			return redirect('ra:tera_login_view')
 
 	def post(self, request):
 	 	form = CreateFolderForm(request.POST)
