@@ -12,14 +12,15 @@
 </head>
 
 <body style="background-color: #f3f3f3">
-
+<input id="user_id" value="{{user_id}}" hidden name="">
     <h1> Create form</h1>
 
 
    <br><br> 
         {% csrf_token %}
 {% for n in number %}
- <i id ="{{n}}false"class="fa fa-bookmark" style="color: white;" onClick="fun({{n}},this.id)"></i>
+<i id ="btnBookmark{{n}}"class="fa fa-bookmark" style="color: white;" onClick="fun({{n}},this.id)"></i>
+ <!-- <i id ="btnBookmark{{n}}"class="fa fa-bookmark" style="color: white;" onClick="fun({{n}},this.id)"></i> -->
         <form id="bookmarkForm" >   
             <button id="asdsd/awdwd/asd/wdawdrqq/adawdawda/wadasd/wda/dada/" class="btnBookmark" onClick="reply_click(this.id)">B1</button>
             <button id="{{n}}" onClick="reply_click(this.id)">B2</button>
@@ -38,19 +39,50 @@
 <p> Click the following text to see the effect. </p>  
 <p id = "para">Click me</p>  
 <script>  
-
+let a = [];
 function fun(counter,id) {  
+a.push(document.getElementById("user_id").value);
+   alert(a)
+if(document.getElementById(id).style.color == "white")
+    document.getElementById(id).style.color = "red";
+else
+    document.getElementById(id).style.color = "white";
 
-if(id.includes("true"))
-    document.getElementById(id).style.color = "white";  
-if(id.includes("false"))
-    document.getElementById(id).style.color = "red";  
 
 
-document.getElementById("para").style.backgroundColor = "yellow";  
-document.getElementById("para").style.fontSize = "25px";  
-document.getElementById("para").style.border = "4px solid red";   
-}  
+} 
+
+$(document).ready(function() {
+           var buttons = document.getElementsByClassName("fa fa-bookmark");
+           
+           
+                   
+            if(document.getElementById("user_id").value == 0  ){
+                    for(i=0; i< buttons.length; i++){
+                        buttons[i].style.display = "none"; 
+                    }
+                     
+            }
+             // $("#bookmarkForm").submit(function(event){
+             //     event.preventDefault();
+             //      var arrInput = document.getElementsByTagName("btnBookmark");
+             //      alert(arrInput)
+             //     // var a = 'b';
+             //     // var index = $('#index').val();
+             //     // alert($('#link'+ a ).val())
+             //     $.ajax({
+             //          type:"POST",
+             //          url:"",
+             //          data:{
+             //            link: $('#link').val(),
+             //            csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+             //          }
+             //              });
+             // });
+             return false;
+          });
+ 
+ 
 </script>  
 
 
@@ -73,23 +105,5 @@ function reply_click(clicked_id){
                       }
         });      
 }
-         // $(document).ready(function() {
-         //     $("#bookmarkForm").submit(function(event){
-         //         event.preventDefault();
-         //          var arrInput = document.getElementsByTagName("btnBookmark");
-         //          alert(arrInput)
-         //         // var a = 'b';
-         //         // var index = $('#index').val();
-         //         // alert($('#link'+ a ).val())
-         //         $.ajax({
-         //              type:"POST",
-         //              url:"",
-         //              data:{
-         //                link: $('#link').val(),
-         //                csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
-         //              }
-         //                  });
-         //     });
-         //     return false;
-         //  });
+         
       </script>

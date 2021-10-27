@@ -22,6 +22,7 @@ class practice(View):
 	def get(self, request):
 		
 		a = ['a','b']
+
 		context={
 			'number':a,
 			'user_id': request.session.get('id')
@@ -58,13 +59,13 @@ class TeraLoginUser(View):
 			
 		# 	proxy = Proxies(proxy = proxy)
 		# 	proxy.save()
+		request.session['id'] = 0
+		# if( request.session.get('id') == 0 ):
+			
+		# else:
+		# 	return redirect("ra:index_view")
 
-		if( request.session.get('id') != None):
-			return redirect("ra:index_view")
-		else:
-			return render(request,'login.html')	
-
-
+		return render(request,'login.html')	
 		
 		
 
@@ -79,7 +80,7 @@ class TeraLoginUser(View):
 				user = User.objects.get(username = uname, password = passw)
 				request.session['id'] = user.id
 				
-				return redirect("ra:index_view")
+				return redirect("ra:" + request.session.get('previousPage'))
 			except:
 				return HttpResponse("Invalid username or password. ")
 					
@@ -102,11 +103,13 @@ class TeraIndexView(View):
 		proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
 		a = testProxy(proxies).proxy
 		
-		User.objects.filter(id = request.session['id']).update(proxy = a) # set proxy to user
+		User.objects.filter(id = request.session.get('id')).update(proxy = a) # set proxy to user
 		
 		#request.session['proxy'] = a
 		#request.session['id'] = 1
-		
+		context ={
+			"user_id": request.session.get('id')
+		}
 		
 		#scienceDirect(testProxy(proxies))
 		#scirp('engineer', practice(testProxy(proxies)), 'a')
@@ -114,10 +117,16 @@ class TeraIndexView(View):
 		#springer('war', testProxy(proxies))
 		#print(proxyID.id)
 		#x = Proxies.objects.filter(id = proxyID.id).update(isUsed = 1)
-		return render(request,'landingpage.html')
+		return render(request,'landingpage.html',context)
 
 	def post(self, request):
-		if request.method == 'POST':
+
+		if 'buttonLogin' in request.POST:
+			request.session['previousPage'] = request.POST['previousPage']
+			print(request.session.get('previousPage'))
+			return redirect('ra:tera_login_view')
+
+		elif 'btnSearch' in request.POST:
 			request.session['word'] = request.POST.get("keyword")
 			return redirect('ra:search_result_view')
 		
@@ -149,16 +158,19 @@ class TeraSearchResultsView(View):
 							'results': results,
 							'links': links,
 							'type': refType,
-							'id': request.session.get('id')
+							'user_id': request.session.get('id')
 		}
 
 		return render(request,'searchresults.html', context)
 
 	def post(self, request):
 
-		proxies = Proxies.objects.filter(isUsed = 0)
+		if 'buttonLogin' in request.POST:
+			request.session['previousPage'] = request.POST['previousPage']
+			print("btnLogin clicked")
+			return redirect('ra:tera_login_view')
 
-		if 'btnSearchbar' in request.POST:
+		elif 'btnSearchbar' in request.POST:
 			word = request.POST.get("searchbar")
 			refType = 'springer article'
 			
@@ -176,7 +188,8 @@ class TeraSearchResultsView(View):
 					'keyword': word,
 					'results': springers,
 					'links': springLinks,
-					'type': refType
+					'type': refType,
+					'user_id': request.session.get('id')
 			}
 	
 			return render(request,'searchresults.html', context)
@@ -202,7 +215,8 @@ class TeraSearchResultsView(View):
 					'keyword': word,
 					'results': springers,
 					'links': springLinks,
-					'type': refType
+					'type': refType,
+					'user_id': request.session.get('id')
 			}
 
 			return render(request,'searchresults.html', context)
@@ -223,11 +237,11 @@ class TeraSearchResultsView(View):
 			scienceLinks = a[1]
 				
 			context = {
-				'keyword': word,
+					'keyword': word,
 					'results': scienceDirects,
 					'links': scienceLinks,
-					'type': refType
-					
+					'type': refType,
+					'user_id': request.session.get('id')
 			}
 
 			return render(request,'searchresults.html', context)
@@ -253,7 +267,8 @@ class TeraSearchResultsView(View):
 					'keyword': word,
 					'results': scienceDirects,
 					'links': scienceLinks,
-					'type': refType
+					'type': refType,
+					'user_id': request.session.get('id')
 					
 			}
 
@@ -278,6 +293,7 @@ class TeraSearchResultsView(View):
 			
 			return HttpResponse('')
 
+		
 
 class TeraHomepageView(View):
 	def get(self,request):

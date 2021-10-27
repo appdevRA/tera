@@ -48,10 +48,21 @@
       </label>
      
       <ul>     
+       
       
-      <li><a href="#">Home</a></li>
 
-       <li>
+      
+        <li id="login">
+        <form  action = "" method = "POST" autocomplete = "off" enctype="multipart/form-data">
+      {% csrf_token %}
+      <button type="submit" class="button" name="buttonLogin" id="buttonLogin" style=""> Login </button>
+
+        <input name="previousPage" value="index_view" hidden>
+</form>
+      </li>
+
+      <li id="myAccount">   
+
                 <label for="btn-2" class="show">My Account <i class="fa fa-user" aria-hidden="true"></i></label>
                 <a href="#">My Account <i class="fa fa-user" aria-hidden="true"></i></a>
                 
@@ -64,7 +75,7 @@
                 </ul>
       </li>
       </ul>
-  </nav>
+        </nav>
     <div class="left-tab" style="border-right:2px"></div>
 <br><br>
     <div class="wrapper">
@@ -82,7 +93,7 @@
                             </div> -->
                           
                             <button type="submit" class="button" style=" margin-top: .5%; margin-right: 45% ;background: none "  name="btnSearchbar" id="btnSearchbar" >
-                              <i class="fa fa-search" aria-hidden="true" style=" margin-left: ; margin-top: 13%; border-bottom-color: #ff0000"></i></button>
+                              <i class="fa fa-search" aria-hidden="true" style=" margin-left:35% ; margin-top: 13%; border-bottom-color: #ff0000"></i></button>
                               
 
                               
@@ -111,13 +122,13 @@
            
             <input type="button" class="filterbutton" value="Dissertations">
              <input type="hidden" class="filterbutton" name = "search" value="{{keyword}}">
-             <input id="userid" value="{{id}}" hidden="true">
+            
            </form>
       </center>
       <div class="info">
       <br><br>
           <div style="margin-left: 12%">
-
+<input id="user_id" value="{{user_id}}" hidden name="">
             {%for row in results %} <!-- get a row from all the rows of extracted result from the site-->
             {% with forloop.counter as outer_counter %} <!-- retrieve loop counter of the row-->
             
@@ -135,8 +146,8 @@
                       {% if type == 'springer article'%} 
                         <div>
                           <a href="{{link}}" > <b> {{column}} </b> </a>
-
-                        <button id="springer||{{column}}||{{link}}"class="btnBookmark "onClick="reply_click(this.id)" style="border: none">bookmark</button>
+                           <i id="springer||{{column}}||{{link}}" class="fa fa-bookmark" style="color: red;" onClick="reply_click(this.id)"></i>
+                        <!-- <button id="springer||{{column}}||{{link}}" onClick="reply_click(this.id)" style="border: none">bookmark</button> -->
                         </div> 
                       {% endif %}   
 
@@ -144,7 +155,7 @@
                       {% if type == 'springer book'%} 
                         <div>
                           <a href="https://www.springer.com{{link}}" > <b> {{column}} </b>  </a>
-                          <button id="springer||{{column}}||https://www.springer.com{{link}}"class=""onClick="reply_click(this.id)">Bookmark</button>
+                          <i id="springer||{{column}}||https://www.springer.com{{link}}"class="fa fa-bookmark" style="color: red;" onClick="reply_click(this.id)"></i>
                         </div>  <!-- to prevent from displaying all the links in at a time -->
                       {% endif %}
 
@@ -152,7 +163,7 @@
                       {% if type == 'scienceDirectJournal' %}
                       <div>
                         <a href="https://www.sciencedirect.com/{{link}}" > <b> {{column}} </b> </a>
-                        <button id="science direct||{{column}}||https://www.sciencedirect.com/{{link}}" onClick="reply_click(this.id)">Bookmark</button>
+                        <i id="science direct||{{column}}||https://www.sciencedirect.com/{{link}}" class="fa fa-bookmark" style="color: red;" onClick="reply_click(this.id)"></i>
                       </div>  <!-- display title of links -->
                       {% endif %}
                       
@@ -161,7 +172,7 @@
                       {% if type == 'scienceDirectBook' %}
                       <div>
                         <a href="https://www.sciencedirect.com/{{link}}" > <b> {{column}} </b> </a>
-                        <button id="science direct||{{column}}||https://www.sciencedirect.com/{{link}}" onClick="reply_click(this.id)">Bookmark</button>
+                        <i id="science direct||{{column}}||https://www.sciencedirect.com/{{link}}" class="fa fa-bookmark" style="color: red;" onClick="reply_click(this.id)"></i>
                       </div>  <!-- display title of links -->
                       {% endif %}
                       
@@ -169,7 +180,7 @@
                       {% if type == 'scirp article'%} 
                         <div>
                           <a href="https://www.scirp.org/journal/{{link}}" > <b> {{column}} </b> </a>
-                          <button id="scirp||{{column}}||https://www.scirp.org/journal/{{link}}" onClick="reply_click(this.id)">Bookmark</button>
+                          <i id="scirp||{{column}}||https://www.scirp.org/journal/{{link}}" class="fa fa-bookmark" style="color: red;" onClick="reply_click(this.id)"></i>
                         </div>  <!-- to prevent from displaying all the links in at a time -->
                       {% endif %} 
                       
@@ -177,14 +188,14 @@
                       {% if type == 'tandfon article' %}
                       <div>
                         <a href="https://www.tandfonline.com{{link}}" > <b> {{column}} </b> </a>
-                        <button id="tandfon||{{column}}||https://www.tandfonline.com{{link}}" onClick="reply_click(this.id)">Bookmark</button>
+                        <i id="tandfon||{{column}}||https://www.tandfonline.com{{link}}" class="fa fa-bookmark" style="color: red;" onClick="reply_click(this.id)"></i>
                       </div>  <!-- display title of links -->
                       {% endif %}
 
                       {% if type == 'tandfon journal' %}
                       <div >
                         <a href="https://www.tandfonline.com{{link}}" > <b> {{column}} </b> </a>
-                        <button id="tandfon||{{column}}||https://www.tandfonline.com{{link}}" onClick="reply_click(this.id)">Bookmark</button>
+                        <i id="tandfon||{{column}}||https://www.tandfonline.com{{link}}" class="fa fa-bookmark" style="color: red;" onClick="reply_click(this.id)"></i>
                        
                       </div>  <!-- display title of links -->
                       {% endif %}
@@ -193,7 +204,7 @@
                       {% if type == 'tandfon database' %}
                       <div >
                         <a href="https://www.tandfonline.com{{link}}" > <b> {{column}} </b> </a>
-                      <button id="tandfon||{{column}}||https://www.tandfonline.com{{link}}" onClick="reply_click(this.id)">Bookmark</button>
+                      <i id="tandfon||{{column}}||https://www.tandfonline.com{{link}}" class="fa fa-bookmark" style="color: red;" onClick="reply_click(this.id)"></i>
                       </div>  <!-- display title of links -->
                       {% endif %}
 
@@ -206,7 +217,7 @@
                       {% if type == 'herdinJournal' %}
                       <div >
                         <a href="https://www.ncbi.nlm.nih.gov{{link}}" > <b> {{column}} </b> </a>
-                        <button id="herdin||{{column}}||https://www.ncbi.nlm.nih.gov{{link}}" onClick="reply_click(this.id)">
+                        <i id="herdin||{{column}}||https://www.ncbi.nlm.nih.gov{{link}}" class="fa fa-bookmark" style="color: red;" onClick="reply_click(this.id)"></i>
                        
                       </div>  <!-- display title of links -->
                       {% endif %}
@@ -251,7 +262,7 @@
         
     </div>
 
-      
+
     
 </body>
 <script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js"></script>
@@ -281,7 +292,10 @@
 <script type="text/javascript">
   
 function reply_click(clicked_id){
-      
+if(document.getElementById(clicked_id).style.color == "red")
+    document.getElementById(clicked_id).style.color = "#d05858";
+else
+    document.getElementById(id).style.color = "white";
         $.ajax({
                       type:"POST",
                       url:"",
@@ -292,4 +306,21 @@ function reply_click(clicked_id){
                       }
         });      
 }
+
+
+$(document).ready(function() {
+           var buttons = document.getElementsByClassName("fa fa-bookmark");
+           
+            if(document.getElementById("user_id").value == 0 ){
+                    // for(i=0; i< buttons.length; i++){
+                    //     buttons[i].style.display = "none"; 
+                    // }
+                 document.getElementById("myAccount").style.display = "none"
+            }else{
+              document.getElementById("login").style.display = "none"
+
+             }
+          });
+            
+            
 </script>
