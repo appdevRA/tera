@@ -292,6 +292,11 @@ class TeraSearchResultsView(View):
 			
 			return HttpResponse('')
 
+		elif 'btnLogout' in request.POST:
+			request.session['id'] = 0
+			return redirect("ra:" + request.session.get('previousPage'))
+			
+
 		
 
 class TeraHomepageView(View):
@@ -308,6 +313,8 @@ class TeraDashboardView(View):
 		try:
 			if request.session.get('id') != 0:
 				return render(request,'collections.html', context)
+			else:
+				return redirect('ra:tera_login_view')
 		except:
 			return redirect('ra:tera_login_view')
 
@@ -326,7 +333,9 @@ class TeraDashboardView(View):
 	 			fid = request.POST.get("folder-id")
 	 			fldr = Folders.objects.filter(id=fid).delete()
 	 			print('Recorded Deleted')
-	 		return redirect('ra:tera_dashboard_view')		
+	 		return redirect('ra:tera_dashboard_view')
+
+
 
 class TeraCreateJournalCitationView(View):
 	def get(self,request):

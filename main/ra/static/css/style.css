@@ -201,3 +201,21 @@ section.home{
   padding: 10px;
   background-color: #f3f3f3;
 }
+
+.wrapper .main_content .info div .btnBookmark:hover{
+  color: #fff;
+  background: #fbd305;
+  cursor: pointer;
+  border-radius: 25px 5px 25px 5px;
+
+}
+
+.wrapper .main_content .info div .btnBookmark{
+  display: block;
+  margin-left: 102%;
+}
+
+
+
+
+
