@@ -20,10 +20,11 @@ from django.core import serializers
 
 class practice(View):
 	def get(self, request):
-
+		
 		a = ['a','b']
 		context={
-			'number':a
+			'number':a,
+			'user_id': request.session.get('id')
 		}
 		return render(request,'practice.html',context)
 
@@ -51,7 +52,7 @@ class practice(View):
 class TeraLoginUser(View): 
 
 	def get(self,request):
-		request.session['id'] = None
+		
 		# proxies = proxy_generator2() #/ generating free proxies /
 		# for proxy in proxies:  #/ saving proxies to db /
 			
@@ -126,30 +127,30 @@ class TeraSearchResultsView(View):
 	
 
 	def get(self,request):
-		if request.session.get('id') != None:
+		
 
-			proxies = Proxies.objects.filter(isUsed = 0)
-			word = request.session.get('word')
-			refType = 'springer article'
-			
+		proxies = Proxies.objects.filter(isUsed = 0)
+		word = request.session.get('word')
+		refType = 'springer article'
+		
 
+		a = scrape(word,request.session.get('proxy') , 'article',1, 'springer open')
+		# a = springer(word,request.session.get('proxy') , 'article',1)
+		while (a == False):
+
+			proxy = testProxy(proxies).proxy
+			request.session['proxy'] = proxy
 			a = scrape(word,request.session.get('proxy') , 'article',1, 'springer open')
-			# a = springer(word,request.session.get('proxy') , 'article',1)
-			while (a == False):
-
-				proxy = testProxy(proxies).proxy
-				request.session['proxy'] = proxy
-				a = scrape(word,request.session.get('proxy') , 'article',1, 'springer open')
-			
-			results = a[0]	
-			links = a[1]				
-			context = {
-								'keyword': word,
-								'results': results,
-								'links': links,
-								'type': refType,
-								'id': request.session.get('id')
-			}
+		
+		results = a[0]	
+		links = a[1]				
+		context = {
+							'keyword': word,
+							'results': results,
+							'links': links,
+							'type': refType,
+							'id': request.session.get('id')
+		}
 
 		return render(request,'searchresults.html', context)
 
@@ -261,12 +262,15 @@ class TeraSearchResultsView(View):
 
 		elif request.method == 'POST' and request.is_ajax():
 			
-			link = request.POST['link']
+			bookmark = request.POST['link']
 			
-			string = link.split('||')
+			string = bookmark.split('||')
 			site = string[0]
-			title = string[1].replace('\n','')
+			title = string[1].replace('\n','').replace('  ','')
 			link = string[2]
+			print(bookmark)
+			print(site, title, link)
+			
 
 			
 			Bookmarks.objects.create(user = User.objects.get(id=request.session.get('id')), siteName=site, title=title, link = link)
@@ -282,10 +286,10 @@ class TeraHomepageView(View):
 
 class TeraDashboardView(View):
 	def get(self,request):
-		qs_folders = Folders.objects.all()
-		print (qs_folders)
+		userbookmarks = Bookmarks.objects.filter(user_id= request.session.get('id'))
+		
 			
-		context = { 'folders': qs_folders}
+		context = { 'bookmarks': userbookmarks}
 		return render(request,'collections.html', context)
 
 	def post(self, request):

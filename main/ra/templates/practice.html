@@ -7,6 +7,7 @@
   
     <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js" type="text/javascript"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 </head>
 
@@ -18,24 +19,39 @@
    <br><br> 
         {% csrf_token %}
 {% for n in number %}
- 
-        <form id="bookmarkForm" >
-            <button id="asdsd/awdwd/asd/wdawdrqq/adawdawda/wadasd/wda/dada/" onClick="reply_click(this.id)">B1</button>
+ <i id ="{{n}}false"class="fa fa-bookmark" style="color: white;" onClick="fun({{n}},this.id)"></i>
+        <form id="bookmarkForm" >   
+            <button id="asdsd/awdwd/asd/wdawdrqq/adawdawda/wadasd/wda/dada/" class="btnBookmark" onClick="reply_click(this.id)">B1</button>
             <button id="{{n}}" onClick="reply_click(this.id)">B2</button>
             <button id="{{n}}" onClick="reply_click(this.id)">B3</button>
     
 <script type="text/javascript">
   
 </script>
-        <!-- <input type="text" id="" value="{{n}}"  > -->
-        <!-- <input id="isa" type="submit" onclick="myFunction()" value="wala" placeholder="right"> -->
-         <!-- <input id="index" value="{{n}}" hidden> -->
-       <!-- <button type="submit" name="button"></button> -->
+     
     </form>
     
         {% endfor %}
          
 
+<h3> This is an example of using onclick event. </h3>  
+<p> Click the following text to see the effect. </p>  
+<p id = "para">Click me</p>  
+<script>  
+
+function fun(counter,id) {  
+
+if(id.includes("true"))
+    document.getElementById(id).style.color = "white";  
+if(id.includes("false"))
+    document.getElementById(id).style.color = "red";  
+
+
+document.getElementById("para").style.backgroundColor = "yellow";  
+document.getElementById("para").style.fontSize = "25px";  
+document.getElementById("para").style.border = "4px solid red";   
+}  
+</script>  
 
 
   
@@ -45,10 +61,8 @@
     </html>
 <script type="text/javascript">
 
-function reply_click(clicked_id)
-  {
+function reply_click(clicked_id){
     
-
         $.ajax({
                       type:"POST",
                       url:"",
@@ -57,15 +71,12 @@ function reply_click(clicked_id)
                         link: clicked_id,
                         csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
                       }
-        });
-             
-            
-         
-  }
+        });      
+}
          // $(document).ready(function() {
          //     $("#bookmarkForm").submit(function(event){
          //         event.preventDefault();
-         //          var arrInput = document.getElementsByTagName("input");
+         //          var arrInput = document.getElementsByTagName("btnBookmark");
          //          alert(arrInput)
          //         // var a = 'b';
          //         // var index = $('#index').val();

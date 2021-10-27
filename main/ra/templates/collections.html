@@ -25,7 +25,7 @@
       </label>
      
       <ul>     
-      <li><a href="#">Recommendations</a></li>
+      
       <li><a href="#">My Collections</a></li>
 
        <li>
@@ -42,6 +42,7 @@
   </nav>
 
     <div class="main-menu" style="border-right:2px #800000 solid;">
+
         <ul>
             <section class="home">
                 <li class="menu-item"><i class="fa fa-bookmark"></i>All References</li>
@@ -63,19 +64,25 @@
 
         <div class="wrapper">
      <div class="main_content">
-      <!--
+      
         <div class="header" style="left: 180px; width: 20px;">
 
           <div class="info">
-              <div>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</div>
-              <div>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</div>
-              <div>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</div>
+            {% for row in bookmarks %}
+              <!-- {{ row.title }} {{ row.siteName }} {{ row.dateAdded }} -->
+              {% if row.siteName == 'springer' %}
+              <a href="{{row.link}}" target="_blank"><div><img class="logo-style" src="{% static 'images/springerLogo.PNG' %}" style="height: 15px">  &nbsp; &nbsp; {{row.title}}  </div></a> <br><br><br>
+              {% endif %}
+
+              {% endfor %}
+             
+              
                  
          
           </div>
 
         </div>  
-      -->
+      
       </div>
        <!-- The Modal -->
                   <div id="id01" class="modal">

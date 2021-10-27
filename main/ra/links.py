@@ -74,7 +74,7 @@ def springer(word, proxy, refType, pageNumber): # INDEX 1 STARTING SA PAGINATION
                     p = div.find('p', class_='c-listing__authors u-mb-0') #extract authors
                     z = []
                                         
-                    z.append(a.text) # store title to list
+                    z.append(a.text.replace('\n','')) # store title to list
                     z.append(div.p.text) # store description of link to list
                     z.append(p.text) # store author to list
                     div2 = article.find('div',class_='c-meta')
@@ -502,7 +502,7 @@ def doab(word, proxy,refType):
     while(x == False):
         try:
             response = requests.get('https://directory.doabooks.org/discover?query=' + word + '&submit=', headers = headers(), proxies={'https:': proxy}, timeout=5) # article
-            x = True
+            x = true
         except ConnectionError:
             print('Connection Error')
             return False
