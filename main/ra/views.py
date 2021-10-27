@@ -59,7 +59,7 @@ class TeraLoginUser(View):
 			
 		# 	proxy = Proxies(proxy = proxy)
 		# 	proxy.save()
-		request.session['id'] = 0
+		
 		# if( request.session.get('id') == 0 ):
 			
 		# else:
@@ -99,13 +99,13 @@ class TeraIndexView(View):
 		proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
 		a = testProxy(proxies).proxy
 		request.session['proxy'] = a
-		#request.session['id'] = 1
+
 		context ={
 			"user_id": request.session.get('id')
 		}
 		
 	
-		#print(proxyID.id)
+		
 		#x = Proxies.objects.filter(id = proxyID.id).update(isUsed = 1)
 		return render(request,'landingpage.html',context)
 
