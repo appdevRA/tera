@@ -26,17 +26,26 @@
      
       <ul>     
       
-      <li><a href="#">My Collections</a></li>
+      
 
        <li>
                 <label for="btn-2" class="show">My Account <i class="fa fa-user" aria-hidden="true"></i></label>
                 <a href="#">My Account <i class="fa fa-user" aria-hidden="true"></i></a>
                 
                 <ul>
-                <li><a href="{% url 'ra:tera_dashboard_view'%}">Dashboard</a></li>  
-                <li><a href="{% url 'ra:tera_account_settings'%}">Settings</a></li>
-                <li><a href="#modalLogoutForm" data-toggle="modal" data-target="#modalLogoutForm" >Logout </a></li>
-                </ul>
+                <li><a href="{% url 'ra:tera_dashboard_view'%}">Search</a></li>  
+                <li><a href="{% url 'ra:tera_account_settings'%}">Change pass</a></li>
+                <li>
+
+                  <form  action = "" method = "POST" autocomplete = "off" enctype="multipart/form-data">
+                    {% csrf_token %}
+                  <button type="submit" class="btn btn-default" name="btnLogout">Logout </button>
+                  </form>
+
+                </li>
+
+        </ul>
+
       </li>
       </ul>
   </nav>

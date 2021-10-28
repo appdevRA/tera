@@ -1,15 +1,9 @@
 from django.db import models
 from datetime import datetime
 from django.utils import timezone
-
-class User(models.Model):
-	username = models.CharField(max_length = 25, null = False)
-	password = models.CharField(max_length = 25, null = False)
-	proxy = models.CharField(max_length = 40, null = True)
+from django.contrib.auth.models import User
 
 
-	class Meta:
-		db_table = "User"
 
 
 

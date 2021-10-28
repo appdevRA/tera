@@ -50,7 +50,7 @@
                 <li>
                   <form  action = "" method = "POST" autocomplete = "off" enctype="multipart/form-data">
                     {% csrf_token %}
-                  <button type="submit" class="btn btn-default" name="btnLogout">Logout </button>
+                  <button type="submit" class="btn" name="btnLogout">Logout </button>
                   </form>
                 </li>
                 </ul>
@@ -103,7 +103,7 @@
 $(document).ready(function() {
            
            
-            if(document.getElementById("user_id").value == 0 ){
+            if(document.getElementById("user_id").value == 0 || document.getElementById("user_id").value == "None"){
                     
                  document.getElementById("myAccount").style.display = "none"
             }else{

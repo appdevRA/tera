@@ -55,7 +55,7 @@
 
       
         
-
+{% if user_id != None%}
       <li id="myAccount">   
 
                 
@@ -72,6 +72,7 @@
                 </li>
                 </ul>
       </li>
+      {% endif %}
       </ul>
         </nav>
     <div class="left-tab" style="border-right:2px"></div>
@@ -144,11 +145,11 @@
                       {% if type == 'springer article'%} 
                         <div>
                           <a href="{{link}}" > <b> {{column}} </b> </a>
-                          {% if user_id != 0 %}
+                          {% if user_id != None %}
 
                            <i id="springer||{{column}}||{{link}}" class="fa fa-bookmark" style="color: red;" onClick="reply_click(this.id)"></i>
                            {% endif  %}
-                           {% if user_id == 0 %}
+                           {% if user_id == None %}
                            <i href="#modalLogoutForm" data-toggle="modal" data-target="#modalLogoutForm" style="color: red;"class="fa fa-bookmark"></i>
                          
                            {% endif  %}
@@ -162,10 +163,10 @@
                       <a href="https://www.springer.com{{link}}" > <b> {{column}} </b>  </a>
                         <div>
                           
-                          {% if user_id != 0 %}
+                          {% if user_id != None %}
                           <i id="springer||{{column}}||https://www.springer.com{{link}}"class="fa fa-bookmark" style="color: red;" onClick="reply_click(this.id)"></i>
                           {% endif  %}
-                          {% if user_id == 0 %}
+                          {% if user_id == None %}
                            <i href="#modalLogoutForm" data-toggle="modal" data-target="#modalLogoutForm" style="color: red;"class="fa fa-bookmark"></i>
                          
                            {% endif  %}
@@ -176,12 +177,12 @@
                       {% if type == 'scienceDirectJournal' %}
                       <div>
                         <a href="https://www.sciencedirect.com/{{link}}" > <b> {{column}} </b> </a>
-                        {% if user_id != 0 %}
+                        {% if user_id != None %}
                             
                             <i id="science direct||{{column}}||https://www.sciencedirect.com/{{link}}" class="fa fa-bookmark" style="color: red;" onClick="reply_click(this.id)"></i>
                         {% endif  %}
 
-                        {% if user_id == 0 %}
+                        {% if user_id == None %}
                            <i href="#modalLogoutForm" data-toggle="modal" data-target="#modalLogoutForm" style="color: red;"class="fa fa-bookmark"></i>
                          
                            {% endif  %}
@@ -195,12 +196,12 @@
                       {% if type == 'scienceDirectBook' %}
                       <div>
                         <a href="https://www.sciencedirect.com/{{link}}" > <b> {{column}} </b> </a>
-                        {% if user_id != 0 %}
+                        {% if user_id != None %}
                             
                             <i id="science direct||{{column}}||https://www.sciencedirect.com/{{link}}" class="fa fa-bookmark" style="color: red;" onClick="reply_click(this.id)"></i>
                         {% endif  %}
 
-                        {% if user_id == 0 %}
+                        {% if user_id == None %}
                            <i href="#modalLogoutForm" data-toggle="modal" data-target="#modalLogoutForm" style="color: red;"class="fa fa-bookmark"></i>
                          
                            {% endif  %}
@@ -211,12 +212,12 @@
                       {% if type == 'scirp article'%} 
                         <div>
                           <a href="https://www.scirp.org/journal/{{link}}" > <b> {{column}} </b> </a>
-                          {% if user_id != 0 %}
+                          {% if user_id != None %}
                               
                               <i id="scirp||{{column}}||https://www.scirp.org/journal/{{link}}" class="fa fa-bookmark" style="color: red;" onClick="reply_click(this.id)"></i>
                           {% endif  %}
 
-                          {% if user_id == 0 %}
+                          {% if user_id == None %}
                            <i href="#modalLogoutForm" data-toggle="modal" data-target="#modalLogoutForm" style="color: red;"class="fa fa-bookmark"></i>
                          
                            {% endif  %}
@@ -227,12 +228,12 @@
                       {% if type == 'tandfon article' %}
                       <div>
                         <a href="https://www.tandfonline.com{{link}}" > <b> {{column}} </b> </a>
-                        {% if user_id != 0 %}
+                        {% if user_id != None %}
                               
                               <i id="tandfon||{{column}}||https://www.tandfonline.com{{link}}" class="fa fa-bookmark" style="color: red;" onClick="reply_click(this.id)"></i>
                         {% endif  %}
 
-                        {% if user_id == 0 %}
+                        {% if user_id == None %}
                            <i href="#modalLogoutForm" data-toggle="modal" data-target="#modalLogoutForm" style="color: red;"class="fa fa-bookmark"></i>
                          
                         {% endif  %}
@@ -242,12 +243,12 @@
                       {% if type == 'tandfon journal' %}
                       <div >
                         <a href="https://www.tandfonline.com{{link}}" > <b> {{column}} </b> </a>
-                        {% if user_id != 0 %}
+                        {% if user_id != None %}
                               
                               <i id="tandfon||{{column}}||https://www.tandfonline.com{{link}}" class="fa fa-bookmark" style="color: red;" onClick="reply_click(this.id)"></i>
                         {% endif  %}
 
-                        {% if user_id == 0 %}
+                        {% if user_id == None %}
                            <i href="#modalLogoutForm" data-toggle="modal" data-target="#modalLogoutForm" style="color: red;"class="fa fa-bookmark"></i>
                          
                         {% endif  %}
@@ -258,13 +259,13 @@
                       {% if type == 'tandfon database' %}
                       <div >
                         <a href="https://www.tandfonline.com{{link}}" > <b> {{column}} </b> </a>
-                         {% if user_id != 0 %}
+                         {% if user_id != None %}
                               
                             <i id="tandfon||{{column}}||https://www.tandfonline.com{{link}}" class="fa fa-bookmark" style="color: red;" onClick="reply_click(this.id)"></i>
                           {% endif  %}
 
 
-                          {% if user_id == 0 %}
+                          {% if user_id == None %}
                            <i href="#modalLogoutForm" data-toggle="modal" data-target="#modalLogoutForm" style="color: red;"class="fa fa-bookmark"></i>
                          
                         {% endif  %}
@@ -275,12 +276,12 @@
                       {% if type == 'herdinJournal' %}
                       <div >
                         <a href="https://www.ncbi.nlm.nih.gov{{link}}" > <b> {{column}} </b> </a>
-                        {% if user_id != 0 %}
+                        {% if user_id != None %}
                         
                         <i id="herdin||{{column}}||https://www.ncbi.nlm.nih.gov{{link}}" class="fa fa-bookmark" style="color: red;" onClick="reply_click(this.id)"></i>
                         {% endif  %}
 
-                         {% if user_id == 0 %}
+                         {% if user_id == None %}
                              <i href="#modalLogoutForm" data-toggle="modal" data-target="#modalLogoutForm" style="color: red;"class="fa fa-bookmark"></i>
                            
                           {% endif  %}
@@ -395,6 +396,7 @@
 function reply_click(clicked_id){
 if(document.getElementById(clicked_id).style.color == "red"){
   document.getElementById(clicked_id).style.color = "#d05858";
+
    $.ajax({
                       type:"POST",
                       url:"",
@@ -423,15 +425,9 @@ function logout(){
 $(document).ready(function() {
            var buttons = document.getElementsByClassName("fa fa-bookmark");
            
-            if(document.getElementById("user_id").value == 0 ){
-                    // for(i=0; i< buttons.length; i++){
-                    //     buttons[i].style.display = "none"; 
-                    // }
-                 document.getElementById("myAccount").style.display = "none"
-            }else{
-              document.getElementById("login").style.display = "none"
+           
 
-             }
+             
           });
             
             
