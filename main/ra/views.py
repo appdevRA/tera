@@ -90,7 +90,7 @@ class TeraLoginUser(View):
 			password = request.POST.get('password')
 
 			user = authenticate(request, username=username, password=password)
-			print(user)
+			
 			
 			if user is not None:
 				login(request, user)
@@ -123,8 +123,18 @@ class TeraIndexView(View):
 		#	proxy.save()
 		if request.session.get('proxy') == None:
 			proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
-			request.session['proxy'] = testProxy(proxies).proxy
-		print(request.session.get('proxy'))
+			request.session['proxy'] = testProxy(proxies,1)
+		else:
+			result = testProxy(request.session.get('proxy'),2) # test a single proxy
+
+			if result == False:
+				proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
+				request.session['proxy'] = testProxy(proxies,1) # test a random proxy from db
+			else:
+				request.session['proxy'] = result
+
+
+		
 		context ={
 			"user_id": request.user.id
 		}
@@ -142,11 +152,11 @@ class TeraIndexView(View):
 			return redirect('ra:tera_login_view')
 
 		elif 'btnLogout' in request.POST:
-			
+			proxy = request.session.get('proxy')
+
 			logout(request)
 
-			proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
-			request.session['proxy'] = testProxy(proxies).proxy
+			request.session['proxy'] = proxy
 			return redirect("ra:index_view")
 
 		elif 'btnSearch' in request.POST:

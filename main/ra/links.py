@@ -650,31 +650,35 @@ def headers():
 
     
 
-def testProxy(proxies):
+def testProxy(proxies, ptype):
     a = False
 
     while a == False:
+
+        if ptype == 1:
+            try:
+                p = random.choice(proxies)
+                print(p.proxy + ': ')
+                response = requests.get('https://google.com', proxies={'https:':p.proxy} ,timeout=1)
+                print('new proxy assigned')
+                a = True
+                return p.proxy
+            except:
+                print( "                   Connection error ")
+                pass
+        else:
+            try:
+                response = requests.get('https://free-proxy-list.net/', proxies={'https:':proxies} ,timeout=1)
+                print(proxies + ' working\n')
+                a = True
+                return proxies
+            except:
+                print(proxies,' not working\n')
+                return False
         
-        try:
-            #p = proxy_generator()
-            p = random.choice(proxies)
-            
-            
-            # if kind == 1:
-            print(p.proxy + ': ')
-            response = requests.get('https://google.com/', proxies={'https:':p.proxy} ,timeout=1)
-            # else:
-            #     print(p + ': ')
-            #     response = requests.get('https://free-proxy-list.net/', proxies={'https:':p} ,timeout=1)
-            print('successful')
-            a = True
-            return p
-            
             
             # if the request is successful, no exception is raised
-        except:
-            print( "                   Connection error ")
-            pass
+       
         
 
 userAgents = [ 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36',
