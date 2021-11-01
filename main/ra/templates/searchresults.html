@@ -144,17 +144,21 @@
               
                       {% if type == 'springer article'%} 
                         <div>
+                          <a class="btnBookmark"  >
                           <a href="{{link}}" > <b> {{column}} </b> </a>
                           {% if user_id != None %}
-
-                           <i id="springer||{{column}}||{{link}}" class="fa fa-bookmark" style="color: red;" onClick="reply_click(this.id)"></i>
-                           {% endif  %}
-                           {% if user_id == None %}
-                           <i href="#modalLogoutForm" data-toggle="modal" data-target="#modalLogoutForm" style="color: red;"class="fa fa-bookmark"></i>
+                            <i id="springer||{{column}}||https://www.springer.com{{link}}"class="fa fa-bookmark" style="color: red;" onClick="reply_click(this.id)"></i></a>
+                          {% endif  %}
+                          {% if user_id == None %}
+                           <a class="btnBookmark"  ><i href="#modalLogoutForm" data-toggle="modal" data-target="#modalLogoutForm" style="color: red;"class="fa fa-bookmark"></i>
                          
                            {% endif  %}
-                          
+                           </a>
+                          {% if user_id != None %}
+
+                       
                         
+                        {% endif %}
                         </div> 
                       {% endif %}   
 
@@ -162,20 +166,25 @@
                       {% if type == 'springer book'%} 
                       <a href="https://www.springer.com{{link}}" > <b> {{column}} </b>  </a>
                         <div>
-                          
+                          <a class="btnBookmark"  >
                           {% if user_id != None %}
+                          
                           <i id="springer||{{column}}||https://www.springer.com{{link}}"class="fa fa-bookmark" style="color: red;" onClick="reply_click(this.id)"></i>
                           {% endif  %}
                           {% if user_id == None %}
                            <i href="#modalLogoutForm" data-toggle="modal" data-target="#modalLogoutForm" style="color: red;"class="fa fa-bookmark"></i>
+                           
                          
                            {% endif  %}
+                            </a>
                         </div>  <!-- to prevent from displaying all the links in at a time -->
+                       
                       {% endif %}
 
 
                       {% if type == 'scienceDirectJournal' %}
                       <div>
+                        <a class="btnBookmark"  >
                         <a href="https://www.sciencedirect.com/{{link}}" > <b> {{column}} </b> </a>
                         {% if user_id != None %}
                             
@@ -187,7 +196,7 @@
                          
                            {% endif  %}
 
-
+                        </a>
                       </div>  <!-- display title of links -->
                       {% endif %}
                       
@@ -195,6 +204,7 @@
 
                       {% if type == 'scienceDirectBook' %}
                       <div>
+                        <a class="btnBookmark"  >
                         <a href="https://www.sciencedirect.com/{{link}}" > <b> {{column}} </b> </a>
                         {% if user_id != None %}
                             
@@ -205,12 +215,14 @@
                            <i href="#modalLogoutForm" data-toggle="modal" data-target="#modalLogoutForm" style="color: red;"class="fa fa-bookmark"></i>
                          
                            {% endif  %}
+                         </a>
                       </div>  <!-- display title of links -->
                       {% endif %}
                       
 
                       {% if type == 'scirp article'%} 
                         <div>
+                          <a class="btnBookmark"  >
                           <a href="https://www.scirp.org/journal/{{link}}" > <b> {{column}} </b> </a>
                           {% if user_id != None %}
                               
@@ -221,73 +233,85 @@
                            <i href="#modalLogoutForm" data-toggle="modal" data-target="#modalLogoutForm" style="color: red;"class="fa fa-bookmark"></i>
                          
                            {% endif  %}
+                         </a>
                         </div>  <!-- to prevent from displaying all the links in at a time -->
                       {% endif %} 
                       
 
                       {% if type == 'tandfon article' %}
                       <div>
-                        <a href="https://www.tandfonline.com{{link}}" > <b> {{column}} </b> </a>
-                        {% if user_id != None %}
-                              
-                              <i id="tandfon||{{column}}||https://www.tandfonline.com{{link}}" class="fa fa-bookmark" style="color: red;" onClick="reply_click(this.id)"></i>
-                        {% endif  %}
+                        <a class="btnBookmark"  >
+                            <a href="https://www.tandfonline.com{{link}}" > <b> {{column}} </b> </a>
+                            {% if user_id != None %}
+                                  
+                                  <i id="tandfon||{{column}}||https://www.tandfonline.com{{link}}" class="fa fa-bookmark" style="color: red;" onClick="reply_click(this.id)"></i>
+                            {% endif  %}
 
-                        {% if user_id == None %}
-                           <i href="#modalLogoutForm" data-toggle="modal" data-target="#modalLogoutForm" style="color: red;"class="fa fa-bookmark"></i>
-                         
-                        {% endif  %}
+                            {% if user_id == None %}
+                               <i href="#modalLogoutForm" data-toggle="modal" data-target="#modalLogoutForm" style="color: red;"class="fa fa-bookmark"></i>
+                             
+                            {% endif  %}
+                        </a>
                       </div>  <!-- display title of links -->
                       {% endif %}
 
                       {% if type == 'tandfon journal' %}
                       <div >
-                        <a href="https://www.tandfonline.com{{link}}" > <b> {{column}} </b> </a>
-                        {% if user_id != None %}
-                              
-                              <i id="tandfon||{{column}}||https://www.tandfonline.com{{link}}" class="fa fa-bookmark" style="color: red;" onClick="reply_click(this.id)"></i>
-                        {% endif  %}
+                        <a class="btnBookmark"  >
+                            <a href="https://www.tandfonline.com{{link}}" > <b> {{column}} </b> </a>
+                            {% if user_id != None %}
+                                  
+                                  <i id="tandfon||{{column}}||https://www.tandfonline.com{{link}}" class="fa fa-bookmark" style="color: red;" onClick="reply_click(this.id)"></i>
+                            {% endif  %}
 
-                        {% if user_id == None %}
-                           <i href="#modalLogoutForm" data-toggle="modal" data-target="#modalLogoutForm" style="color: red;"class="fa fa-bookmark"></i>
-                         
-                        {% endif  %}
+                            {% if user_id == None %}
+                               <i href="#modalLogoutForm" data-toggle="modal" data-target="#modalLogoutForm" style="color: red;"class="fa fa-bookmark"></i>
+                             
+                            {% endif  %}
+                        </a>
                       </div>  <!-- display title of links -->
                       {% endif %}
 
 
                       {% if type == 'tandfon database' %}
                       <div >
-                        <a href="https://www.tandfonline.com{{link}}" > <b> {{column}} </b> </a>
-                         {% if user_id != None %}
-                              
-                            <i id="tandfon||{{column}}||https://www.tandfonline.com{{link}}" class="fa fa-bookmark" style="color: red;" onClick="reply_click(this.id)"></i>
-                          {% endif  %}
+                        <a class="btnBookmark"  >
+                            <a href="https://www.tandfonline.com{{link}}" > <b> {{column}} </b> </a>
+                             {% if user_id != None %}
+                                  
+                                <i id="tandfon||{{column}}||https://www.tandfonline.com{{link}}" class="fa fa-bookmark" style="color: red;" onClick="reply_click(this.id)"></i>
+                              {% endif  %}
 
 
-                          {% if user_id == None %}
-                           <i href="#modalLogoutForm" data-toggle="modal" data-target="#modalLogoutForm" style="color: red;"class="fa fa-bookmark"></i>
-                         
-                        {% endif  %}
+                              {% if user_id == None %}
+                               <i href="#modalLogoutForm" data-toggle="modal" data-target="#modalLogoutForm" style="color: red;"class="fa fa-bookmark"></i>
+                             
+                            {% endif  %}
+                        </a>
                       </div>  <!-- display title of links -->
                       {% endif %}
 
 
                       {% if type == 'herdinJournal' %}
                       <div >
-                        <a href="https://www.ncbi.nlm.nih.gov{{link}}" > <b> {{column}} </b> </a>
-                        {% if user_id != None %}
-                        
-                        <i id="herdin||{{column}}||https://www.ncbi.nlm.nih.gov{{link}}" class="fa fa-bookmark" style="color: red;" onClick="reply_click(this.id)"></i>
-                        {% endif  %}
+                        <a class="btnBookmark"  >
+                            <a href="https://www.ncbi.nlm.nih.gov{{link}}" > <b> {{column}} </b> </a>
+                              {% if user_id != None %}
+                            
+                                  <i id="herdin||{{column}}||https://www.ncbi.nlm.nih.gov{{link}}" class="fa fa-bookmark" style="color: red;" onClick="reply_click(this.id)"></i>
+                              {% endif  %}
 
-                         {% if user_id == None %}
-                             <i href="#modalLogoutForm" data-toggle="modal" data-target="#modalLogoutForm" style="color: red;"class="fa fa-bookmark"></i>
-                           
-                          {% endif  %}
+                              {% if user_id == None %}
+                                  <i href="#modalLogoutForm" data-toggle="modal" data-target="#modalLogoutForm" style="color: red;"class="fa fa-bookmark"></i>
+                               
+                              {% endif  %}
+                        </a>
                       </div>  <!-- display title of links -->
                       {% endif %}
+
+
                 {{break}}
+
               {% endif %}
               {% endfor %}
               {% endif %}

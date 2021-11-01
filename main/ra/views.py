@@ -179,8 +179,8 @@ class TeraSearchResultsView(View):
 		a = scrape(word,proxy , 'article',1, 'springer open')
 		
 		while (a == False):
-
-			proxy = testProxy(proxies).proxy
+			proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
+			proxy = testProxy(proxies,1)
 			request.session['proxy'] = proxy
 			a = scrape(word,proxy , 'article',1, 'springer open')
 		
@@ -207,9 +207,9 @@ class TeraSearchResultsView(View):
 			a = scrape(word, request.session.get('proxy') , 'article', 1, 'springer open')
 
 			while (a == False):
-				proxy = testProxy(proxies).proxy
-				request.session['proxy'] = proxy
-				a = scrape(word, request.session.get('proxy') , 'article', 1, 'springer open')
+				proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
+				proxy = testProxy(proxies,1)
+				a = scrape(word, proxy , 'article', 1, 'springer open')
 
 
 			springers = a[0]	
@@ -232,9 +232,9 @@ class TeraSearchResultsView(View):
 			a = scrape(word, request.session.get('proxy') , 'article', 1, 'scirp')
 			
 			while (a == False):
-				proxy = testProxy(proxies).proxy
-				request.session['proxy'] = proxy
-				a = scrape(word, request.session.get('proxy') , 'article', 1, 'scirp')
+				proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
+				proxy = testProxy(proxies,1)
+				a = scrape(word, proxy , 'article', 1, 'scirp')
 			
 			scienceDirects = a[0]
 			scienceLinks = a[1]
@@ -261,9 +261,9 @@ class TeraSearchResultsView(View):
 
 
 			while (a == False):
-				proxy = testProxy(proxies).proxy
-				request.session['proxy'] = proxy
-				a = scrape(word,request.session.get('proxy') , 'journal',1, 'science direct')
+				proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
+				proxy = testProxy(proxies,1)
+				a = scrape(word,proxy , 'journal',1, 'science direct')
 
 			scienceDirects = a[0]
 			scienceLinks = a[1]
