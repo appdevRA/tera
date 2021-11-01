@@ -12,7 +12,7 @@
 </head>
 
 <body style="background-color: #f3f3f3">
-<input id="user_id" value="{{user_id}}" hidden name="">
+<input id="header" value=""  name="">
     <h1> Create form</h1>
 
 
@@ -22,10 +22,10 @@
 <i id ="btnBookmark{{n}}"class="fa fa-bookmark" style="color: white;" onClick="fun({{n}},this.id)"></i>
  <!-- <i id ="btnBookmark{{n}}"class="fa fa-bookmark" style="color: white;" onClick="fun({{n}},this.id)"></i> -->
         <form id="bookmarkForm" >   
-            <button id="asdsd/awdwd/asd/wdawdrqq/adawdawda/wadasd/wda/dada/" class="btnBookmark" onClick="reply_click(this.id)">B1</button>
+            <button id="" class="btnBookmark" onClick="reply_click(this.id)">B1</button>
             <button id="{{n}}" onClick="reply_click(this.id)">B2</button>
             <button id="{{n}}" onClick="reply_click(this.id)">B3</button>
-    
+        <input type="" name="">
 <script type="text/javascript">
   
 </script>
@@ -94,12 +94,14 @@ $(document).ready(function() {
 <script type="text/javascript">
 
 function reply_click(clicked_id){
-    
+    buttons = document.getElementById("header").value;
+    alert(buttons)
         $.ajax({
                       type:"POST",
                       url:"",
 
                       data:{
+                        header: buttons,
                         link: clicked_id,
                         csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
                       }
@@ -107,3 +109,39 @@ function reply_click(clicked_id){
 }
          
       </script>
+
+
+
+
+div class="c-article-header">
+<ul class="c-article-identifiers" data-test="article-identifier">
+<li class="c-article-identifiers__item" data-test="article-category">Research</li>
+<li class="c-article-identifiers__item">
+<span class="c-article-identifiers__open" data-test="open-access">Open Access</span>
+</li>
+<li class="c-article-identifiers__item"><a data-track="click" data-track-action="publication date" data-track-label="link" href="#article-info">Published: <time datetime="2016-04-05">05 April 2016</time></a></li>
+</ul>
+<h1 class="c-article-title" data-article-title="" data-test="article-title">Adaption of a dermal in vitro method to investigate the uptake of chemicals across amphibian skin</h1>
+<ul class="c-article-author-list js-etal-collapsed" data-component-authors-activator="authors-list" data-etal="25" data-etal-small="3" data-test="authors-list">
+    <li class="c-article-author-list__item"><a data-author-popup="auth-Katharina-Kaufmann" data-corresp-id="c1" data-test="author-name" data-track="click" data-track-action="open author" data-track-label="link" href="#auth-Katharina-Kaufmann">Katharina Kaufmann
+        <svg aria-hidden="true" class="u-icon" focusable="false" height="16" role="img" width="16">
+            <use xlink:href="#global-icon-email" xmlns:xlink="http://www.w3.org/1999/xlink"></use></svg></a><sup class="u-js-hide"><a href="#Aff1">1</a></sup> &amp; </li><li class="c-article-author-list__item"><a data-author-popup="auth-Peter-Dohmen" data-test="author-name" data-track="click" data-track-action="open author" data-track-label="link" href="#auth-Peter-Dohmen">Peter Dohmen</a><sup class="u-js-hide"><a href="#Aff1">1</a></sup> </li></ul>
+<p class="c-article-info-details" data-container-section="info">
+<a data-test="journal-link" href="/"><i data-test="journal-title">Environmental Sciences Europe</i></a>
+<b data-test="journal-volume"><span class="u-visually-hidden">volume</span> 28</b>, Article number: <span data-test="article-number">10</span> (<span data-test="article-publication-year">2016</span>)
+            <a class="c-article-info-details__cite-as u-hide-print" data-track="click" data-track-action="cite this article" data-track-label="link" href="#citeas">Cite this article</a>
+</p>
+<div class="c-article-metrics-bar__wrapper u-clear-both">
+<ul class="c-article-metrics-bar u-list-reset">
+<li class="c-article-metrics-bar__item">
+<p class="c-article-metrics-bar__count">2519 <span class="c-article-metrics-bar__label">Accesses</span></p>
+</li>
+<li class="c-article-metrics-bar__item">
+<p class="c-article-metrics-bar__count">12 <span class="c-article-metrics-bar__label">Citations</span></p>
+</li>
+<li class="c-article-metrics-bar__item">
+<p class="c-article-metrics-bar__details"><a data-track="click" data-track-action="view metrics" data-track-label="link" href="/articles/10.1186/s12302-016-0080-y/metrics" rel="nofollow">Metrics <span class="u-visually-hidden">details</span></a></p>
+</li>
+</ul>
+</div>
+</div>

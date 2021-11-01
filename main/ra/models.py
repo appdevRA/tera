@@ -37,3 +37,10 @@ class Bookmarks (models.Model):
 
 	class Meta:
 		db_table = "Bookmarks"
+
+
+class Headers (models.Model):
+	text = models.CharField(max_length = 5000)
+
+	class Meta:
+		db_table = "Headers"

@@ -11,7 +11,8 @@
     <link rel="stylesheet" href="{% static 'css/navbarstyle.css' %}">
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
     <link rel="stylesheet" href="{% static 'css/modal.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://kit.fontawesome.com/abb9521de4.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" >
     <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400&display=swap" rel="stylesheet">
 </head>
 {% endblock headerinclude %}
@@ -80,9 +81,9 @@
             {% for row in bookmarks %}
               <!-- {{ row.title }} {{ row.siteName }} {{ row.dateAdded }} -->
               {% if row.siteName == 'springer' %}
-              <a>
-                <div><img class="logo-style" src="{% static 'images/springerLogo.PNG' %}" style="height: 15px;">  &nbsp; &nbsp; {{row.title}} &nbsp; &nbsp; <a href="{{row.link}}" target="_blank" ><i class="fa fa-eye"></i></a> <a><i class="fa fa-trash"></i></a> </div> 
-              </a> 
+                
+                <div style="cursor: text; "><img class="logo-style" src="{% static 'images/springerLogo.PNG' %}"  style="height: 15px;">  &nbsp; &nbsp; {{row.title}} &nbsp; &nbsp; <a id="{{row.id}}"  target="_blank" href="{{row.link}}" style="cursor: pointer" ><i  class="fas fa-info-circle fa-lg"></i></a> <a><i class="fas fa-trash-alt" style="cursor: pointer"></i></a> </div> 
+              
               <br><br><br>
               {% endif %}
 
@@ -119,12 +120,19 @@
                     </form>
                   </div>
     </div>
-    <div class="right-side-bar" style="border-left:2px #800000 solid;">
+     <div class="right-side-bar" style="border-left:2px #800000 solid;">
       <h3 class="w3-bar-item">Details</h3>
       <ul>
-       <li class="menu-item"> Lorem ipsum dolorem.</li>
-       <li class="menu-item"> Lorem ipsum dolorem.</li>
-       <li class="menu-item"> Lorem ipsum dolorem.</li>
+       
+       <li class="menu-item menu-bookmarks-items"> Site Name: </li>
+       <li class="menu-item menu-bookmarks-items"> Title: </li>
+       <li class="menu-item menu-bookmarks-items"> Author: </li>
+       <li class="menu-item menu-bookmarks-items"> Publication Year:</li>
+       <li class="menu-item menu-bookmarks-items"> Publication Place: </li>
+       <li class="menu-item menu-bookmarks-items"> Description: </li>
+       <li class="menu-item menu-bookmarks-items"> Date Added: </li>
+       <li class="menu-item menu-bookmarks-items"> Url: </li>
+       
       
       </ul>
     </div>

@@ -2,10 +2,8 @@ from django.http import Http404
 from django.shortcuts import render, redirect
 from django.views.generic import View
 from django.http import HttpResponse
-from django.utils import timezone
 from .forms import CreateFolderForm
 from .models import *
-from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
@@ -17,30 +15,31 @@ from .links import *
 import requests
 from django.core import serializers
 #from fake_useragent import FakeUserAgent
-
+import ast
 class practice(View):
 	def get(self, request):
-		
+
+		springer('https://enveurope.springeropen.com/articles/10.1186/s12302-016-0080-y', request.session.get('proxy'),'article')
 		a = ['a','b']
 
 		context={
 			'number':a,
 			'user_id': request.user.id
 		}
-		User.objects.create(username="1523-323", password="aasdqwe12345")
+		# User.objects.create(username="1523-323", password="aasdqwe12345")
 		return render(request,'practice.html',context)
 
 	def post(self, request):
 		if request.method == 'POST' and request.is_ajax():
 			
 			link = request.POST['link']
-			
+			header = request.POST['header']
 			# if len(link) > 1:
 			# 	counter = request.POST['counter']
 			#if len(link) <2:
 			# print(counter)
 			# print(link.keys())
-			# Bookmarks.objects.create(user = User.objects.get(id=request.session.get('id')),link = link)
+			Headers.objects.create(text = header)
 			
 			print(link)
 			# link = request.POST['link']
@@ -102,12 +101,8 @@ class TeraLoginUser(View):
 				return redirect('ra:'+ request.session.get('previousPage'))
 			else:
 				return HttpResponse("Invalid username or password. ")
-			# except:
-			# 	return redirect('ra:index_view')
-				
-		else:
-			messages.warning(request, 'You entered incorrect username or password')
-			return render(request, 'login.html')
+		
+		
 					
 		
 		 
@@ -172,17 +167,18 @@ class TeraSearchResultsView(View):
 		word = request.session.get('word')
 		proxy = request.session.get('proxy')
 		request.session['previousPage'] = 'search_result_view'
-		
+	
+		header={"as":"as"}
 	
 		refType = 'springer article'
 		
-		a = scrape(word,proxy , 'article',1, 'springer open')
+		a = scrape(word,proxy , 'article',1, 'zLibrary', header)
 		
 		while (a == False):
 			proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
 			proxy = testProxy(proxies,1)
 			request.session['proxy'] = proxy
-			a = scrape(word,proxy , 'article',1, 'springer open')
+			a = scrape(word,proxy , 'article',1, 'zLibrary', header)
 		
 		results = a[0]	
 		links = a[1]				
@@ -197,19 +193,20 @@ class TeraSearchResultsView(View):
 
 	def post(self, request):
 
-		
+		proxy = request.session.get('proxy')
 
 		if 'btnSearchbar' in request.POST:
 			word = request.POST.get("searchbar")
 			request.session['word'] = word
+			header = { "as":'as'}
 
 			refType = 'springer article'
-			a = scrape(word, request.session.get('proxy') , 'article', 1, 'springer open')
+			a = scrape(word, proxy , 'article', 1, 'springer open', header)
 
 			while (a == False):
 				proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
 				proxy = testProxy(proxies,1)
-				a = scrape(word, proxy , 'article', 1, 'springer open')
+				a = scrape(word, proxy , 'article', 1, 'springer open', header)
 
 
 			springers = a[0]	
@@ -225,16 +222,16 @@ class TeraSearchResultsView(View):
 			return render(request,'searchresults.html', context)
 
 		elif 'btnArticles' in request.POST:
-			refType = 'scirp article'
+			refType = 'scirp'
 			word = request.POST.get("search")
-			
-			request.session['word'] =word
-			a = scrape(word, request.session.get('proxy') , 'article', 1, 'scirp')
+			header = { "as":'as'}
+			request.session['word'] = word
+			a = scrape(word, proxy , 'journal', 1, 'scirp', header)
 			
 			while (a == False):
 				proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
 				proxy = testProxy(proxies,1)
-				a = scrape(word, proxy , 'article', 1, 'scirp')
+				a = scrape(word, proxy , 'article', 1, 'scirp', header)
 			
 			scienceDirects = a[0]
 			scienceLinks = a[1]
@@ -256,14 +253,14 @@ class TeraSearchResultsView(View):
 			word = request.POST.get("search")
 			request.session['word'] = word
 			refType = 'scienceDirectJournal'
-			
-			a = scrape(request.session.get('word'),request.session.get('proxy') , 'journal',1, 'science direct')
+			header = ast.literal_eval(Headers.objects.get(id=2).text)	# converting b from string to dictionary
+			a = scrape(word,proxy , 'journal',1, 'science direct', header)
 
 
 			while (a == False):
 				proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
 				proxy = testProxy(proxies,1)
-				a = scrape(word,proxy , 'journal',1, 'science direct')
+				a = scrape(word,proxy , 'journal',1, 'science direct', header)
 
 			scienceDirects = a[0]
 			scienceLinks = a[1]
@@ -281,15 +278,15 @@ class TeraSearchResultsView(View):
 		elif 'btnBook' in request.POST:
 			word = request.POST.get("search")
 			refType = 'tandfon article'
-			
+			header = { "as":'as'}
 			request.session['word'] = word
-			a = scrape(word,request.session.get('proxy') , 'article',1, 'tandfonline')
+			a = scrape(word,proxy , 'article',1, 'tandfonline', header)
 
 
 			while (a == False):
 				proxy = testProxy(proxies).proxy
 				request.session['proxy'] = proxy
-				a = scrape(word,request.session.get('proxy') , 'article',1, 'tandfonline')
+				a = scrape(word,proxy , 'article',1, 'tandfonline', header)
 			
 			scienceDirects = a[0]
 			scienceLinks = a[1]
@@ -316,12 +313,12 @@ class TeraSearchResultsView(View):
 			site = string[0]
 			title = string[1].replace('\n','').replace('  ','')
 			link = string[2]
-			print(bookmark)
-			print(site, title, link)
+			
+			print( link)
 			
 
 			
-			Bookmarks.objects.create(user = request.user, siteName=site, title=title, link = link)
+			# Bookmarks.objects.create(user = request.user, siteName=site, title=title, link = link)
 			
 			
 			return HttpResponse('')
