@@ -145,7 +145,7 @@
                           <a href="{{link}}" > <b> {{column}} </b> </a>
                           {% if user_id != None %}
                           <a class="btnBookmark" >
-                            <i id="refType||{{column}}||{{link}}"class="fa fa-bookmark" style="color: red;" onClick="reply_click(this.id)"></i></a>
+                            <i id="{{type}}||{{column}}||{{link}}"class="fa fa-bookmark" style="color: red;" onClick="reply_click(this.id)"></i></a>
                           {% endif  %}
 
                           {% if user_id == None %}
@@ -273,7 +273,8 @@ if(document.getElementById(clicked_id).style.color == "red"){
                       url:"",
 
                       data:{
-                        link: clicked_id,
+                        
+                        bookmark: clicked_id,
                         csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
                       }
         }); 

@@ -18,11 +18,11 @@ import time
 def scrape(word, proxy, refType, pageNumber, site, header):
 
 
-    if site == 'springer open':
+    if site == 'Springeropen.com':
         return springer(word, proxy, refType,pageNumber)
-    elif site == 'science direct':
+    elif site == 'Sciencedirect.com':
         return scienceDirect(word, proxy, refType, pageNumber, header)
-    elif site == 'scirp':
+    elif site == 'Scirp.org':
         return scirp(word, proxy, refType, pageNumber)
     elif site == 'tandfonline':
         return tandFOnline(word, proxy, refType, pageNumber)
@@ -89,7 +89,7 @@ def springer(word, proxy, refType, pageNumber): # INDEX 1 STARTING SA PAGINATION
         x = False
         while(x == False):
             try:
-                response = requests.get('https://www.springer.com/gp/search?page='+ str(pageNumber) +'&query='+ word+'&submit=Submit', headers = headers(), proxies={'https:': proxy}, timeout=2) #books
+                response = requests.get('https://www.springer.com/gp/search?dnc=true&facet-type=type__book&page='+ str(pageNumber) +'&query='+ word+'&submit=Submit', headers = headers(), proxies={'https:': proxy}, timeout=2) #books
                 x = True
                 
             except ConnectionError:
@@ -125,7 +125,7 @@ def springer(word, proxy, refType, pageNumber): # INDEX 1 STARTING SA PAGINATION
                     z.append(books1.div.text) #desicription
                     z.append(books1.find('p', class_='format').text) #format
                     #z.append(books1.find('p', class_='price-container price-loaded').span.text) #price
-                    springLinks.append(books1.h4.a['href'])
+                    springLinks.append('https://www.springer.com' +books1.h4.a['href'])
      
                 elif books2 != None:
                     z.append(books2.h4.a.text) #title
@@ -140,25 +140,79 @@ def springer(word, proxy, refType, pageNumber): # INDEX 1 STARTING SA PAGINATION
     
     return springers, springLinks
 
-def springer(link, proxy, refType ):
-    if refType == 'article':
+def details(link, proxy, refType ):
+    ref = refType.split(' ')
+    if refType == 'Springeropen.com Article':
         # with open ('C:/Users/Valued Client/Desktop/html/sprigner DETAILS.html', 'r', errors='ignore') as html_file:
         #     content = html_file.read()
             # soup = BeautifulSoup(content, 'html.parser')
-        response = requests.get(link,headers=headers(), proxies={'https:': proxy})
-        soup = BeautifulSoup(response.content, 'html.parser')
         
-        data={
+        # reference = refType.split(' ')
+      
+        response = requests.get('https:'+link,headers=headers(), proxies={'https:': proxy})
+        soup = BeautifulSoup(response.content, 'html.parser')
+        descrip = soup.find('div', class_='c-article-section__content').p.text
+        description = descrip[:500]
+        # print(len(description))
+        # if len(description) > 1000:
+        #     a = soup.find('h3', text='Conclusion')
+        #     print(a.next)
+      
+        details={
+            'websiteTitle': ref[0],
+            'itemType': ref[1],
             'author': soup.find('div', class_='c-article-header').find('ul', class_='c-article-author-list js-etal-collapsed').text,
-            'abstract': soup.find('div', class_='c-article-section__content').p.text,
-            'publication': soup.find('i', attrs={'data-test':'journal-title'}).text,
+            'description': description,
+            'journalItBelongs': soup.find('i', attrs={'data-test':'journal-title'}).text,
             'volume': soup.find('b', attrs={'data-test':'journal-volume'}).text[7:],
-            'year': soup.find('span', attrs={'data-test':'article-publication-year'}).text,
-            'doi': soup.find('a', attrs={'data-track-action':'view doi'}).text,
+            'publishYear': soup.find('span', class_="c-bibliographic-information__value").text,
+            'doi': soup.find('a', attrs={'data-track-action':'view doi'}).text, 
+            'subtitle':'',
+            'citation':'',
+            'downloads':'',
+            'publisher':'',
+            'edition':'',
+            'pages':''
+            
         }
         
-        return data
+
+            
+        # websiteTitle = refType[0]
+        # itemType = refType[1]
         
+        return details
+
+    elif refType == 'Springeropen.com Book':
+        response = requests.get(link + '#about',headers=headers(), proxies={'https:': proxy})
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        if soup.find('div', class_='unique-selling-points unique-selling-points--collapsed u-mb-36') == None:
+            description = ''
+        else:
+            description = soup.find('div', class_='unique-selling-points unique-selling-points--collapsed u-mb-36').text
+        details={
+            'websiteTitle': ref[0],
+            'itemType': ref[1],
+            'title': soup.find('h1', attrs={"itemprop":"name"}).text,
+            'subtitle': soup.find('h2', class_='page-title__subtitle').text,
+            'description': description,
+            'citation': soup.find('span', id='bookcitations-count-number').text,
+            'downloads': soup.find('span', class_='test-metric-count article-metrics__views').text,
+            'author': soup.find('ul', class_='test-contributor-names').text,
+            'publisher': soup.find('span', attrs={"itemprop":"name"}).text,
+            'edition': soup.find('span', id='edition-number').text,
+            'pages': soup.find('span', id='number-of-pages').text,
+            'doi': soup.find('span', id='doi-url').text,
+            'journalItBelongs': '',
+            'volume': '',
+            'publishYear': '',
+
+
+            
+        }
+
+        return details
 
 
 def scienceDirect(word,proxy, refType, pageNumber, header):
@@ -527,7 +581,7 @@ def proxy_generator1():
 def proxy_generator2():
     proxies = []
     
-    for x in range(20):
+    for x in range(2):
         
         headers = {
         'authority': 'www.proxyhub.me',
@@ -572,7 +626,7 @@ def proxy_generator2():
        
 
     proxyList = list(dict.fromkeys(proxies))
-    print(proxyList[91])
+    # print(proxyList[91])
 
     return proxyList
     
