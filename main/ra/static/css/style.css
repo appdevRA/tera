@@ -104,9 +104,11 @@ section.home{
     right:0;
     padding: 10px;
     z-index: -1;
-   
 }
 
+.right-side-bar:hover{
+    overflow-y: scroll;
+}
 .right-side-bar li{
     display: block;
 }
