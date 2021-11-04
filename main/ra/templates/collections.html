@@ -8,11 +8,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TERA</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link rel="stylesheet" href="{% static 'css/navbarstyle.css' %}">
+  
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
     <link rel="stylesheet" href="{% static 'css/modal.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+    <style type="text/css">
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+
+      th, td {
+        text-align: left;
+        padding: 8px;
+      }
+
+      tr:nth-child(even) {background-color: #f2f2f2;}
+    </style>
 </head>
 {% endblock headerinclude %}
 
@@ -23,13 +46,8 @@
       <label for="btn" class="icon">
         <span class=></span>
       </label>
-     
       <ul>     
-      
-      <li><a href="#">My Collections</a></li>
-
-       <li>
-                <label for="btn-2" class="show">My Account <i class="fa fa-user" aria-hidden="true"></i></label>
+      <li>
                 <a href="#">My Account <i class="fa fa-user" aria-hidden="true"></i></a>
                 
                 <ul>
@@ -40,54 +58,82 @@
       </li>
       </ul>
   </nav>
-
-    <div class="main-menu" style="border-right:2px #800000 solid;">
-
+  <div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-2">
+      <div class="main-menu" style="border-right:2px #800000 solid;">
         <ul>
             <section class="home">
-                <li class="menu-item"><i class="fa fa-bookmark"></i>All References</li>
-                <li class="menu-item"><i class="fa fa-history"></i>Recently Added</li>
-                <li class="menu-item"><i class="fa fa-bookmark"></i>Recently Read</li>
-                <li class="menu-item"><i class="fa fa-star"></i>Favorites</li>
-                <li class="menu-item"><i class="fa fa-trash"></i>Trash</li>
-                <li class="menu-item"><i class="fa fa-chevron-circle-down"></i><b>My Collections </b>
+                <li class="menu-item"><i class="fa fa-bookmark"></i> &nbsp; &nbsp; All References</li>
+                <li class="menu-item"><i class="fa fa-history"></i>&nbsp; &nbsp; Recently Added</li>
+                <li class="menu-item"><i class="fa fa-bookmark"></i>&nbsp; &nbsp; Recently Read</li>
+                <li class="menu-item"><i class="fa fa-star"></i>&nbsp; &nbsp; Favorites</li>
+                <li class="menu-item"><i class="fa fa-trash"></i>&nbsp; &nbsp; Trash</li>
+                <li class="menu-item"><i class="fa fa-chevron-circle-down"></i>&nbsp; &nbsp; <b>My Collections </b>
                                  <i class="fa fa-plus" style="font-size:10px;" name="addfolder" onclick="document.getElementById('id01').style.display='block'"></i></li>
                                  {% for folder in folders %}
                                     <li class="menu-item" style="padding-left: 50px;"> {{folder.foldername}} </li>
                                  {% endfor %}
-                <li class="menu-item"><i class="fa fa-chevron-circle-down"></i><b>Private Groups</b>
+                <li class="menu-item"><i class="fa fa-chevron-circle-down"></i>&nbsp; &nbsp; &nbsp;<b>Private Groups</b>
                                  <i class="fa fa-plus" style="font-size: 10px;"></i></li>
-
                </section>             
         </ul>
+      </div>
     </div>
 
-        <div class="wrapper">
-     <div class="main_content">
-      
-        <div class="header" style="left: 180px; width: 20px;">
-
-          <div class="info">
-            {% for row in bookmarks %}
-              <!-- {{ row.title }} {{ row.siteName }} {{ row.dateAdded }} -->
-              {% if row.siteName == 'springer' %}
-              <a>
-                <div><img class="logo-style" src="{% static 'images/springerLogo.PNG' %}" style="height: 15px;">  &nbsp; &nbsp; {{row.title}} &nbsp; &nbsp; <a href="{{row.link}}" target="_blank" ><i class="fa fa-eye"></i></a> <a><i class="fa fa-trash"></i></a> </div> 
-              </a> 
-              <br><br><br>
-              {% endif %}
-
-              {% endfor %}
-             
-              
-                <!-- <i class="fa fa-trash"> -->
-         
-          </div>
-
-        </div>  
-      
-      </div>
-       <!-- The Modal -->
+    <div class="col-sm-6">
+      <div class="wrapper">
+       <div class="main_content">
+          <div class="header" >
+                <h4> All References </h4>  
+                     
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>Site</th>
+                        <th>Title</th>
+                        <th>Date Added</th>
+                        <th>Date Accessed</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <a>
+                      <tr>
+                        <td><img class="logo-style" src="{% static 'images/springerLogo.PNG' %}" style="height: 15px;"></td>
+                        <td><a href="#"><span style="display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 15ch;">The New Era of Modern Technology The New Era of Modern Technology</span></a></td>
+                        <td>11-01-2021</td>
+                        <td>11-01-2021</td>
+                        <td><a href="#"><i class="fa fa-eye"></i></a></td>
+                        <td><a href="#"><i class="fa fa-trash"></i></a></td>
+                        <td><a href="#"><i class="fa fa-star"></i></a></td>
+                      </tr>
+                      <tr>
+                        <td><img class="logo-style" src="{% static 'images/springerLogo.PNG' %}" style="height: 15px;"></td>
+                        <td><a href="#"><span style="display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 15ch;">The New Era of Modern Technology</span></a></td>
+                        <td>11-01-2021</td>
+                        <td>11-01-2021</td>
+                        <td><a href="#"><i class="fa fa-eye"></i></a></td>
+                        <td><a href="#"><i class="fa fa-trash"></i></a></td>
+                        <td><a href="#"><i class="fa fa-star"></i></a></td>
+                      </tr>
+                      <tr>
+                        <td><img class="logo-style" src="{% static 'images/springerLogo.PNG' %}" style="height: 15px;"></td>
+                        <td><a href=""><span style="display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 15ch;">The New Era of Modern Technology</span></a></td>
+                        <td>11-01-2021</td>
+                        <td>11-01-2021</td>
+                        <td><a href="#"><i class="fa fa-eye"></i></a></td>
+                        <td><a href="#"><i class="fa fa-trash"></i></a></td>
+                        <td><a href="#"><i class="fa fa-star"></i></a></td>
+                      </tr>
+                    </a>
+                    </tbody>
+                  </table>
+                </div>
+            </div>
+            <!-- The Modal -->
                   <div id="id01" class="modal">
                     
                     <form class="modal-content" id = "form1" action="" method="POST" autocomplete="off" enctype="multipart/form-data">
@@ -109,19 +155,24 @@
                       </div>
                     </form>
                   </div>
-    </div>
-    <div class="right-side-bar" style="border-left:2px #800000 solid;">
-      <h3 class="w3-bar-item">Details</h3>
+          </div>  
+                 
+        </div>
+   
+    
+    <div class="col-sm-4">
+      <div class="right-side-bar" style="border-left:2px #800000 solid;">
+      <h4>Details</h4>
       <ul>
-       <li class="menu-item"> Lorem ipsum dolorem.</li>
+       <li class="menu-item"> Lorem ipsum dolorem. Lorem ipsum dolorem.</li>
        <li class="menu-item"> Lorem ipsum dolorem.</li>
        <li class="menu-item"> Lorem ipsum dolorem.</li>
       
       </ul>
     </div>
-    
-
-    
+    </div>
+  </div>
+</div>
 </body>
 {% endblock content %} 
 
