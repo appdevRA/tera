@@ -21,15 +21,20 @@ from django.core import serializers
 
 class practice(View):
 	def get(self, request):
-		
-		# time= Practice.objects.get(id = 6)
-		# print(a)
-		a = ['a','b']
+		queryset = Bookmarks.objects.filter(user_id=1)
+		# marker_list = []
+		a= serializers.serialize("json",queryset )
+		# for instance in queryset:
+		# 	b_id = int(instance.id)
+		# 	title = str(instance.title)
+		# 	url = str(instance.url)
+		# 	marker_list += [[b_id, title, url]]
 
-		context={
-			'number':a,
-			'user_id': request.user.id,
-			'time': time
+		context = {
+		    # "queryset": json.dumps(queryset),
+		    # "queryset1": json.dumps(marker_list)
+		    "bookmark_set": queryset,
+		    "bookmark_list" : a 
 		}
 		# User.objects.create(username="1523-323", password="aasdqwe12345")
 		return render(request,'practice.html',context)
@@ -306,6 +311,7 @@ class TeraSearchResultsView(View):
 
 
 		elif request.method == 'POST' and request.is_ajax():
+			print('bookmark button clicked')
 			bookmark = request.POST['bookmark']
 			string = bookmark.split('||')
 			refType = string[0]
@@ -369,12 +375,14 @@ class TeraHomepageView(View):
 
 class TeraDashboardView(View):
 	def get(self,request):
-		queryset = Bookmarks.objects.filter(user_id= request.user.id)
-		# print(list(userbookmarks))
-		# all_objects = queryset
-		# data = serializers.serialize('json', all_objects)
-		# print(data)
-		context = { 'bookmark_list': queryset}
+		queryset = Bookmarks.objects.filter(user_id=request.user.id)
+
+		a= serializers.serialize("json",queryset )
+
+		context = {
+		    "bookmark_set": queryset,
+		    "bookmark_list" : a 
+		}
 		try:
 			if request.user.id != None:
 				return render(request,'collections.html', context)
@@ -418,9 +426,9 @@ class TeraDashboardView(View):
 		# 		return redirect('ra:tera_dashboard_view')
 
 		elif request.method == 'POST' and request.is_ajax():
-			bookmarkID = request.POST['deleteID']
-			print(bookmarkID)
-			Bookmarks.objects.filter(id=bookmarkID).update(isRemoved=1)
+			deleteID = request.POST['deleteID']
+			# print(deleteID)
+			Bookmarks.objects.filter(id=deleteID).update(isRemoved=1)
 			return HttpResponse('')
 
 

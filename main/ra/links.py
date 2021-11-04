@@ -191,13 +191,31 @@ def details(link, proxy, refType ):
             description = ''
         else:
             description = soup.find('div', class_='unique-selling-points unique-selling-points--collapsed u-mb-36').text
+
+        if soup.find('span', id='bookcitations-count-number') == None:
+            cite = ''
+        else:
+            cite = soup.find('span', id='bookcitations-count-number').text
+        
+        if soup.find('h2', class_='page-title__subtitle') == None:
+            subtitle = ''
+        else:
+            subtitle = soup.find('h2', class_='page-title__subtitle').text
+
+        if soup.find('h1', attrs={"itemprop":"name"}) == None:
+            if soup.find('h1', class_='app-journal-header__title') == None:
+                title = ''
+            else:
+                title= soup.find('h1', class_='app-journal-header__title').text
+        else:
+            title= soup.find('h1', attrs={"itemprop":"name"}).text
         details={
             'websiteTitle': ref[0],
             'itemType': ref[1],
-            'title': soup.find('h1', attrs={"itemprop":"name"}).text,
-            'subtitle': soup.find('h2', class_='page-title__subtitle').text,
+            'title': title,
+            'subtitle': subtitle,
             'description': description,
-            'citation': soup.find('span', id='bookcitations-count-number').text,
+            'citation': cite,
             'downloads': soup.find('span', class_='test-metric-count article-metrics__views').text,
             'author': soup.find('ul', class_='test-contributor-names').text,
             'publisher': soup.find('span', attrs={"itemprop":"name"}).text,
