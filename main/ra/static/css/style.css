@@ -38,6 +38,16 @@ body{
     cursor: pointer;
 }
 
+.site-filter{
+    padding: 5px;
+    display: block;
+    margin:0;
+}
+.site-filter:hover{
+    background-color: #d6d6d6;
+    cursor: pointer;
+}
+
 .main-menu .menu-item .fa{
     color: gray;
     width:20px;
@@ -105,6 +115,14 @@ section.home{
     padding: 10px;
     z-index: -1;
 }
+.left-side-bar{
+    background-color: #f3f3f3;
+    box-shadow:  20px #d4d4d4;
+    position: absolute;
+    left:0;
+    padding: 10px;
+   
+}
 
 .right-side-bar:hover{
     overflow-y: scroll;
@@ -171,11 +189,11 @@ section.home{
 .wrapper .header{
    line-height: 10px;
    margin-top: 10px;
-   z-index: 1;
+   
 }
 
 .wrapper .info{
-  z-index: 1;
+  
   color: #717171;
 }
 
