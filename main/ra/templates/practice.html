@@ -11,140 +11,59 @@
 
 </head>
 
-
-
-
-
-
-
 <body style="background-color: #f3f3f3">
-<div id="header" name="" >olok </div>
-   {% for item in bookmark_set %}
-   <div id="{{item.id}}" onclick="showResult(this.id)">{{item.title}}</div>
-   {% endfor %}
-   
-  <table style="font-size: 15px">
-    <thead>
-      <tr>
-        <td></td>
-        <td></td>
-      
-      </tr>
-
-    </thead>
-    <tbody id="detailArea"></tbody>
-  </table>
- 
-</body>
-         
-  </html>
- 
-<script type="text/javascript">  
-
-var markers = {{ bookmark_list|safe }};
-
-function showResult(clicked_id){
-var id = parseInt(clicked_id);
+<div id="header" name="">{{time.time}} </div>
+    <h1> Create form</h1>
 
 
-
-for(i=0; i< markers.length;i++){
-    if(markers[i]['pk'] == id){
-        dateAdded = new Date(markers[i]['fields']['dateAdded'])
-        dateAccessed = new Date(markers[i]['fields']['dateAccessed'])
-     $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Website: </td>"+ "<td>"+ markers[i]['fields']['title'] +  "</td></tr>" );  
-       $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Item type: </td>"+ "<td>"+ markers[i]['fields']['itemType'] +  "</td></tr>" );  
-       $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> URL: </td>"+ "<td>"+ markers[i]['fields']['url'] +  "</td></tr>" );  
-       $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Title: </td>"+ "<td>"+ markers[i]['fields']['title'] +  "</td></tr>" );  
-       $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Author: </td>"+ "<td>"+ markers[i]['fields']['author'] +  "</td></tr>" );  
-       $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Description: </td>"+ "<td>"+ markers[i]['fields']['description'] +  "</td></tr>" );  
-       $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Collection: </td>"+ "<td>"+ markers[i]['fields']['journalItBelongs'] +  "</td></tr>" );  
-       $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Publication Year: </td>"+ "<td>"+ markers[i]['fields']['publicationYear'] +  "</td></tr>" );  
-       $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Date added: </td>"+ "<td>"+  dateAdded.toUTCString().slice(4, 22) +  "</td></tr>" );  
-       $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Date Accessed: </td>"+ "<td>"+ dateAccessed.toUTCString().slice(4, 22) +  "</td></tr>" ); 
-
-break;
-    }
- 
-}
-
-
-}
-  
-
-
-</script>
-
-
-
-
-
-
-
-
-
-<!-- <div class="">
-  <table border="1">
-    <thead>
-      <tr>
-        <td>Name</td>
-        <td>Clas</td>
-        <td>Roll</td>
-        <td>Age</td>
-        <td>NID</td>
-      </tr>
-    </thead>
-    <tbody id="displayArea"></tbody>
-  </table>
-</div>
-<div class="formdata">
-  <form action="" method="post" id="myForm">
-    <input type="text" name="name"><br/><br/>
-    <input type="text" name="roll"><br/><br/>
-    <input type="text" name="class"><br/><br/>
-    <input type="text" name="age"><br/><br/>
-    <input type="text" name="nid"><br/><br/>
-    <input type="submit" name="sub" value="submit">
-  </form>
-</div> -->
+   <br><br> 
+        {% csrf_token %}
+{% for n in number %}
+<i id ="btnBookmark{{n}}"class="fa fa-bookmark" style="color: white;" onClick="fun({{n}},this.id)"></i>
+ <!-- <i id ="btnBookmark{{n}}"class="fa fa-bookmark" style="color: white;" onClick="fun({{n}},this.id)"></i> -->
+        <form id="bookmarkForm" >   
+            <button id="" class="btnBookmark" onClick="reply_click(this.id)">B1</button>
+            <button id="{{n}}" onClick="reply_click(this.id)">B2</button>
+            <button id="{{n}}" onClick="reply_click(this.id)">B3</button>
+        <input type="" name="">
 <script type="text/javascript">
-  $('#myForm').submit(function() {
-    var $inputs = $('#myForm :input');
-    var values = {};
-    $inputs.each(function() {
-      values[this.name] = $(this).val();
-    });
-    $('#displayArea').append("<td>" + values.name + "</td><td>" + values.roll + "</td><td>" + values.class + "</td><td>" + values.age + "</td><td>" + values.nid + "</td></tr>");
-  });
+  
 </script>
+     
+    </form>
+    
+        {% endfor %}
+         
+
+<h3> This is an example of using onclick event. </h3>  
+<p> Click the following text to see the effect. </p>  
+<p id = "para">Click me</p>  
+<script>  
+let a = [];
+function fun(counter,id) {  
+a.push(document.getElementById("user_id").value);
+   alert(a)
+if(document.getElementById(id).style.color == "white")
+    document.getElementById(id).style.color = "red";
+else
+    document.getElementById(id).style.color = "white";
 
 
 
+} 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- <script>
-
- // $("#bookmarkForm").submit(function(event){
+$(document).ready(function() {
+           var buttons = document.getElementsByClassName("fa fa-bookmark");
+           
+           
+                   
+            if(document.getElementById("user_id").value == 0  ){
+                    for(i=0; i< buttons.length; i++){
+                        buttons[i].style.display = "none"; 
+                    }
+                     
+            }
+             // $("#bookmarkForm").submit(function(event){
              //     event.preventDefault();
              //      var arrInput = document.getElementsByTagName("btnBookmark");
              //      alert(arrInput)
@@ -160,20 +79,38 @@ break;
              //          }
              //              });
              // });
-
-
+             return false;
+          });
+ 
  
 </script>  
 
 
   
+    </body>
+
     
+    </html>
+<script type="text/javascript">
+
+function reply_click(clicked_id){
+    buttons = document.getElementById("header").value;
+    alert(buttons)
+        $.ajax({
+                      type:"POST",
+                      url:"",
+
+                      data:{
+                        header: buttons,
+                        link: clicked_id,
+                        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                      }
+        });      
+}
+         
+      </script>
 
 
 
 
 
-
-
- 
-             
