@@ -16,37 +16,31 @@ import requests
 import ast
 import json
 from django.core import serializers
-
+from django.http import JsonResponse
 
 
 class practice(View):
 	def get(self, request):
 		
-		# time= Practice.objects.get(id = 6)
-		# print(a)
-		a = ['a','b']
+		queryset = Bookmarks.objects.all()
+		data = serializers.serialize('json', queryset)
+		
+		
+		context = { 'bookmark_list': data}
 
-		context={
-			'number':a,
-			'user_id': request.user.id,
-			'time': time
-		}
+		
 		# User.objects.create(username="1523-323", password="aasdqwe12345")
 		return render(request,'practice.html',context)
 
 	def post(self, request):
-		if request.method == 'POST' and request.is_ajax():
-			
-			link = request.POST['link']
-			header = request.POST['header']
-			
-			Headers.objects.create(text = header)
-			
-			print(link)
+		if request.method == 'POST':
+			queryset = Headers.objects.all()
+			data = serializers.serialize('json', queryset)
+			print('1')
 			# link = request.POST['link']
-
-			
-			return render(request,'login.html')	
+			context = { 'bookmark_list': queryset}
+				
+			return JsonResponse(context)
 		
 		
 
@@ -370,11 +364,12 @@ class TeraHomepageView(View):
 class TeraDashboardView(View):
 	def get(self,request):
 		queryset = Bookmarks.objects.filter(user_id= request.user.id)
-		# print(list(userbookmarks))
-		# all_objects = queryset
-		# data = serializers.serialize('json', all_objects)
-		# print(data)
-		context = { 'bookmark_list': queryset}
+		
+		data = serializers.serialize('json', queryset)
+		
+		context = { 'bookmark_set': queryset,
+					'bookmark_list': data
+		}
 		try:
 			if request.user.id != None:
 				return render(request,'collections.html', context)
@@ -418,10 +413,16 @@ class TeraDashboardView(View):
 		# 		return redirect('ra:tera_dashboard_view')
 
 		elif request.method == 'POST' and request.is_ajax():
-			bookmarkID = request.POST['deleteID']
-			print(bookmarkID)
-			Bookmarks.objects.filter(id=bookmarkID).update(isRemoved=1)
-			return HttpResponse('')
+			try:
+				bookmarkID = request.POST['deleteID']
+				print(bookmarkID)
+				Bookmarks.objects.filter(id=bookmarkID).update(isRemoved=1)
+				return HttpResponse('')
+			except:
+				favoriteID = request.POST['favoriteID']
+				
+				Bookmarks.objects.filter(id=favoriteID).update(isFavorite=True)
+				return HttpResponse('')
 
 
 class TeraCreateJournalCitationView(View):

@@ -205,7 +205,7 @@ function delete_item(clicked_id){
       }
    }
    clearRow("itemTable")
-   showRows()
+   showRows('all')
   
     
 }
@@ -236,6 +236,7 @@ function favorite_item(clicked_id){
 
 
 function showRows(rowType){
+  
   clearStyle();
   clearRow('itemTable');
 // document.getElementById("itemTable").style.display = "none"; 
@@ -312,7 +313,7 @@ function showRows(rowType){
           days = Math.round((now - then) / (1000 * 60 * 60 * 24));
         
           for(i=0; i< markers.length;i++){
-
+              
                 if(markers[i]['fields']['websiteTitle'] == "Springeropen.com" & days <= 7 &  markers[i]['fields']['isRemoved'] == 0){
                   dateAdded = new Date(markers[i]['fields']['dateAdded'])
                   dateAccessed = new Date(markers[i]['fields']['dateAccessed'])
@@ -342,13 +343,46 @@ function showRows(rowType){
           document.getElementById(rowType).style.backgroundColor= "#c9c9c9";
           document.getElementById(rowType).style.color= "#800000";
           document.getElementById('recentlyReadIcon').style.color= "#800000";
+          var then = new Date(markers[0]['fields']['dateAdded']), // month is zero based
+          now  = new Date;               // no arguments -> current date
+          days = Math.round((now - then) / (1000 * 60 * 60 * 24));
+        
+          for(i=0; i< markers.length;i++){
+              
+                if(markers[i]['fields']['websiteTitle'] == "Springeropen.com" & days <= 7 &  markers[i]['fields']['isRemoved'] == 0){
+                  dateAdded = new Date(markers[i]['fields']['dateAdded'])
+                  dateAccessed = new Date(markers[i]['fields']['dateAccessed'])
+                  $('#itemArea').append(
+                    "<tr>"+
+                    "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>" +
+                    "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
+                    "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
+
+                    "<td>" + dateAdded.toUTCString().slice(4, 22) + "</td>" +
+                    "<td>" + dateAccessed.toUTCString().slice(4, 22) +"</td>" + 
+                    "<td><i id='"+ markers[i]['pk']+"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
+                    "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer' onclick='delete_item(this.id)'></i></td>" +
+                    "<td><i id='"+ markers[i]['pk']+"' class='fas fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>" +
+            
+            
+
+
+
+                   "</tr>"
+
+                    );  
+                }
+         
+          }
     } else if(rowType =='favorite'){
+      
           document.getElementById(rowType).style.backgroundColor= "#c9c9c9";
           document.getElementById(rowType).style.color= "#800000";
           document.getElementById('favoriteIcon').style.color= "#800000";
           for(i=0; i< markers.length;i++){
+             
+            if(markers[i]['fields']['websiteTitle'] == "Springeropen.com" & markers[i]['fields']['isFavorite'] == 1 & markers[i]['fields']['isRemoved'] == 0){
 
-            if(markers[i]['fields']['websiteTitle'] == "Springeropen.com" & markers[i]['fields']['isFavorite'] == 1){
               dateAdded = new Date(markers[i]['fields']['dateAdded'])
               dateAccessed = new Date(markers[i]['fields']['dateAccessed'])
               $('#itemArea').append(

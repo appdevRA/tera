@@ -49,6 +49,7 @@ class Bookmarks (models.Model):
 	isRemoved = models.IntegerField(default = 0)
 	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
 	folder = models.ForeignKey(Folders, null = True, blank = True, on_delete = models.CASCADE)
+	isFavorite = models.BooleanField(default=False)
 
 	class Meta:
 		db_table = "Bookmarks"
