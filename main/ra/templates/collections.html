@@ -4,10 +4,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+   <link rel="stylesheet" href="{% static 'css/style.css' %}">
     
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
-    <link rel="stylesheet" href="{% static 'css/modal.css' %}">
+    
+    <link rel="stylesheet" href="{% static 'css/navbarstyle.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -20,7 +21,8 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <script src="https://kit.fontawesome.com/abb9521de4.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="{% static 'css/navbarstyle.css' %}">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+     
     <style>
 table {
   border-spacing: 2;
@@ -57,8 +59,8 @@ tr:hover {
                 <a href="#" style="color: #8f2929">My Account <i class="fa fa-user" aria-hidden="true"></i></a>
                 
                 <ul style="z-index: 1">
-                <li><a href="{% url 'ra:tera_dashboard_view'%}">Collections</a></li>  
-                  <li><a href="{% url 'ra:tera_dashboard_view'%}">Settings</a></li>  
+                <li><a href="{% url 'ra:search_result_view' %}">Search</a></li>  
+                  <li><a href="{% url 'ra:tera_account_settings' %}">Settings</a></li>  
                 <li>
                   <form  action = "" method = "POST" autocomplete = "off" enctype="multipart/form-data">
                     {% csrf_token %}

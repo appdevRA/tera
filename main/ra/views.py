@@ -17,13 +17,14 @@ import ast
 import json
 from django.core import serializers
 from django.contrib.auth.hashers import make_password
+from django.contrib import messages
 
 
 class practice(View):
 	def get(self, request):
 		queryset = Bookmarks.objects.filter(user_id=1)
 		
-		
+		# User.objects.create(username='18-5126-269', password = make_password('mondejar.12345'))
 		
 		# marker_list = []
 		a= serializers.serialize("json",queryset )
@@ -379,6 +380,7 @@ class TeraSearchResultsView(View):
 			return redirect("ra:search_result_view")
 			
 
+
 		
 
 class TeraHomepageView(View):
@@ -450,6 +452,10 @@ class TeraDashboardView(View):
 				Bookmarks.objects.filter(id=favoriteID).update(isFavorite=1)
 				return HttpResponse('')
 
+		
+	    
+
+
 class TeraCreateJournalCitationView(View):
 	def get(self,request):
 		return render(request,'citejournal.html')
@@ -519,14 +525,15 @@ def TeraLogout(request):
 
 def TeraAccountSettingsView(request):
     if request.method == 'POST':
-        form = PasswordChangeForm(request.user, request.POST)
+        form = PasswordChangeForm(data=request.POST, user=request.user)
+        
         if form.is_valid():
             user = form.save()
             update_session_auth_hash(request, user)  
-            messages.success(request, 'Your password was successfully updated!')
+            messages.success(request, 'Your password was successfully updated!' )
             return redirect('ra:tera_account_settings')
         else:
-            messages.info(request, 'Password cannot be changed.')
+            messages.info(request, 'Incorrect Password.')
     else:
         form = PasswordChangeForm(request.user)
     return render(request, 'accountsettings.html', {
