@@ -141,6 +141,7 @@ def springer(word, proxy, refType, pageNumber): # INDEX 1 STARTING SA PAGINATION
     return springers, springLinks
 
 def details(link, proxy, refType ):
+    
     ref = refType.split(' ')
     if refType == 'Springeropen.com Article':
         # with open ('C:/Users/Valued Client/Desktop/html/sprigner DETAILS.html', 'r', errors='ignore') as html_file:
@@ -237,16 +238,32 @@ def scienceDirect(word,proxy, refType, pageNumber, header):
     scienceDirects = []
     scienceLinks = []
     #ua = random.choice(userAgents) 
-
+    headers = {
+    'authority': 'www.sciencedirect.com',
+    'cache-control': 'max-age=0',
+    'sec-ch-ua': '"Microsoft Edge";v="95", "Chromium";v="95", ";Not A Brand";v="99"',
+    'sec-ch-ua-mobile': '?0',
+    'sec-ch-ua-platform': '"Windows"',
+    'upgrade-insecure-requests': '1',
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36 Edg/95.0.1020.44',
+    'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+    'sec-fetch-site': 'cross-site',
+    'sec-fetch-mode': 'navigate',
+    'sec-fetch-user': '?1',
+    'sec-fetch-dest': 'document',
+    'referer': 'https://id.elsevier.com/',
+    'accept-language': 'en-US,en;q=0.9',
+    'cookie': 'EUID=80a39c81-5643-43a6-a14d-dbdeb3ff56f9; utt=ae01-efa25bdbb71478802a627452c2319959fc3-A; AMCVS_4D6368F454EC41940A4C98A6%40AdobeOrg=1; __gads=ID=cbccebd4b239d1b9:T=1634873619:S=ALNI_MbKgsfwajTBcaYJMjf-VEiMK5cN_g; mboxes=%7B%22universal-view-pdf%22%3A%7B%22variation%22%3A%22A%22%7D%2C%22login-intermediate-page%22%3A%7B%22variation%22%3A%22B%22%7D%7D; SD_ART_LINK_STATE=%3Ce%3E%3Cq%3Escience%3C%2Fq%3E%3Corg%3Erslt_list%3C%2Forg%3E%3Cz%3Erslt_list_item%3C%2Fz%3E%3CsrcFr%3Erslt_list_item%3C%2FsrcFr%3E%3Crdt%3E2021%2F10%2F31%2F13%3A02%3A47%3A933%3C%2Frdt%3E%3Cenc%3EN%3C%2Fenc%3E%3C%2Fe%3E; __cf_bm=YrisfCns8p2z8ZZHzzjsm5nrdSeQ24kgyTez1vjjlw4-1636341385-0-AfO28+touQnJ+aAFzCvzn6WCJUyzI06yFSVTDr21BWQ8TwxF0PGr4qHLLNrFUQR6jQgFMiZrmpfHT27QDBKdcfz9hq/Cf/dUeVvo9FX21lk6; acw=4736891373ac114c545b5af0416165e484ddgxrqa%7C%24%7CC7567E508BB27F0AD5635AC3D279072A6E49DE75273610E54C84238FDA27FE09DAC91C7CC2088AD67DC4507B13AC5E7DDC1CE1FFCC1DF7F03FBA44D1BD4E4F2EB0469A67597464825D387A21AFA2E514; fingerPrintToken=298693a32e804ab0b2513bc3a48802f9; mbox=session%23a16c9dd3c28146179d4e14055ed5c400%231636343500%7CPC%23a16c9dd3c28146179d4e14055ed5c400.34_0%231699586440; sd_access=eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..XY8C06otiUe0iCqt41nacw.f9hu3we5h6QHt-39HS1f7iTu0L_bYiyszOObB6jFKwGJ0QH-M12-_QDN8AEgSkXhSiAEVXTSLVN4uftBJXpxGhJoBeiWMljtYT8fDBee9nyJScBEDHxdzTAyXA64Bi2yNqWz42ZRhz7m2xKr8VB8kA.gVqctdV9io2lBtpUkOUP6w; sd_session_id=7013f5299d49c04a76895ef7d9cfb5d83787gxrqa; id_ab=IDP; has_multiple_organizations=true; MIAMISESSION=c99c2c87-1a5d-4301-bb44-4aab50adf504:3813794463; SD_REMOTEACCESS=eyJhY2NvdW50SWQiOiI3MzA5NCIsInRpbWVzdGFtcCI6MTYzNjM0MTY2Mzk5M30=; AMCV_4D6368F454EC41940A4C98A6%40AdobeOrg=-2121179033%7CMCIDTS%7C18940%7CMCMID%7C81261105090677501200180261852203688591%7CMCAID%7CNONE%7CMCOPTOUT-1636348869s%7CNONE%7CMCAAMLH-1636946469%7C3%7CMCAAMB-1636946469%7Cj8Odv6LonN4r3an7LhD3WZrU1bUpAkFkkiY1ncBR96t2PTI%7CvVersion%7C5.3.0%7CMCCIDH%7C-388222836; s_pers=%20v8%3D1636341673263%7C1730949673263%3B%20v8_s%3DLess%2520than%25207%2520days%7C1636343473263%3B%20c19%3Dsd%253Ahome%253Ahpx%7C1636343473269%3B%20v68%3D1636341664028%7C1636343473274%3B; s_sess=%20s_cpc%3D0%3B%20e78%3Dqs%253Dcancer%3B%20c21%3Dqs%253Dtsunami%3B%20e13%3Dqs%253Dtsunami%253A1%3B%20c13%3Drelevance-desc%3B%20s_sq%3D%3B%20s_ppvl%3Dsd%25253Ahome%25253Ahpx%252C21%252C21%252C969%252C1239%252C969%252C1920%252C1080%252C1%252CP%3B%20s_cc%3Dtrue%3B%20e41%3D1%3B%20s_ppv%3Dsd%25253Ahome%25253Ahpx%252C21%252C21%252C969%252C1239%252C969%252C1920%252C1080%252C1%252CP%3B',
+    }
     
     x = False
     while(x == False):
         try:
             if refType == 'journal':
-                response = requests.get('https://www.sciencedirect.com/browse/journals-and-books?contentType=JL&searchPhrase='+ word, headers=header, proxies={'https:': proxy}, timeout= 5)
+                response = requests.get('https://www.sciencedirect.com/browse/journals-and-books?contentType=JL&searchPhrase='+ word, headers=headers, proxies={'https:': proxy}, timeout= 5)
                 x = True
             else:
-                response = requests.get('https://www.sciencedirect.com/browse/journals-and-books?contentType=BK&searchPhrase='+ word, headers=header, proxies={'https:': proxy}, timeout= 5) # books
+                response = requests.get('https://www.sciencedirect.com/browse/journals-and-books?contentType=BK&searchPhrase='+ word, headers=headers, proxies={'https:': proxy}, timeout= 5) # books
                 x = True
         except ConnectionError:
                 print('Connection Error')
