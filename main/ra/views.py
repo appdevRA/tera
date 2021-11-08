@@ -157,7 +157,6 @@ class TeraSearchResultsView(View):
 		word = request.session.get('word')
 		proxy = request.session.get('proxy')
 		request.session['previousPage'] = 'search_result_view'
-	
 		
 	
 		refType = 'Springeropen.com Article'
@@ -169,7 +168,10 @@ class TeraSearchResultsView(View):
 			proxy = testProxy(proxies,1)
 			request.session['proxy'] = proxy
 			a = scrape(word,proxy , 'article',1, 'Springeropen.com', header)
-		
+		if request.user.id != None:
+			user_id = True
+		else:
+			user_id = False	
 		results = a[0]	
 		links = a[1]				
 		context = {
