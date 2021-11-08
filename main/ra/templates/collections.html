@@ -20,6 +20,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <script src="https://kit.fontawesome.com/abb9521de4.js" crossorigin="anonymous"></script>
+<<<<<<< HEAD
     <style>
 table {
   border-spacing: 2;
@@ -41,6 +42,10 @@ tr:hover {
 
 }
 </style>
+=======
+    <link rel="stylesheet" >
+    
+>>>>>>> parent of b1c8b67 (delete and view detail w/ javascript)
 </head>
 {% endblock headerinclude %}
 
@@ -79,6 +84,7 @@ tr:hover {
       <div class="main-menu" style="border-right:2px #800000 solid;">
         <ul>
             <section class="home">
+<<<<<<< HEAD
                 <li id="all" class="menu-item" onclick="showRows(this.id)" ><i id="allIcon" class="fa fa-bookmark"></i> &nbsp; &nbsp; &nbsp; &nbsp;All References</li>
                 <li id="recentlyAdded" class="menu-item" onclick="showRows(this.id)" ><i id="recentlyAddedIcon" class="fa fa-history"></i>&nbsp; &nbsp;&nbsp; &nbsp; Recently Added</li>
                 <li id="recentlyRead" class="menu-item" onclick="showRows(this.id)" ><i id="recentlyReadIcon" class="fa fa-bookmark"></i>&nbsp; &nbsp;&nbsp; &nbsp; Recently Read</li>
@@ -87,17 +93,64 @@ tr:hover {
                 <li class="menu-item"><i class="fa fa-folder"></i>&nbsp; &nbsp;&nbsp; &nbsp;  <b>My Collections </b> <i class="fa fa-plus" style="font-size:10px;" name="addfolder" onclick="document.getElementById('id01').style.display='block'"></i></li>
                                 
                 <li class="menu-item"><i class="fa fa-group" style="font-size: 20px"></i> &nbsp; &nbsp; &nbsp; <b>Private Groups</b> <i class="fa fa-plus" style="font-size: 10px;"></i></li>
+=======
+                <li class="menu-item"><i class="fa fa-bookmark"></i>All References</li>
+                <li class="menu-item"><i class="fa fa-history"></i>Recently Added</li>
+                <li class="menu-item"><i class="fa fa-bookmark"></i>Recently Read</li>
+                <li class="menu-item"><i class="fa fa-star"></i>Favorites</li>
+                <li class="menu-item"><i class="fa fa-trash"></i>Trash</li>
+                <li class="menu-item"><i class="fa fa-chevron-circle-down"></i><b>My Collections </b>
+                                 <i class="fa fa-plus" style="font-size:10px;" name="addfolder" onclick="document.getElementById('id01').style.display='block'"></i></li>
+                                 {% for folder in folders %}
+                                    <li class="menu-item" style="padding-left: 50px;"> {{folder.foldername}} </li>
+                                 {% endfor %}
+                <li class="menu-item"><i class="fa fa-chevron-circle-down"></i><b>Private Groups</b>
+                                 <i class="fa fa-plus" style="font-size: 10px;"></i></li>
+>>>>>>> parent of b1c8b67 (delete and view detail w/ javascript)
 
                </section>             
         </ul>
       </div>
     </div>
+<<<<<<< HEAD
 
      <div class="col-sm-7" style="border-right: solid #800000 2px;">
       <div class="wrapper">
        <div class="main_content">
           <div class="header" >
                 <br> 
+=======
+<input type="" name="">
+        <div class="wrapper">
+     <div class="main_content">
+      
+        <div class="header" style="left: 180px; width: 20px;">
+
+          <div class="info">
+           
+              <!-- {{ row.title }} {{ row.siteName }} {{ row.dateAdded }} -->
+             {% for item in bookmark_list %}
+                {% if item.isRemoved == 0 %}
+                <div style="cursor: text; ">
+                    <img class="logo-style" src="{% static 'images/springerLogo.PNG' %}"  style="height: 15px;">  &nbsp; &nbsp; {{ item.title }} &nbsp; &nbsp; 
+
+                        <a   style="cursor: pointer"  >
+                            <i id="{{item.id}}" class="fas fa-info-circle fa-lg" onclick="get_detail(this.id)"></i>
+                        </a> 
+
+                        <a>
+                            <i id="{{item.id}}" class="fas fa-trash-alt" style="cursor: pointer" onclick="delete_item(this.id)"></i>
+                        </a> 
+                </div> 
+            <br><br><br>
+            
+               {% endif %}
+              {% endfor %}
+              
+              
+             
+             
+>>>>>>> parent of b1c8b67 (delete and view detail w/ javascript)
               
                    <table id="itemTable"  class="table">
                     <thead>
@@ -140,6 +193,7 @@ tr:hover {
                       </div>
                     </form>
                   </div>
+<<<<<<< HEAD
           </div>  
                  
         </div>
@@ -164,14 +218,72 @@ tr:hover {
     </div>
   </div>
 </div>
+=======
+    </div>
+     <div class="right-side-bar" style="border-left:2px #800000 solid;">
+      <h3 class="w3-bar-item">Details</h3>
+      <ul>
+       {% for item in bookmark_list %}
+                {% if item.isRemoved == 0 %}
+       <li id="website{{item.id}}" class="menu-item menu-bookmarks-items"style="display: none" > Website: 
+
+          <a id="website-value{{item.id}}"style="display: none" class="detail-info">{{item.websiteTitle}}</a>
+      </li>
+
+       <li id="itemType{{item.id}}" class="menu-item menu-bookmarks-items" style="display: none"> Item type: 
+          <a id="itemType-value{{item.id}}"style="display: none"class="detail-info">{{item.itemType}}</a>
+        </li>
+
+       <li id="url{{item.id}}" class="menu-item menu-bookmarks-items" style="display: none"> URL: 
+        <a id="url-value{{item.id}}"style="display: none" href="{{item.url}}" class="detail-info">{{item.url}}</a>
+      </li>
+       <li id="title{{item.id}}" class="menu-item menu-bookmarks-items" style="display: none"> Title: 
+        <a id="title-value{{item.id}}"style="display: none"class="detail-info">{{item.title}}</a>
+      </li>
+       <li id="author{{item.id}}" class="menu-item menu-bookmarks-items" style="display: none"> Author:  
+        <a id="author-value{{item.id}}"style="display: none"class="detail-info">{{item.author}}</a>
+      </li>
+
+       <li id="description{{item.id}}" class="menu-item menu-bookmarks-items" style="display: none"> Description:  
+        <a id="description-value{{item.id}}"style="display: none"class="detail-info">{{item.description}}</a>
+      </li>
+       <li id="collection{{item.id}}" class="menu-item menu-bookmarks-items" style="display: none"> Collection: 
+
+        <a id="collection-value{{item.id}}"style="display: none"class="detail-info">{{item.journalItBelongs}}</a>
+      </li>
+       <li id="publicationYear{{item.id}}" class="menu-item menu-bookmarks-items" style="display: none"> Publication Year:
+
+        <a id="publicationYear-value{{item.id}}"style="display: none"class="detail-info">{{item.publicationYear}}</a>
+      </li>
+       <li id="dateAdded{{item.id}}" class="menu-item menu-bookmarks-items"class="detail-info" style="display: none"> Date added: 
+        <a id="dateAdded-value{{item.id}}" >{{item.dateAdded}}</a>
+      </li>
+       <li id="dateAccessed{{item.id}}" class="menu-item menu-bookmarks-items"class="detail-info" style="display: none"> Date Accessed: 
+        <a id="dateAccessed-value{{item.id}}"style="display: none">{{item.dateAccessed}}</a>
+      </li>
+       
+        
+        <!-- <div id="detail{{item.id}}" class="detail6" style="display: none">{{item.title}}</div> -->
+       {% endif %}
+              {% endfor %}
+      
+      
+      </ul>
+    </div>
+   <input id="previousID"  value="{{item.id}}"name="" hidden="">
+     {% for item in bookmark_list %}
+    <div id="item{{item.id}}" class="detailasd" style="display: none ">{{item.id}} </div>
+    <div id="item{{item.id}}" class="detailasd" style="display: none ">{{item.volume}} </div>
+>>>>>>> parent of b1c8b67 (delete and view detail w/ javascript)
     
+    {% endfor %}
     
 </body>
 
 
 <script type="text/javascript">
-  var markers = {{ bookmark_list|safe }}
 
+<<<<<<< HEAD
 $(document).ready(function($) {
 
   showRows('all')
@@ -184,9 +296,18 @@ $(document).ready(function($) {
 
 
 });
-
+=======
+$(document).ready(function() {
+          
+        //    var buttons=   document.getElementsByClassName("menu-item menu-bookmarks-items");
+        //    for(i=0; i< buttons.length; i++){
+        //                 buttons[i].style.display = "None"; 
+        //             }
+        });
+>>>>>>> parent of b1c8b67 (delete and view detail w/ javascript)
 
 function delete_item(clicked_id){
+<<<<<<< HEAD
   
    $.ajax({
                       type:"POST",
@@ -206,10 +327,14 @@ function delete_item(clicked_id){
    }
    clearRow("itemTable")
    showRows('all')
+=======
+  alert(clicked_id)
+>>>>>>> parent of b1c8b67 (delete and view detail w/ javascript)
   
     
 }
 
+<<<<<<< HEAD
 
 function favorite_item(clicked_id){
   
@@ -268,8 +393,45 @@ function showRows(rowType){
                 }
                  
             }
+=======
+function get_detail(clicked_id){
 
+    var buttons=   document.getElementsByClassName("detail-info");
+           for(i=0; i< buttons.length; i++){
+                        buttons[i].style.display = "none"; 
+    }
 
+    var buttons=   document.getElementsByClassName("menu-item menu-bookmarks-items");
+           for(i=0; i< buttons.length; i++){
+                        buttons[i].style.display = "none"; 
+    }
+>>>>>>> parent of b1c8b67 (delete and view detail w/ javascript)
+
+   document.getElementById("website"+ clicked_id).style.display = "block";
+   document.getElementById("itemType" + clicked_id).style.display = "block"; 
+   document.getElementById("url" + clicked_id).style.display = "block"; 
+   document.getElementById("title" + clicked_id).style.display = "block"; 
+   document.getElementById("author" + clicked_id).style.display = "block"; 
+   document.getElementById("description" + clicked_id).style.display = "block"; 
+   document.getElementById("collection" + clicked_id).style.display = "block"; 
+   document.getElementById("publicationYear" + clicked_id).style.display = "block"; 
+   document.getElementById("dateAdded" + clicked_id).style.display = "block"; 
+   document.getElementById("dateAccessed" + clicked_id).style.display = "block"; 
+  
+   document.getElementById("website-value"+ clicked_id).style.display = "block";
+   document.getElementById("itemType-value" + clicked_id).style.display = "block"; 
+   document.getElementById("url-value" + clicked_id).style.display = "block"; 
+   document.getElementById("title-value" + clicked_id).style.display = "block"; 
+   document.getElementById("author-value" + clicked_id).style.display = "block"; 
+   document.getElementById("description-value" + clicked_id).style.display = "block"; 
+   document.getElementById("collection-value" + clicked_id).style.display = "block"; 
+   document.getElementById("publicationYear-value" + clicked_id).style.display = "block"; 
+   document.getElementById("dateAdded-value" + clicked_id).style.display = "block"; 
+   document.getElementById("dateAccessed-value" + clicked_id).style.display = "block"; 
+
+            
+
+<<<<<<< HEAD
     } else if(rowType =='trash'){
       document.getElementById(rowType).style.backgroundColor= "#c9c9c9";
       document.getElementById(rowType).style.color= "#800000";
@@ -367,6 +529,14 @@ function showRows(rowType){
             
 
 
+=======
+           
+
+  
+
+// alert(id)
+     
+>>>>>>> parent of b1c8b67 (delete and view detail w/ javascript)
 
                    "</tr>"
 
@@ -410,12 +580,9 @@ function showRows(rowType){
     }
 
 
-}
 
-function clearRow(tableName){
-  var table = document.getElementById(tableName);
-    //or use :  var table = document.all.tableid;
 
+<<<<<<< HEAD
     for(var i = table.rows.length - 1; i > 0; i--)
     {
         table.deleteRow(i);
@@ -446,13 +613,15 @@ function get_detail(clicked_id){
     var id = parseInt(clicked_id);
   
     clearRow("detailTable")   
+=======
+>>>>>>> parent of b1c8b67 (delete and view detail w/ javascript)
 
-   for(i=0; i< markers.length;i++){
-      if(markers[i]['pk'] == id){
-          var dt = new Date( markers[i]['fields']['dateAdded']);
-          var access = new Date( markers[i]['fields']['dateAccessed']);
-           added =  (("0"+dt.getDate()).slice(-2)) +"/"+ (("0"+(dt.getMonth()+1)).slice(-2)) +"/"+ (dt.getFullYear()) +" "+ (("0"+dt.getHours()).slice(-2)) +":"+ (("0"+dt.getMinutes()).slice(-2));
+//   for(var key in json.jsonData) {
+//    for (var key1 in json.jsonData[key]) {
+//     // convert object to key's array
+//     const keys = Object.keys(courses);
 
+<<<<<<< HEAD
             accessed =  (("0"+access.getDate()).slice(-2)) +"/"+ (("0"+(access.getMonth()+1)).slice(-2)) +"/"+ (access.getFullYear()) +" "+ (("0"+access.getHours()).slice(-2)) +":"+ (("0"+access.getMinutes()).slice(-2));
            
        $('#detailArea').append("<tr ><td style='text-align: right; vertical-align:top'> Website: </td>"+ "<td>"+ markers[i]['fields']['title'] +  "</td></tr>" );  
@@ -510,6 +679,14 @@ function sort(){
   }
 }    
 
+=======
+//     // print all keys
+//     console.log(typeof(courses));
+        
+    
+}
+  
+>>>>>>> parent of b1c8b67 (delete and view detail w/ javascript)
 </script> 
 
 

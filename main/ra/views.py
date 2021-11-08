@@ -22,6 +22,7 @@ from django.http import JsonResponse
 class practice(View):
 	def get(self, request):
 		
+<<<<<<< HEAD
 		queryset = Bookmarks.objects.all()
 		data = serializers.serialize('json', queryset)
 		
@@ -29,6 +30,17 @@ class practice(View):
 		context = { 'bookmark_list': data}
 
 		
+=======
+		# time= Practice.objects.get(id = 6)
+		# print(a)
+		a = ['a','b']
+
+		context={
+			'number':a,
+			'user_id': request.user.id,
+			'time': time
+		}
+>>>>>>> parent of b1c8b67 (delete and view detail w/ javascript)
 		# User.objects.create(username="1523-323", password="aasdqwe12345")
 		return render(request,'practice.html',context)
 
@@ -366,12 +378,20 @@ class TeraHomepageView(View):
 class TeraDashboardView(View):
 	def get(self,request):
 		queryset = Bookmarks.objects.filter(user_id= request.user.id)
+<<<<<<< HEAD
 		
 		data = serializers.serialize('json', queryset)
 		
 		context = { 'bookmark_set': queryset,
 					'bookmark_list': data
 		}
+=======
+		# print(list(userbookmarks))
+		# all_objects = queryset
+		# data = serializers.serialize('json', all_objects)
+		# print(data)
+		context = { 'bookmark_list': queryset}
+>>>>>>> parent of b1c8b67 (delete and view detail w/ javascript)
 		try:
 			if request.user.id != None:
 				return render(request,'collections.html', context)
@@ -415,6 +435,7 @@ class TeraDashboardView(View):
 		# 		return redirect('ra:tera_dashboard_view')
 
 		elif request.method == 'POST' and request.is_ajax():
+<<<<<<< HEAD
 			try:
 				bookmarkID = request.POST['deleteID']
 				print(bookmarkID)
@@ -425,6 +446,12 @@ class TeraDashboardView(View):
 				
 				Bookmarks.objects.filter(id=favoriteID).update(isFavorite=True)
 				return HttpResponse('')
+=======
+			bookmarkID = request.POST['deleteID']
+			print(bookmarkID)
+			Bookmarks.objects.filter(id=bookmarkID).update(isRemoved=1)
+			return HttpResponse('')
+>>>>>>> parent of b1c8b67 (delete and view detail w/ javascript)
 
 
 class TeraCreateJournalCitationView(View):

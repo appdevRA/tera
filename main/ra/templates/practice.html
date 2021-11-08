@@ -12,11 +12,16 @@
 </head>
 
 <body style="background-color: #f3f3f3">
+<<<<<<< HEAD
 <!-- <div id="header" name=""> </div> -->
+=======
+<div id="header" name="">{{time.time}} </div>
+>>>>>>> parent of b1c8b67 (delete and view detail w/ javascript)
     <h1> Create form</h1>
 
 
    <br><br> 
+<<<<<<< HEAD
       
 
 <i id ="btnBookmark{{n}}"class="fa fa-bookmark" style="color: white;" onClick="fun({{n}},this.id)"></i>
@@ -26,10 +31,27 @@
             <button id="{{n}}" onClick="reply_click(this.id)">B2</button>
             <button id="{{n}}" onClick="reply_click(this.id)">B3</button>
         <input id="header" type="" name="">
+=======
+        {% csrf_token %}
+{% for n in number %}
+<i id ="btnBookmark{{n}}"class="fa fa-bookmark" style="color: white;" onClick="fun({{n}},this.id)"></i>
+ <!-- <i id ="btnBookmark{{n}}"class="fa fa-bookmark" style="color: white;" onClick="fun({{n}},this.id)"></i> -->
+        <form id="bookmarkForm" >   
+            <button id="" class="btnBookmark" onClick="reply_click(this.id)">B1</button>
+            <button id="{{n}}" onClick="reply_click(this.id)">B2</button>
+            <button id="{{n}}" onClick="reply_click(this.id)">B3</button>
+        <input type="" name="">
+>>>>>>> parent of b1c8b67 (delete and view detail w/ javascript)
 <script type="text/javascript">
   
 </script>
+     
+    </form>
+    
+        {% endfor %}
+         
 
+<<<<<<< HEAD
     
        
          
@@ -84,6 +106,79 @@ function loop(){
     for(i=0; i < markers.length;i++){
         console.log(markers)
     }
+=======
+<h3> This is an example of using onclick event. </h3>  
+<p> Click the following text to see the effect. </p>  
+<p id = "para">Click me</p>  
+<script>  
+let a = [];
+function fun(counter,id) {  
+a.push(document.getElementById("user_id").value);
+   alert(a)
+if(document.getElementById(id).style.color == "white")
+    document.getElementById(id).style.color = "red";
+else
+    document.getElementById(id).style.color = "white";
+
+
+
+} 
+
+$(document).ready(function() {
+           var buttons = document.getElementsByClassName("fa fa-bookmark");
+           
+           
+                   
+            if(document.getElementById("user_id").value == 0  ){
+                    for(i=0; i< buttons.length; i++){
+                        buttons[i].style.display = "none"; 
+                    }
+                     
+            }
+             // $("#bookmarkForm").submit(function(event){
+             //     event.preventDefault();
+             //      var arrInput = document.getElementsByTagName("btnBookmark");
+             //      alert(arrInput)
+             //     // var a = 'b';
+             //     // var index = $('#index').val();
+             //     // alert($('#link'+ a ).val())
+             //     $.ajax({
+             //          type:"POST",
+             //          url:"",
+             //          data:{
+             //            link: $('#link').val(),
+             //            csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+             //          }
+             //              });
+             // });
+             return false;
+          });
+ 
+ 
+</script>  
+
+
+  
+    </body>
+
+    
+    </html>
+<script type="text/javascript">
+
+function reply_click(clicked_id){
+    buttons = document.getElementById("header").value;
+    alert(buttons)
+        $.ajax({
+                      type:"POST",
+                      url:"",
+
+                      data:{
+                        header: buttons,
+                        link: clicked_id,
+                        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                      }
+        });      
+>>>>>>> parent of b1c8b67 (delete and view detail w/ javascript)
 }
          
       </script>
