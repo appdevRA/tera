@@ -4,12 +4,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TERA</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+   <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
-    <link rel="stylesheet" href="{% static 'css/modal.css' %}">
+    
+    <link rel="stylesheet" href="{% static 'css/navbarstyle.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -21,71 +20,88 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="https://kit.fontawesome.com/abb9521de4.js" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+     
+    <style>
+table {
+  border-spacing: 2;
+  width: 100%;
+  border: 0px solid #ddd;
+}
 
-    <style type="text/css">
-      table {
-        border-collapse: collapse;
-        width: 100%;
-      }
+th, td {
+  text-align: left;
+  padding: 16px;
+}
 
-      th, td {
-        text-align: left;
-        padding: 8px;
-      }
+tr:nth-child(even) {
+  background-color: #f2f2f2
 
-      tr:nth-child(even) {background-color: #f2f2f2;}
-    </style>
+}
+tr:hover {
+  background-color: #c4c4c4
+
+}
+</style>
 </head>
 {% endblock headerinclude %}
 
-{% block content %} 
+
 <body style="background-color: #f3f3f3">
-    <nav>
+   <nav >
       <div class="logo"><a href="{% url 'ra:index_view'%}"><img class="logo-style" src="{% static 'images/teralogo.png' %}"></a></div>
-      <label for="btn" class="icon">
-        <span class=></span>
-      </label>
+      
       <ul>     
-      <li>
-                <a href="#">My Account <i class="fa fa-user" aria-hidden="true"></i></a>
+      <li id="myAccount">   
+
                 
-                <ul>
-                <li><a href="{% url 'ra:tera_dashboard_view'%}">Dashboard</a></li>  
-                <li><a href="{% url 'ra:tera_account_settings'%}">Settings</a></li>
-                <li><a href="#modalLogoutForm" data-toggle="modal" data-target="#modalLogoutForm" >Logout </a></li>
+                <a href="#" style="color: #8f2929">My Account <i class="fa fa-user" aria-hidden="true"></i></a>
+                
+                <ul style="z-index: 1">
+                <li><a href="{% url 'ra:search_result_view' %}">Search</a></li>  
+                  <li><a href="{% url 'ra:tera_account_settings' %}">Settings</a></li>  
+                <li>
+                  <form  action = "" method = "POST" autocomplete = "off" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <button type="submit" class="btn " name="btnLogout" style="background-color: white"> &nbsp;Logout </button>
+                  </form>
+                </li>
                 </ul>
       </li>
-      </ul>
+
+        </ul>
+
+    
   </nav>
-  <div class="container-fluid">
+
+    <div class="container-fluid">
   <div class="row">
     <div class="col-sm-2">
       <div class="main-menu" style="border-right:2px #800000 solid;">
         <ul>
             <section class="home">
-                <li class="menu-item"><i class="fa fa-bookmark"></i> &nbsp; &nbsp; All References</li>
-                <li class="menu-item"><i class="fa fa-history"></i>&nbsp; &nbsp; Recently Added</li>
-                <li class="menu-item"><i class="fa fa-bookmark"></i>&nbsp; &nbsp; Recently Read</li>
-                <li class="menu-item"><i class="fa fa-star"></i>&nbsp; &nbsp; Favorites</li>
-                <li class="menu-item"><i class="fa fa-trash"></i>&nbsp; &nbsp; Trash</li>
-                <li class="menu-item"><i class="fa fa-chevron-circle-down"></i>&nbsp; &nbsp; <b>My Collections </b>
-                                 <i class="fa fa-plus" style="font-size:10px;" name="addfolder" onclick="document.getElementById('id01').style.display='block'"></i></li>
-                                 {% for folder in folders %}
-                                    <li class="menu-item" style="padding-left: 50px;"> {{folder.foldername}} </li>
-                                 {% endfor %}
-                <li class="menu-item"><i class="fa fa-chevron-circle-down"></i>&nbsp; &nbsp; &nbsp;<b>Private Groups</b>
-                                 <i class="fa fa-plus" style="font-size: 10px;"></i></li>
+                <li id="all" class="menu-item" onclick="showRows(this.id)" ><i id="allIcon" class="fa fa-bookmark"></i> &nbsp; &nbsp; &nbsp; &nbsp;All References</li>
+                <li id="recentlyAdded" class="menu-item" onclick="showRows(this.id)" ><i id="recentlyAddedIcon" class="fa fa-history"></i>&nbsp; &nbsp;&nbsp; &nbsp; Recently Added</li>
+                <li id="recentlyRead" class="menu-item" onclick="showRows(this.id)" ><i id="recentlyReadIcon" class="fa fa-bookmark"></i>&nbsp; &nbsp;&nbsp; &nbsp; Recently Read</li>
+                <li id="favorite" class="menu-item" onclick="showRows(this.id)" ><i id="favoriteIcon" class="fa fa-star"></i>&nbsp; &nbsp; &nbsp; &nbsp;Favorites</li>
+                <li id="trash" class="menu-item" onclick="showRows(this.id)"><i id="trashIcon" class="fa fa-trash" ></i>&nbsp; &nbsp; &nbsp; &nbsp;Trash</li>
+                <li class="menu-item"><i class="fa fa-folder"></i>&nbsp; &nbsp;&nbsp; &nbsp;  <b>My Collections </b> <i class="fa fa-plus" style="font-size:10px;" name="addfolder" onclick="document.getElementById('id01').style.display='block'"></i></li>
+                                
+                <li class="menu-item"><i class="fa fa-group" style="font-size: 20px"></i> &nbsp; &nbsp; &nbsp; <b>Private Groups</b> <i class="fa fa-plus" style="font-size: 10px;"></i></li>
+
                </section>             
         </ul>
       </div>
     </div>
 
-    <div class="col-sm-6">
+     <div class="col-sm-7" style="border-right: solid #800000 2px;">
       <div class="wrapper">
        <div class="main_content">
           <div class="header" >
-                <h4> All References </h4>  
-                  <table class="table">
+                <br> 
+              
+                   <table id="itemTable"  class="table">
                     <thead>
                       <tr>
                         <th>Site</th>
@@ -98,39 +114,8 @@
                         <th></th>
                       </tr>
                     </thead>
-                    <tbody>
-                      <a>
-                      <tr>
-                        <td><img class="logo-style" src="{% static 'images/springerLogo.PNG' %}" style="height: 15px;"></td>
-                        <td>Book</td>
-                        <td><a href="#"><span style="display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 15ch;">The New Era of Modern Technology The New Era of Modern Technology</span></a></td>
-                        <td>11-01-2021</td>
-                        <td>11-01-2021</td>
-                        <td><a href="#"><i class="fa fa-eye"></i></a></td>
-                        <td><a href="#"><i class="fa fa-trash"></i></a></td>
-                        <td><a href="#"><i class="fa fa-star"></i></a></td>
-                      </tr>
-                      <tr>
-                        <td><img class="logo-style" src="{% static 'images/springerLogo.PNG' %}" style="height: 15px;"></td>
-                        <td>Book</td>
-                        <td><a href="#"><span style="display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 15ch;">The New Era of Modern Technology</span></a></td>
-                        <td>11-01-2021</td>
-                        <td>11-01-2021</td>
-                        <td><a href="#"><i class="fa fa-eye"></i></a></td>
-                        <td><a href="#"><i class="fa fa-trash"></i></a></td>
-                        <td><a href="#"><i class="fa fa-star"></i></a></td>
-                      </tr>
-                      <tr>
-                        <td><img class="logo-style" src="{% static 'images/springerLogo.PNG' %}" style="height: 15px;"></td>
-                        <td>Book</td>
-                        <td><a href=""><span style="display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 15ch;">The New Era of Modern Technology</span></a></td>
-                        <td>11-01-2021</td>
-                        <td>11-01-2021</td>
-                        <td><a href="#"><i class="fa fa-eye"></i></a></td>
-                        <td><a href="#"><i class="fa fa-trash"></i></a></td>
-                        <td><a href="#"><i class="fa fa-star"></i></a></td>
-                      </tr>
-                    </a>
+                    <tbody id="itemArea">
+                      
                     </tbody>
                   </table>
                 </div>
@@ -160,38 +145,393 @@
           </div>  
                  
         </div>
-   
-    
-    <div class="col-sm-4">
-      <div class="right-side-bar" style="border-left:2px #800000 solid;">
+    <div class="col-sm-3" style="overflow-x: scroll;  overflow-y: scroll;  height: 90vh">
+      <br>
       <h4>Details</h4>
-      <ul>
-       <li class="menu-item"> Lorem ipsum dolorem. Lorem ipsum dolorem.</li>
-       <li class="menu-item"> Lorem ipsum dolorem.</li>
-       <li class="menu-item"> Lorem ipsum dolorem.</li>
-      </ul>
-    </div>
+     <table id="detailTable" class="table" style="">
+       <thead>
+        <tr>
+         <th></th>
+         <th></th>
+         </tr>
+
+       </thead>
+
+       <tbody id="detailArea">
+
+       </tbody>
+
+     </table>
+   
     </div>
   </div>
 </div>
+    
+    
 </body>
-{% endblock content %} 
 
-<script>
-      $('.icon').click(function(){
-        $('span').toggleClass("cancel");
+
+<script type="text/javascript">
+  var markers = {{ bookmark_list|safe }}
+
+$(document).ready(function($) {
+
+  showRows('all')
+
+       $(".clickable-row").click(function() {
+          window.location = $(this).data("href");
       });
-</script>
-<script>
-// Get the modal
-var modal = document.getElementById('id01');
 
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
-  if (event.target == modal) {
-    modal.style.display = "none";
-  }
+
+
+
+});
+
+
+function delete_item(clicked_id){
+  
+   $.ajax({
+                      type:"POST",
+                      url:"",
+
+                      data:{
+                        
+                        deleteID: clicked_id,
+                        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                      }
+        }); 
+   for(i=0; i< markers.length;i++){
+      if(markers[i]['pk'] == clicked_id){
+        markers[i]['fields']['isRemoved'] = 1;
+        break;
+      }
+   }
+   clearRow("itemTable")
+   showRows('all')
+  
+    
 }
+
+
+function favorite_item(clicked_id){
+  
+   $.ajax({
+                      type:"POST",
+                      url:"",
+
+                      data:{
+                        
+                        favoriteID: clicked_id,
+                        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                      }
+        }); 
+   for(i=0; i< markers.length;i++){
+      if(markers[i]['pk'] == clicked_id){
+        markers[i]['fields']['isFavorite'] = 1;
+        break;
+      }
+   }
+  
+  
+    
+}
+
+
+function showRows(rowType){
+  clearRow("detailTable")
+  clearStyle();
+  clearRow('itemTable');
+// document.getElementById("itemTable").style.display = "none"; 
+    if(rowType == 'all'){
+      document.getElementById(rowType).style.backgroundColor= "#c9c9c9";
+      document.getElementById(rowType).style.color= "#800000";
+      document.getElementById('allIcon').style.color= "#800000";
+
+            for(i=0; i< markers.length;i++){
+             
+
+                if(markers[i]['fields']['websiteTitle'] == "Springeropen.com" & markers[i]['fields']['isRemoved'] == 0){
+                    var dt = new Date( markers[i]['fields']['dateAdded']);
+                    var access = new Date( markers[i]['fields']['dateAccessed']);
+                          added =  (("0"+dt.getDate()).slice(-2)) +"/"+ (("0"+(dt.getMonth()+1)).slice(-2)) +"/"+ (dt.getFullYear()) +" "+ (("0"+dt.getHours()).slice(-2)) +":"+ (("0"+dt.getMinutes()).slice(-2));
+
+                          accessed =  (("0"+access.getDate()).slice(-2)) +"/"+ (("0"+(access.getMonth()+1)).slice(-2)) +"/"+ (access.getFullYear()) +" "+ (("0"+access.getHours()).slice(-2)) +":"+ (("0"+access.getMinutes()).slice(-2));
+                      
+                       $('#itemArea').append(
+                        "<tr>"+
+                        "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>" +
+                        "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
+                        "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
+
+                        "<td>" + added + "</td>" +
+                        "<td>" + accessed +"</td>" + 
+                        "<td><i id='"+ markers[i]['pk']+"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
+                        "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer' onclick='delete_item(this.id)'></i></td>" +
+                        "<td><i id='"+ markers[i]['pk']+"' class='fas fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>" +
+
+                       "</tr>"
+
+                        );  
+                }
+                 
+            }
+
+
+    } else if(rowType =='trash'){
+      document.getElementById(rowType).style.backgroundColor= "#c9c9c9";
+      document.getElementById(rowType).style.color= "#800000";
+      document.getElementById('trashIcon').style.color= "#800000";
+
+        for(i=0; i< markers.length;i++){
+
+            if(markers[i]['fields']['websiteTitle'] == "Springeropen.com" & markers[i]['fields']['isRemoved'] == 1){
+
+                    var dt = new Date( markers[i]['fields']['dateAdded']);
+                    var access = new Date( markers[i]['fields']['dateAccessed']);
+                          added =  (("0"+dt.getDate()).slice(-2)) +"/"+ (("0"+(dt.getMonth()+1)).slice(-2)) +"/"+ (dt.getFullYear()) +" "+ (("0"+dt.getHours()).slice(-2)) +":"+ (("0"+dt.getMinutes()).slice(-2));
+
+                          accessed =  (("0"+access.getDate()).slice(-2)) +"/"+ (("0"+(access.getMonth()+1)).slice(-2)) +"/"+ (access.getFullYear()) +" "+ (("0"+access.getHours()).slice(-2)) +":"+ (("0"+access.getMinutes()).slice(-2));
+
+              $('#itemArea').append(
+                "<tr class='clickable-row' data-href='" + markers[i]['fields']['url'] + "'>" +
+
+                "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>" +
+                "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
+                "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
+
+                "<td>" + added + "</td>" +
+                "<td>" + accessed +"</td>" + 
+                "<td><i id='"+ markers[i]['pk']+"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
+                "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer' onclick='delete_item(this.id)'></i></td>" +
+                "<td><i id='"+ markers[i]['pk']+"' class='fas fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>" +
+        
+        
+
+
+
+               "</tr>"
+
+                );  
+            }
+         
+        }
+    } else if(rowType =='recentlyAdded'){
+          document.getElementById(rowType).style.backgroundColor= "#c9c9c9";
+          document.getElementById(rowType).style.color= "#800000";
+          document.getElementById('recentlyAddedIcon').style.color= "#800000";
+
+          var then = new Date(markers[0]['fields']['dateAdded']), // month is zero based
+          now  = new Date;               // no arguments -> current date
+          days = Math.round((now - then) / (1000 * 60 * 60 * 24));
+        
+          for(i=0; i< markers.length;i++){
+              
+                if(markers[i]['fields']['websiteTitle'] == "Springeropen.com" & days <= 7 &  markers[i]['fields']['isRemoved'] == 0){
+                      var dt = new Date( markers[i]['fields']['dateAdded']);
+                      var access = new Date( markers[i]['fields']['dateAccessed']);
+                          added =  (("0"+dt.getDate()).slice(-2)) +"/"+ (("0"+(dt.getMonth()+1)).slice(-2)) +"/"+ (dt.getFullYear()) +" "+ (("0"+dt.getHours()).slice(-2)) +":"+ (("0"+dt.getMinutes()).slice(-2));
+
+                          accessed =  (("0"+access.getDate()).slice(-2)) +"/"+ (("0"+(access.getMonth()+1)).slice(-2)) +"/"+ (access.getFullYear()) +" "+ (("0"+access.getHours()).slice(-2)) +":"+ (("0"+access.getMinutes()).slice(-2));
+                  $('#itemArea').append(
+                    "<tr>"+
+                    "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>" +
+                    "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
+                    "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
+
+                    "<td>" + added + "</td>" +
+                    "<td>" + accessed +"</td>" + 
+                    "<td><i id='"+ markers[i]['pk']+"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
+                    "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer' onclick='delete_item(this.id)'></i></td>" +
+                    "<td><i id='"+ markers[i]['pk']+"' class='fas fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>" +
+            
+            
+
+
+
+                   "</tr>"
+
+                    );  
+                }
+         
+          }
+    } else if(rowType =='recentlyRead'){
+          document.getElementById(rowType).style.backgroundColor= "#c9c9c9";
+          document.getElementById(rowType).style.color= "#800000";
+          document.getElementById('recentlyReadIcon').style.color= "#800000";
+          var then = new Date(markers[0]['fields']['dateAdded']), // month is zero based
+          now  = new Date;               // no arguments -> current date
+          days = Math.round((now - then) / (1000 * 60 * 60 * 24));
+        
+          for(i=0; i< markers.length;i++){
+              
+                if(markers[i]['fields']['websiteTitle'] == "Springeropen.com" & days <= 7 &  markers[i]['fields']['isRemoved'] == 0){
+                        var dt = new Date( markers[i]['fields']['dateAdded']);
+                        var access = new Date( markers[i]['fields']['dateAccessed']);
+                          added =  (("0"+dt.getDate()).slice(-2)) +"/"+ (("0"+(dt.getMonth()+1)).slice(-2)) +"/"+ (dt.getFullYear()) +" "+ (("0"+dt.getHours()).slice(-2)) +":"+ (("0"+dt.getMinutes()).slice(-2));
+
+                          accessed =  (("0"+access.getDate()).slice(-2)) +"/"+ (("0"+(access.getMonth()+1)).slice(-2)) +"/"+ (access.getFullYear()) +" "+ (("0"+access.getHours()).slice(-2)) +":"+ (("0"+access.getMinutes()).slice(-2));
+                  $('#itemArea').append(
+                    "<tr>"+
+                    "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>" +
+                    "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
+                    "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
+
+                    "<td>" + added + "</td>" +
+                    "<td>" + accessed +"</td>" + 
+                    "<td><i id='"+ markers[i]['pk']+"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
+                    "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer' onclick='delete_item(this.id)'></i></td>" +
+                    "<td><i id='"+ markers[i]['pk']+"' class='fas fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>" +
+            
+            
+
+
+
+                   "</tr>"
+
+                    );  
+                }
+         
+          }
+    } else if(rowType =='favorite'){
+      
+          document.getElementById(rowType).style.backgroundColor= "#c9c9c9";
+          document.getElementById(rowType).style.color= "#800000";
+          document.getElementById('favoriteIcon').style.color= "#800000";
+          for(i=0; i< markers.length;i++){
+             
+            if(markers[i]['fields']['websiteTitle'] == "Springeropen.com" & markers[i]['fields']['isFavorite'] == 1 & markers[i]['fields']['isRemoved'] == 0){
+
+                    var dt = new Date( markers[i]['fields']['dateAdded']);
+                    var access = new Date( markers[i]['fields']['dateAccessed']);
+                          added =  (("0"+dt.getDate()).slice(-2)) +"/"+ (("0"+(dt.getMonth()+1)).slice(-2)) +"/"+ (dt.getFullYear()) +" "+ (("0"+dt.getHours()).slice(-2)) +":"+ (("0"+dt.getMinutes()).slice(-2));
+
+                          accessed =  (("0"+access.getDate()).slice(-2)) +"/"+ (("0"+(access.getMonth()+1)).slice(-2)) +"/"+ (access.getFullYear()) +" "+ (("0"+access.getHours()).slice(-2)) +":"+ (("0"+access.getMinutes()).slice(-2));
+              $('#itemArea').append(
+                "<tr>"+
+                "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>" +
+                "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
+                "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'> <span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
+
+                "<td>" + added + "</td>" +
+                "<td>" + accessed +"</td>" + 
+                "<td><i id='"+ markers[i]['pk']+"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
+                "<td><i id='"+ markers[i]['pk']+"' class='fas fa-minus' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>" +
+                
+        
+        
+
+
+
+               "</tr>"
+
+                );  
+            }
+         
+        }
+    }
+
+
+}
+
+function clearRow(tableName){
+  var table = document.getElementById(tableName);
+    //or use :  var table = document.all.tableid;
+
+    for(var i = table.rows.length - 1; i > 0; i--)
+    {
+        table.deleteRow(i);
+    }
+
+}
+
+function clearStyle(){
+  var table = document.getElementsByClassName("menu-item");
+    //or use :  var table = document.all.tableid;
+
+    for( i = 0; i < table.length; i++)
+    {
+        table[i].style.backgroundColor = "#f3f3f3";
+          table[i].style.color= "black";
+    }
+
+    document.getElementById('trashIcon').style.color= "grey";
+    document.getElementById('allIcon').style.color= "grey";
+    document.getElementById('recentlyAddedIcon').style.color= "grey";
+    document.getElementById('recentlyReadIcon').style.color= "grey";
+    document.getElementById('favoriteIcon').style.color= "grey";
+    // document.getElementById('favoriteIcon').style.color= "grey";
+    // document.getElementById('recentAddedIcon').style.color= "grey";
+    // document.getElementById('recentReadIcon').style.color= "grey";
+}
+function get_detail(clicked_id){
+    var id = parseInt(clicked_id);
+  
+    clearRow("detailTable")   
+
+   for(i=0; i< markers.length;i++){
+      if(markers[i]['pk'] == id){
+          var dt = new Date( markers[i]['fields']['dateAdded']);
+          var access = new Date( markers[i]['fields']['dateAccessed']);
+           added =  (("0"+dt.getDate()).slice(-2)) +"/"+ (("0"+(dt.getMonth()+1)).slice(-2)) +"/"+ (dt.getFullYear()) +" "+ (("0"+dt.getHours()).slice(-2)) +":"+ (("0"+dt.getMinutes()).slice(-2));
+
+            accessed =  (("0"+access.getDate()).slice(-2)) +"/"+ (("0"+(access.getMonth()+1)).slice(-2)) +"/"+ (access.getFullYear()) +" "+ (("0"+access.getHours()).slice(-2)) +":"+ (("0"+access.getMinutes()).slice(-2));
+           
+       $('#detailArea').append("<tr ><td style='text-align: right; vertical-align:top'> Website: </td>"+ "<td>"+ markers[i]['fields']['title'] +  "</td></tr>" );  
+       $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Item type: </td>"+ "<td>"+ markers[i]['fields']['itemType'] +  "</td></tr>" );  
+       $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> URL: </td>"+ "<td>"+ markers[i]['fields']['url'] +  "</td></tr>" );  
+       $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Title: </td>"+ "<td>"+ markers[i]['fields']['title'] +  "</td></tr>" );  
+       $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Author: </td>"+ "<td>"+ markers[i]['fields']['author'] +  "</td></tr>" );  
+       $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Description: </td>"+ "<td>"+ markers[i]['fields']['description'] +  "</td></tr>" );  
+       $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Collection: </td>"+ "<td>"+ markers[i]['fields']['journalItBelongs'] +  "</td></tr>" );  
+       $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Publication Year: </td>"+ "<td>"+ markers[i]['fields']['publicationYear'] +  "</td></tr>" );  
+       $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Date added: </td>"+ "<td>"+ added +  "</td></tr>" );  
+       $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Date Accessed: </td>"+ "<td>"+ accessed +  "</td></tr>" );  
+
+       break;
+      }
+  }
+  
+  
+}
+
+
+function sort(){
+ // alert("wala")
+  var table, rows, switching, i, x, y, shouldSwitch;
+  table = document.getElementById("itemTable");
+  switching = true;
+  /* Make a loop that will continue until
+  no switching has been done: */
+  while (switching) {
+    // Start by saying: no switching is done:
+    switching = false;
+    rows = table.rows;
+    /* Loop through all table rows (except the
+    first, which contains table headers): */
+    for (i = 1; i < (rows.length - 1); i++) {
+      // Start by saying there should be no switching:
+      shouldSwitch = false;
+      /* Get the two elements you want to compare,
+      one from current row and one from the next: */
+      x = rows[i].getElementsByTagName("TD")[2];
+      y = rows[i + 1].getElementsByTagName("TD")[2];
+      // Check if the two rows should switch place:
+      if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+        // If so, mark as a switch and break the loop:
+        shouldSwitch = true;
+        break;
+      }
+    }
+    if (shouldSwitch) {
+      /* If a switch has been marked, make the switch
+      and mark that a switch has been done: */
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+    }
+  }
+}    
+
 </script> 
 
-<script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js"></script>
+
+</html>

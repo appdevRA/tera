@@ -15,6 +15,7 @@ body{
     position: relative;
     top:2px;
     padding: 10px;
+    overflow-y: scroll;
 
 }
 
@@ -24,9 +25,6 @@ body{
     text-transform: capitalize;
 }
 
-.main-menu:hover{
-    overflow-y: scroll;
-}
 
 .main-menu .menu-item{
     padding: 5px;
@@ -113,7 +111,7 @@ section.home{
     position: absolute;
     right:0;
     padding: 10px;
-    z-index: -1;
+    z-index: 0;
 }
 .left-side-bar{
     background-color: #f3f3f3;
@@ -197,6 +195,9 @@ section.home{
   color: #717171;
 }
 
+.main_content{
+  overflow-y: scroll; 
+}
 .wrapper .main_content .info div{
   margin-bottom: 1%;
   line-height: 15px;

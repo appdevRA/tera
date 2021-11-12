@@ -15,19 +15,21 @@ import time
 
 
 
-def scrape(word, proxy, refType, pageNumber, site):
+def scrape(word, proxy, refType, pageNumber, site, header):
 
 
-    if site == 'springer open':
+    if site == 'Springeropen.com':
         return springer(word, proxy, refType,pageNumber)
-    elif site == 'science direct':
-        return scienceDirect(word, proxy, refType, pageNumber)
-    elif site == 'scirp':
+    elif site == 'Sciencedirect.com':
+        return scienceDirect(word, proxy, refType, pageNumber, header)
+    elif site == 'Scirp.org':
         return scirp(word, proxy, refType, pageNumber)
     elif site == 'tandfonline':
         return tandFOnline(word, proxy, refType, pageNumber)
     elif site == 'herdin':
         return herdin(word, proxy, refType, pageNumber)
+    elif site == 'zLibrary':
+        return zLibrary(word, proxy, refType, pageNumber)
 
 
 
@@ -83,11 +85,12 @@ def springer(word, proxy, refType, pageNumber): # INDEX 1 STARTING SA PAGINATION
                     springLinks.append(a.a['href']) # extract link and store to list
                     
                     springers.append(z)
+        return springers, springLinks
     else:
         x = False
         while(x == False):
             try:
-                response = requests.get('https://www.springer.com/gp/search?page='+ str(pageNumber) +'&query='+ word+'&submit=Submit', headers = headers(), proxies={'https:': proxy}, timeout=2) #books
+                response = requests.get('https://www.springer.com/gp/search?dnc=true&facet-type=type__book&page='+ str(pageNumber) +'&query='+ word+'&submit=Submit', headers = headers(), proxies={'https:': proxy}, timeout=2) #books
                 x = True
                 
             except ConnectionError:
@@ -123,7 +126,7 @@ def springer(word, proxy, refType, pageNumber): # INDEX 1 STARTING SA PAGINATION
                     z.append(books1.div.text) #desicription
                     z.append(books1.find('p', class_='format').text) #format
                     #z.append(books1.find('p', class_='price-container price-loaded').span.text) #price
-                    springLinks.append(books1.h4.a['href'])
+                    springLinks.append('https://www.springer.com' +books1.h4.a['href'])
      
                 elif books2 != None:
                     z.append(books2.h4.a.text) #title
@@ -131,29 +134,119 @@ def springer(word, proxy, refType, pageNumber): # INDEX 1 STARTING SA PAGINATION
                     z.append(books2.div.text) #desicription
                     z.append(books2.find('p', class_='format').text) #format
                     #z.append(books2.find('p', class_='price-container price-loaded').text) #price
-                    springLinks.append(books2.h4.a['href'])
+                    springLinks.append('https://www.springer.com' +books2.h4.a['href'])
 
                 springers.append(z)
 
     
-    return springers, springLinks
+            return springers, springLinks
+
+def details(link, proxy, refType ):
+    
+    ref = refType.split(' ')
+    if refType == 'Springeropen.com Article':
+        # with open ('C:/Users/Valued Client/Desktop/html/sprigner DETAILS.html', 'r', errors='ignore') as html_file:
+        #     content = html_file.read()
+            # soup = BeautifulSoup(content, 'html.parser')
+        
+        # reference = refType.split(' ')
+      
+        response = requests.get('https:'+link,headers=headers(), proxies={'https:': proxy})
+        soup = BeautifulSoup(response.content, 'html.parser')
+        descrip = soup.find('div', class_='c-article-section__content').p.text
+        description = descrip[:500]
+        # print(len(description))
+        # if len(description) > 1000:
+        #     a = soup.find('h3', text='Conclusion')
+        #     print(a.next)
+      
+        details={
+            'websiteTitle': ref[0],
+            'itemType': ref[1],
+            'author': soup.find('div', class_='c-article-header').find('ul', class_='c-article-author-list js-etal-collapsed').text,
+            'description': description,
+            'journalItBelongs': soup.find('i', attrs={'data-test':'journal-title'}).text,
+            'volume': soup.find('b', attrs={'data-test':'journal-volume'}).text[7:],
+            'publishYear': soup.find('span', class_="c-bibliographic-information__value").text,
+            'doi': soup.find('a', attrs={'data-track-action':'view doi'}).text, 
+            'subtitle':'',
+            'citation':'',
+            'downloads':'',
+            'publisher':'',
+            'edition':'',
+            'pages':''
+            
+        }
+        
+
+            
+        # websiteTitle = refType[0]
+        # itemType = refType[1]
+        
+        return details
+
+    elif refType == 'Springeropen.com Book':
+        response = requests.get(link + '#about',headers=headers(), proxies={'https:': proxy})
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        if soup.find('div', class_='unique-selling-points unique-selling-points--collapsed u-mb-36') == None:
+            description = ''
+        else:
+            description = soup.find('div', class_='unique-selling-points unique-selling-points--collapsed u-mb-36').text
+
+        if soup.find('span', id='bookcitations-count-number') == None:
+            cite = ''
+        else:
+            cite = soup.find('span', id='bookcitations-count-number').text
+        
+        if soup.find('h2', class_='page-title__subtitle') == None:
+            subtitle = ''
+        else:
+            subtitle = soup.find('h2', class_='page-title__subtitle').text
+
+        if soup.find('h1', attrs={"itemprop":"name"}) == None:
+            if soup.find('h1', class_='app-journal-header__title') == None:
+                title = ''
+            else:
+                title= soup.find('h1', class_='app-journal-header__title').text
+        else:
+            title= soup.find('h1', attrs={"itemprop":"name"}).text
+        details={
+            'websiteTitle': ref[0],
+            'itemType': ref[1],
+            'title': title,
+            'subtitle': subtitle,
+            'description': description,
+            'citation': cite,
+            'downloads': soup.find('span', class_='test-metric-count article-metrics__views').text,
+            'author': soup.find('ul', class_='test-contributor-names').text,
+            'publisher': soup.find('span', attrs={"itemprop":"name"}).text,
+            'edition': soup.find('span', id='edition-number').text,
+            'pages': soup.find('span', id='number-of-pages').text,
+            'doi': soup.find('span', id='doi-url').text,
+            'journalItBelongs': '',
+            'volume': '',
+            'publishYear': '',
 
 
+            
+        }
+
+        return details
 
 
-def scienceDirect(word,proxy, refType, pageNumber):
+def scienceDirect(word,proxy, refType, pageNumber, header):
     scienceDirects = []
     scienceLinks = []
     #ua = random.choice(userAgents) 
-
     headers = {
     'authority': 'www.sciencedirect.com',
     'cache-control': 'max-age=0',
-    'sec-ch-ua': '"Chromium";v="94", "Microsoft Edge";v="94", ";Not A Brand";v="99"',
+    'sec-ch-ua': '"Microsoft Edge";v="95", "Chromium";v="95", ";Not A Brand";v="99"',
     'sec-ch-ua-mobile': '?0',
     'sec-ch-ua-platform': '"Windows"',
     'upgrade-insecure-requests': '1',
-    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36 Edg/94.0.992.50',
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36 Edg/95.0.1020.44',
     'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
     'sec-fetch-site': 'cross-site',
     'sec-fetch-mode': 'navigate',
@@ -161,8 +254,9 @@ def scienceDirect(word,proxy, refType, pageNumber):
     'sec-fetch-dest': 'document',
     'referer': 'https://id.elsevier.com/',
     'accept-language': 'en-US,en;q=0.9',
-    'cookie': 'EUID=80a39c81-5643-43a6-a14d-dbdeb3ff56f9; mboxes=%7B%22universal-view-pdf%22%3A%7B%22variation%22%3A%22B%22%7D%7D; utt=ae01-efa25bdbb71478802a627452c2319959fc3-A; acw=5d1cdce83ec8304d8068af9-6c583c186dcagxrqb%7C%24%7C7CA41A20BFA2C07A84D675BD5F111A415C3C53A91C92691ED528DFF306AE4B899493A1D62A849F4FBB07278403CAE6F6DEE126DB0DC891D10E9169905BBD791CB0469A67597464825D387A21AFA2E514; AMCVS_4D6368F454EC41940A4C98A6%40AdobeOrg=1; fingerPrintToken=7631a3a3ad37712500188ed350c5ea69; __cf_bm=mizJQkMUL_q_8PVF_L.HeILxfVm_hrV0P2GzPPgSQ2A-1634652896-0-ATT4YKhXMGxnu+JYKueEZSygqt5psFECltLnyIWDLkjjsCflBzc8vUERAIAFgufaGbbI6n7z86jVoHRmu4MyAT/MzSBrncKaj2FxJmEZVrx5; mbox=session%2312615284f2634c109a0e60a30b3b5f6a%231634654763%7CPC%2312615284f2634c109a0e60a30b3b5f6a.34_0%231697897703; sd_access=eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..hJJHvZ6hiPgjGXOrHtKDVA.NvY4b6fKH0AR6-6ufJ8KLnDKuq146W5jmrYLDpyzzzMw2N5JD7d1JE-fBTeciwpM9p9ekc6y6q1LybTa_2RFkqtCY0WEVt0Lm9WUmEaeH95KpxX9_44bHjAOMpjk930ltCl2CzGAFjIRWZ0jwcOslw.6idS905U8j3vfuC0xdyslA; sd_session_id=c5c28e8b9a68a74f236b1844a99c13c9980dgxrqb; id_ab=IDP; has_multiple_organizations=true; MIAMISESSION=69f45c87-b450-4634-aca4-c0203bbf1c39:3812105771; SD_REMOTEACCESS=eyJhY2NvdW50SWQiOiI3MzA5NCIsInRpbWVzdGFtcCI6MTYzNDY1Mjk3MjUyMH0=; AMCV_4D6368F454EC41940A4C98A6%40AdobeOrg=-2121179033%7CMCIDTS%7C18920%7CMCMID%7C81261105090677501200180261852203688591%7CMCAID%7CNONE%7CMCOPTOUT-1634660178s%7CNONE%7CMCAAMLH-1635257778%7C3%7CMCAAMB-1635257778%7Cj8Odv6LonN4r3an7LhD3WZrU1bUpAkFkkiY1ncBR96t2PTI%7CvVersion%7C5.3.0%7CMCCIDH%7C-388222836; s_pers=%20v8%3D1634652991473%7C1729260991473%3B%20v8_s%3DLess%2520than%25201%2520day%7C1634654791473%3B%20c19%3Dsd%253Ahome%253Ahpx%7C1634654791478%3B%20v68%3D1634652972551%7C1634654791483%3B; s_sess=%20s_cpc%3D0%3B%20s_ppvl%3Dsd%25253Aproduct%25253Aaccess%25253Aintermediate-sign-in%252C100%252C100%252C969%252C1920%252C969%252C1920%252C1080%252C1%252CP%3B%20s_cc%3Dtrue%3B%20e41%3D1%3B%20s_ppv%3Dsd%25253Ahome%25253Ahpx%252C22%252C22%252C969%252C1456%252C969%252C1920%252C1080%252C1%252CP%3B',
+    'cookie': 'EUID=80a39c81-5643-43a6-a14d-dbdeb3ff56f9; utt=ae01-efa25bdbb71478802a627452c2319959fc3-A; AMCVS_4D6368F454EC41940A4C98A6%40AdobeOrg=1; __gads=ID=cbccebd4b239d1b9:T=1634873619:S=ALNI_MbKgsfwajTBcaYJMjf-VEiMK5cN_g; mboxes=%7B%22universal-view-pdf%22%3A%7B%22variation%22%3A%22A%22%7D%2C%22login-intermediate-page%22%3A%7B%22variation%22%3A%22B%22%7D%7D; SD_ART_LINK_STATE=%3Ce%3E%3Cq%3Escience%3C%2Fq%3E%3Corg%3Erslt_list%3C%2Forg%3E%3Cz%3Erslt_list_item%3C%2Fz%3E%3CsrcFr%3Erslt_list_item%3C%2FsrcFr%3E%3Crdt%3E2021%2F10%2F31%2F13%3A02%3A47%3A933%3C%2Frdt%3E%3Cenc%3EN%3C%2Fenc%3E%3C%2Fe%3E; __cf_bm=YrisfCns8p2z8ZZHzzjsm5nrdSeQ24kgyTez1vjjlw4-1636341385-0-AfO28+touQnJ+aAFzCvzn6WCJUyzI06yFSVTDr21BWQ8TwxF0PGr4qHLLNrFUQR6jQgFMiZrmpfHT27QDBKdcfz9hq/Cf/dUeVvo9FX21lk6; acw=4736891373ac114c545b5af0416165e484ddgxrqa%7C%24%7CC7567E508BB27F0AD5635AC3D279072A6E49DE75273610E54C84238FDA27FE09DAC91C7CC2088AD67DC4507B13AC5E7DDC1CE1FFCC1DF7F03FBA44D1BD4E4F2EB0469A67597464825D387A21AFA2E514; fingerPrintToken=298693a32e804ab0b2513bc3a48802f9; mbox=session%23a16c9dd3c28146179d4e14055ed5c400%231636343500%7CPC%23a16c9dd3c28146179d4e14055ed5c400.34_0%231699586440; sd_access=eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..XY8C06otiUe0iCqt41nacw.f9hu3we5h6QHt-39HS1f7iTu0L_bYiyszOObB6jFKwGJ0QH-M12-_QDN8AEgSkXhSiAEVXTSLVN4uftBJXpxGhJoBeiWMljtYT8fDBee9nyJScBEDHxdzTAyXA64Bi2yNqWz42ZRhz7m2xKr8VB8kA.gVqctdV9io2lBtpUkOUP6w; sd_session_id=7013f5299d49c04a76895ef7d9cfb5d83787gxrqa; id_ab=IDP; has_multiple_organizations=true; MIAMISESSION=c99c2c87-1a5d-4301-bb44-4aab50adf504:3813794463; SD_REMOTEACCESS=eyJhY2NvdW50SWQiOiI3MzA5NCIsInRpbWVzdGFtcCI6MTYzNjM0MTY2Mzk5M30=; AMCV_4D6368F454EC41940A4C98A6%40AdobeOrg=-2121179033%7CMCIDTS%7C18940%7CMCMID%7C81261105090677501200180261852203688591%7CMCAID%7CNONE%7CMCOPTOUT-1636348869s%7CNONE%7CMCAAMLH-1636946469%7C3%7CMCAAMB-1636946469%7Cj8Odv6LonN4r3an7LhD3WZrU1bUpAkFkkiY1ncBR96t2PTI%7CvVersion%7C5.3.0%7CMCCIDH%7C-388222836; s_pers=%20v8%3D1636341673263%7C1730949673263%3B%20v8_s%3DLess%2520than%25207%2520days%7C1636343473263%3B%20c19%3Dsd%253Ahome%253Ahpx%7C1636343473269%3B%20v68%3D1636341664028%7C1636343473274%3B; s_sess=%20s_cpc%3D0%3B%20e78%3Dqs%253Dcancer%3B%20c21%3Dqs%253Dtsunami%3B%20e13%3Dqs%253Dtsunami%253A1%3B%20c13%3Drelevance-desc%3B%20s_sq%3D%3B%20s_ppvl%3Dsd%25253Ahome%25253Ahpx%252C21%252C21%252C969%252C1239%252C969%252C1920%252C1080%252C1%252CP%3B%20s_cc%3Dtrue%3B%20e41%3D1%3B%20s_ppv%3Dsd%25253Ahome%25253Ahpx%252C21%252C21%252C969%252C1239%252C969%252C1920%252C1080%252C1%252CP%3B',
     }
+    
     x = False
     while(x == False):
         try:
@@ -170,7 +264,7 @@ def scienceDirect(word,proxy, refType, pageNumber):
                 response = requests.get('https://www.sciencedirect.com/browse/journals-and-books?contentType=JL&searchPhrase='+ word, headers=headers, proxies={'https:': proxy}, timeout= 5)
                 x = True
             else:
-                response = requests.get('https://www.sciencedirect.com/browse/journals-and-books?contentType=BK&searchPhrase='+ word, headers=headers, proxies={'https:': proxy}, timeout= 5)
+                response = requests.get('https://www.sciencedirect.com/browse/journals-and-books?contentType=BK&searchPhrase='+ word, headers=headers, proxies={'https:': proxy}, timeout= 5) # books
                 x = True
         except ConnectionError:
                 print('Connection Error')
@@ -188,15 +282,15 @@ def scienceDirect(word,proxy, refType, pageNumber):
 
     for li in lli:
         z = []
-                    #scienceDTitles.append(li.a.text)
+                    
         z.append(li.a.text)
         p = li.div.p
-        pp = li.div.find('p', class_='u-display-inline u-clr-grey8')
+        pp = li.div.find('p', class_='u-display-inline u-clr-grey8') 
 
         if refType == 'journal':
             if pp != None:
                 ppp = pp.find('span')
-                            #scienceDDescriptions.append(p.text + " ● " + ppp.text)
+                            
                 z.append( "Journal ● " + ppp.text)
             else:
                 z.append( "Journal")
@@ -207,11 +301,13 @@ def scienceDirect(word,proxy, refType, pageNumber):
 
 
 
-        scienceLinks.append(li.a['href'])
+        scienceLinks.append('https://www.sciencedirect.com/' + li.a['href'])
         scienceDirects.append(z)
 
     if(soup.find('a', text='Sign in')):
         print("Cookies expired")
+    else:
+        print("Cookies not expired")
    
     return scienceDirects, scienceLinks
 
@@ -225,7 +321,7 @@ def scirp(word, proxy, refType, pageNumber):
     while(x == False):
         try:
             if refType == 'article':
-                response = requests.get('https://www.scirp.org/journal/articles.aspx?searchcode='+ word+'&searchfield=All&page=1&skid=59931926', headers = headers(), proxies={'https:': proxy}, timeout=2) # article                   #
+                response = requests.get('https://www.scirp.org/journal/articles.aspx?searchcode='+ word+'&searchfield=All&page=1', headers = headers(), proxies={'https:': proxy}, timeout=2) # article                   #
                 x = True
             else:
                 response = requests.get('https://www.scirp.org/journal/articles.aspx?searchcode='+ word +'&searchfield=jname&page=1&skid=0', headers = headers(), proxies={'https:': proxy}, timeout=2) #journal
@@ -252,7 +348,9 @@ def scirp(word, proxy, refType, pageNumber):
         z.append(i.find('div', class_='list_unit').text.replace('¼Œ', ' ')) #get other info
         z.append(i.find('div', class_='list_doi').text) 
         scirp.append(z)
-        scirpLinks.append(i.div.span.a['href'])
+
+        
+        scirpLinks.append('https://www.scirp.org/journal/' + i.div.span.a['href'])
 
     return scirp, scirpLinks
 
@@ -299,7 +397,7 @@ def tandFOnline(word, proxy, refType, pageNumber): # INDEX ZERO MAG START ILANG 
 
             
             results.append(z)
-            links.append(row.find('a', class_='ref nowrap')['href'])
+            links.append('https://www.tandfonline.com' + row.find('a', class_='ref nowrap')['href'])
         return results, links
 
     elif refType == 'journal':
@@ -328,7 +426,7 @@ def tandFOnline(word, proxy, refType, pageNumber): # INDEX ZERO MAG START ILANG 
             z.append(row.find('h3').text)
 
             results.append(z)
-            links.append(row.find('a', class_='ref')['href'])
+            links.append('https://www.tandfonline.com' + row.find('a', class_='ref')['href'])
         return results, links
 
     elif refType == 'database':
@@ -358,7 +456,7 @@ def tandFOnline(word, proxy, refType, pageNumber): # INDEX ZERO MAG START ILANG 
             z.append(row.find('div', class_='publication-meta').text) # source
 
             results.append(z)
-            links.append(row.find('a', class_='ref')['href'])
+            links.append('https://www.tandfonline.com' + row.find('a', class_='ref')['href'])
         return results, links
 
 
@@ -420,7 +518,7 @@ def herdin(word, proxy,refType, pageNumber): # INDEX ZERO ANG STARTING SA ILA PA
 
         results.append(z)
 
-        links.append(row.find('h4', attrs={'style':'line-height:1.5; text-align:justify;'}).a['href'])
+        links.append('https://www.ncbi.nlm.nih.gov' + row.find('h4', attrs={'style':'line-height:1.5; text-align:justify;'}).a['href'])
             
     return results, links
 
@@ -463,7 +561,7 @@ def zLibrary(word, proxy,refType, pageNumber):
             z.append(row.find('div', class_='bookDetailsBox').text)
             
             results.append(z)
-            links.append(row.find('h3', attrs={'itemprop':'name'}).a['href'])
+            links.append('https://1lib.ph/' + row.find('h3', attrs={'itemprop':'name'}).a['href'])
 
         return results, links
 
@@ -486,47 +584,17 @@ def zLibrary(word, proxy,refType, pageNumber):
             z.append(row.find('div', class_='bookDetailsBox').text[stringPosition:].replace('\n',' ')) # journal of the 
 
             results.append(z)
-            links.append(row.find('h3', attrs={'itemprop':'name'}).a['href'])
+            links.append('https://booksc.org/' + row.find('h3', attrs={'itemprop':'name'}).a['href'])
             
             
         return results, links
 
             
 
-def doab(word, proxy,refType):
 
-    results = []
-    links = []
 
-    x = False
-    while(x == False):
-        try:
-            response = requests.get('https://directory.doabooks.org/discover?query=' + word + '&submit=', headers = headers(), proxies={'https:': proxy}, timeout=5) # article
-            x = true
-        except ConnectionError:
-            print('Connection Error')
-            return False
 
-        except ConnectTimeout:
-            print('Connect Timeout')
-                
-        except ReadTimeout:
-            print('Read Timeout')
 
-    soup = BeautifulSoup(response.content, 'html.parser')
-    rows = soup.findAll('div', class_='col-sm-9 artifact-description')
-
-    for row in rows:
-        z = []
-        z.append(row.a.h4.text) # title
-        z.append(row.find('div', class_='artifact-info').span.text + '  ' +rows.find('div', class_='artifact-info').find('span', class_='publisher-date h4').text)
-        z.append(row.find('div', class_='abstract').text.replace('\n', ''))
-
-        results.append(z)
-        links.append(rows.a['href'])
-    
-    return results, links
-    
 
     
 
@@ -549,7 +617,7 @@ def proxy_generator1():
 def proxy_generator2():
     proxies = []
     
-    for x in range(20):
+    for x in range(2):
         
         headers = {
         'authority': 'www.proxyhub.me',
@@ -594,7 +662,7 @@ def proxy_generator2():
        
 
     proxyList = list(dict.fromkeys(proxies))
-    print(proxyList[91])
+    # print(proxyList[91])
 
     return proxyList
     
@@ -650,31 +718,35 @@ def headers():
 
     
 
-def testProxy(proxies):
+def testProxy(proxies, ptype):
     a = False
 
     while a == False:
+
+        if ptype == 1:
+            try:
+                p = random.choice(proxies)
+                print(p.proxy + ': ')
+                response = requests.get('https://free-proxy-list.net/', proxies={'https:':p.proxy} ,timeout=1)
+                print('new proxy assigned')
+                a = True
+                return p.proxy
+            except:
+                print( "                   Connection error ")
+                pass
+        else:
+            try:
+                response = requests.get('https://free-proxy-list.net/', proxies={'https:':proxies} ,timeout=1)
+                print(proxies + ' working\n')
+                a = True
+                return proxies
+            except:
+                print(proxies,' not working\n')
+                return False
         
-        try:
-            #p = proxy_generator()
-            p = random.choice(proxies)
-            
-            
-            # if kind == 1:
-            print(p.proxy + ': ')
-            response = requests.get('https://google.com/', proxies={'https:':p.proxy} ,timeout=1)
-            # else:
-            #     print(p + ': ')
-            #     response = requests.get('https://free-proxy-list.net/', proxies={'https:':p} ,timeout=1)
-            print('successful')
-            a = True
-            return p
-            
             
             # if the request is successful, no exception is raised
-        except:
-            print( "                   Connection error ")
-            pass
+       
         
 
 userAgents = [ 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36',
