@@ -18,44 +18,38 @@ import json
 from django.core import serializers
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
+from django.http import JsonResponse
 
 
 class practice(View):
 	def get(self, request):
-		queryset = Bookmarks.objects.filter(user_id=1)
+		queryset = Bookmarks.objects.values('id', 'title').all()
 		
-		# User.objects.create(username='18-5126-269', password = make_password('mondejar.12345'))
+		# User.objects.create(username='18-5126-260', password = make_password('mondejar.12345'))
 		
-		# marker_list = []
-		a= serializers.serialize("json",queryset )
-		# for instance in queryset:
-		# 	b_id = int(instance.id)
-		# 	title = str(instance.title)
-		# 	url = str(instance.url)
-		# 	marker_list += [[b_id, title, url]]
-
+		
+		
+		a = list(queryset)
 		context = {
-		    # "queryset": json.dumps(queryset),
-		    # "queryset1": json.dumps(marker_list)
 		    "bookmark_set": queryset,
 		    "bookmark_list" : a 
 		}
 		# User.objects.create(username="1523-323", password="aasdqwe12345")
-		return render(request,'login.html',context)
+		return render(request,'practice.html',context)
 
 	def post(self, request):
 		if request.method == 'POST' and request.is_ajax():
-			
-			link = request.POST['link']
-			header = request.POST['header']
-			
-			Headers.objects.create(text = header)
-			
-			print(link)
-			# link = request.POST['link']
+			bID = request.POST.get('id')
+			queryset = Bookmarks.objects.values('id','websiteTitle', 'itemType').filter(id=bID)
+
+			a = list(queryset)
+			context = {
+		    
+		    "result" : a 
+			}
 
 			
-			return render(request,'login.html')	
+			return JsonResponse(context)	
 		
 		
 
@@ -173,161 +167,56 @@ class TeraSearchResultsView(View):
 		# header = request.session.get('header')
 		word = request.session.get('word')
 		proxy = request.session.get('proxy')
-		request.session['previousPage'] = 'search_result_view'
+		# request.session['previousPage'] = 'search_result_view'
 		
-		
+		print("get request pressed")
 	
 		refType = 'Springeropen.com Article'
 		
-		a = scrape(word,proxy , 'article',1, 'Springeropen.com', ' ')
+		# a = scrape(word,proxy , 'article',1, 'Springeropen.com', ' ')
 		
-		while (a == False):
-			proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
-			proxy = testProxy(proxies,1)
-			request.session['proxy'] = proxy
-			a = scrape(word,proxy , 'article',1, 'Springeropen.com', ' ')
-		
-		results = a[0]	
-		links = a[1]				
+		# while (a == False):
+		# 	proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
+		# 	proxy = testProxy(proxies,1)
+		# 	request.session['proxy'] = proxy
+		# 	a = scrape(word,proxy , 'article',1, 'Springeropen.com', ' ')
+		print("data scraped")
+		# results = a[0]	
+		# links = a[1]				
 		context = {
-							'keyword': word,
-							'results': results,
-							'links': links,
-							'type': refType,
-							'user_id': request.user.is_authenticated
+							'keyword': 'word',
+							'rows': ['213','1233','asd'],
+							'links': 'links',
+							'type': 'refType',
+							'proxy': proxy,
+							'is_authenticated': request.user.is_authenticated
 		}
+		
 		return render(request,'searchresults.html', context)
 
 	def post(self, request):
-		header = request.session.get('header')
-		proxy = request.session.get('proxy')
-		#header = ast.literal_eval(Headers.objects.get(id=2).text)	# converting b from string to dictionary
-
-		if 'btnSearchbar' in request.POST:
-			word = request.POST.get("searchbar")
-			request.session['word'] = word
+		
+		if request.method == 'POST' and request.is_ajax():
 			
-			
-			refType = 'Springeropen.com Article'
-			a = scrape(word, proxy , 'article', 1, 'Springeropen.com', header)
-
-			while (a == False):
-				proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
-				proxy = testProxy(proxies,1)
-				request.session['proxy'] = proxy
-				a = scrape(word, proxy , 'article', 1, 'Springeropen.com', header)
-
-
-			springers = a[0]	
-			springLinks = a[1]		
-			context = {
-					'keyword': word,
-					'results': springers,
-					'links': springLinks,
-					'type': refType,
-					'user_id': request.user.is_authenticated
-			}
-	
-			return render(request,'searchresults.html', context)
-
-		elif 'btnArticles' in request.POST:
-			
-			word = request.POST.get("search")
-			request.session['word'] = word
-
-			refType = 'Scirp.org Article'
-			a = scrape(word, proxy , 'article', 1, 'Scirp.org', header)
-			
-			while (a == False):
-				proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
-				proxy = testProxy(proxies,1)
-				a = scrape(word, proxy , 'article', 1, 'Scirp.org', header)
-			
-			scienceDirects = a[0]
-			scienceLinks = a[1]
-
-			springers = a[0]	
-			springLinks = a[1]	
-
-			context = {
-					'keyword': word,
-					'results': springers,
-					'links': springLinks,
-					'type': refType,
-					'user_id': request.user.is_authenticated
-			}
-
-			return render(request,'searchresults.html', context)
-
-		elif 'btnJournal' in request.POST:
-			word = request.POST.get("search")
-			request.session['word'] = word
-			refType = 'Sciencedirect.com Article'
-
-			
-			a = scrape(word,proxy , 'journal',1, 'Sciencedirect.com', header)
-
-
-			while (a == False):
-				proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
-				proxy = testProxy(proxies,1)
-				a = scrape(word,proxy , 'journal',1, 'Sciencedirect.com', header)
-
-			scienceDirects = a[0]
-			scienceLinks = a[1]
-				
-			context = {
-					'keyword': word,
-					'results': scienceDirects,
-					'links': scienceLinks,
-					'type': refType,
-					'user_id': request.user.is_authenticated
-			}
-
-			return render(request,'searchresults.html', context)
-
-		elif 'btnBook' in request.POST:
-			word = request.POST.get("search")
-			
-			request.session['word'] = word
-			refType = 'Springeropen.com Book'
-			a = scrape(word,proxy , 'book',1, 'Springeropen.com', header)
-
-
-			while (a == False):
-				proxy = testProxy(proxies).proxy
-				request.session['proxy'] = proxy
-				a = scrape(word,proxy , 'book',1, 'Springeropen.com', header)
-			
-			scienceDirects = a[0]
-			scienceLinks = a[1]
-
-			
-				
-			context = {
-					'keyword': word,
-					'results': scienceDirects,
-					'links': scienceLinks,
-					'type': refType,
-					'user_id': request.user.is_authenticated
-					
-			}
-
-			return render(request,'searchresults.html', context)
-
-
-		elif request.method == 'POST' and request.is_ajax():
 			print('bookmark button clicked')
-			bookmark = request.POST['bookmark']
+			
 			action = request.POST['action']
-			if action == "add":
+
+			if action == "search":
+				print(request.POST['word'])
+				print(request.POST['itemType'])
+				print(request.POST['site'])
+				print(request.POST['prox'])
+				
+				return HttpResponse('')
+			elif action == "add":
+				bookmark = request.POST['bookmark']
 				string = bookmark.split('||')
 				refType = string[0]
 
 				title = string[1].replace('\n','').replace('  ','')
 				url = string[2]
 				# print(bookmark)
-				
 				detail = details(url, request.session.get('proxy'),refType)
 
 				websiteTitle = detail['websiteTitle']
@@ -391,7 +280,7 @@ class TeraHomepageView(View):
 class TeraDashboardView(View):
 	def get(self,request):
 		queryset = Bookmarks.objects.filter(user_id=request.user.id)
-
+		request.session['previousPage'] = "tera_dashboard_view"
 		a= serializers.serialize("json",queryset )
 
 		context = {

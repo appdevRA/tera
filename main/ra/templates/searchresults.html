@@ -126,7 +126,7 @@
 
       
         
-{% if user_id == True%}
+{% if is_authenticated == True%}
       <li id="myAccount">   
 
                 
@@ -134,7 +134,7 @@
                 
                 <ul>
                 <li><a href="{% url 'ra:tera_dashboard_view'%}">Collections</a></li>  
-                  <li><a href="{% url 'ra:tera_dashboard_view'%}">Settings</a></li>  
+                  <li><a href="{% url 'ra:tera_account_settings' %}">Settings</a></li>  
                 <li>
                   <form  action = "" method = "POST" autocomplete = "off" enctype="multipart/form-data">
                     {% csrf_token %}
@@ -145,7 +145,7 @@
       </li>
       {% endif %}
 
-      {% if user_id == False %}
+      {% if is_authenticated == False %}
     <br>
                 
                  <a href="{% url 'ra:tera_login_view'%}" style="font-size: 130%; ">Login </a>
@@ -197,37 +197,35 @@
                       <div class="search-container" style="margin-left: -25%">
                         <div >
                               <br><br> <br>    <br><br> <br>    <br><br> <br>
-                           <form id= "form1" action = "" method = "POST" autocomplete = "off" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            <input type="text" placeholder="" name = "searchbar" class="input" value="{{ keyword }}" style="width: 192%; height: 120%; margin-left: -80%; border-color: #f3f3f3; background-color: #f3f3f3"><hr style="width: 197%; margin-left: -72%; height: 1px; background-color: #6b6b6c; margin-top: -1.5%;">
-                            <button type="submit" class="btn" style=" margin-top: -30%; margin-left:  111% ;background: none  "  name="btnSearchbar" id="btnSearchbar" >
+                           
+                            <input id="keyword" type="text" placeholder="" name = "searchbar" class="input" value="{{ keyword }}" style="width: 192%; height: 120%; margin-left: -80%; border-color: #f3f3f3; background-color: #f3f3f3"><hr style="width: 197%; margin-left: -72%; height: 1px; background-color: #6b6b6c; margin-top: -1.5%;">
+                            <button type="submit" class="btn" style=" margin-top: -30%; margin-left:  111% ;background: none  "  name="btnSearchbar" id="btnSearchbar" onclick="search('','search')" >
                               <i class="fa fa-search" aria-hidden="true" style=" color: #800000; font-size: 150%"></i></button>
-                          </form>
+                         
                         </div>
                       </div>
                   </div>  
          
       </div>
           
-           <form id= "form1" action = "" method = "POST" autocomplete = "off" enctype="multipart/form-data">
-            {% csrf_token %}
+      
 
          
 
-          <button type="submit" class="filterbutton" name="btnArticles" id="btnArticles" > Articles</button>
+          <button id="Article" type="submit" class="filterbutton" name="btnArticles" id="btnArticles"  onclick="search(this.id,'itemType')"> Articles</button>
            <input type="button" class="filterbutton" value="|">
 
-          <button type="submit" class="filterbutton" name="btnJournal" id="btnJournal" > Journals</button>
+          <button id="Journal" type="submit" class="filterbutton" name="btnJournal" id="btnJournal" onclick="search(this.id,'itemType')"> Journals</button>
             <input type="button" class="filterbutton" value="|" >
 
-          <button type="submit" class="filterbutton" name="btnBook" id="btnBook" > Book</button>
+          <button id="Book" type="submit" class="filterbutton" name="btnBook" id="btnBook" onclick="search(this.id,'itemType')"> Books</button>
             <input type="button" class="filterbutton" value="|">
-            
+            <button id="Dissertation" type="submit" class="filterbutton" name="btnBook" id="btnBook" onclick="search(this.id,'itemType')"> Dissertations</button>
            
-            <input type="button" class="filterbutton" value="Dissertations">
-             <input type="hidden" class="filterbutton" name = "search" value="{{keyword}}">
-             <input id="userid" value="{{id}}" hidden="true">
-           </form>
+            
+             
+             
+         
          
           <div class="wrapper">
        <div class="main_content">
@@ -314,118 +312,185 @@
 
 
 <script type="text/javascript">
-  var markers = {{results|safe}}
+  var markers = {{rows|safe}}
   var links = {{links|safe}}
  user_id = "{{user_id}}"
-
+ website = 'Springeropen.com'
+ type = 'Article'
+ prox = "{{proxy}}"
   $(document).ready(function($) {
-    
+      // showRows()
 
-  for(i=0; i< markers.length;i++){
   
-    
-      if(markers[i].length == 2){
-          
-            if(user_id == 'True'){
-              $('#itemArea').append(
-                    "<tr> " +
-               "<td><a href='"+ links[i]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;font-size: 115%'><strong>" +
-                    markers[i][0] + "</strong></span></a><br>" +
-
-                    " <em>"+ markers[i][1]+"</em><br><br></td>" +
-
-                      "<td><a class='btnBookmark' > <i id='{{type}}||"+markers[i][0]+"||"+links[i]+"' class='fa fa-bookmark' style='color: red;' onClick='reply_click(this.id)'></i></a> </td>"+ "</tr>" );  
-            } else{
-              $('#itemArea').append(
-                    "<tr> " +
-               "<td><a href='"+ links[i]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;'><strong>" +
-                    markers[i][0] + "</strong></span></a><br>" +
-
-                    " <em>"+ markers[i][1]+"</em><br><br></td>" +
-
-                      "<td><a class='btnBookmark' >  <i href='#modalLogoutForm' data-toggle='modal' data-target='#modalLogoutForm'style='color: red;'class='fa fa-bookmark'></i></a> </td><br><br>  "+ "</tr>" );  
-            }
-
-
-
-
-
-
-
-        } else if(markers[i].length == 3){
-          
-            if(user_id == 'True'){
-              $('#itemArea').append(
-                    "<tr> " +
-               "<td><a href='"+ links[i]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;font-size: 120%'><strong>" +
-                    markers[i][0] + "</strong></span></a><br>" +
-
-                    " <area>"+ markers[i][1]+"</area><br>" +
-                     " <a>"+ markers[i][2]+"</a><br><br><br><br></td>" +
-
-                      "<td><a class='btnBookmark' cursor: pointer > <i id='{{type}}||"+markers[i][0]+"||"+links[i]+"' class='fa fa-bookmark' style='color: red;' onClick='reply_click(this.id)'></i></a> </td>"+ "</tr>" );  
-            } else{
-              $('#itemArea').append(
-                    "<tr> " +
-               "<td><a href='"+ links[i]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;font-size: 120%'><strong>" +
-                    markers[i][0] + "</strong></span></a><br>" +
-
-                    " <em>"+ markers[i][1]+"</em><br>" +
-                     " <em>"+ markers[i][2]+"</em><br><br></td>" +
-
-                      "<td><a class='btnBookmark' >  <i href='#modalLogoutForm' data-toggle='modal' data-target='#modalLogoutForm'style='color: red; cursor: pointer' class='fa fa-bookmark'></i></a> </td></tr>" );  
-            }
-
-
-
-
-
-
-
-        }  else if(markers[i].length == 4){
-            
-            if(user_id == 'True'){
-              
-              $('#itemArea').append(
-                    "<tr> " +
-               "<td ><a href='"+ links[i]+"' ><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 80ch; font-size: 120%; '><b>" +
-                    markers[i][0] + "</b></span></a><br> " +
-
-                    " <area style=' font-size: 120%;  max-width: 60ch;'>"+ markers[i][1]+"</area><br>" +
-                     " <em>"+ markers[i][2]+"</em><br>" +
-                     " <area>"+ markers[i][3]+"</area><br><br><br><br></td>" +
-
-                       "<td><a class='btnBookmark' > <i id='{{type}}||"+markers[i][0]+"||"+links[i]+"' class='fa fa-bookmark' style='color: red; cursor: pointer' onClick='reply_click(this.id)'></i></a> </td>"+ "</tr>" );  
-            } else{
-              $('#itemArea').append(
-                    "<tr> " +
-               "<td><a href='"+ links[i]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;'><strong>" +
-                    markers[i][0] + "</strong></span></a><br>" +
-
-                   " <area style=' font-size: 120%;  max-width: 60ch;'>"+ markers[i][1]+"</area><br>" +
-                     " <em>"+ markers[i][2]+"</em><br>" +
-                     " <em>"+ markers[i][3]+"</em><br><br><br></td>" +
-
-                      "<td><a class='btnBookmark' >  <i href='#modalLogoutForm' data-toggle='modal' data-target='#modalLogoutForm'style='color: red;cursor: pointer'class='fa fa-bookmark'></i></a> </td>"+ "</tr> <br><br>" );  
-            }
-        }            
-                                
-               
-        
-
-
-
-               
-
-               
-                
-        }
-       
-
 
 
 
 });
+
+
+function showRows(){
+
+  for(i=0; i< markers.length;i++){
+  
+    
+          if(markers[i].length == 2){
+              
+                        if(user_id == 'True'){
+                          $('#itemArea').append(
+                                "<tr> " +
+                           "<td><a href='"+ links[i]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;font-size: 115%'><strong>" +
+                                markers[i][0] + "</strong></span></a><br>" +
+
+                                " <em>"+ markers[i][1]+"</em><br><br></td>" +
+
+                                  "<td><a class='btnBookmark' > <i id='{{type}}||"+markers[i][0]+"||"+links[i]+"' class='fa fa-bookmark' style='color: red;' onClick='reply_click(this.id)'></i></a> </td>"+ "</tr>" );  
+                        } else{
+                          $('#itemArea').append(
+                                "<tr> " +
+                           "<td><a href='"+ links[i]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;'><strong>" +
+                                markers[i][0] + "</strong></span></a><br>" +
+
+                                " <em>"+ markers[i][1]+"</em><br><br></td>" +
+
+                                  "<td><a class='btnBookmark' >  <i href='#modalLogoutForm' data-toggle='modal' data-target='#modalLogoutForm'style='color: red;'class='fa fa-bookmark'></i></a> </td><br><br>  "+ "</tr>" );  
+                        }
+
+            } else if(markers[i].length == 3){
+              
+                        if(user_id == 'True'){
+                          $('#itemArea').append(
+                                "<tr> " +
+                           "<td><a href='"+ links[i]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;font-size: 120%'><strong>" +
+                                markers[i][0] + "</strong></span></a><br>" +
+
+                                " <area>"+ markers[i][1]+"</area><br>" +
+                                 " <a>"+ markers[i][2]+"</a><br><br><br><br></td>" +
+
+                                  "<td><a class='btnBookmark' cursor: pointer > <i id='{{type}}||"+markers[i][0]+"||"+links[i]+"' class='fa fa-bookmark' style='color: red;' onClick='reply_click(this.id)'></i></a> </td>"+ "</tr>" );  
+                        } else{
+                          $('#itemArea').append(
+                                "<tr> " +
+                           "<td><a href='"+ links[i]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;font-size: 120%'><strong>" +
+                                markers[i][0] + "</strong></span></a><br>" +
+
+                                " <em>"+ markers[i][1]+"</em><br>" +
+                                 " <em>"+ markers[i][2]+"</em><br><br></td>" +
+
+                                  "<td><a class='btnBookmark' >  <i href='#modalLogoutForm' data-toggle='modal' data-target='#modalLogoutForm'style='color: red; cursor: pointer' class='fa fa-bookmark'></i></a> </td></tr>" );  
+                        }
+
+            }  else if(markers[i].length == 4){
+                
+                        if(user_id == 'True'){
+                          
+                          $('#itemArea').append(
+                                "<tr> " +
+                           "<td ><a href='"+ links[i]+"' ><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 80ch; font-size: 120%; '><b>" +
+                                markers[i][0] + "</b></span></a><br> " +
+
+                                " <area style=' font-size: 120%;  max-width: 60ch;'>"+ markers[i][1]+"</area><br>" +
+                                 " <em>"+ markers[i][2]+"</em><br>" +
+                                 " <area>"+ markers[i][3]+"</area><br><br><br><br></td>" +
+
+                                   "<td><a class='btnBookmark' > <i id='{{type}}||"+markers[i][0]+"||"+links[i]+"' class='fa fa-bookmark' style='color: red; cursor: pointer' onClick='reply_click(this.id)'></i></a> </td>"+ "</tr>" );  
+                        } else{
+                          $('#itemArea').append(
+                                "<tr> " +
+                           "<td><a href='"+ links[i]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;'><strong>" +
+                                markers[i][0] + "</strong></span></a><br>" +
+
+                               " <area style=' font-size: 120%;  max-width: 60ch;'>"+ markers[i][1]+"</area><br>" +
+                                 " <em>"+ markers[i][2]+"</em><br>" +
+                                 " <em>"+ markers[i][3]+"</em><br><br><br></td>" +
+
+                                  "<td><a class='btnBookmark' >  <i href='#modalLogoutForm' data-toggle='modal' data-target='#modalLogoutForm'style='color: red;cursor: pointer'class='fa fa-bookmark'></i></a> </td>"+ "</tr> <br><br>" );  
+                        }
+            }              
+  }
+}
+
+
+function clearRow(tableName){
+  var table = document.getElementById(tableName);
+    //or use :  var table = document.all.tableid;
+    website = "Scirp.org"
+    for(var i = table.rows.length - 1; i > 0; i--)
+    {
+        table.deleteRow(i);
+    }
+
+}
+
+
+function search(clicked_id, searchType){
+
+    keyword = document.getElementById('keyword').value
+    clearRow("itemTable")
+    if(searchType == 'search'){
+      alert(prox)
+        $.ajax({
+                type:"POST",
+                url:"",
+
+                data:{
+                  action: "search",
+                  word: keyword,
+                  site: website,
+                  itemType: type,
+                  proxy: prox,
+                  csrfmiddlewaretoken: "{{csrf_token}}"
+                },
+                success: function(response){
+                  // markers = response.result
+             
+                }
+          }); 
+
+    } else if( searchType == 'itemType'){
+        type = clicked_id
+        $.ajax({
+                type:"POST",
+                url:"",
+
+                data:{
+                  action: "search",
+                  word: keyword,
+                  site: website,
+                  itemType: type,
+                  proxy: prox,
+                  csrfmiddlewaretoken: "{{csrf_token}}"
+                },
+                success: function(response){
+                  // markers = response.result
+             
+                }
+          }); 
+        
+    } else if( searchType == 'site'){
+      type = clicked_id
+      $.ajax({
+                type:"POST",
+                url:"",
+
+                data:{
+                  action: "search",
+                  word: keyword,
+                  site: website,
+                  itemType: type,
+                  proxy: prox,
+                  csrfmiddlewaretoken: "{{csrf_token}}"
+                },
+                success: function(response){
+                  // markers = response.result
+             
+                }
+          }); 
+    }
+    
+        
+}
+
+
 
 function reply_click(clicked_id){
       if(document.getElementById(clicked_id).style.color == "red"){
@@ -456,4 +521,14 @@ function reply_click(clicked_id){
 
         
 }
+
+
+
+
+
+
+
+
+
+
 </script>

@@ -85,6 +85,7 @@ def springer(word, proxy, refType, pageNumber): # INDEX 1 STARTING SA PAGINATION
                     springLinks.append(a.a['href']) # extract link and store to list
                     
                     springers.append(z)
+        return springers, springLinks
     else:
         x = False
         while(x == False):
@@ -138,7 +139,7 @@ def springer(word, proxy, refType, pageNumber): # INDEX 1 STARTING SA PAGINATION
                 springers.append(z)
 
     
-    return springers, springLinks
+            return springers, springLinks
 
 def details(link, proxy, refType ):
     
@@ -726,7 +727,7 @@ def testProxy(proxies, ptype):
             try:
                 p = random.choice(proxies)
                 print(p.proxy + ': ')
-                response = requests.get('https://google.com', proxies={'https:':p.proxy} ,timeout=1)
+                response = requests.get('https://free-proxy-list.net/', proxies={'https:':p.proxy} ,timeout=1)
                 print('new proxy assigned')
                 a = True
                 return p.proxy
