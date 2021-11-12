@@ -15,7 +15,7 @@ import time
 
 
 
-def scrape(word, proxy, refType, pageNumber, site, header):
+def scrape(word, proxy, refType, site, header, pageNumber):
 
 
     if site == 'Springeropen.com':
@@ -86,7 +86,7 @@ def springer(word, proxy, refType, pageNumber): # INDEX 1 STARTING SA PAGINATION
                     
                     springers.append(z)
         return springers, springLinks
-    else:
+    elif refType == 'book':
         x = False
         while(x == False):
             try:
@@ -727,7 +727,7 @@ def testProxy(proxies, ptype):
             try:
                 p = random.choice(proxies)
                 print(p.proxy + ': ')
-                response = requests.get('https://free-proxy-list.net/', proxies={'https:':p.proxy} ,timeout=1)
+                response = requests.get('https://google.com', proxies={'https:':p.proxy} ,timeout=1)
                 print('new proxy assigned')
                 a = True
                 return p.proxy
@@ -736,7 +736,7 @@ def testProxy(proxies, ptype):
                 pass
         else:
             try:
-                response = requests.get('https://free-proxy-list.net/', proxies={'https:':proxies} ,timeout=1)
+                response = requests.get('https://google.com', proxies={'https:':proxies} ,timeout=1)
                 print(proxies + ' working\n')
                 a = True
                 return proxies

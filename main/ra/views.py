@@ -173,21 +173,20 @@ class TeraSearchResultsView(View):
 	
 		refType = 'Springeropen.com Article'
 		
-		# a = scrape(word,proxy , 'article',1, 'Springeropen.com', ' ')
+		a = scrape(word,proxy , 'article', 'Springeropen.com', ' ',1)
 		
-		# while (a == False):
-		# 	proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
-		# 	proxy = testProxy(proxies,1)
-		# 	request.session['proxy'] = proxy
-		# 	a = scrape(word,proxy , 'article',1, 'Springeropen.com', ' ')
+		while (a == False):
+			proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
+			proxy = testProxy(proxies,1)
+			request.session['proxy'] = proxy
+			a = scrape(word,proxy , 'article',1, 'Springeropen.com', ' ')
 		print("data scraped")
-		# results = a[0]	
-		# links = a[1]				
+		results = a[0]	
+		links = a[1]				
 		context = {
-							'keyword': 'word',
-							'rows': ['213','1233','asd'],
-							'links': 'links',
-							'type': 'refType',
+							'keyword': word,
+							'results': results,
+							'links': links,
 							'proxy': proxy,
 							'is_authenticated': request.user.is_authenticated
 		}
@@ -203,54 +202,105 @@ class TeraSearchResultsView(View):
 			action = request.POST['action']
 
 			if action == "search":
-				print(request.POST['word'])
-				print(request.POST['itemType'])
-				print(request.POST['site'])
-				print(request.POST['prox'])
-				
-				return HttpResponse('')
-			elif action == "add":
-				bookmark = request.POST['bookmark']
-				string = bookmark.split('||')
-				refType = string[0]
 
-				title = string[1].replace('\n','').replace('  ','')
-				url = string[2]
-				# print(bookmark)
-				detail = details(url, request.session.get('proxy'),refType)
 
-				websiteTitle = detail['websiteTitle']
-				itemType = detail['itemType']
-				author = detail['author']
-				description = detail['description']
-				journalItBelongs = detail['journalItBelongs']
-				volume = detail['volume']
-				doi = detail['doi']
-				publicationYear = detail['publishYear']
-				subtitle = detail['subtitle']
-				citation = detail['citation']
-				downloads = detail['downloads']
-				publisher = detail['publisher']
-				edition = detail['edition']
-				pages = detail['pages']
-				# author description publication volume doi
+
+				if request.POST['proxy'] == None:
+
+
+					proxy = request.session.get('proxy')
+					a = scrape(request.POST['word'],proxy, request.POST['itemType'], request.POST['site'],' ', request.POST['pageNumber'])
+					
+					while (a == False):
+						proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
+						proxy = testProxy(proxies,1)
+						request.session['proxy'] = proxy
+						a = scrape(request.POST['word'],proxy, request.POST['itemType'], request.POST['site'],' ', request.POST['pageNumber'])
+
+					results = a[0]	
+					links = a[1]
+
+
+					context = {
+						'results': results,
+						'links': links,
+						'proxy': proxy,
+						'is_authenticated': request.user.is_authenticated
+					}
+					return JsonResponse(context)	
+
+
+
+
+
+				else:
+					print(request.POST['word'])
+					proxy = request.POST['proxy']
+
+					a = scrape(request.POST['word'],proxy, request.POST['itemType'], request.POST['site'],' ', request.POST['pageNumber'])
+					
+					while (a == False):
+						proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
+						proxy = testProxy(proxies,1)
+						request.session['proxy'] = proxy
+						a = scrape(request.POST['word'],proxy, request.POST['itemType'], request.POST['site'],' ', request.POST['pageNumber'])
+				
+
+
+					results = a[0]	
+					links = a[1]
+
+					# print(results)
+					# print(links)
+					context = {
+						'results': results,
+						'links': links,
+						'proxy': proxy,
+						'is_authenticated': request.user.is_authenticated
+					}
+					return JsonResponse(context)
+			# elif action == "add":
+			# 	bookmark = request.POST['bookmark']
+			# 	string = bookmark.split('||')
+			# 	refType = string[0]
+
+			# 	title = string[1].replace('\n','').replace('  ','')
+			# 	url = string[2]
+			# 	# print(bookmark)
+			# 	detail = details(url, request.session.get('proxy'),refType)
+
+			# 	websiteTitle = detail['websiteTitle']
+			# 	itemType = detail['itemType']
+			# 	author = detail['author']
+			# 	description = detail['description']
+			# 	journalItBelongs = detail['journalItBelongs']
+			# 	volume = detail['volume']
+			# 	doi = detail['doi']
+			# 	publicationYear = detail['publishYear']
+			# 	subtitle = detail['subtitle']
+			# 	citation = detail['citation']
+			# 	downloads = detail['downloads']
+			# 	publisher = detail['publisher']
+			# 	edition = detail['edition']
+			# 	pages = detail['pages']
+			# 	# author description publication volume doi
 				
 				
-				# print(websiteTitle + '\n'+itemType + '\n'+title + '\n' +link + '\n' +author+ '\n' +description+ '\n' +publication+ '\n' +volume+ '\n' +doi)
-				if itemType == "Article":
-					Bookmarks.objects.create(user = request.user,title = title,websiteTitle= websiteTitle,itemType= itemType,author = author, description= description, url = url, journalItBelongs= journalItBelongs, volume = volume, DOI = doi)
-				elif itemType == "Book":
-					Bookmarks.objects.create(user = request.user,title = title,websiteTitle= websiteTitle,subtitle = subtitle, 
-						itemType= itemType,author = author,numOfCitation = citation,numOfDownload= downloads,publisher=publisher, 
-						description= description, url = url, edition = edition,numOfPages = pages,
-						 DOI = doi)
-				return HttpResponse('')
-			else:
-				string = bookmark.split('||')
+			# 	# print(websiteTitle + '\n'+itemType + '\n'+title + '\n' +link + '\n' +author+ '\n' +description+ '\n' +publication+ '\n' +volume+ '\n' +doi)
+			# 	if itemType == "Article":
+			# 		Bookmarks.objects.create(user = request.user,title = title,websiteTitle= websiteTitle,itemType= itemType,author = author, description= description, url = url, journalItBelongs= journalItBelongs, volume = volume, DOI = doi)
+			# 	elif itemType == "Book":
+			# 		Bookmarks.objects.create(user = request.user,title = title,websiteTitle= websiteTitle,subtitle = subtitle, 
+			# 			itemType= itemType,author = author,numOfCitation = citation,numOfDownload= downloads,publisher=publisher, 
+			# 			description= description, url = url, edition = edition,numOfPages = pages,
+			# 			 DOI = doi)
+			# 	return HttpResponse('')
+			# else:
+			# 	string = bookmark.split('||')
 
-				title = string[1].replace('\n','').replace('  ','')
-				Bookmarks.objects.filter(title=title).update(isRemoved=1)
-				return HttpResponse('')
+			# 	title = string[1].replace('\n','').replace('  ','')
+			# 	Bookmarks.objects.filter(title=title).update(isRemoved=1)
+			# 	return HttpResponse('')
 
 		elif 'buttonLogin' in request.POST:
 			request.session['previousPage'] = request.POST['previousPage']

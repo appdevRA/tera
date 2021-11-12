@@ -198,10 +198,10 @@
                         <div >
                               <br><br> <br>    <br><br> <br>    <br><br> <br>
                            
-                            <input id="keyword" type="text" placeholder="" name = "searchbar" class="input" value="{{ keyword }}" style="width: 192%; height: 120%; margin-left: -80%; border-color: #f3f3f3; background-color: #f3f3f3"><hr style="width: 197%; margin-left: -72%; height: 1px; background-color: #6b6b6c; margin-top: -1.5%;">
-                            <button type="submit" class="btn" style=" margin-top: -30%; margin-left:  111% ;background: none  "  name="btnSearchbar" id="btnSearchbar" onclick="search('','search')" >
+                            <input id="input" type="text" placeholder="" name="" class="input" value="{{ keyword }}" style="width: 192%; height: 120%; margin-left: -80%; border-color: #f3f3f3; background-color: #f3f3f3"><hr style="width: 197%; margin-left: -72%; height: 1px; background-color: #6b6b6c; margin-top: -1.5%;">
+                            <button id="searchButton" class="btn" style=" margin-top: -30%; margin-left:  111% ;background: none  "  name="btnSearchbar" id="btnSearchbar" onclick="search('','search')" >
                               <i class="fa fa-search" aria-hidden="true" style=" color: #800000; font-size: 150%"></i></button>
-                         
+                          
                         </div>
                       </div>
                   </div>  
@@ -212,15 +212,15 @@
 
          
 
-          <button id="Article" type="submit" class="filterbutton" name="btnArticles" id="btnArticles"  onclick="search(this.id,'itemType')"> Articles</button>
+          <button id="article" type="submit" class="filterbutton" name="btnArticles" id="btnArticles"  onclick="search(this.id,'itemType')"> Articles</button>
            <input type="button" class="filterbutton" value="|">
 
-          <button id="Journal" type="submit" class="filterbutton" name="btnJournal" id="btnJournal" onclick="search(this.id,'itemType')"> Journals</button>
+          <button id="journal" type="submit" class="filterbutton" name="btnJournal" id="btnJournal" onclick="search(this.id,'itemType')"> Journals</button>
             <input type="button" class="filterbutton" value="|" >
 
-          <button id="Book" type="submit" class="filterbutton" name="btnBook" id="btnBook" onclick="search(this.id,'itemType')"> Books</button>
+          <button id="book" type="submit" class="filterbutton" name="btnBook" id="btnBook" onclick="search(this.id,'itemType')"> Books</button>
             <input type="button" class="filterbutton" value="|">
-            <button id="Dissertation" type="submit" class="filterbutton" name="btnBook" id="btnBook" onclick="search(this.id,'itemType')"> Dissertations</button>
+            <button id="dissertation" type="submit" class="filterbutton" name="btnBook" id="btnBook" onclick="search(this.id,'itemType')"> Dissertations</button>
            
             
              
@@ -230,7 +230,7 @@
           <div class="wrapper">
        <div class="main_content">
           <div class="header" ><br><br><br><br><br><br>
-                <em style="font-size: 120%"> Search results for <a style="color: #800000">{{keyword}}</a></em>   <br><br><br><br>
+                <em style="font-size: 120%"> Search results for <a style="color: #800000" id="displayWord">{{keyword}}</a></em>   <br><br><br><br>
                   <table class="table" id="itemTable">
                     <thead>
                       <tr>
@@ -312,17 +312,25 @@
 
 
 <script type="text/javascript">
-  var markers = {{rows|safe}}
+  var markers = {{results|safe}}
   var links = {{links|safe}}
- user_id = "{{user_id}}"
+ user_id = "{{is_authenticated}}"
  website = 'Springeropen.com'
- type = 'Article'
+ type = 'article'
  prox = "{{proxy}}"
+ keyword = "{{keyword}}"
+ 
   $(document).ready(function($) {
-      // showRows()
-
+     showRows()
+    
   
-
+      var input = document.getElementById("input");
+      input.addEventListener("keyup", function(event) {
+        if (event.keyCode === 13) {
+         event.preventDefault();
+         document.getElementById("searchButton").click();
+        }
+      });
 
 
 });
@@ -413,7 +421,7 @@ function showRows(){
 function clearRow(tableName){
   var table = document.getElementById(tableName);
     //or use :  var table = document.all.tableid;
-    website = "Scirp.org"
+    
     for(var i = table.rows.length - 1; i > 0; i--)
     {
         table.deleteRow(i);
@@ -423,11 +431,13 @@ function clearRow(tableName){
 
 
 function search(clicked_id, searchType){
-
-    keyword = document.getElementById('keyword').value
+    
+    keyword = document.getElementById('input').value
     clearRow("itemTable")
-    if(searchType == 'search'){
-      alert(prox)
+    
+    if(searchType == 'search'){ 
+      
+        document.getElementById('displayWord').style.display ="none"
         $.ajax({
                 type:"POST",
                 url:"",
@@ -438,10 +448,19 @@ function search(clicked_id, searchType){
                   site: website,
                   itemType: type,
                   proxy: prox,
+                  pageNumber: 1,
                   csrfmiddlewaretoken: "{{csrf_token}}"
                 },
                 success: function(response){
-                  // markers = response.result
+                  markers = response.results
+                  
+                  links = response.links
+                  user_id = response.is_authenticated
+                  prox =  response.proxy
+                  // console.log(response)
+                  document.getElementById('displayWord').innerHTML = keyword
+                  document.getElementById('displayWord').style.display ="inline"
+                  showRows()
              
                 }
           }); 
@@ -458,16 +477,25 @@ function search(clicked_id, searchType){
                   site: website,
                   itemType: type,
                   proxy: prox,
+                  pageNumber: 1,
                   csrfmiddlewaretoken: "{{csrf_token}}"
                 },
                 success: function(response){
-                  // markers = response.result
+                  markers = response.results
+                  
+                  links = response.links
+                  user_id = response.is_authenticated
+                  prox =  response.proxy
+                  // console.log(response)
+                  document.getElementById('displayWord').innerHTML = keyword
+                  document.getElementById('displayWord').style.display ="inline"
+                  showRows()
              
                 }
           }); 
         
     } else if( searchType == 'site'){
-      type = clicked_id
+      website = clicked_id
       $.ajax({
                 type:"POST",
                 url:"",
@@ -478,10 +506,19 @@ function search(clicked_id, searchType){
                   site: website,
                   itemType: type,
                   proxy: prox,
+                  pageNumber: 1,
                   csrfmiddlewaretoken: "{{csrf_token}}"
                 },
                 success: function(response){
-                  // markers = response.result
+                  markers = response.results
+                  
+                  links = response.links
+                  user_id = response.is_authenticated
+                  prox =  response.proxy
+                  // console.log(response)
+                  document.getElementById('displayWord').innerHTML = keyword
+                  document.getElementById('displayWord').style.display ="inline"
+                  showRows()
              
                 }
           }); 
