@@ -19,37 +19,54 @@ from django.core import serializers
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
 from django.http import JsonResponse
+from django.db import connection
+
+class practice2(View):
+	def get(self, request, input):
+		
+		
+		return render(request,'practice.html',context)	
+		
+
+class practice3(View):
+	def get(self, request):
+		print('practice3 get')
+	def post(self, request):
+		if request.method == 'POST' and request.is_ajax():
+			print('practice 3 post')
+
+			
+			return HttpResponse(request.GET.get('search'))
+		
+		
+		
 
 
 class practice(View):
 	def get(self, request):
-		queryset = Bookmarks.objects.values('id', 'title').all()
 		
 		# User.objects.create(username='18-5126-260', password = make_password('mondejar.12345'))
 		
-		
-		
+		# cursor = connection.cursor()   |for retrievving bookmarks inside a folder|
+		# cursor.execute("Select b.* from Bookmarks b, bookmark_folders bf Where bf.user_id = "+str(request.user.id)+" AND bf.folder_id = "+ str(1)+" AND bf.bookmark_id = b.id"  )
+		# row = cursor.fetchall()
+		# print(row)
+
+
 		a = list(queryset)
 		context = {
 		    "bookmark_set": queryset,
 		    "bookmark_list" : a 
 		}
-		# User.objects.create(username="1523-323", password="aasdqwe12345")
-		return render(request,'practice.html',context)
+		User.objects.create(username="1523-323", password="aasdqwe12345")
+		return render(request,'practice.html')#,context)
 
 	def post(self, request):
-		if request.method == 'POST' and request.is_ajax():
-			bID = request.POST.get('id')
-			queryset = Bookmarks.objects.values('id','websiteTitle', 'itemType').filter(id=bID)
+		if request.method == 'POST':
+			print('practice post')
 
-			a = list(queryset)
-			context = {
-		    
-		    "result" : a 
-			}
-
+			return HttpResponse('practice post')
 			
-			return JsonResponse(context)	
 		
 		
 
@@ -71,7 +88,7 @@ class TeraLoginUser(View):
 				request.session['previousPage'] = 'index_view'
 				return redirect("ra:index_view")
 		else:
-			request.session['previousPage'] = 'index_view'
+			
 			return render(request,'login.html')	
 		
 		
@@ -113,7 +130,7 @@ class TeraIndexView(View):
 			
 		#	proxy =Proxies(proxy = proxy)
 		#	proxy.save()
-
+		request.session['previousPage'] ='index_view'
 		if request.session.get('proxy') == None:
 			proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
 			request.session['proxy'] = testProxy(proxies,1)
@@ -154,7 +171,7 @@ class TeraIndexView(View):
 
 		elif 'btnSearch' in request.POST:
 			request.session['word'] = request.POST.get("keyword")
-			request.session['previousPage'] ='index_view'
+			
 			return redirect('ra:search_result_view')
 		
 
@@ -163,11 +180,15 @@ class TeraSearchResultsView(View):
 	
 
 	def get(self,request):
+
 		# header = ast.literal_eval(Headers.objects.get(id=2).text)	# converting b from string to dictionary
 		# header = request.session.get('header')
 		word = request.session.get('word')
+
 		proxy = request.session.get('proxy')
-		# request.session['previousPage'] = 'search_result_view'
+		
+		request.session['previousPage'] ='search_result_view'
+		
 		
 		print("get request pressed")
 	
@@ -180,6 +201,7 @@ class TeraSearchResultsView(View):
 			proxy = testProxy(proxies,1)
 			request.session['proxy'] = proxy
 			a = scrape(word,proxy , 'article',1, 'Springeropen.com', ' ')
+
 		print("data scraped")
 		results = a[0]	
 		links = a[1]				
@@ -188,7 +210,8 @@ class TeraSearchResultsView(View):
 							'results': results,
 							'links': links,
 							'proxy': proxy,
-							'is_authenticated': request.user.is_authenticated
+							'itemType': 'article',
+							'is_authenticated': str(request.user.is_authenticated)
 		}
 		
 		return render(request,'searchresults.html', context)
@@ -197,19 +220,20 @@ class TeraSearchResultsView(View):
 		
 		if request.method == 'POST' and request.is_ajax():
 			
-			print('bookmark button clicked')
+			
 			
 			action = request.POST['action']
 
 			if action == "search":
 
 
-
 				if request.POST['proxy'] == None:
 
-
+					word = request.POST['word']
+					request.session['word'] = word
 					proxy = request.session.get('proxy')
-					a = scrape(request.POST['word'],proxy, request.POST['itemType'], request.POST['site'],' ', request.POST['pageNumber'])
+
+					a = scrape(word,proxy, request.POST['itemType'], request.POST['site'],' ', request.POST['pageNumber'])
 					
 					while (a == False):
 						proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
@@ -234,10 +258,11 @@ class TeraSearchResultsView(View):
 
 
 				else:
-					print(request.POST['word'])
+					word = request.POST['word']
+					request.session['word'] = word
 					proxy = request.POST['proxy']
 
-					a = scrape(request.POST['word'],proxy, request.POST['itemType'], request.POST['site'],' ', request.POST['pageNumber'])
+					a = scrape(word,proxy, request.POST['itemType'], request.POST['site'],' ', request.POST['pageNumber'])
 					
 					while (a == False):
 						proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
@@ -249,9 +274,7 @@ class TeraSearchResultsView(View):
 
 					results = a[0]	
 					links = a[1]
-
 					# print(results)
-					# print(links)
 					context = {
 						'results': results,
 						'links': links,
@@ -259,48 +282,48 @@ class TeraSearchResultsView(View):
 						'is_authenticated': request.user.is_authenticated
 					}
 					return JsonResponse(context)
-			# elif action == "add":
-			# 	bookmark = request.POST['bookmark']
-			# 	string = bookmark.split('||')
-			# 	refType = string[0]
+			elif action == "add":
+				print('bookmark button clicked')
+				bookmark = request.POST['bookmark']
+				siteRef = request.POST['website'] +" " +request.POST['reftype']
+				string = bookmark.split('||')
+				title = string[0].replace('\n','').replace('  ','')
+				url = string[1]
+				# print(title, url, siteRef)
+				detail = details(url, request.session.get('proxy'),siteRef)
 
-			# 	title = string[1].replace('\n','').replace('  ','')
-			# 	url = string[2]
-			# 	# print(bookmark)
-			# 	detail = details(url, request.session.get('proxy'),refType)
-
-			# 	websiteTitle = detail['websiteTitle']
-			# 	itemType = detail['itemType']
-			# 	author = detail['author']
-			# 	description = detail['description']
-			# 	journalItBelongs = detail['journalItBelongs']
-			# 	volume = detail['volume']
-			# 	doi = detail['doi']
-			# 	publicationYear = detail['publishYear']
-			# 	subtitle = detail['subtitle']
-			# 	citation = detail['citation']
-			# 	downloads = detail['downloads']
-			# 	publisher = detail['publisher']
-			# 	edition = detail['edition']
-			# 	pages = detail['pages']
-			# 	# author description publication volume doi
+				websiteTitle = detail['websiteTitle']
+				itemType = detail['itemType']
+				author = detail['author']
+				description = detail['description']
+				journalItBelongs = detail['journalItBelongs']
+				volume = detail['volume']
+				doi = detail['doi']
+				publicationYear = detail['publishYear']
+				subtitle = detail['subtitle']
+				citation = detail['citation']
+				downloads = detail['downloads']
+				publisher = detail['publisher']
+				edition = detail['edition']
+				pages = detail['pages']
+				# author description publication volume doi
 				
 				
-			# 	# print(websiteTitle + '\n'+itemType + '\n'+title + '\n' +link + '\n' +author+ '\n' +description+ '\n' +publication+ '\n' +volume+ '\n' +doi)
-			# 	if itemType == "Article":
-			# 		Bookmarks.objects.create(user = request.user,title = title,websiteTitle= websiteTitle,itemType= itemType,author = author, description= description, url = url, journalItBelongs= journalItBelongs, volume = volume, DOI = doi)
-			# 	elif itemType == "Book":
-			# 		Bookmarks.objects.create(user = request.user,title = title,websiteTitle= websiteTitle,subtitle = subtitle, 
-			# 			itemType= itemType,author = author,numOfCitation = citation,numOfDownload= downloads,publisher=publisher, 
-			# 			description= description, url = url, edition = edition,numOfPages = pages,
-			# 			 DOI = doi)
-			# 	return HttpResponse('')
-			# else:
-			# 	string = bookmark.split('||')
+				# print(websiteTitle + '\n'+itemType + '\n'+title + '\n' +link + '\n' +author+ '\n' +description+ '\n' +publication+ '\n' +volume+ '\n' +doi)
+				if request.POST['reftype'] == "article":
+					Bookmarks.objects.create(user = request.user,title = title,websiteTitle= websiteTitle,itemType= itemType,author = author, description= description, url = url, journalItBelongs= journalItBelongs, volume = volume, DOI = doi)
+				elif itemType == "book":
+					Bookmarks.objects.create(user = request.user,title = title,websiteTitle= websiteTitle,subtitle = subtitle, 
+						itemType= itemType,author = author,numOfCitation = citation,numOfDownload= downloads,publisher=publisher, 
+						description= description, url = url, edition = edition,numOfPages = pages,
+						 DOI = doi)
+				return HttpResponse('')
+			else:
+				string = bookmark.split('||')
 
-			# 	title = string[1].replace('\n','').replace('  ','')
-			# 	Bookmarks.objects.filter(title=title).update(isRemoved=1)
-			# 	return HttpResponse('')
+				title = string[1].replace('\n','').replace('  ','')
+				Bookmarks.objects.filter(title=title).update(isRemoved=1)
+				return HttpResponse('')
 
 		elif 'buttonLogin' in request.POST:
 			request.session['previousPage'] = request.POST['previousPage']
@@ -380,18 +403,26 @@ class TeraDashboardView(View):
 		# 		return redirect('ra:tera_dashboard_view')
 
 		elif request.method == 'POST' and request.is_ajax():
-			try:
-				deleteID = request.POST['deleteID']
-			# print(deleteID)
-				Bookmarks.objects.filter(id=deleteID).update(isRemoved=1)
+				
+			action = request.POST['action']
+
+			if action == 'addFav':
+				Bookmarks.objects.filter(id=request.POST['bID']).update(isFavorite=1)
 				return HttpResponse('')
-			except:
-				favoriteID = request.POST['favoriteID']
-			
-				Bookmarks.objects.filter(id=favoriteID).update(isFavorite=1)
+			elif action == 'remFav':
+				Bookmarks.objects.filter(id=request.POST['bID']).update(isFavorite=0)
+				return HttpResponse('')
+			elif action == 'trashItem':
+				Bookmarks.objects.filter(id=request.POST['bID']).update(isRemoved=1)
+				return HttpResponse('')
+			elif action == 'unTrashItem':
+				Bookmarks.objects.filter(id=request.POST['bID']).update(isRemoved=0)
+				return HttpResponse('')
+			elif action == 'deleteItem':
+				Bookmarks.objects.filter(id=request.POST['bID']).update(isRemoved=3)
 				return HttpResponse('')
 
-		
+
 	    
 
 
