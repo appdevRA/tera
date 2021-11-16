@@ -8,7 +8,7 @@
     
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
     
-    <!-- <link rel="stylesheet" href="{% static 'css/navbarstyle.css' %}"> -->
+    <link rel="stylesheet" href="{% static 'css/navbarstyle.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -22,7 +22,6 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <script src="https://kit.fontawesome.com/abb9521de4.js" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
      
     <style>
 table {
@@ -36,18 +35,14 @@ th, td {
   padding: 16px;
 }
 
-/*tr:nth-child(even) {
+tr:nth-child(even) {
   background-color: #f2f2f2
 
-}*/
+}
 tr:hover {
   background-color: #c4c4c4
 
 }
-/*td:hover {
-  background-color: #c4c4c4
-
-}*/
 </style>
 </head>
 {% endblock headerinclude %}
@@ -80,7 +75,6 @@ tr:hover {
     
   </nav>
 
-
     <div class="container-fluid">
   <div class="row">
     <div class="col-sm-2">
@@ -92,8 +86,8 @@ tr:hover {
                 <li id="recentlyRead" class="menu-item" onclick="showRows(this.id)" ><i id="recentlyReadIcon" class="fa fa-bookmark"></i>&nbsp; &nbsp;&nbsp; &nbsp; Recently Read</li>
                 <li id="favorite" class="menu-item" onclick="showRows(this.id)" ><i id="favoriteIcon" class="fa fa-star"></i>&nbsp; &nbsp; &nbsp; &nbsp;Favorites</li>
                 <li id="trash" class="menu-item" onclick="showRows(this.id)"><i id="trashIcon" class="fa fa-trash" ></i>&nbsp; &nbsp; &nbsp; &nbsp;Trash</li>
-                <li class="menu-item"><i class="fa fa-folder"></i>&nbsp; &nbsp;&nbsp; &nbsp;  <b>My Collections </b> <i class="fa fa-plus" style="font-size:10px;" name="addfolder" href='#addtoFolderModal' data-toggle='modal' data-target='#addtoFolderModal' ></i></li>
-                               
+                <li class="menu-item"><i class="fa fa-folder"></i>&nbsp; &nbsp;&nbsp; &nbsp;  <b>My Collections </b> <i class="fa fa-plus" style="font-size:10px;" name="addfolder" onclick="document.getElementById('id01').style.display='block'"></i></li>
+                                
                 <li class="menu-item"><i class="fa fa-group" style="font-size: 20px"></i> &nbsp; &nbsp; &nbsp; <b>Private Groups</b> <i class="fa fa-plus" style="font-size: 10px;"></i></li>
 
                </section>             
@@ -109,17 +103,16 @@ tr:hover {
               
                    <table id="itemTable"  class="table">
                     <thead>
-                      
-                        <th >Site</th>
-                        <th onclick="sort(1)" style="cursor: pointer">Type</th>
-                        <th onclick="sort(2)" style="cursor: pointer">Title</th>
-                        <th onclick="sort(3)"style="cursor: pointer">Date Added</th>
-                        <th onclick="sort(4)"style="cursor: pointer">Date Accessed</th>
+                      <tr>
+                        <th>Site</th>
+                        <th>Type</th>
+                        <th>Title</th>
+                        <th>Date Added</th>
+                        <th>Date Accessed</th>
                         <th></th>
                         <th></th>
                         <th></th>
-                        <th></th>
-                      
+                      </tr>
                     </thead>
                     <tbody id="itemArea">
                       
@@ -128,42 +121,27 @@ tr:hover {
                 </div>
             </div>
             <!-- The Modal -->
-                  <div class="modal fade" id="addtoFolderModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header text-center">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"  style=“color: yellow”; >
-          <span aria-hidden="true">&times;</span>
-        </button>
-        <div class="modal-body mx-3">
-        <div class="md-form mb-5">
-      
-         <center> 
-         <form action = "" method = "POST" autocomplete = "off" enctype="multipart/form-data">
-          {% csrf_token %}
-            <h4 style="color: #800000">PLEASE LOG IN</h4> <br><br>
-            Bookmark feature requires an account<br>
-            <b>do you want to log in?</b><br><br><br><br>
-       
-   
-        <center>
-              <div class="form-row">
-                <div class="form-group col-md-6">
-                <button type=“button” class="buttoncancel" data-dismiss="modal">Cancel</button>
-                </div>
-                <input value="search_result_view" name="previousPage" hidden>
-                <div class="form-group col-md-6"> 
-                    <button type="submit" name="buttonLogin"class="buttonlogout"> Login</button>
-                </div> 
-         </div>
-      </center>
-       </form>
-      </center>
-    </div></div>
-      </div>
-      
-  </div>
-</div></div>
+                  <div id="id01" class="modal">
+                    
+                    <form class="modal-content" id = "form1" action="" method="POST" autocomplete="off" enctype="multipart/form-data">
+
+                      <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
+                      {% csrf_token %}
+                      <div class="container">
+
+                        <p style="font-size: 25px; color: #800000">Create a New Collection</p>
+                        <p style="font-size: 15px">Please provide a name for your collection.</p>
+                        <hr>
+                        <label for="foldername"><b>Collection Name</b></label>
+                        <input type="text" placeholder="Enter Collection Name" name="foldername" required>
+
+                        <div class="clearfix">
+                          <button type="button" onclick="document.getElementById('id01').style.display='none'" class="cancelbtn">Cancel</button>
+                          <button type="submit" class="signupbtn">Save</button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
           </div>  
                  
         </div>
@@ -195,7 +173,7 @@ tr:hover {
 
 <script type="text/javascript">
   var markers = {{ bookmark_list|safe }}
-  tab = 'all'
+
 $(document).ready(function($) {
 
   showRows('all')
@@ -209,108 +187,48 @@ $(document).ready(function($) {
 
 });
 
-function permanentdelete_item(clicked_id){
-  
-   
-   for(i=0; i< markers.length;i++){
-      if(markers[i]['pk'] == clicked_id ){
-        markers[i]['fields']['isRemoved'] = 3;
-        $.ajax({
-                      type:"POST",
-                      url:"",
-
-                      data:{
-                        action: 'deleteItem',
-                        bID: clicked_id,
-                        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
-                      }
-        }); 
-        break;
-
-      } 
-   }
-   
-   showRows(tab)
-  
-    
-}
 
 function delete_item(clicked_id){
   
-   
+   $.ajax({
+                      type:"POST",
+                      url:"",
+
+                      data:{
+                        
+                        deleteID: clicked_id,
+                        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                      }
+        }); 
    for(i=0; i< markers.length;i++){
-      if(markers[i]['pk'] == clicked_id & markers[i]['fields']['isRemoved'] == 0){
+      if(markers[i]['pk'] == clicked_id){
         markers[i]['fields']['isRemoved'] = 1;
-        $.ajax({
-                      type:"POST",
-                      url:"",
-
-                      data:{
-                        action: 'trashItem',
-                        bID: clicked_id,
-                        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
-                      }
-        }); 
-        break;
-      } else if(markers[i]['pk'] == clicked_id & markers[i]['fields']['isRemoved'] == 1){
-        markers[i]['fields']['isRemoved'] = 0;
-        $.ajax({
-                      type:"POST",
-                      url:"",
-
-                      data:{
-                        action: 'unTrashItem',
-                        bID: clicked_id,
-                        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
-                      }
-        }); 
         break;
       }
    }
-   
-   showRows(tab)
+   clearRow("itemTable")
+   showRows('all')
   
     
 }
 
 
 function favorite_item(clicked_id){
-  // alert(tab)
-   
+  
+   $.ajax({
+                      type:"POST",
+                      url:"",
+
+                      data:{
+                        
+                        favoriteID: clicked_id,
+                        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                      }
+        }); 
    for(i=0; i< markers.length;i++){
       if(markers[i]['pk'] == clicked_id){
-        if(markers[i]['fields']['isFavorite'] == 0){
-          markers[i]['fields']['isFavorite'] = 1;  
-          // clearRow('itemArea')
-          showRows(tab)
-          $.ajax({
-                      type:"POST",
-                      url:"",
-
-                      data:{
-                        action: 'addFav',
-                        bID: clicked_id,
-                        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
-                      }
-        }); 
-
-        } else if(markers[i]['fields']['isFavorite'] == 1){
-          markers[i]['fields']['isFavorite'] = 0;  
-           showRows(tab)
-            $.ajax({
-                      type:"POST",
-                      url:"",
-
-                      data:{
-                        action: 'remFav',
-                        bID: clicked_id,
-                        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
-                      }
-        }); 
-            break;
-        }
-        
-       
+        markers[i]['fields']['isFavorite'] = 1;
+        break;
       }
    }
   
@@ -323,10 +241,8 @@ function showRows(rowType){
   clearRow("detailTable")
   clearStyle();
   clearRow('itemTable');
-  tab = rowType;
 // document.getElementById("itemTable").style.display = "none"; 
     if(rowType == 'all'){
-
       document.getElementById(rowType).style.backgroundColor= "#c9c9c9";
       document.getElementById(rowType).style.color= "#800000";
       document.getElementById('allIcon').style.color= "#800000";
@@ -334,27 +250,12 @@ function showRows(rowType){
             for(i=0; i< markers.length;i++){
              
 
-                if(markers[i]['fields']['websiteTitle'] == "Springeropen.com" & markers[i]['fields']['isRemoved'] == 0 & markers[i]['fields']['isFavorite'] == 0){
-                    console.log( markers[i]['fields']['title'])
-                       $('#itemArea').append(
-                        "<tr>"+
-                        "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>" +
-                        "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
-                        "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
+                if(markers[i]['fields']['websiteTitle'] == "Springeropen.com" & markers[i]['fields']['isRemoved'] == 0){
+                    var dt = new Date( markers[i]['fields']['dateAdded']);
+                    var access = new Date( markers[i]['fields']['dateAccessed']);
+                          added =  (("0"+dt.getDate()).slice(-2)) +"/"+ (("0"+(dt.getMonth()+1)).slice(-2)) +"/"+ (dt.getFullYear()) +" "+ (("0"+dt.getHours()).slice(-2)) +":"+ (("0"+dt.getMinutes()).slice(-2));
 
-                        "<td>" + markers[i]['fields']['dateAdded'].slice(0,-8).replace('T',' ') + "</td>" +
-                        "<td>" + markers[i]['fields']['dateAccessed'].slice(0,-8).replace('T',' ') +"</td>" + 
-                        "<td><i id='"+ markers[i]['pk']+"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
-                         "<td><i id='"+ markers[i]['pk']+"' class='fas fa-plus' style='cursor: pointer; font-size: 80%' onclick='get_detail(this.id)'></i></td>" +
-                          "<td><i id='"+ markers[i]['pk']+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>" +
-                        "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer; font-size: 90%' onclick='delete_item(this.id)'></i></td>" +
-                       
-
-                       "</tr>"
-
-                        );  
-                } else if(markers[i]['fields']['websiteTitle'] == "Springeropen.com" & markers[i]['fields']['isRemoved'] == 0 & markers[i]['fields']['isFavorite'] == 1){
-                   
+                          accessed =  (("0"+access.getDate()).slice(-2)) +"/"+ (("0"+(access.getMonth()+1)).slice(-2)) +"/"+ (access.getFullYear()) +" "+ (("0"+access.getHours()).slice(-2)) +":"+ (("0"+access.getMinutes()).slice(-2));
                       
                        $('#itemArea').append(
                         "<tr>"+
@@ -362,14 +263,11 @@ function showRows(rowType){
                         "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
                         "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
 
-                        "<td>" +  markers[i]['fields']['dateAdded'].slice(0,-8).replace('T',' ') + "</td>" +
-                        "<td>" +  markers[i]['fields']['dateAccessed'].slice(0,-8).replace('T',' ') +"</td>" + 
+                        "<td>" + added + "</td>" +
+                        "<td>" + accessed +"</td>" + 
                         "<td><i id='"+ markers[i]['pk']+"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
-                         "<td><i id='"+ markers[i]['pk']+"' class='fas fa-plus' style='cursor: pointer; font-size: 80%' onclick='get_detail(this.id)'></i></td>" +
-                          "<td><i id='"+ markers[i]['pk']+"' class='fas fa-star' style='cursor: pointer;color:red' onclick='favorite_item(this.id)'></i></td>" +
-                        
-                        "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer;font-size: 90%' onclick='delete_item(this.id)'></i></td>" +
-                       
+                        "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer' onclick='delete_item(this.id)'></i></td>" +
+                        "<td><i id='"+ markers[i]['pk']+"' class='fas fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>" +
 
                        "</tr>"
 
@@ -388,7 +286,11 @@ function showRows(rowType){
 
             if(markers[i]['fields']['websiteTitle'] == "Springeropen.com" & markers[i]['fields']['isRemoved'] == 1){
 
-                   
+                    var dt = new Date( markers[i]['fields']['dateAdded']);
+                    var access = new Date( markers[i]['fields']['dateAccessed']);
+                          added =  (("0"+dt.getDate()).slice(-2)) +"/"+ (("0"+(dt.getMonth()+1)).slice(-2)) +"/"+ (dt.getFullYear()) +" "+ (("0"+dt.getHours()).slice(-2)) +":"+ (("0"+dt.getMinutes()).slice(-2));
+
+                          accessed =  (("0"+access.getDate()).slice(-2)) +"/"+ (("0"+(access.getMonth()+1)).slice(-2)) +"/"+ (access.getFullYear()) +" "+ (("0"+access.getHours()).slice(-2)) +":"+ (("0"+access.getMinutes()).slice(-2));
 
               $('#itemArea').append(
                 "<tr class='clickable-row' data-href='" + markers[i]['fields']['url'] + "'>" +
@@ -397,14 +299,11 @@ function showRows(rowType){
                 "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
                 "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
 
-                "<td>" +  markers[i]['fields']['dateAdded'].slice(0,-8).replace('T',' ') + "</td>" +
-                "<td>" +  markers[i]['fields']['dateAccessed'].slice(0,-8).replace('T',' ') +"</td>" + 
-
-                "<td><i id='"+ markers[i]['pk']+"' class='fas fa-undo' style='cursor: pointer' onclick='delete_item(this.id)'></i></td>" +
-                "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer' onclick='permanentdelete_item(this.id)'></i></td>" +
-
-               
-               
+                "<td>" + added + "</td>" +
+                "<td>" + accessed +"</td>" + 
+                "<td><i id='"+ markers[i]['pk']+"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
+                "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer' onclick='delete_item(this.id)'></i></td>" +
+                "<td><i id='"+ markers[i]['pk']+"' class='fas fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>" +
         
         
 
@@ -427,47 +326,31 @@ function showRows(rowType){
         
           for(i=0; i< markers.length;i++){
               
-                if(markers[i]['fields']['websiteTitle'] == "Springeropen.com" & days < 7 & markers[i]['fields']['isRemoved'] == 0 & markers[i]['fields']['isFavorite'] == 0){
-                   
-                      
-                       $('#itemArea').append(
-                        "<tr>"+
-                        "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>" +
-                        "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
-                        "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
+                if(markers[i]['fields']['websiteTitle'] == "Springeropen.com" & days <= 7 &  markers[i]['fields']['isRemoved'] == 0){
+                      var dt = new Date( markers[i]['fields']['dateAdded']);
+                      var access = new Date( markers[i]['fields']['dateAccessed']);
+                          added =  (("0"+dt.getDate()).slice(-2)) +"/"+ (("0"+(dt.getMonth()+1)).slice(-2)) +"/"+ (dt.getFullYear()) +" "+ (("0"+dt.getHours()).slice(-2)) +":"+ (("0"+dt.getMinutes()).slice(-2));
 
-                        "<td>" +  markers[i]['fields']['dateAdded'].slice(0,-8).replace('T',' ') + "</td>" +
-                        "<td>" +  markers[i]['fields']['dateAccessed'].slice(0,-8).replace('T',' ') +"</td>" + 
-                         "<td><i id='"+ markers[i]['pk']+"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
-                         "<td><i id='"+ markers[i]['pk']+"' class='fas fa-plus' style='cursor: pointer; font-size: 80%' onclick='get_detail(this.id)'></i></td>" +
-                          "<td><i id='"+ markers[i]['pk']+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>" +
-                        
-                        "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer;font-size: 90%' onclick='delete_item(this.id)'></i></td>" +
-                       
+                          accessed =  (("0"+access.getDate()).slice(-2)) +"/"+ (("0"+(access.getMonth()+1)).slice(-2)) +"/"+ (access.getFullYear()) +" "+ (("0"+access.getHours()).slice(-2)) +":"+ (("0"+access.getMinutes()).slice(-2));
+                  $('#itemArea').append(
+                    "<tr>"+
+                    "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>" +
+                    "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
+                    "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
 
-                       "</tr>"
+                    "<td>" + added + "</td>" +
+                    "<td>" + accessed +"</td>" + 
+                    "<td><i id='"+ markers[i]['pk']+"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
+                    "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer' onclick='delete_item(this.id)'></i></td>" +
+                    "<td><i id='"+ markers[i]['pk']+"' class='fas fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>" +
+            
+            
 
-                        );  
-                } else if(markers[i]['fields']['websiteTitle'] == "Springeropen.com"  & days < 7 &  markers[i]['fields']['isRemoved'] == 0 & markers[i]['fields']['isFavorite'] == 1){
-                    
-                       $('#itemArea').append(
-                        "<tr>"+
-                        "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>" +
-                        "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
-                        "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
 
-                        "<td>" +  markers[i]['fields']['dateAdded'].slice(0,-8).replace('T',' ') + "</td>" +
-                        "<td>" +  markers[i]['fields']['dateAccessed'].slice(0,-8).replace('T',' ') +"</td>" + 
-                         "<td><i id='"+ markers[i]['pk']+"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
-                         "<td><i id='"+ markers[i]['pk']+"' class='fas fa-plus' style='cursor: pointer; font-size: 80%' onclick='get_detail(this.id)'></i></td>" +
-                          "<td><i id='"+ markers[i]['pk']+"' class='fas fa-star' style='cursor: pointer;color:red' onclick='favorite_item(this.id)'></i></td>" +
-                        
-                        "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer;font-size: 90%' onclick='delete_item(this.id)'></i></td>" +
-                       
 
-                       "</tr>"
+                   "</tr>"
 
-                        );  
+                    );  
                 }
          
           }
@@ -475,51 +358,37 @@ function showRows(rowType){
           document.getElementById(rowType).style.backgroundColor= "#c9c9c9";
           document.getElementById(rowType).style.color= "#800000";
           document.getElementById('recentlyReadIcon').style.color= "#800000";
-          var then = new Date(markers[0]['fields']['dateAccessed']), // month is zero based
+          var then = new Date(markers[0]['fields']['dateAdded']), // month is zero based
           now  = new Date;               // no arguments -> current date
           days = Math.round((now - then) / (1000 * 60 * 60 * 24));
         
           for(i=0; i< markers.length;i++){
               
-                if(markers[i]['fields']['websiteTitle'] == "Springeropen.com" & days <= 3 & markers[i]['fields']['isRemoved'] == 0 & markers[i]['fields']['isFavorite'] == 0){
-                 
-                       $('#itemArea').append(
-                        "<tr>"+
-                        "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>" +
-                        "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
-                        "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
+                if(markers[i]['fields']['websiteTitle'] == "Springeropen.com" & days <= 7 &  markers[i]['fields']['isRemoved'] == 0){
+                        var dt = new Date( markers[i]['fields']['dateAdded']);
+                        var access = new Date( markers[i]['fields']['dateAccessed']);
+                          added =  (("0"+dt.getDate()).slice(-2)) +"/"+ (("0"+(dt.getMonth()+1)).slice(-2)) +"/"+ (dt.getFullYear()) +" "+ (("0"+dt.getHours()).slice(-2)) +":"+ (("0"+dt.getMinutes()).slice(-2));
 
-                        "<td>" +  markers[i]['fields']['dateAdded'].slice(0,-8).replace('T',' ') + "</td>" +
-                        "<td>" +  markers[i]['fields']['dateAccessed'].slice(0,-8).replace('T',' ') +"</td>" + 
-                         "<td><i id='"+ markers[i]['pk']+"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
-                         "<td><i id='"+ markers[i]['pk']+"' class='fas fa-plus' style='cursor: pointer; font-size: 80%' onclick='get_detail(this.id)'></i></td>" +
-                          "<td><i id='"+ markers[i]['pk']+"' class='far fa-star' style='cursor: pointer;' onclick='favorite_item(this.id)'></i></td>" +
-                        
-                        "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer;font-size: 90%' onclick='delete_item(this.id)'></i></td>" +
-                       
+                          accessed =  (("0"+access.getDate()).slice(-2)) +"/"+ (("0"+(access.getMonth()+1)).slice(-2)) +"/"+ (access.getFullYear()) +" "+ (("0"+access.getHours()).slice(-2)) +":"+ (("0"+access.getMinutes()).slice(-2));
+                  $('#itemArea').append(
+                    "<tr>"+
+                    "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>" +
+                    "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
+                    "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
 
-                       "</tr>"
+                    "<td>" + added + "</td>" +
+                    "<td>" + accessed +"</td>" + 
+                    "<td><i id='"+ markers[i]['pk']+"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
+                    "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer' onclick='delete_item(this.id)'></i></td>" +
+                    "<td><i id='"+ markers[i]['pk']+"' class='fas fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>" +
+            
+            
 
-                        );  
-                } else if(markers[i]['fields']['websiteTitle'] == "Springeropen.com"  & days < 7 &  markers[i]['fields']['isRemoved'] == 0 & markers[i]['fields']['isFavorite'] == 1){
-                  
-                       $('#itemArea').append(
-                        "<tr>"+
-                        "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>" +
-                        "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
-                        "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
 
-                        "<td>" +  markers[i]['fields']['dateAdded'].slice(0,-8).replace('T',' ') + "</td>" +
-                        "<td>" +  markers[i]['fields']['dateAccessed'].slice(0,-8).replace('T',' ') +"</td>" + 
-                         "<td><i id='"+ markers[i]['pk']+"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
-                         "<td><i id='"+ markers[i]['pk']+"' class='fas fa-plus' style='cursor: pointer; font-size: 80%' onclick='get_detail(this.id)'></i></td>" +
-                          "<td><i id='"+ markers[i]['pk']+"' class='fas fa-star' style='cursor: pointer;color:red' onclick='favorite_item(this.id)'></i></td>" +
-                        
-                        "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer;font-size: 90%' onclick='delete_item(this.id)'></i></td>" +
 
-                       "</tr>"
+                   "</tr>"
 
-                        );  
+                    );  
                 }
          
           }
@@ -532,25 +401,21 @@ function showRows(rowType){
              
             if(markers[i]['fields']['websiteTitle'] == "Springeropen.com" & markers[i]['fields']['isFavorite'] == 1 & markers[i]['fields']['isRemoved'] == 0){
 
-                    // var dt = new Date( markers[i]['fields']['dateAdded']);
-                    // var access = new Date( markers[i]['fields']['dateAccessed']);
-                    //       added =  (("0"+dt.getDate()).slice(-2)) +"/"+ (("0"+(dt.getMonth()+1)).slice(-2)) +"/"+ (dt.getFullYear()) +" "+ (("0"+dt.getHours()).slice(-2)) +":"+ (("0"+dt.getMinutes()).slice(-2));
+                    var dt = new Date( markers[i]['fields']['dateAdded']);
+                    var access = new Date( markers[i]['fields']['dateAccessed']);
+                          added =  (("0"+dt.getDate()).slice(-2)) +"/"+ (("0"+(dt.getMonth()+1)).slice(-2)) +"/"+ (dt.getFullYear()) +" "+ (("0"+dt.getHours()).slice(-2)) +":"+ (("0"+dt.getMinutes()).slice(-2));
 
-                    //       accessed =  (("0"+access.getDate()).slice(-2)) +"/"+ (("0"+(access.getMonth()+1)).slice(-2)) +"/"+ (access.getFullYear()) +" "+ (("0"+access.getHours()).slice(-2)) +":"+ (("0"+access.getMinutes()).slice(-2));
+                          accessed =  (("0"+access.getDate()).slice(-2)) +"/"+ (("0"+(access.getMonth()+1)).slice(-2)) +"/"+ (access.getFullYear()) +" "+ (("0"+access.getHours()).slice(-2)) +":"+ (("0"+access.getMinutes()).slice(-2));
               $('#itemArea').append(
                 "<tr>"+
                 "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>" +
                 "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
                 "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'> <span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
 
-                "<td>" +  markers[i]['fields']['dateAdded'].slice(0,-8).replace('T',' ') + "</td>" +
-                "<td>" +  markers[i]['fields']['dateAccessed'].slice(0,-8).replace('T',' ') +"</td>" + 
-               "<td><i id='"+ markers[i]['pk']+"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
-                         "<td><i id='"+ markers[i]['pk']+"' class='fas fa-plus' style='cursor: pointer; font-size: 80%' onclick='get_detail(this.id)'></i></td>" +
-                          "<td><i id='"+ markers[i]['pk']+"' class='fas fa-minus' style='cursor: pointer;color:red' onclick='favorite_item(this.id)'></i></td>" +
-                        
-                        "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer;font-size: 90%' onclick='delete_item(this.id)'></i></td>" +
-                       
+                "<td>" + added + "</td>" +
+                "<td>" + accessed +"</td>" + 
+                "<td><i id='"+ markers[i]['pk']+"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
+                "<td><i id='"+ markers[i]['pk']+"' class='fas fa-minus' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>" +
                 
         
         
@@ -610,31 +475,17 @@ function get_detail(clicked_id){
            added =  (("0"+dt.getDate()).slice(-2)) +"/"+ (("0"+(dt.getMonth()+1)).slice(-2)) +"/"+ (dt.getFullYear()) +" "+ (("0"+dt.getHours()).slice(-2)) +":"+ (("0"+dt.getMinutes()).slice(-2));
 
             accessed =  (("0"+access.getDate()).slice(-2)) +"/"+ (("0"+(access.getMonth()+1)).slice(-2)) +"/"+ (access.getFullYear()) +" "+ (("0"+access.getHours()).slice(-2)) +":"+ (("0"+access.getMinutes()).slice(-2));
-           markers[i]['fields']['publisher'] = ''
-       $('#detailArea').append("<tr ><td style='text-align: right; vertical-align:top'> Website: </td>"+ "<td> <a href='https://"+markers[i]['fields']['websiteTitle']+ "'>"+ markers[i]['fields']['websiteTitle'] +  "</a></td></tr>" );  
+           
+       $('#detailArea').append("<tr ><td style='text-align: right; vertical-align:top'> Website: </td>"+ "<td>"+ markers[i]['fields']['title'] +  "</td></tr>" );  
        $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Item type: </td>"+ "<td>"+ markers[i]['fields']['itemType'] +  "</td></tr>" );  
-       $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> URL: </td>"+ "<td><a href='"+markers[i]['fields']['url']+"' target='_blank'>"+ markers[i]['fields']['url'] +  "</td></tr>" );  
+       $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> URL: </td>"+ "<td>"+ markers[i]['fields']['url'] +  "</td></tr>" );  
        $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Title: </td>"+ "<td>"+ markers[i]['fields']['title'] +  "</td></tr>" );  
        $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Author: </td>"+ "<td>"+ markers[i]['fields']['author'] +  "</td></tr>" );  
-       $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Abstract: </td>"+ "<td>"+ markers[i]['fields']['description'] +  "</td></tr>" );  
+       $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Description: </td>"+ "<td>"+ markers[i]['fields']['description'] +  "</td></tr>" );  
        $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Collection: </td>"+ "<td>"+ markers[i]['fields']['journalItBelongs'] +  "</td></tr>" );  
        $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Publication Year: </td>"+ "<td>"+ markers[i]['fields']['publicationYear'] +  "</td></tr>" );  
-       $('#detailArea').append(
-        "<tr><td style='text-align: right; vertical-align:top'> Publisher: </td>"+ "<td>"+ markers[i]['fields']['publisher'] +  "</td></tr>" +
-        "<tr><td style='text-align: right; vertical-align:top'> Volume: </td>"+ "<td>"+ markers[i]['fields']['volume'] +  "</td></tr>" +
-        "<tr><td style='text-align: right; vertical-align:top'> Edition: </td>"+ "<td>"+ markers[i]['fields']['edition'] +  "</td></tr>" +
-        "<tr><td style='text-align: right; vertical-align:top'> Citation: </td>"+ "<td>"+ markers[i]['fields']['numOfCitation'] +  "</td></tr>" +
-        "<tr><td style='text-align: right; vertical-align:top'> Downloads: </td>"+ "<td>"+ markers[i]['fields']['numOfDownload'] +  "</td></tr>" +
-        "<tr><td style='text-align: right; vertical-align:top'> Pages: </td>"+ "<td>"+ markers[i]['fields']['numOfPages'] +  "</td></tr>" +
-        "<tr><td style='text-align: right; vertical-align:top'> DOI: </td>"+ "<td>"+ markers[i]['fields']['DOI'] +  "</td></tr>" +
-        "<tr><td style='text-align: right; vertical-align:top'> ISSN: </td>"+ "<td>"+ markers[i]['fields']['ISSN'] +  "</td></tr>" +
-        
-        "<tr><td style='text-align: right; vertical-align:top'> Date added: </td>"+ "<td>"+ added +  "</td></tr>"+
-        "<tr><td style='text-align: right; vertical-align:top'> Date Accessed: </td>"+ "<td>"+ accessed +  "</td></tr>" 
-
-
-
-        );  
+       $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Date added: </td>"+ "<td>"+ added +  "</td></tr>" );  
+       $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Date Accessed: </td>"+ "<td>"+ accessed +  "</td></tr>" );  
 
        break;
       }
@@ -644,13 +495,11 @@ function get_detail(clicked_id){
 }
 
 
-function sort(n){
-  // alert(n)
-  var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+function sort(){
+ // alert("wala")
+  var table, rows, switching, i, x, y, shouldSwitch;
   table = document.getElementById("itemTable");
   switching = true;
-  // Set the sorting direction to ascending:
-  dir = "asc";
   /* Make a loop that will continue until
   no switching has been done: */
   while (switching) {
@@ -664,22 +513,13 @@ function sort(n){
       shouldSwitch = false;
       /* Get the two elements you want to compare,
       one from current row and one from the next: */
-      x = rows[i].getElementsByTagName("TD")[n];
-      y = rows[i + 1].getElementsByTagName("TD")[n];
-      /* Check if the two rows should switch place,
-      based on the direction, asc or desc: */
-      if (dir == "asc") {
-        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-          // If so, mark as a switch and break the loop:
-          shouldSwitch = true;
-          break;
-        }
-      } else if (dir == "desc") {
-        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
-          // If so, mark as a switch and break the loop:
-          shouldSwitch = true;
-          break;
-        }
+      x = rows[i].getElementsByTagName("TD")[2];
+      y = rows[i + 1].getElementsByTagName("TD")[2];
+      // Check if the two rows should switch place:
+      if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+        // If so, mark as a switch and break the loop:
+        shouldSwitch = true;
+        break;
       }
     }
     if (shouldSwitch) {
@@ -687,15 +527,6 @@ function sort(n){
       and mark that a switch has been done: */
       rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
       switching = true;
-      // Each time a switch is done, increase this count by 1:
-      switchcount ++;
-    } else {
-      /* If no switching has been done AND the direction is "asc",
-      set the direction to "desc" and run the while loop again. */
-      if (switchcount == 0 && dir == "asc") {
-        dir = "desc";
-        switching = true;
-      }
     }
   }
 }    

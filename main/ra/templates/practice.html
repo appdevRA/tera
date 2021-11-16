@@ -20,16 +20,9 @@
 <body style="background-color: #f3f3f3">
 <div id="header" name="" >olok </div>
    {% for item in bookmark_set %}
-   <div id="{{item.id}}" onclick="search()">{{item.user}}</div>
+   <div id="{{item.id}}" onclick="showResult(this.id)">{{item.title}}</div>
    {% endfor %}
-   
-    <a href="{% url 'ra:practice2' input='war' %}"> wara</a>
-    <input id="input"type="" name="search" > 
-    <input type="submit" name=""> 
-   
-   
-   
-   
+   <input type="" name="" >
   <table style="font-size: 15px">
     <thead>
       <tr>
@@ -62,8 +55,7 @@ var markers = {{ bookmark_list|safe }};
  //            }
  //        });
 
- function search(){
-  alert('olok')
+ function search(clicked_id){
     keyword = document.getElementById('keyword').value
     
         $.ajax({
@@ -72,11 +64,13 @@ var markers = {{ bookmark_list|safe }};
 
                 data:{
                   word: keyword,
+                  site: website,
+                  itemType: type,
                   
                   csrfmiddlewaretoken: "{{csrf_token}}"
                 },
                 success: function(response){
-                  
+                  markers = response.result
              
                 }
         }); 
@@ -89,7 +83,7 @@ function showResult(clicked_id){
   
         $.ajax({
                 type:"POST",
-                url:"practice2",
+                url:"",
 
                 data:{
                   

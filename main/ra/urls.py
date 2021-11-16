@@ -16,10 +16,7 @@ urlpatterns = [
 			path('/citation_history',views.CitationHistory.as_view(), name="citation-history"),
 			path('/citation_history',views.CitationDeleteView.as_view(), name="deletion_confirmation"),
 			path('/search',views.TeraSearchResultsView.as_view(), name="search_result_view"),
-
-		
+			# path('bookmark/', views.bookmark.as_view(), name="bookmark"),
 			path('/practice', views.practice.as_view(), name="practice"),
-			path('/practice2/search=<input>', views.practice2.as_view(), name="practice2"),
-			path('/practice3', views.practice3.as_view(), name="practice34"),
 			
 			]	

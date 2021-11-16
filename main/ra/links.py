@@ -24,11 +24,11 @@ def scrape(word, proxy, refType, site, header, pageNumber):
         return scienceDirect(word, proxy, refType, pageNumber, header)
     elif site == 'Scirp.org':
         return scirp(word, proxy, refType, pageNumber)
-    elif site == 'Tandfonline.com':
+    elif site == 'tandfonline':
         return tandFOnline(word, proxy, refType, pageNumber)
-    elif site == 'Herdin.ph':
+    elif site == 'herdin':
         return herdin(word, proxy, refType, pageNumber)
-    elif site == 'Zlibrary.org':
+    elif site == 'zLibrary':
         return zLibrary(word, proxy, refType, pageNumber)
 
 
@@ -144,8 +144,7 @@ def springer(word, proxy, refType, pageNumber): # INDEX 1 STARTING SA PAGINATION
 def details(link, proxy, refType ):
     
     ref = refType.split(' ')
-
-    if refType == 'Springeropen.com article':
+    if refType == 'Springeropen.com Article':
         # with open ('C:/Users/Valued Client/Desktop/html/sprigner DETAILS.html', 'r', errors='ignore') as html_file:
         #     content = html_file.read()
             # soup = BeautifulSoup(content, 'html.parser')
@@ -160,7 +159,7 @@ def details(link, proxy, refType ):
         # if len(description) > 1000:
         #     a = soup.find('h3', text='Conclusion')
         #     print(a.next)
-        
+      
         details={
             'websiteTitle': ref[0],
             'itemType': ref[1],
@@ -186,7 +185,7 @@ def details(link, proxy, refType ):
         
         return details
 
-    elif refType == 'Springeropen.com book':
+    elif refType == 'Springeropen.com Book':
         response = requests.get(link + '#about',headers=headers(), proxies={'https:': proxy})
         soup = BeautifulSoup(response.content, 'html.parser')
 
@@ -476,7 +475,6 @@ def herdin(word, proxy,refType, pageNumber): # INDEX ZERO ANG STARTING SA ILA PA
                 response = requests.get('https://www.herdin.ph/index.php?option=com_herdin&view=publiclistowp&layout=list&type=researches&searchstr='+ word +'&res_source=journal&start=' + pageNumber, headers = headers(), proxies={'https:': proxy}, timeout=3) #article                                       
                 x = True
             elif refType == 'book' :
-                print('book')
                 response = requests.get('https://www.herdin.ph/index.php?option=com_herdin&view=publiclistowp&layout=list&type=researches&searchstr='+ word + '&res_source=book&start=' + pageNumber, headers = headers(), proxies={'https:': proxy}, timeout=3) #books 
                 x = True
             elif refType == 'research project' :
@@ -520,7 +518,7 @@ def herdin(word, proxy,refType, pageNumber): # INDEX ZERO ANG STARTING SA ILA PA
 
         results.append(z)
 
-        links.append('https://www.herdin.ph' + row.find('h4', attrs={'style':'line-height:1.5; text-align:justify;'}).a['href'])
+        links.append('https://www.ncbi.nlm.nih.gov' + row.find('h4', attrs={'style':'line-height:1.5; text-align:justify;'}).a['href'])
             
     return results, links
 
@@ -563,7 +561,7 @@ def zLibrary(word, proxy,refType, pageNumber):
             z.append(row.find('div', class_='bookDetailsBox').text)
             
             results.append(z)
-            links.append('https://1lib.ph' + row.find('h3', attrs={'itemprop':'name'}).a['href'])
+            links.append('https://1lib.ph/' + row.find('h3', attrs={'itemprop':'name'}).a['href'])
 
         return results, links
 
@@ -586,7 +584,7 @@ def zLibrary(word, proxy,refType, pageNumber):
             z.append(row.find('div', class_='bookDetailsBox').text[stringPosition:].replace('\n',' ')) # journal of the 
 
             results.append(z)
-            links.append('https://booksc.org' + row.find('h3', attrs={'itemprop':'name'}).a['href'])
+            links.append('https://booksc.org/' + row.find('h3', attrs={'itemprop':'name'}).a['href'])
             
             
         return results, links

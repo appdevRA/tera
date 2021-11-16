@@ -7,8 +7,13 @@ from django.contrib.auth.models import User
 
 
 
+class Folders (models.Model):
+	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
+	parentFolder_id = models.IntegerField(default = 0)
+	foldername = models.CharField(max_length=25)
 
-
+	class Meta:
+		db_table = "Folders"	
 
 
 class Proxies (models.Model):
@@ -30,44 +35,24 @@ class Bookmarks (models.Model):
 	author =  models.CharField(max_length = 1000,null=True)
 	description =  models.CharField(max_length = 1000,null=True)
 	journalItBelongs = models.CharField(max_length = 1000,null=True)
-	volume = models.IntegerField(null=True)
-	numOfCitation = models.CharField(max_length = 1000, default='')
-	numOfDownload = models.CharField(max_length = 1000,default='')
-	numOfPages = models.CharField(max_length = 1000, default='')
-	edition =models.CharField(max_length = 20,default='')
-	publisher = models.CharField(max_length = 1000, default='')
+	volume = models.IntegerField(null = True)
+	numOfCitation = models.CharField(max_length = 1000, null=True)
+	numOfDownload = models.CharField(max_length = 1000,null=True)
+	numOfPages = models.CharField(max_length = 1000, null=True)
+	edition =models.CharField(max_length = 20,null = True)
+	publisher = models.CharField(max_length = 1000, null = True)
 	publicationYear = models.CharField(max_length= 20)
 	dateAccessed = models.DateTimeField(default = datetime.now())
 	dateAdded = models.DateTimeField(default=datetime.now() )
-	DOI = models.CharField(max_length = 200,default='')
-	ISSN = models.CharField(max_length = 100,default='')
+	DOI = models.CharField(max_length = 200,null=True)
+	ISSN = models.CharField(max_length = 100,null=True)
 	isRemoved = models.IntegerField(default = 0)
 	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
+	folder = models.ForeignKey(Folders, null = True, blank = True, on_delete = models.CASCADE)
 	isFavorite = models.BooleanField(default=False)
 
 	class Meta:
 		db_table = "Bookmarks"
-
-
-class Folders (models.Model):
-	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
-	parentFolder_id = models.IntegerField(null = True)
-	foldername = models.CharField(max_length=25)
-
-	class Meta:
-		db_table = "Folders"	
-
-
-class Bookmark_folders (models.Model):
-	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
-	folder = models.ForeignKey(Folders, null = False, blank = False, on_delete = models.CASCADE)
-	bookmark = models.ForeignKey(Bookmarks, null = False, blank = False, on_delete = models.CASCADE)
-
-	class Meta:
-		db_table = "Bookmark_folders"	
-
-
-
 
 
 class Headers (models.Model):
