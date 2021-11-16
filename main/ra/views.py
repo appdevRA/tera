@@ -21,11 +21,20 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.db import connection
 
+
+
+class adminIndexView(View):
+	def get(self, request):
+		print('olok')
+		
+		return render(request,'adminIndex.html')
 class practice2(View):
-	def get(self, request, input):
+	def get(self, request, sinput, site,type):
+		print('olok')
 		
-		
-		return render(request,'practice.html',context)	
+		return HttpResponse(sinput +" "+site+" "+type)
+
+
 		
 
 class practice3(View):
@@ -51,15 +60,15 @@ class practice(View):
 		# cursor.execute("Select b.* from Bookmarks b, bookmark_folders bf Where bf.user_id = "+str(request.user.id)+" AND bf.folder_id = "+ str(1)+" AND bf.bookmark_id = b.id"  )
 		# row = cursor.fetchall()
 		# print(row)
-
-
+		queryset =  Bookmarks.objects.all()
+		# print(queryset)
 		a = list(queryset)
 		context = {
 		    "bookmark_set": queryset,
 		    "bookmark_list" : a 
 		}
-		User.objects.create(username="1523-323", password="aasdqwe12345")
-		return render(request,'practice.html')#,context)
+		# User.objects.create(username="1523-323", password="aasdqwe12345")
+		return render(request,'practice.html',context)
 
 	def post(self, request):
 		if request.method == 'POST':
@@ -130,7 +139,7 @@ class TeraIndexView(View):
 			
 		#	proxy =Proxies(proxy = proxy)
 		#	proxy.save()
-		request.session['previousPage'] ='index_view'
+		
 		if request.session.get('proxy') == None:
 			proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
 			request.session['proxy'] = testProxy(proxies,1)
@@ -178,7 +187,7 @@ class TeraIndexView(View):
 
 class TeraSearchResultsView(View):
 	
-	a = 1
+
 	def get(self,request):
 		request.session['previousPage'] ='search_result_view'
 		# header = ast.literal_eval(Headers.objects.get(id=2).text)	# converting b from string to dictionary
@@ -196,8 +205,7 @@ class TeraSearchResultsView(View):
 			itemType = request.session.get('itemType')
 		else:
 			itemType = "article"
-		
-		print(a)			
+						
 		context = {
 							'keyword': word,
 							'proxy': proxy,
@@ -358,7 +366,9 @@ class TeraHomepageView(View):
 		
 
 class TeraDashboardView(View):
+	reqCount = 0
 	def get(self,request):
+		print(self.reqCount)
 		queryset = Bookmarks.objects.filter(user_id=request.user.id)
 		request.session['previousPage'] = "tera_dashboard_view"
 		a= serializers.serialize("json",queryset )

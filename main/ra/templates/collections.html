@@ -115,11 +115,11 @@ tr:hover {
                         <th onclick="sort(2)" style="cursor: pointer">Title</th>
                         <th onclick="sort(3)"style="cursor: pointer">Date Added</th>
                         <th onclick="sort(4)"style="cursor: pointer">Date Accessed</th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                      
+                        <th>asd</th>
+                        <th>asd</th>
+                        <th>asd</th>
+                        <th>asd</th>
+                        
                     </thead>
                     <tbody id="itemArea">
                       
@@ -664,8 +664,9 @@ function sort(n){
       shouldSwitch = false;
       /* Get the two elements you want to compare,
       one from current row and one from the next: */
-      x = rows[i].getElementsByTagName("TD")[n];
-      y = rows[i + 1].getElementsByTagName("TD")[n];
+      x = rows[i].getElementsByTagName("TD")[1];
+      y = rows[i + 1].getElementsByTagName("TD")[1];
+      alert(rows[i].getElementsByTagName("TD")[1].text)
       /* Check if the two rows should switch place,
       based on the direction, asc or desc: */
       if (dir == "asc") {

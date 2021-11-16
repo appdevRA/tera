@@ -18,12 +18,12 @@
 
 
 <body style="background-color: #f3f3f3">
-<div id="header" name="" >olok </div>
-   {% for item in bookmark_set %}
-   <div id="{{item.id}}" onclick="search()">{{item.user}}</div>
-   {% endfor %}
+<div id="header" name="" onclick="search()">olok </div>
+   <!-- {% for item in bookmark_set %}
+   <div id="{{item.id}}" >{{item.user}}</div>
+   {% endfor %}-->
    
-    <a href="{% url 'ra:practice2' input='war' %}"> wara</a>
+    <a href="{% url 'ra:practice2' sinput='war' site='Springeropen.com' type='article'%}"> wara</a>
     <input id="input"type="" name="search" > 
     <input type="submit" name=""> 
    
@@ -64,11 +64,11 @@ var markers = {{ bookmark_list|safe }};
 
  function search(){
   alert('olok')
-    keyword = document.getElementById('keyword').value
+    // keyword = document.getElementById('keyword').value
     
         $.ajax({
-                type:"POST",
-                url:"",
+                type:"GET",
+                url:"{% url 'ra:practice2' sinput='war' site='springeropen.com' type='article'%}",
 
                 data:{
                   word: keyword,
@@ -76,7 +76,7 @@ var markers = {{ bookmark_list|safe }};
                   csrfmiddlewaretoken: "{{csrf_token}}"
                 },
                 success: function(response){
-                  
+                  alert(response)
              
                 }
         }); 
