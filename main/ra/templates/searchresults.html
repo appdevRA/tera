@@ -172,13 +172,13 @@
             <h4>Site Filter</h4>
           <div class="left-side-bar">
             <ul>
-             <label id="Springeropen.com" class="site-filter container" onclick="search(this.id, 'site')"> Springeropen.com<input type="radio" checked="checked" name="radio"><span class="checkmark"></span></label>
-             <label id="Sciencedirect.com" class="site-filter container" onclick="search(this.id, 'site')"> Sciencedirect.com <input type="radio" name="radio"><span class="checkmark"></span></label>
-             <label id="Scirp.org" class="site-filter container" onclick="search(this.id, 'site')">Scirp.org<input type="radio" name="radio"><span class="checkmark"></span></label>
-             <label id="Tandfonline.com" class="site-filter container" onclick="search(this.id, 'site')"> Tandfonline.com<input type="radio" name="radio"><span class="checkmark"></span></label>
-             <label id="Zlibrary.org" class="site-filter container" onclick="search(this.id, 'site')"> Zlibrary.org<input type="radio" name="radio"><span class="checkmark"></span></label>
-             <label id="" class="site-filter container" onclick="search(this.id, 'site')"> Cambridgecore.org<input type="radio" name="radio"><span class="checkmark"></span></label>
-             <label id="Herdin.ph" class="site-filter container" onclick="search(this.id, 'site')"> Herdin.ph<input type="radio" name="radio"><span class="checkmark"></span></label>
+             <label id="Springeropen.com" class="site-filter container" onclick="search(this.id, 'site')"> Springeropen.com<input type="radio" checked="checked" name="radio" value="Springeropen.com"><span class="checkmark"></span></label>
+             <label id="Sciencedirect.com" class="site-filter container" onclick="search(this.id, 'site')"> Sciencedirect.com <input type="radio" name="radio" value="Sciencedirect.com"><span class="checkmark"></span></label>
+             <label id="Scirp.org" class="site-filter container" onclick="search(this.id, 'site')">Scirp.org<input type="radio" name="radio" value="Scirp.org"><span class="checkmark"></span></label>
+             <label id="Tandfonline.com" class="site-filter container" onclick="search(this.id, 'site')"> Tandfonline.com<input type="radio" name="radio" value="Tandfonline.com"><span class="checkmark"></span></label>
+             <label id="Zlibrary.org" class="site-filter container" onclick="search(this.id, 'site')"> Zlibrary.org<input type="radio" name="radio" value="Zlibrary.org"><span class="checkmark"></span></label>
+             <label id="" class="site-filter container" onclick="search(this.id, 'site')"> Cambridgecore.org<input type="radio" name="radio" value="Cambridgecore.org"><span class="checkmark"></span></label>
+             <label id="Herdin.ph" class="site-filter container" onclick="search(this.id, 'site')"> Herdin.ph<input type="radio" name="radio" value="Herdin.ph"><span class="checkmark"></span></label>
              
               
               
@@ -214,21 +214,27 @@
 
           <button id="article" type="submit" class="filterbutton" name="btnArticles" id="btnArticles"  onclick="search(this.id,'itemType')"> Articles 
 
-            {% if itemType == 'article'%}
-            <div id="articlehr" style="border: thin solid red; width: 100%; margin-top: 10%; display: ;"></div>{% endif %}</button>
+            
+            <div id="articlehr" style="border: thin solid red; width: 100%; margin-top: 10%; display: none;"></div></button>
            <input id="article|" type="button" class="filterbutton" value="|">
 
           <button id="journal" type="submit" class="filterbutton" name="btnJournal" id="btnJournal" onclick="search(this.id,'itemType')"> Journals
-            {% if itemType == 'article'%}<div id="journalhr" style="border: thin solid red; width: 100%; margin-top: 9%;display: none;"></div>{% endif %}
+          <div id="journalhr" style="border: thin solid red; width: 100%; margin-top: 9%;display: none;"></div>
           </button>
             <input id="journal|" type="button" class="filterbutton" value="|" >
 
           <button id="book" type="submit" class="filterbutton" name="btnBook" id="btnBook" onclick="search(this.id,'itemType')"> Books
-             {% if itemType == 'article'%}<div id="bookhr" style="border: thin solid red; width: 100%; margin-top: 15%;display: none;"></div>{% endif %}
+             <div id="bookhr" style="border: thin solid red; width: 100%; margin-top: 15%;display: none;"></div>
           </button>
             <input  id="book|" type="button" class="filterbutton" value="|">
+
+            <button id="database" type="submit" class="filterbutton" name="btnBook" id="btnBook" onclick="search(this.id,'itemType')"> Databases
+               <div id="databasehr" style="border: thin solid red; width: 100%; margin-top: 7%;display: none;"></div>
+             </button>
+           <input  id="database|" type="button" class="filterbutton" value="|">
+
             <button id="dissertation" type="submit" class="filterbutton" name="btnBook" id="btnBook" onclick="search(this.id,'itemType')"> Dissertations
-               {% if itemType == 'article'%}<div id="dissertationhr" style="border: thin solid red; width: 100%; margin-top: 7%;display: none;"></div>{% endif %}
+               <div id="dissertationhr" style="border: thin solid red; width: 100%; margin-top: 7%;display: none;"></div>
              </button>
            
             
@@ -321,18 +327,23 @@
 
 
 <script type="text/javascript">
-  var markers = {{results|safe}}
-  var links = {{links|safe}}
+  
  user_id = "{{is_authenticated}}"
- website = 'Springeropen.com'
- type = 'article'
+ site = "{{website}}"
+ type = "{{itemType}}"
  prox = "{{proxy}}"
  keyword = "{{keyword}}"
  
   $(document).ready(function($) {
-     showRows()
-   
+     // showRows()
+  radio=  document.getElementsByName("radio")
 
+  for(i=0;i< radio.length;i++){
+   
+    if(radio[i].value == site){
+      radio[i].click()
+    }
+  }
         var input = document.getElementById("input");
       input.addEventListener("keyup", function(event) {
         if (event.keyCode === 13) {
@@ -345,7 +356,7 @@
 });
 
 
-function showRows(){
+function showRows(markers, links){
 
   for(i=0; i< markers.length;i++){
     
@@ -522,12 +533,13 @@ function search(clicked_id, searchType){
                   markers = response.results
                   
                   links = response.links
+                  showRows(markers, links)
                   user_id = response.is_authenticated
                   prox =  response.proxy
                   // console.log(response)
                   document.getElementById('displayWord').innerHTML = keyword
                   document.getElementById('displayWord').style.display ="inline"
-                  showRows()
+                  
              
                 }
           }); 
@@ -535,6 +547,7 @@ function search(clicked_id, searchType){
 
     } else if( searchType == 'itemType'){
         type = clicked_id
+        
         document.getElementById('displayWord').style.display ="none"
         navhr(type)
         $.ajax({
@@ -554,64 +567,103 @@ function search(clicked_id, searchType){
                   markers = response.results
                   
                   links = response.links
+                  showRows(markers, links)
                   user_id = response.is_authenticated
                   prox =  response.proxy
                   // console.log(response)
                   document.getElementById('displayWord').innerHTML = keyword
                   document.getElementById('displayWord').style.display ="inline"
-                  showRows()
+                  
              
                 }
           }); 
         
     } else if( searchType == 'site'){
+      
       website = clicked_id
       document.getElementById('displayWord').style.display ="none"
       if(clicked_id == 'Sciencedirect.com'){
-        type = 'journal'
+        if(type != 'journal' & type != 'book'){
+          type = 'journal'
+        }
         document.getElementById('article').style.display="none"
         document.getElementById('article|').style.display="none"
+        document.getElementById('database').style.display="none"
+        document.getElementById('database|').style.display="none"
         document.getElementById('journal').style.display="inline"
         document.getElementById('journal|').style.display="inline"
         document.getElementById('book').style.display="inline"
         document.getElementById('book|').style.display="inline"
         navhr(type)
       } else if(clicked_id == 'Springeropen.com'){
-        type = 'article'
+          if(type != 'article' & type != 'book'){
+          type = 'article'
+        
+        }
+
         document.getElementById('journal').style.display="none"
         document.getElementById('journal|').style.display="none"
+        document.getElementById('database').style.display="none"
+        document.getElementById('database|').style.display="none"
         document.getElementById('article').style.display="inline"
         document.getElementById('article|').style.display="inline"
         document.getElementById('book').style.display="inline"
         document.getElementById('book|').style.display="inline"
         navhr(type)
       } else if(clicked_id == 'Scirp.org'){
-        type = 'article'
+        if(type != 'article' & type != 'journal'){
+          type = 'article'
+        }
         document.getElementById('book').style.display="none"
         document.getElementById('book|').style.display="none"
+        document.getElementById('database').style.display="none"
+        document.getElementById('database|').style.display="none"
         document.getElementById('article').style.display="inline"
         document.getElementById('article|').style.display="inline"
          document.getElementById('journal').style.display="inline"
         document.getElementById('journal|').style.display="inline"
         navhr(type)
       }else if(clicked_id == 'Zlibrary.org'){
-        type = 'article'
+        if(type != 'article' & type != 'book'){
+          type = 'article'
+        }
         document.getElementById('journal').style.display="none"
-        document.getElementById('article|').style.display="none"
+        document.getElementById('journal|').style.display="none"
+        document.getElementById('database').style.display="none"
+        document.getElementById('database|').style.display="none"
         document.getElementById('article').style.display="inline"
         document.getElementById('article|').style.display="inline"
         document.getElementById('book').style.display="inline"
         document.getElementById('book|').style.display="inline"
         navhr(type)
       }else if(clicked_id == 'Herdin.ph'){
-        type = 'journal'
+        if(type != 'book' & type != 'journal'){
+          type = 'journal'
+        }
         document.getElementById('article').style.display="none"
         document.getElementById('article|').style.display="none"
+        document.getElementById('database').style.display="none"
+        document.getElementById('database|').style.display="none"
         document.getElementById('journal').style.display="inline"
         document.getElementById('journal|').style.display="inline"
         document.getElementById('book').style.display="inline"
         document.getElementById('book|').style.display="inline"
         navhr(type)
+
+      } else if(clicked_id == 'Tandfonline.com'){
+        if(type != 'article' & type != 'journal' & type != 'database'){
+          type = 'article'
+        }
+        document.getElementById('book').style.display="none"
+        document.getElementById('book|').style.display="none"
+        document.getElementById('journal').style.display="inline"
+        document.getElementById('journal|').style.display="inline"
+        document.getElementById('article').style.display="inline"
+        document.getElementById('article|').style.display="inline"
+        document.getElementById('database').style.display="inline"
+        document.getElementById('database|').style.display="inline"
+        navhr(type)
+
       }
       $.ajax({
                 type:"POST",
@@ -628,16 +680,18 @@ function search(clicked_id, searchType){
                 },
                 success: function(response){
                   markers = response.results
-                  console.log(markers)
+                  
                   links = response.links
+                  showRows(markers, links)
                   user_id = response.is_authenticated
                   prox =  response.proxy
                   // console.log(response)
                   document.getElementById('displayWord').innerHTML = keyword
                   document.getElementById('displayWord').style.display ="inline"
-                  showRows()
+                  
              
                 }
+
           }); 
     }
     
@@ -685,6 +739,7 @@ function navhr(type){
   document.getElementById('journalhr').style.display = "none"
   document.getElementById('bookhr').style.display = "none"
   document.getElementById('dissertationhr').style.display = "none"
+  document.getElementById('databasehr').style.display = "none"
   if(type == 'article'){
     document.getElementById('articlehr').style.display = "block"
   } else if(type == 'journal'){
@@ -693,6 +748,8 @@ function navhr(type){
     document.getElementById('bookhr').style.display = "block"
   } else if(type == 'dissertation'){
     document.getElementById('dissertationhr').style.display = "block"
+  }else if(type == 'database'){
+    document.getElementById('databasehr').style.display = "block"
   }
 
 }

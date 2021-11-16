@@ -178,39 +178,31 @@ class TeraIndexView(View):
 
 class TeraSearchResultsView(View):
 	
-
+	a = 1
 	def get(self,request):
-
+		request.session['previousPage'] ='search_result_view'
 		# header = ast.literal_eval(Headers.objects.get(id=2).text)	# converting b from string to dictionary
 		# header = request.session.get('header')
 		word = request.session.get('word')
 
 		proxy = request.session.get('proxy')
-		
-		request.session['previousPage'] ='search_result_view'
-		
-		
-		print("get request pressed")
-	
-		refType = 'Springeropen.com Article'
-		
-		a = scrape(word,proxy , 'article', 'Springeropen.com', ' ',1)
-		
-		while (a == False):
-			proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
-			proxy = testProxy(proxies,1)
-			request.session['proxy'] = proxy
-			a = scrape(word,proxy , 'article',1, 'Springeropen.com', ' ')
 
-		print("data scraped")
-		results = a[0]	
-		links = a[1]				
+		if request.session.get('website') != None:
+			website = request.session.get('website')
+		else:
+			website = "Springeropen.com"
+
+		if request.session.get('itemType') != None:
+			itemType = request.session.get('itemType')
+		else:
+			itemType = "article"
+		
+		print(a)			
 		context = {
 							'keyword': word,
-							'results': results,
-							'links': links,
 							'proxy': proxy,
-							'itemType': 'article',
+							'website': website,
+							'itemType': itemType,
 							'is_authenticated': str(request.user.is_authenticated)
 		}
 		
@@ -228,47 +220,24 @@ class TeraSearchResultsView(View):
 
 
 				if request.POST['proxy'] == None:
+					proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
+					proxy = testProxy(proxies,1)
+
 
 					word = request.POST['word']
+					website = request.POST['site']
+					itemType = request.POST['itemType']
+					request.session['website'] =website
+					request.session['itemType'] = itemType
 					request.session['word'] = word
-					proxy = request.session.get('proxy')
 
-					a = scrape(word,proxy, request.POST['itemType'], request.POST['site'],' ', request.POST['pageNumber'])
+					a = scrape(word,proxy,itemType , website,' ', request.POST['pageNumber'])
 					
 					while (a == False):
 						proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
 						proxy = testProxy(proxies,1)
 						request.session['proxy'] = proxy
-						a = scrape(request.POST['word'],proxy, request.POST['itemType'], request.POST['site'],' ', request.POST['pageNumber'])
-
-					results = a[0]	
-					links = a[1]
-
-
-					context = {
-						'results': results,
-						'links': links,
-						'proxy': proxy,
-						'is_authenticated': request.user.is_authenticated
-					}
-					return JsonResponse(context)	
-
-
-
-
-
-				else:
-					word = request.POST['word']
-					request.session['word'] = word
-					proxy = request.POST['proxy']
-
-					a = scrape(word,proxy, request.POST['itemType'], request.POST['site'],' ', request.POST['pageNumber'])
-					
-					while (a == False):
-						proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
-						proxy = testProxy(proxies,1)
-						request.session['proxy'] = proxy
-						a = scrape(request.POST['word'],proxy, request.POST['itemType'], request.POST['site'],' ', request.POST['pageNumber'])
+						a = scrape(request.POST['word'],proxy, itemType,website ,' ', request.POST['pageNumber'])
 				
 
 
@@ -282,6 +251,44 @@ class TeraSearchResultsView(View):
 						'is_authenticated': request.user.is_authenticated
 					}
 					return JsonResponse(context)
+
+
+
+
+
+				else:
+					print("search")
+					word = request.POST['word']
+					request.session['word'] = word
+					proxy = request.POST['proxy']
+					
+					website = request.POST['site']
+					itemType = request.POST['itemType']
+					request.session['website'] =website
+					request.session['itemType'] = itemType
+
+
+					a = scrape(word,proxy,itemType , website,' ', request.POST['pageNumber'])
+					
+					while (a == False):
+						proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
+						proxy = testProxy(proxies,1)
+						request.session['proxy'] = proxy
+						a = scrape(request.POST['word'],proxy, itemType,website ,' ', request.POST['pageNumber'])
+				
+
+
+					results = a[0]	
+					links = a[1]
+					# print(results)
+					context = {
+						'results': results,
+						'links': links,
+						'proxy': proxy,
+						'is_authenticated': request.user.is_authenticated
+					}
+					return JsonResponse(context)
+					
 			elif action == "add":
 				print('bookmark button clicked')
 				bookmark = request.POST['bookmark']
