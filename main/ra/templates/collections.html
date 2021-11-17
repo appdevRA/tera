@@ -47,6 +47,32 @@ tr:hover {
 
 }
 
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 100%;
+  overflow: auto;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown a:hover {background-color: #ddd;}
+
+.show {display: block;}
+
 
 </style>
 
@@ -113,6 +139,19 @@ tr:hover {
                     <li class="menu-item" style="padding-left: 20%"> Sample Folder Three</li>
                     </ul>
 
+                 <div>
+                  <i onclick="myFunction()" class="fa fa-plus"></i>
+                  <div id="myDropdown" class="dropdown-content">
+                    <ul>
+                                    <li class="menu-item" style="padding-left: 20%"> Sample Folder One</li>
+                                    <li class="menu-item" style="padding-left: 20%"> Sample Folder Two</li>
+                                    <li class="menu-item" style="padding-left: 20%"> Sample Folder Three</li>
+                                    </ul>
+                  </div>
+                </div>
+
+                </li>
+
                </section>             
         </ul>
       </div>
@@ -141,6 +180,7 @@ tr:hover {
                     <tbody id="itemArea">
                       
                     </tbody>
+
                   </table>
                 </div>
             </div>
@@ -255,6 +295,7 @@ tr:hover {
     
 </body>
 <script>
+  // for collapsibles
 var coll = document.getElementsByClassName("collapsible");
 var i;
 
@@ -269,7 +310,29 @@ for (i = 0; i < coll.length; i++) {
     }
   });
 }
-</script>         
+</script> 
+
+<script>
+/* When the user clicks on the button, 
+toggle between hiding and showing the dropdown content */
+function myFunction() {
+  document.getElementById("myDropdown").classList.toggle("show");
+}
+
+// Close the dropdown if the user clicks outside of it
+window.onclick = function(event) {
+  if (!event.target.matches('.fa-plus')) {
+    var dropdowns = document.getElementsByClassName("dropdown-content");
+    var i;
+    for (i = 0; i < dropdowns.length; i++) {
+      var openDropdown = dropdowns[i];
+      if (openDropdown.classList.contains('show')) {
+        openDropdown.classList.remove('show');
+      }
+    }
+  }
+}
+</script>        
 
 
 <script type="text/javascript">
