@@ -46,11 +46,10 @@ tr:hover {
   background-color: #c4c4c4
 
 }
-/*td:hover {
-  background-color: #c4c4c4
 
-}*/
+
 </style>
+
 </head>
 {% endblock headerinclude %}
 
@@ -90,13 +89,29 @@ tr:hover {
         <ul>
             <section class="home">
                 <li id="all" class="menu-item" onclick="showRows(this.id)" ><i id="allIcon" class="fa fa-bookmark"></i> &nbsp; &nbsp; &nbsp; &nbsp;All References</li>
+
                 <li id="recentlyAdded" class="menu-item" onclick="showRows(this.id)" ><i id="recentlyAddedIcon" class="fa fa-history"></i>&nbsp; &nbsp;&nbsp; &nbsp; Recently Added</li>
+
                 <li id="recentlyRead" class="menu-item" onclick="showRows(this.id)" ><i id="recentlyReadIcon" class="fa fa-bookmark"></i>&nbsp; &nbsp;&nbsp; &nbsp; Recently Read</li>
+
                 <li id="favorite" class="menu-item" onclick="showRows(this.id)" ><i id="favoriteIcon" class="fa fa-star"></i>&nbsp; &nbsp; &nbsp; &nbsp;Favorites</li>
+
                 <li id="trash" class="menu-item" onclick="showRows(this.id)"><i id="trashIcon" class="fa fa-trash" ></i>&nbsp; &nbsp; &nbsp; &nbsp;Trash</li>
-                <li class="menu-item"><i class="fa fa-folder"></i>&nbsp; &nbsp;&nbsp; &nbsp;  <b>My Collections </b> <i class="fa fa-plus" style="font-size:10px;" name="addfolder" href='#addtoFolderModal' data-toggle='modal' data-target='#addtoFolderModal' ></i></li>
+
+                <li class="collapsible menu-item"><i class="fa fa-folder"></i>&nbsp; &nbsp;&nbsp; &nbsp;  <b>My Collections </b> <i class="fa fa-plus" style="font-size:10px;" name="addfolder" href='#addtoFolderModal' data-toggle='modal' data-target='#addtoFolderModal' ></i></li>
+                    <ul>
+                    <li class="menu-item" style="padding-left: 20%"> Sample Folder One</li>
+                    <li class="menu-item" style="padding-left: 20%"> Sample Folder Two</li>
+                    <li class="menu-item" style="padding-left: 20%"> Sample Folder Three</li>
+                    </ul>
+                    
                                
-                <li class="menu-item"><i class="fa fa-group" style="font-size: 20px"></i> &nbsp; &nbsp; &nbsp; <b>Private Groups</b> <i class="fa fa-plus" style="font-size: 10px;"></i></li>
+                <li class="collapsible menu-item"><i class="fa fa-group"></i> &nbsp; &nbsp; &nbsp; <b>Private Groups</b> <i class="fa fa-plus" style="font-size: 10px;" name="addgroup" href="#addtoGroupModal" data-toggle='modal' data-target='#addtoGroupModal'></i></li>
+                    <ul>
+                    <li class="menu-item" style="padding-left: 20%"> Sample Folder One</li>
+                    <li class="menu-item" style="padding-left: 20%"> Sample Folder Two</li>
+                    <li class="menu-item" style="padding-left: 20%"> Sample Folder Three</li>
+                    </ul>
 
                </section>             
         </ul>
@@ -117,10 +132,10 @@ tr:hover {
                         <th onclick="sort(2)" style="cursor: pointer">Title</th>
                         <th onclick="sort(3)"style="cursor: pointer">Date Added</th>
                         <th onclick="sort(4)"style="cursor: pointer">Date Accessed</th>
-                        <th>asd</th>
-                        <th>asd</th>
-                        <th>asd</th>
-                        <th>asd</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
                         
                     </thead>
                     <tbody id="itemArea">
@@ -129,43 +144,89 @@ tr:hover {
                   </table>
                 </div>
             </div>
-            <!-- The Modal -->
+            <!-- Folders Modal -->
                   <div class="modal fade" id="addtoFolderModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header text-center">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"  style=“color: yellow”; >
-          <span aria-hidden="true">&times;</span>
-        </button>
-        <div class="modal-body mx-3">
-        <div class="md-form mb-5">
-      
-         <center> 
-         <form action = "" method = "POST" autocomplete = "off" enctype="multipart/form-data">
-          {% csrf_token %}
-            <h4 style="color: #800000">PLEASE LOG IN</h4> <br><br>
-            Bookmark feature requires an account<br>
-            <b>do you want to log in?</b><br><br><br><br>
-       
-   
-        <center>
-              <div class="form-row">
-                <div class="form-group col-md-6">
-                <button type=“button” class="buttoncancel" data-dismiss="modal">Cancel</button>
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header text-center">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"  style=“color: yellow”; >
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                        <div class="modal-body mx-3">
+                        <div class="md-form mb-5">
+                      
+                         <center> 
+                         <form action = "" method = "POST" autocomplete = "off" enctype="multipart/form-data">
+                          {% csrf_token %}
+                            <p style="font-size: 25px; color: #800000">Create a New Collection</p>
+                            <p style="font-size: 15px">Please provide a name for your collection.</p>
+                            <hr>
+                            <label for="foldername"><b>Collection Name</b></label><br>
+                            <input type="text" placeholder="Enter Collection Name" style="width: 80%" name="foldername" required>
+                           <br><br><br>
+                       
+                   
+                        <center>
+                              <div class="form-row">
+                                <div class="form-group col-md-6">
+                                <button type=“button” class="buttoncancel" data-dismiss="modal">Cancel</button>
+                                </div>
+                                <input value="search_result_view" name="previousPage" hidden>
+                                <div class="form-group col-md-6"> 
+                                    <button type="submit" name="buttonLogin"class="buttonlogout"> Create</button>
+                                </div> 
+                         </div>
+                      </center>
+                       </form>
+                      </center>
+                    </div></div>
+                      </div>
+                      
+                  </div>
                 </div>
-                <input value="search_result_view" name="previousPage" hidden>
-                <div class="form-group col-md-6"> 
-                    <button type="submit" name="buttonLogin"class="buttonlogout"> Login</button>
-                </div> 
-         </div>
-      </center>
-       </form>
-      </center>
-    </div></div>
-      </div>
-      
-  </div>
-</div></div>
+                </div>
+
+                 <!-- Collab Modal -->
+                  <div class="modal fade" id="addtoGroupModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header text-center">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"  style=“color: yellow”; >
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                        <div class="modal-body mx-3">
+                        <div class="md-form mb-5">
+                      
+                         <center> 
+                         <form action = "" method = "POST" autocomplete = "off" enctype="multipart/form-data">
+                          {% csrf_token %}
+                            <p style="font-size: 25px; color: #800000">Create Collaboration Group</p>
+                            <p style="font-size: 15px">Please provide a name for your group.</p>
+                            <hr>
+                            <label for="foldername"><b>Collaboration Group Name</b></label><br>
+                            <input type="text" placeholder="Enter Group Name" style="width: 80%" name="groupname" required>
+                           <br><br><br>
+                       
+                   
+                        <center>
+                              <div class="form-row">
+                                <div class="form-group col-md-6">
+                                <button type=“button” class="buttoncancel" data-dismiss="modal">Cancel</button>
+                                </div>
+                                <input value="search_result_view" name="previousPage" hidden>
+                                <div class="form-group col-md-6"> 
+                                    <button type="submit" name="buttonLogin"class="buttonlogout"> Create</button>
+                                </div> 
+                         </div>
+                      </center>
+                       </form>
+                      </center>
+                    </div></div>
+                      </div>
+                      
+                  </div>
+                </div>
+                </div>
           </div>  
                  
         </div>
@@ -193,6 +254,22 @@ tr:hover {
     
     
 </body>
+<script>
+var coll = document.getElementsByClassName("collapsible");
+var i;
+
+for (i = 0; i < coll.length; i++) {
+  coll[i].addEventListener("click", function() {
+    this.classList.toggle("active");
+    var content = this.nextElementSibling;
+    if (content.style.display === "block") {
+      content.style.display = "none";
+    } else {
+      content.style.display = "block";
+    }
+  });
+}
+</script>         
 
 
 <script type="text/javascript">
@@ -703,7 +780,10 @@ function sort(n){
   }
 }    
 
+
+
 </script> 
 
 
 </html>
+
