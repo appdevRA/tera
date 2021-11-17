@@ -18,11 +18,18 @@
 
 
 <body style="background-color: #f3f3f3">
-<div id="header" name="" >olok </div>
-   {% for item in bookmark_set %}
-   <div id="{{item.id}}" onclick="showResult(this.id)">{{item.title}}</div>
-   {% endfor %}
-   <input type="" name="" >
+<div id="header" name="" onclick="search()">olok </div>
+   <!-- {% for item in bookmark_set %}
+   <div id="{{item.id}}" >{{item.user}}</div>
+   {% endfor %}-->
+   
+    <a href="{% url 'ra:practice2' sinput='war' site='Springeropen.com' type='article'%}"> wara</a>
+    <input id="input"type="" name="search" > 
+    <input type="submit" name=""> 
+   
+   
+   
+   
   <table style="font-size: 15px">
     <thead>
       <tr>
@@ -55,22 +62,21 @@ var markers = {{ bookmark_list|safe }};
  //            }
  //        });
 
- function search(clicked_id){
-    keyword = document.getElementById('keyword').value
+ function search(){
+  alert('olok')
+    // keyword = document.getElementById('keyword').value
     
         $.ajax({
-                type:"POST",
-                url:"",
+                type:"GET",
+                url:"{% url 'ra:practice2' sinput='war' site='springeropen.com' type='article'%}",
 
                 data:{
                   word: keyword,
-                  site: website,
-                  itemType: type,
                   
                   csrfmiddlewaretoken: "{{csrf_token}}"
                 },
                 success: function(response){
-                  markers = response.result
+                  alert(response)
              
                 }
         }); 
@@ -83,7 +89,7 @@ function showResult(clicked_id){
   
         $.ajax({
                 type:"POST",
-                url:"",
+                url:"practice2",
 
                 data:{
                   
