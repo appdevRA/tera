@@ -4,6 +4,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <title>Collections</title>
+  <link rel="shortcut icon" href="{% static 'images/teralogo.png' %}">
    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
@@ -664,9 +666,9 @@ function sort(n){
       shouldSwitch = false;
       /* Get the two elements you want to compare,
       one from current row and one from the next: */
-      x = rows[i].getElementsByTagName("TD")[1];
-      y = rows[i + 1].getElementsByTagName("TD")[1];
-      alert(rows[i].getElementsByTagName("TD")[1].text)
+      x = rows[i].getElementsByTagName("TD")[n];
+      y = rows[i + 1].getElementsByTagName("TD")[n];
+      //alert(rows[i].getElementsByTagName("TD")[1].text)
       /* Check if the two rows should switch place,
       based on the direction, asc or desc: */
       if (dir == "asc") {
