@@ -115,10 +115,10 @@ tr:hover {
                         <th onclick="sort(2)" style="cursor: pointer">Title</th>
                         <th onclick="sort(3)"style="cursor: pointer">Date Added</th>
                         <th onclick="sort(4)"style="cursor: pointer">Date Accessed</th>
-                        <th>asd</th>
-                        <th>asd</th>
-                        <th>asd</th>
-                        <th>asd</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
                         
                     </thead>
                     <tbody id="itemArea">
@@ -431,8 +431,7 @@ function showRows(rowType){
                    
                       
                        $('#itemArea').append(
-                        "<tr>"+
-                        "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>" +
+                        "<tr><td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>" +
                         "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
                         "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
 
@@ -664,9 +663,9 @@ function sort(n){
       shouldSwitch = false;
       /* Get the two elements you want to compare,
       one from current row and one from the next: */
-      x = rows[i].getElementsByTagName("TD")[1];
-      y = rows[i + 1].getElementsByTagName("TD")[1];
-      alert(rows[i].getElementsByTagName("TD")[1].text)
+      x = rows[i].getElementsByTagName("TD")[n];
+      y = rows[i + 1].getElementsByTagName("TD")[n];
+      // alert(rows[i].getElementsByTagName("TD")[1].text)
       /* Check if the two rows should switch place,
       based on the direction, asc or desc: */
       if (dir == "asc") {

@@ -15,12 +15,11 @@ import requests
 #from fake_useragent import FakeUserAgent
 import ast
 import json
-from django.core import serializers
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
 from django.http import JsonResponse
 from django.db import connection
-
+from datetime import datetime
 
 
 class adminIndexView(View):
@@ -54,21 +53,30 @@ class practice3(View):
 class practice(View):
 	def get(self, request):
 		
-		# User.objects.create(username='18-5126-260', password = make_password('mondejar.12345'))
+		User.objects.create(username='mondejar2', password = make_password('mondejar.12345'), department=2)
+		# User.objects.create(username='mondejar2', password = make_password('mondejar.12345'), department_id=2)
+		cursor = connection.cursor()   
+		#datetime.now().month = #get month of current time
+		# cursor.execute("SELECT b.isRemoved, COUNT(b.user_id) FROM auth_user u, bookmarks b WHERE u.id=b.user_id AND b.dateAdded LIKE '2021-11%' GROUP BY isRemoved") #| get rows of for a specific date|
+		# cursor.execute("SELECT user_id, COUNT(user_id) AS `value_occurrence` FROM Bookmarks GROUP BY user_id ORDER BY `value_occurrence` DESC LIMIT 1") # |get the most frequent user ID (top1 ky limit 1 man)|
+		# cursor.execute("Select b.* from Bookmarks b, bookmark_folders bf Where bf.user_id = "+str(request.user.id)+" AND bf.folder_id = "+ str(1)+" AND bf.bookmark_id = b.id"  ) #|for retrievving bookmarks inside a folder|
+		# row = cursor.fetchall()
 		
-		# cursor = connection.cursor()   |for retrievving bookmarks inside a folder|
-		# cursor.execute("Select b.* from Bookmarks b, bookmark_folders bf Where bf.user_id = "+str(request.user.id)+" AND bf.folder_id = "+ str(1)+" AND bf.bookmark_id = b.id"  )
+		# queryset = User.objects.filter(id = Bookmarks.objects.filter(dateAdded__contains='2021-11-17').values('user_id'))   #| get rows of for a specific date|
+		# row = cursor.fetchall()
+		# print()
+
+		# cursor.execute("SELECT id, COUNT(id) FROM Bookmarks GROUP BY dateAdded LIKE '2021-11%'") # |get the most frequent user ID (top1 ky limit 1 man)|
 		# row = cursor.fetchall()
 		# print(row)
-		queryset =  Bookmarks.objects.all()
-		# print(queryset)
-		a = list(queryset)
-		context = {
-		    "bookmark_set": queryset,
-		    "bookmark_list" : a 
-		}
+		# a = list(queryset)
+		# context = {
+		#     "bookmark_set": queryset,
+		#     # "bookmark_list" : a 
+		# }
+		return HttpResponse('')
 		# User.objects.create(username="1523-323", password="aasdqwe12345")
-		return render(request,'practice.html',context)
+		# return render(request,'practice.html',context)
 
 	def post(self, request):
 		if request.method == 'POST':

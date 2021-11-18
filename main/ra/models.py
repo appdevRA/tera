@@ -1,23 +1,32 @@
 from django.db import models
 from datetime import datetime
 from django.utils import timezone
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
 
 
-
-
-
-
-
-
-
-class Proxies (models.Model):
-	proxy = models.CharField(max_length = 100)
-	isUsed = models.BooleanField(default = False)
+class Department (models.Model):
+	name = models.CharField(max_length = 100)
+	
 
 	class Meta:
-		db_table = "Proxies"
+		db_table = "Department"
 
+class User (models.Model):
+	username = models.CharField(max_length=50, null= False)
+	password = models.CharField(max_length=100, null= False)
+	last_login = models.DateTimeField(default=datetime.now())
+	first_name =  models.CharField(max_length=100, null= False)
+	last_name =  models.CharField(max_length=100, null= False)
+	email =  models.CharField(max_length=100, default='')
+	is_staff = models.BooleanField( default=False)
+	is_active = models.BooleanField( default=False)
+	date_joined= models.DateTimeField(default=datetime.now())
+	department_id= models.ForeignKey(Department, null = False, blank = False, on_delete = models.CASCADE)
+	class Meta:
+		db_table = "User"
+
+	# class Meta:
+	# 	db_table = "auth_user"
 
 
 
@@ -84,3 +93,12 @@ class Practice (models.Model):
 
 	class Meta:
 		db_table = "Practice"
+
+
+
+class Proxies (models.Model):
+	proxy = models.CharField(max_length = 100)
+	isUsed = models.BooleanField(default = False)
+
+	class Meta:
+		db_table = "Proxies"
