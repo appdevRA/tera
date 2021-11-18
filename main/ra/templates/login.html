@@ -22,57 +22,49 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.css">
     <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 </head>
+
 <body>
+  <nav>
+    <div class="logo"><img class="logo-style" src="{% static 'images/teralogo.png' %}"></div>
+    <label for="btn" class="icon">
+    </nav>
 
-<div class="bodystyle">
-    <div class="form"><br>
-      <div class="container">
-        <div>
-         <center>
-          <form method="POST" action="" style="max-width:450px;margin:auto">
-          {% csrf_token %}
-           <br> <h2><b>WELCOME!<b> </h2> <br>
-            <div class="input-icons"> 
-                <i class="fa fa-user icon-login"></i> 
-                <input type="text" placeholder="Example(18-0123-123)" name="username" class="inputfield-login" required><br></br>
-            </div> 
-            <div class="input-icons"> 
-                <i class="fa fa-key icon-login"> </i> 
-                <input type="password" placeholder="Password" name="password" class="inputfield-login" id="myInput" required><br><br>
+    <div class="bodystyle">
+      <div class="form"><br>
+        <div class="container p-5 my-5 ">
+          <div>
+            <center>
+              <form method="POST" action="" style="max-width:450px;margin:auto">
+                {% csrf_token %}
+                <br> <h2><b>Technologian Exclusive Research Assistant</b> </h2> <br>
+                  <div class="input-icons">
+                    <i class="fa fa-user icon-login"></i>
+                    <input type="text" placeholder="username" name="username" class="inputfield-login" required><br><br>
+                  </div>
 
-                <div class="form-row">
-                <div class="form-group col-md-6"> 
-                <input type="checkbox" onclick="myFunction()"> Show Password 
-                </div>
-                <div class="form-group col-md-6"> 
-                <input type="checkbox" checked="checked"> Remember me
-                </div>
-                </div>
-
-        </div> 
-        <center>
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                 <a type="submit" class="buttonCancellogin" style="color: #fff"> CANCEL </a> 
-                </div>
-                <div class="form-group col-md-6"> 
-                   <a type="submit" class="buttonlogin" style="color: #fff" href="{% url 'ra:tera_index_view'%}"> LOGIN </a> 
-                 
-                </div> 
-            </div>
-
-        Forgot <a href="#"> password? </a>
-        {% for message in messages %}
-        <div>
-            {{ message }}
+                  <div class="input-icons">
+                    <i class="fa fa-key icon-login"> </i>
+                    <input type="password" placeholder="password" name="password" class="inputfield-login" id="myInput" required>
+                    <br><br><br>
+                    <div class="form-row" style="margin-left: 30%">
+                      <div class="form-group col-md-6">
+                        <input type="checkbox" onclick="myFunction()"> Show Password
+                      </div>
+                      
+                    </div>
+                  </div>
+                    <div class="form-row">
+                      <div class="form-group col-md-9"> 
+                        <button type="submit" value="LOGIN" name="buttonlogin" class="buttonlogin">LOGIN</button> <br>
+                      </div> 
+                    </div>
+                    Forgot <a href="#"> password? </a>
+                    
+                </form>
+            </center>
+          </div>
         </div>
-        {% endfor %}
-      </center>
-      </center> 
-    </form>
       </div>
-    </div>
-</div>
 
 <script>
 function myFunction() {

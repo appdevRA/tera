@@ -11,10 +11,11 @@ class CreateFolderForm(forms.ModelForm):
 		model = Folders
 		fields = ('foldername',)
 
-class CreateUserForm(UserCreationForm):
+class LoginUser(UserCreationForm):
 	class Meta:
 		model = User
-		fields = [ 'username', 'email', 'password1', 'password2' ]
+		fields = [ 'username', 'password' ]
 
 
 
+		

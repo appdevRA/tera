@@ -11,34 +11,54 @@
 
     <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"> -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+      
     
 
    
 
   </head>
-  <body style="background-image: url({% static 'images/bg.png' %});">
+  <body style="background-image: url({% static 'images/bg.png' %}); background-repeat: no-repeat; background-size:cover;">
     <nav>
-      <div class="logo"><a href="{% url 'ra:tera_index_view'%}"><img class="logo-style" src="{% static 'images/teralogo.png' %}"></a></div>
+      <div class="logo"><a href="{% url 'ra:index_view'%}"><img class="logo-style" src="{% static 'images/teralogo.png' %}"></a></div>
       <label for="btn" class="icon">
         <span class=></span>
       </label>
      
-      <ul>     
-      <li><a href="#">Recommendations</a></li>
-      <li><a href="#">Home</a></li>
+      <ul>   
+      
+      <li id="login">
+        <form action = "" method = "POST" autocomplete = "off" enctype="multipart/form-data">
+      {% csrf_token %}
+      <button type="submit" class="button" name="buttonLogin" id="buttonLogin" style="margin-top: 150%; font-size: 20px;cursor: pointer; "> Login </button>
 
-       <li>
+        <input name="previousPage" value="index_view" hidden>
+</form>
+      </li>
+        <input id="user_id" value="{{user_id}}" hidden name="">
+
+       <li id="myAccount">   
+
                 <label for="btn-2" class="show">My Account <i class="fa fa-user" aria-hidden="true"></i></label>
                 <a href="#">My Account <i class="fa fa-user" aria-hidden="true"></i></a>
                 
                 <ul>
-                <li><a href="{% url 'ra:tera_dashboard_view'%}">Dashboard</a></li>  
-                <li><a href="{% url 'ra:tera_account_settings'%}">Settings</a></li>
-                <li><a href="#modalLogoutForm" data-toggle="modal" data-target="#modalLogoutForm" >Logout </a></li>
+                <li><a href="{% url 'ra:tera_dashboard_view'%}">Collections</a></li>  
+                <li><a href="{% url 'ra:tera_account_settings'%}">Change pass</a></li>
+                <li>
+                  <form  action = "" method = "POST" autocomplete = "off" enctype="multipart/form-data">
+                    {% csrf_token %}
+                  <button type="submit" class="btn" name="btnLogout">Logout </button>
+                  </form>
+                </li>
                 </ul>
       </li>
       </ul>
   </nav>
+  
+
     {% for x in a %}
       <div>{{x}}</div>
       {% endfor %}
@@ -55,7 +75,7 @@
             <div class="autocom-box">
           <!-- here list are inserted from javascript -->
             </div>
-            <button type="submit" id ="btnSearch" name="btnSearch" class="button"><i class="fa fa-search" aria-hidden="true"></i></button>
+            <button type="submit" id ="btnSearch" name="btnSearch" class="button"><i class="fa fa-search" aria-hidden="true" style="cursor: pointer;"></i></button>
           </form>
         </div>
       </div>
@@ -73,3 +93,23 @@
 
   </body>
 </html>
+
+
+<script type="text/javascript">
+  
+
+
+
+$(document).ready(function() {
+           
+           
+            if(document.getElementById("user_id").value == 0 || document.getElementById("user_id").value == "None"){
+                    
+                 document.getElementById("myAccount").style.display = "none"
+            }else{
+              document.getElementById("login").style.display = "none"
+             }
+          });
+            
+            
+</script>

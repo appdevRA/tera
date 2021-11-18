@@ -196,7 +196,7 @@ p{
   display: flex;
   justify-content: center;
   align-items: center;
-
+  color: transparent;
 }
 .input{
   width: 100%;
