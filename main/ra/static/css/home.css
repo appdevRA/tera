@@ -316,3 +316,19 @@ p{
 h2 { 
         color: maroon; 
 }
+
+.header{
+  background-color: var(--color-1);
+  padding-top: 10px;
+  position: relative;
+}
+.header .nav ul li{
+  display: inline-block;
+  margin-left: 40px;
+}
+.header .nav ul li a{
+  display: block;
+  font-size: 16px;
+  padding:10px 0;
+  color: #3f3e40;
+}

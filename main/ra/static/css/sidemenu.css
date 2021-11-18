@@ -1,0 +1,43 @@
+.main-menu{
+    background-color: #f3f3f3;
+    box-shadow:  20px #d4d4d4;
+    height: 100vh;
+    position: fixed;
+    top:75px;
+    left:0;
+
+   
+}
+.main-menu a{
+    font-size: 45px;
+    color: #3f3e40;
+    text-transform: capitalize;
+}
+
+.main-menu:hover{
+    overflow-y: scroll;
+}
+
+.main-menu .menu-item{
+    padding: 5px;
+}
+.main-menu .menu-item:hover{
+    background-color: #d6d6d6;
+    cursor: pointer;
+}
+
+.main-menu .menu-item .fa{
+    color: gray;
+    width:20px;
+    font-size: 25px;
+    padding: 10px;
+
+}
+
+.main-menu .menu-item:hover > .fa{
+    color: #800000;
+}
+
+section.home{
+    background-color: #f3f3f3;
+}
