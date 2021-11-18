@@ -132,8 +132,8 @@ tr:hover {
                     </ul>
                     
                                
-                <li class="collapsible menu-item"><i class="fa fa-group"></i> &nbsp; &nbsp; &nbsp; <b>Private Groups</b> <i class="fa fa-plus" style="font-size: 10px;" name="addgroup" href="#addtoGroupModal" data-toggle='modal' data-target='#addtoGroupModal'></i></li>
-                    <ul>
+                <li class="collapsible menu-item" onclick="functionCollapse()"><i class="fa fa-group"></i> &nbsp; &nbsp; &nbsp; <b>Private Groups</b> <i class="fa fa-plus" style="font-size: 10px;" name="addgroup" href="#addtoGroupModal" data-toggle='modal' data-target='#addtoGroupModal'></i></li>
+                    <ul id="folders">
                     <li class="menu-item" style="padding-left: 20%"> Sample Folder One</li>
                     <li class="menu-item" style="padding-left: 20%"> Sample Folder Two</li>
                     <li class="menu-item" style="padding-left: 20%"> Sample Folder Three</li>
@@ -296,6 +296,10 @@ tr:hover {
 </body>
 <script>
   // for collapsibles
+function functionCollapse() {
+  document.getElementById("folders").classList.toggle("show");
+}
+
 var coll = document.getElementsByClassName("collapsible");
 var i;
 
