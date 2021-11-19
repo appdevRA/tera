@@ -27,10 +27,11 @@ SECRET_KEY = '%i+ah@&1r8f#wyiw^%!q68nr^!*bflghstnki5)t3ka0&!f@o#'
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
+AUTH_USER_MODEL ="ra.User"
 STATICFILES_DIRS = [
     "C:/Users/carme/OneDrive/Documents/GitHub/tera/main/ra",
-    "C:/Users/Valued Client/Desktop/tera/main/ra",
+    "C:/Users/Valued Client/Desktop/tera/main",
+
 ]
 
 # Application definition

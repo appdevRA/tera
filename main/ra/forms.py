@@ -8,8 +8,8 @@ from django.contrib.auth.models import User
 
 class CreateFolderForm(forms.ModelForm):
 	class Meta:
-		model = Folders
-		fields = ('foldername',)
+		model = User_folder
+		fields = ('folder_name',)
 
 class LoginUser(UserCreationForm):
 	class Meta:

@@ -48,7 +48,7 @@
  
 <script type="text/javascript">  
 
-var markers = {{ bookmark_list|safe }};
+
 // console.log(markers[0].id)
  // $.ajax({
  //            type: "GET",
@@ -63,22 +63,19 @@ var markers = {{ bookmark_list|safe }};
  //        });
 
  function search(){
-  alert('olok')
+  
     // keyword = document.getElementById('keyword').value
     
         $.ajax({
-                type:"GET",
-                url:"{% url 'ra:practice2' sinput='war' site='springeropen.com' type='article'%}",
+                type:"POST",
+                url:"",
 
                 data:{
-                  word: keyword,
+                  
                   
                   csrfmiddlewaretoken: "{{csrf_token}}"
                 },
-                success: function(response){
-                  alert(response)
-             
-                }
+              
         }); 
 }
 
@@ -89,7 +86,7 @@ function showResult(clicked_id){
   
         $.ajax({
                 type:"POST",
-                url:"practice2",
+                url:"",
 
                 data:{
                   
@@ -97,16 +94,8 @@ function showResult(clicked_id){
                   csrfmiddlewaretoken: "{{csrf_token}}"
                 },
                 success: function(response){
-                  markers = response.result
-                    for(i=0; i< markers.length;i++){
-            if(markers[i].id == bID){
-               
-             $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Website: </td>"+ "<td>"+ markers[i].websiteTitle +  "</td></tr>" );         
-               $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> id: </td>"+ "<td>"+  markers[i].itemType +  "</td></tr>" ); 
-            break;
-            }
-         
-        }
+                  // markers = response.result
+                    
                 }
         }); 
 

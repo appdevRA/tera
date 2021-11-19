@@ -7,12 +7,10 @@ from .models import *
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
-from django.contrib.auth.models import User
-from .forms import LoginUser
 from bs4 import BeautifulSoup
 from .links import *
 import requests
-#from fake_useragent import FakeUserAgent
+from fake_useragent import FakeUserAgent
 import ast
 import json
 from django.contrib.auth.hashers import make_password
@@ -20,7 +18,7 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.db import connection
 from datetime import datetime
-
+from django.core import serializers
 
 class adminIndexView(View):
 	def get(self, request):
@@ -37,8 +35,10 @@ class practice2(View):
 		
 
 class practice3(View):
+	
 	def get(self, request):
-		print('practice3 get')
+		self.a +=1
+		return HttpResponse(self.a)
 	def post(self, request):
 		if request.method == 'POST' and request.is_ajax():
 			print('practice 3 post')
@@ -51,11 +51,14 @@ class practice3(View):
 
 
 class practice(View):
+	
 	def get(self, request):
-		
-		User.objects.create(username='mondejar2', password = make_password('mondejar.12345'), department=2)
+		# Department.objects.create(name='College of Computer Studies', abbv='CCS')
+		User.objects.create(username='mondejar', password =make_password('12345'), department=Department.objects.get(abbv='CCS'))
 		# User.objects.create(username='mondejar2', password = make_password('mondejar.12345'), department_id=2)
-		cursor = connection.cursor()   
+		
+
+		# cursor = connection.cursor()   
 		#datetime.now().month = #get month of current time
 		# cursor.execute("SELECT b.isRemoved, COUNT(b.user_id) FROM auth_user u, bookmarks b WHERE u.id=b.user_id AND b.dateAdded LIKE '2021-11%' GROUP BY isRemoved") #| get rows of for a specific date|
 		# cursor.execute("SELECT user_id, COUNT(user_id) AS `value_occurrence` FROM Bookmarks GROUP BY user_id ORDER BY `value_occurrence` DESC LIMIT 1") # |get the most frequent user ID (top1 ky limit 1 man)|
@@ -69,18 +72,20 @@ class practice(View):
 		# cursor.execute("SELECT id, COUNT(id) FROM Bookmarks GROUP BY dateAdded LIKE '2021-11%'") # |get the most frequent user ID (top1 ky limit 1 man)|
 		# row = cursor.fetchall()
 		# print(row)
+		# queryset = User_bookmark.objects.all()
 		# a = list(queryset)
 		# context = {
 		#     "bookmark_set": queryset,
 		#     # "bookmark_list" : a 
 		# }
-		return HttpResponse('')
-		# User.objects.create(username="1523-323", password="aasdqwe12345")
-		# return render(request,'practice.html',context)
+		# return HttpResponse()
+		
+		return render(request,'practice.html')#,context)
 
 	def post(self, request):
+		
 		if request.method == 'POST':
-			print('practice post')
+			
 
 			return HttpResponse('practice post')
 			
@@ -91,7 +96,6 @@ class practice(View):
 class TeraLoginUser(View): 
 
 	def get(self,request):
-		
 		# proxies = proxy_generator2() #/ generating free proxies /
 		# for proxy in proxies:  #/ saving proxies to db /
 			
@@ -120,8 +124,6 @@ class TeraLoginUser(View):
 			password = request.POST.get('password')
 
 			user = authenticate(request, username=username, password=password)
-			
-			
 			if user is not None:
 				login(request, user)
 				
@@ -334,9 +336,9 @@ class TeraSearchResultsView(View):
 				
 				# print(websiteTitle + '\n'+itemType + '\n'+title + '\n' +link + '\n' +author+ '\n' +description+ '\n' +publication+ '\n' +volume+ '\n' +doi)
 				if request.POST['reftype'] == "article":
-					Bookmarks.objects.create(user = request.user,title = title,websiteTitle= websiteTitle,itemType= itemType,author = author, description= description, url = url, journalItBelongs= journalItBelongs, volume = volume, DOI = doi)
+					User_bookmark.objects.create(user = request.user,title = title,websiteTitle= websiteTitle,itemType= itemType,author = author, description= description, url = url, journalItBelongs= journalItBelongs, volume = volume, DOI = doi)
 				elif itemType == "book":
-					Bookmarks.objects.create(user = request.user,title = title,websiteTitle= websiteTitle,subtitle = subtitle, 
+					User_bookmark.objects.create(user = request.user,title = title,websiteTitle= websiteTitle,subtitle = subtitle, 
 						itemType= itemType,author = author,numOfCitation = citation,numOfDownload= downloads,publisher=publisher, 
 						description= description, url = url, edition = edition,numOfPages = pages,
 						 DOI = doi)
@@ -345,7 +347,7 @@ class TeraSearchResultsView(View):
 				string = bookmark.split('||')
 
 				title = string[1].replace('\n','').replace('  ','')
-				Bookmarks.objects.filter(title=title).update(isRemoved=1)
+				User_bookmark.objects.filter(title=title).update(isRemoved=1)
 				return HttpResponse('')
 
 		elif 'buttonLogin' in request.POST:
@@ -374,10 +376,10 @@ class TeraHomepageView(View):
 		
 
 class TeraDashboardView(View):
-	reqCount = 0
+
 	def get(self,request):
-		print(self.reqCount)
-		queryset = Bookmarks.objects.filter(user_id=request.user.id)
+
+		queryset = User_bookmark.objects.filter(user_id=request.user.id)
 		request.session['previousPage'] = "tera_dashboard_view"
 		a= serializers.serialize("json",queryset )
 
@@ -432,19 +434,19 @@ class TeraDashboardView(View):
 			action = request.POST['action']
 
 			if action == 'addFav':
-				Bookmarks.objects.filter(id=request.POST['bID']).update(isFavorite=1)
+				User_bookmark.objects.filter(id=request.POST['bID']).update(isFavorite=1)
 				return HttpResponse('')
 			elif action == 'remFav':
-				Bookmarks.objects.filter(id=request.POST['bID']).update(isFavorite=0)
+				User_bookmark.objects.filter(id=request.POST['bID']).update(isFavorite=0)
 				return HttpResponse('')
 			elif action == 'trashItem':
-				Bookmarks.objects.filter(id=request.POST['bID']).update(isRemoved=1)
+				User_bookmark.objects.filter(id=request.POST['bID']).update(isRemoved=1)
 				return HttpResponse('')
 			elif action == 'unTrashItem':
-				Bookmarks.objects.filter(id=request.POST['bID']).update(isRemoved=0)
+				User_bookmark.objects.filter(id=request.POST['bID']).update(isRemoved=0)
 				return HttpResponse('')
 			elif action == 'deleteItem':
-				Bookmarks.objects.filter(id=request.POST['bID']).update(isRemoved=3)
+				User_bookmark.objects.filter(id=request.POST['bID']).update(isRemoved=3)
 				return HttpResponse('')
 
 
