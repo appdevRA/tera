@@ -16,8 +16,14 @@ urlpatterns = [
 			path('/citation_history',views.CitationHistory.as_view(), name="citation-history"),
 			path('/citation_history',views.CitationDeleteView.as_view(), name="deletion_confirmation"),
 			path('/search',views.TeraSearchResultsView.as_view(), name="search_result_view"),
+
 			path('/admin', views.adminIndexView.as_view(), name="admin_index_view"),
-		
+			path('/charts', views.adminChartsView.as_view(), name="admin_charts_view"),
+			path('/tables', views.adminTablesView.as_view(), name="admin_tables_view"),
+			path('/colleges', views.adminCollegesView.as_view(), name="admin_colleges_view"),
+
+	
+
 			path('/practice', views.practice.as_view(), name="practice"),
 			path('/practice2/search?=<sinput>&site=<site>&type=<type>', views.practice2.as_view(), name="practice2"),
 			path('/practice3', views.practice3.as_view(), name="practice34"),

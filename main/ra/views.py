@@ -26,8 +26,27 @@ from django.db import connection
 class adminIndexView(View):
 	def get(self, request):
 		print('olok')
-		
+
 		return render(request,'adminIndex.html')
+
+class adminChartsView(View):
+	def get(self, request):
+		print('olok')
+
+		return render(request,'adminCharts.html')
+
+class adminTablesView(View):
+	def get(self, request):
+		print('olok')
+
+		return render(request,'adminTables.html')
+
+class adminCollegesView(View):
+	def get(self, request):
+		print('olok')
+
+		return render(request,'adminColleges.html')
+
 class practice2(View):
 	def get(self, request, sinput, site,type):
 		print('olok')
