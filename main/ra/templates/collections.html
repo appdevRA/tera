@@ -62,6 +62,7 @@ tr:hover {
   z-index: 1;
 }
 
+
 .dropdown-content a {
   color: black;
   padding: 12px 16px;
@@ -72,6 +73,10 @@ tr:hover {
 .dropdown a:hover {background-color: #ddd;}
 
 .show {display: block;}
+
+.folder_dropdown_style{
+  padding-left: 20%
+}
 
 </style>
 </head>
@@ -118,32 +123,24 @@ tr:hover {
                 <li id="favorite" class="menu-item" onclick="showRows(this.id)" ><i id="favoriteIcon" class="fa fa-star"></i>&nbsp; &nbsp; &nbsp; &nbsp;Favorites</li>
                 <li id="trash" class="menu-item" onclick="showRows(this.id)"><i id="trashIcon" class="fa fa-trash" ></i>&nbsp; &nbsp; &nbsp; &nbsp;Trash</li>
 
-
-                <li class="collapsible menu-item"><i class="fa fa-folder"></i>&nbsp; &nbsp;&nbsp; &nbsp;  <b>My Collections </b> <i class="fa fa-plus" style="font-size:10px;" name="addfolder" href='#addtoFolderModal' data-toggle='modal' data-target='#addtoFolderModal' ></i></li>
-                    <ul>
-                    <li class="menu-item" style="padding-left: 20%"> Sample Folder One</li>
-                    <li class="menu-item" style="padding-left: 20%"> Sample Folder Two</li>
-                    <li class="menu-item" style="padding-left: 20%"> Sample Folder Three</li>
+                                                                                                                       <!-- onclick="display_folder('collections')" -->
+                <li id="collections" class="collapsible menu-item" onclick="display_folder()"><i class="fa fa-folder"></i>&nbsp; &nbsp;&nbsp; &nbsp;  <b >My Collections </b> <button style="width: 10%; margin-left: 19%; background-color: none;border: none " "><a style="font-weight: 500; color: red" >+</a></button></li>
+                
+                    <ul id="mycollection_ul" style="display: none">
+                      
                     </ul>
                                
-               <li class="collapsible menu-item" onclick="functionCollapse()"><i class="fa fa-group"></i> &nbsp; &nbsp; &nbsp; <b>Private Groups</b> <i class="fa fa-plus" style="font-size: 10px;" name="addgroup" href="#addtoGroupModal" data-toggle='modal' data-target='#addtoGroupModal'></i></li>
-                    <ul id="folders">
+               <li id="groups" class="collapsible menu-item" onclick=""><i class="fa fa-group"></i> &nbsp; &nbsp; &nbsp; <b>Private Groups</b> <button style="width: 10%; margin-left: 18%; background-color: none;border: none " name="addgroup" href="#addtoGroupModal" data-toggle='modal' data-target='#addtoGroupModal'><a style="font-weight: 500; color: red" >+</a></button></li>
+                    <ul id="folders" style="display: none">
                     <ul>
                     <li class="menu-item" style="padding-left: 20%"> Sample Folder One</li>
                     <li class="menu-item" style="padding-left: 20%"> Sample Folder Two</li>
                     <li class="menu-item" style="padding-left: 20%"> Sample Folder Three</li>
                     </ul>
               <div>
-                  <i onclick="addFolder()" class="fa fa-plus"></i>
-                  <div id="myDropdown" class="dropdown-content">
-                    <ul>
-                                    <li class="menu-item" style="padding-left: 20%"> Sample Folder One</li>
-                                    <li class="menu-item" style="padding-left: 20%"> Sample Folder Two</li>
-                                    <li class="menu-item" style="padding-left: 20%"> Sample Folder Three</li>
-                                    </ul>
-                  </div>
+                  
                 </div>
-
+                
                 <!-- </li> -->
                </section>             
         </ul>
@@ -154,6 +151,15 @@ tr:hover {
       <div class="wrapper">
        <div class="main_content">
           <div class="header" >
+           <i  onclick="add_folder_button()" class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>
+           <center>
+                         <div id="dropdown-content_input" class='dropdown-content' style='min-width: 20%; margin-left: 5%; margin-top: -1%; z-index: 5 '>
+                         <ul id='add_folder_fillup_ul'>
+                     <br>
+                             <input type="text" name="foldername_input"> <input type="button" name="" value="add">
+                             
+                          </ul> </div></center>
+                  
                 <br> 
               
                    <table id="itemTable"  class="table">
@@ -268,7 +274,7 @@ tr:hover {
     <div class="col-sm-3" style="overflow-x: scroll;  overflow-y: scroll;  height: 90vh">
       <br>
       <h4>Details</h4>
-     <table id="detailTable" class="table" style="">
+     <table id="detailTable" class="table" style="overflow: none;" >
        <thead>
         <tr>
          <th></th>
@@ -277,7 +283,7 @@ tr:hover {
 
        </thead>
 
-       <tbody id="detailArea">
+       <tbody id="detailArea" style="overflow: none;">
 
        </tbody>
 
@@ -285,7 +291,7 @@ tr:hover {
    
     </div>
   
-</div>
+
     
     
 </body>
@@ -293,28 +299,46 @@ tr:hover {
 
 <script type="text/javascript">
   var markers = {{ bookmark_list|safe }}
+   var folders = {{ folder_list|safe }}
   tab = 'all'
+  did_add_folder = false
 $(document).ready(function($) {
   showRows('all')
+console.log(folders)
 
-       $(".clickable-row").click(function() {
-          window.location = $(this).data("href");
-      });
+  // document.getElementById("folderList_dropdown1").classList.toggle("hide");
+  //      $(".clickable-row").click(function() {
+  //         window.location = $(this).data("href");
+  //     });
 
 
         var coll = document.getElementsByClassName("collapsible");
-        var i;
 
           for (i = 0; i < coll.length; i++) {
             coll[i].addEventListener("click", function() {
               this.classList.toggle("active");
               var content = this.nextElementSibling;
-              if (content.style.display === "block") {
+              if (content.style.display == "block") {
                 content.style.display = "none";
               } else {
                 content.style.display = "block";
               }
             });
+          }
+
+
+          // Close the dropdown if the user clicks outside of it
+          window.onclick = function(event) {
+            if (!event.target.matches('.fa-plus')) {
+              var dropdowns = document.getElementsByClassName("dropdown-content");
+              
+              for (i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                  openDropdown.classList.remove('show');
+                }
+              }
+            }
           }
 
 
@@ -446,7 +470,7 @@ function showRows(rowType){
              
 
                 if(markers[i]['fields']['websiteTitle'] == "Springeropen.com" & markers[i]['fields']['isRemoved'] == 0 & markers[i]['fields']['isFavorite'] == 0){
-                    console.log( markers[i]['fields']['title'])
+                      
                        $('#itemArea').append(
                         "<tr>"+
                         "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>" +
@@ -455,8 +479,22 @@ function showRows(rowType){
 
                         "<td>" + markers[i]['fields']['dateAdded'].slice(0,-8).replace('T',' ') + "</td>" +
                         "<td>" + markers[i]['fields']['dateAccessed'].slice(0,-8).replace('T',' ') +"</td>" + 
-                        "<td><i id='"+ markers[i]['pk']+"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
-                         "<td><i id='"+ markers[i]['pk']+"' class='fas fa-plus' style='cursor: pointer; font-size: 80%' onclick='get_detail(this.id)'></i></td>" +
+                        "<td><i id='"+ markers[i]['pk'] +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
+
+
+                         "<td><i  onclick='bookmarkToFolder_dropdown("+ i +")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
+                         "<div id='folderList_dropdown"+i+"' class='dropdown-content' style='min-width: 15%; margin-left: -8% '>"+
+                         "<ul id='add-folderList'>"+
+                     
+                              "{% for folder in folder_set %} "+
+                                    
+                                  "<li id='{{folder.id}}' class='menu-item' style='padding-left: 5%;padding-right: 10%; cursor: pointer' onclick='submit_add_folder(this.id,"+ markers[i]['pk'] +")'>{{ folder.name }}</li>" +
+                                "{% endfor %}  "+
+                          "</ul> </div> </td>" +
+
+
+
+
                           "<td><i id='"+ markers[i]['pk']+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>" +
                         "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer; font-size: 90%' onclick='delete_item(this.id)'></i></td>" +
                        
@@ -475,8 +513,16 @@ function showRows(rowType){
 
                         "<td>" +  markers[i]['fields']['dateAdded'].slice(0,-8).replace('T',' ') + "</td>" +
                         "<td>" +  markers[i]['fields']['dateAccessed'].slice(0,-8).replace('T',' ') +"</td>" + 
-                        "<td><i id='"+ markers[i]['pk']+"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
-                         "<td><i id='"+ markers[i]['pk']+"' class='fas fa-plus' style='cursor: pointer; font-size: 80%' onclick='get_detail(this.id)'></i></td>" +
+                        "<td><i id='"+ markers[i]['pk']+"' class='fas fa-info-circle fa-lg' style='cursor: pointer; ' onclick='get_detail(this.id)'></i></td>" +
+                         "<td><i  onclick='bookmarkToFolder_dropdown("+ i +")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
+                         "<div id='folderList_dropdown"+i+"' class='dropdown-content' style='min-width: 15%; margin-left: -8% '>"+
+                         "<ul id='add-folderList'>"+
+                     
+                              "{% for folder in folder_set %} "+
+                                    
+                                  "<li id='{{folder.id}}' class='menu-item' style='padding-left: 5%;padding-right: 10%; cursor: pointer' onclick='submit_add_folder(this.id,"+ markers[i]['pk'] +")'>{{ folder.name }}</li>" +
+                                "{% endfor %}  "+
+                          "</ul> </div> </td>" +
                           "<td><i id='"+ markers[i]['pk']+"' class='fas fa-star' style='cursor: pointer;color:red' onclick='favorite_item(this.id)'></i></td>" +
                         
                         "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer;font-size: 90%' onclick='delete_item(this.id)'></i></td>" +
@@ -549,7 +595,15 @@ function showRows(rowType){
                         "<td>" +  markers[i]['fields']['dateAdded'].slice(0,-8).replace('T',' ') + "</td>" +
                         "<td>" +  markers[i]['fields']['dateAccessed'].slice(0,-8).replace('T',' ') +"</td>" + 
                          "<td><i id='"+ markers[i]['pk']+"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
-                         "<td><i id='"+ markers[i]['pk']+"' class='fas fa-plus' style='cursor: pointer; font-size: 80%' onclick='get_detail(this.id)'></i></td>" +
+                           "<td><i  onclick='bookmarkToFolder_dropdown("+ i +")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
+                         "<div id='folderList_dropdown"+i+"' class='dropdown-content' style='min-width: 15%; margin-left: -8% '>"+
+                         "<ul id='add-folderList'>"+
+                     
+                              "{% for folder in folder_set %} "+
+                                    
+                                  "<li id='{{folder.id}}' class='menu-item' style='padding-left: 5%;padding-right: 10%; cursor: pointer' onclick='submit_add_folder(this.id,"+ markers[i]['pk'] +")'>{{ folder.name }}</li>" +
+                                "{% endfor %}  "+
+                          "</ul> </div> </td>" +
                           "<td><i id='"+ markers[i]['pk']+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>" +
                         
                         "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer;font-size: 90%' onclick='delete_item(this.id)'></i></td>" +
@@ -569,7 +623,15 @@ function showRows(rowType){
                         "<td>" +  markers[i]['fields']['dateAdded'].slice(0,-8).replace('T',' ') + "</td>" +
                         "<td>" +  markers[i]['fields']['dateAccessed'].slice(0,-8).replace('T',' ') +"</td>" + 
                          "<td><i id='"+ markers[i]['pk']+"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
-                         "<td><i id='"+ markers[i]['pk']+"' class='fas fa-plus' style='cursor: pointer; font-size: 80%' onclick='get_detail(this.id)'></i></td>" +
+                           "<td><i  onclick='bookmarkToFolder_dropdown("+ i +")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
+                         "<div id='folderList_dropdown"+i+"' class='dropdown-content' style='min-width: 15%; margin-left: -8% '>"+
+                         "<ul id='add-folderList'>"+
+                     
+                              "{% for folder in folder_set %} "+
+                                    
+                                  "<li id='{{folder.id}}' class='menu-item' style='padding-left: 5%;padding-right: 10%; cursor: pointer' onclick='submit_add_folder(this.id,"+ markers[i]['pk'] +")'>{{ folder.name }}</li>" +
+                                "{% endfor %}  "+
+                          "</ul> </div> </td>" +
                           "<td><i id='"+ markers[i]['pk']+"' class='fas fa-star' style='cursor: pointer;color:red' onclick='favorite_item(this.id)'></i></td>" +
                         
                         "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer;font-size: 90%' onclick='delete_item(this.id)'></i></td>" +
@@ -602,7 +664,15 @@ function showRows(rowType){
                         "<td>" +  markers[i]['fields']['dateAdded'].slice(0,-8).replace('T',' ') + "</td>" +
                         "<td>" +  markers[i]['fields']['dateAccessed'].slice(0,-8).replace('T',' ') +"</td>" + 
                          "<td><i id='"+ markers[i]['pk']+"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
-                         "<td><i id='"+ markers[i]['pk']+"' class='fas fa-plus' style='cursor: pointer; font-size: 80%' onclick='get_detail(this.id)'></i></td>" +
+                           "<td><i  onclick='bookmarkToFolder_dropdown("+ i +")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
+                         "<div id='folderList_dropdown"+i+"' class='dropdown-content' style='min-width: 15%; margin-left: -8% '>"+
+                         "<ul id='add-folderList'>"+
+                     
+                              "{% for folder in folder_set %} "+
+                                    
+                                  "<li id='{{folder.id}}' class='menu-item' style='padding-left: 5%;padding-right: 10%; cursor: pointer' onclick='submit_add_folder(this.id,"+ markers[i]['pk'] +")'>{{ folder.name }}</li>" +
+                                "{% endfor %}  "+
+                          "</ul> </div> </td>" +
                           "<td><i id='"+ markers[i]['pk']+"' class='far fa-star' style='cursor: pointer;' onclick='favorite_item(this.id)'></i></td>" +
                         
                         "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer;font-size: 90%' onclick='delete_item(this.id)'></i></td>" +
@@ -622,7 +692,15 @@ function showRows(rowType){
                         "<td>" +  markers[i]['fields']['dateAdded'].slice(0,-8).replace('T',' ') + "</td>" +
                         "<td>" +  markers[i]['fields']['dateAccessed'].slice(0,-8).replace('T',' ') +"</td>" + 
                          "<td><i id='"+ markers[i]['pk']+"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
-                         "<td><i id='"+ markers[i]['pk']+"' class='fas fa-plus' style='cursor: pointer; font-size: 80%' onclick='get_detail(this.id)'></i></td>" +
+                           "<td><i  onclick='bookmarkToFolder_dropdown("+ i +")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
+                         "<div id='folderList_dropdown"+i+"' class='dropdown-content' style='min-width: 15%; margin-left: -8% '>"+
+                         "<ul id='add-folderList'>"+
+                     
+                              "{% for folder in folder_set %} "+
+                                    
+                                  "<li id='{{folder.id}}' class='menu-item' style='padding-left: 5%;padding-right: 10%; cursor: pointer' onclick='submit_add_folder(this.id,"+ markers[i]['pk'] +")'>{{ folder.name }}</li>" +
+                                "{% endfor %}  "+
+                          "</ul> </div> </td>" +
                           "<td><i id='"+ markers[i]['pk']+"' class='fas fa-star' style='cursor: pointer;color:red' onclick='favorite_item(this.id)'></i></td>" +
                         
                         "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer;font-size: 90%' onclick='delete_item(this.id)'></i></td>" +
@@ -656,10 +734,18 @@ function showRows(rowType){
                 "<td>" +  markers[i]['fields']['dateAdded'].slice(0,-8).replace('T',' ') + "</td>" +
                 "<td>" +  markers[i]['fields']['dateAccessed'].slice(0,-8).replace('T',' ') +"</td>" + 
                "<td><i id='"+ markers[i]['pk']+"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
-                         "<td><i id='"+ markers[i]['pk']+"' class='fas fa-plus' style='cursor: pointer; font-size: 80%' onclick='get_detail(this.id)'></i></td>" +
+                           "<td><i  onclick='bookmarkToFolder_dropdown("+ i +")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
+                         "<div id='folderList_dropdown"+i+"' class='dropdown-content' style='min-width: 15%; margin-left: -8% '>"+
+                         "<ul id='add-folderList'>"+
+                     
+                              "{% for folder in folder_set %} "+
+                                    
+                                  "<li id='{{folder.id}}' class='menu-item' style='padding-left: 5%;padding-right: 10%; cursor: pointer' onclick='submit_add_folder(this.id,"+ markers[i]['pk'] +")'>{{ folder.name }}</li>" +
+                                "{% endfor %}  "+
+                          "</ul> </div> </td>" +
                           "<td><i id='"+ markers[i]['pk']+"' class='fas fa-minus' style='cursor: pointer;color:red' onclick='favorite_item(this.id)'></i></td>" +
                         
-                        "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer;font-size: 90%' onclick='delete_item(this.id)'></i></td>" +
+                        
                        
                 
         
@@ -704,6 +790,8 @@ function clearStyle(){
     document.getElementById('recentlyAddedIcon').style.color= "grey";
     document.getElementById('recentlyReadIcon').style.color= "grey";
     document.getElementById('favoriteIcon').style.color= "grey";
+    // document.getElementById('collections').style.color= "grey";
+    // document.getElementById('groups').style.color= "grey";
     // document.getElementById('favoriteIcon').style.color= "grey";
     // document.getElementById('recentAddedIcon').style.color= "grey";
     // document.getElementById('recentReadIcon').style.color= "grey";
@@ -811,30 +899,59 @@ function sort(n){
   }
 }    
 
+// function addfolder
 
-
-function addFolder() {
-  document.getElementById("myDropdown").classList.toggle("show");
+function bookmarkToFolder_dropdown(clicked_id) {
+  document.getElementById("folderList_dropdown"+ clicked_id).classList.toggle("show");
+  // alert(clicked_id)
 }
 
+function submit_add_folder(folder_id, bookmark_id){
+  alert(folder_id+"  "+bookmark_id)
+  // alert(folder_id+" "+ bookmark_id)
+
+  $.ajax({
+                      type:"POST",
+                      url:"",
+
+                      data:{
+                        action: 'addToFolder',
+                        bID: bookmark_id,
+                        fID: folder_id,
+                        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                      }
+        }); 
+}
+function add_folder_button() {
+  document.getElementById("dropdown-content_input").classList.toggle("show");
+}
 
 +function functionCollapse() {
   document.getElementById("folders").classList.toggle("show");
 }
 
-// Close the dropdown if the user clicks outside of it
-window.onclick = function(event) {
-  if (!event.target.matches('.fa-plus')) {
-    var dropdowns = document.getElementsByClassName("dropdown-content");
-    var i;
-    for (i = 0; i < dropdowns.length; i++) {
-      var openDropdown = dropdowns[i];
-      if (openDropdown.classList.contains('show')) {
-        openDropdown.classList.remove('show');
-      }
-    }
-  }
+
+
+function display_folder() {
+
+$("#mycollection_ul").empty();
+for(i=0;i< folders.length;i++){
+  var ul = document.getElementById("mycollection_ul");
+  var li = document.createElement("li");
+  li.appendChild(document.createTextNode(folders[i]['fields']['name']));
+  li.setAttribute("id", folders[i]['pk']); // added line
+  li.setAttribute("style", "padding-left:20%"); 
+  ul.appendChild(li);
+
+ 
+  
+ 
+
 }
+  
+  
+}
+
 </script> 
 
 

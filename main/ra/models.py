@@ -98,24 +98,28 @@ class Group_bookmark(models.Model):
 		db_table = "Group_bookmark"
 
 
-
-class User_folder (models.Model):
-	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
-	folder_name = models.CharField(max_length=25)
+class Folder(models.Model):
+	name = models.CharField(max_length=25, unique=True)
+	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE, default=None)
 	date_created = models.DateTimeField(default=datetime.now())
 
-
 	class Meta:
-		db_table = "Folders"	
+		db_table = "Folder"	
 
-
-class Bookmark_folders (models.Model):
+class Bookmark_folder (models.Model):
 	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
-	folder = models.ForeignKey(User_folder, null = False, blank = False, on_delete = models.CASCADE)
+	folder = models.ForeignKey(Folder, null = False, blank = False, on_delete = models.CASCADE)
 	bookmark = models.ForeignKey(User_bookmark, null = False, blank = False, on_delete = models.CASCADE)
+	date_added = models.DateTimeField(default=datetime.now())
 
 	class Meta:
-		db_table = "Bookmark_folders"	
+		db_table = "Bookmark_folder"	
+
+
+	
+
+
+	
 
 
 

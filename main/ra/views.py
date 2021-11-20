@@ -54,7 +54,7 @@ class practice(View):
 	
 	def get(self, request):
 		# Department.objects.create(name='College of Computer Studies', abbv='CCS')
-		User.objects.create(username='mondejar', password =make_password('12345'), department=Department.objects.get(abbv='CCS'))
+		# User.objects.create(username='mondejar', password =make_password('12345'), department=Department.objects.get(abbv='CCS'))
 		# User.objects.create(username='mondejar2', password = make_password('mondejar.12345'), department_id=2)
 		
 
@@ -370,32 +370,36 @@ class TeraSearchResultsView(View):
 
 		
 
-class TeraHomepageView(View):
-	def get(self,request):
-		return render(request,'home.html')	
 		
 
 class TeraDashboardView(View):
 
 	def get(self,request):
-
-		queryset = User_bookmark.objects.filter(user_id=request.user.id)
+		# Folder.objects.create(name=wala, user=request.user, bookmark= User_bookmark.objects.get(id=1))
 		request.session['previousPage'] = "tera_dashboard_view"
-		a= serializers.serialize("json",queryset )
+		# try:
+			# cursor = connection.cursor()   
+			# cursor.execute("SELECT f.*, b.* FROM User_bookmark b, Folders f WHERE f.user_id = "+ request.user.id+" AND f.bookmark_id == b.id OR") #| get rows of for a specific date|
+			# row = cursor.fetchall()
+		if request.user.id != None:
+			queryset = User_bookmark.objects.filter(user_id=request.user.id)
+			folders =	Folder.objects.filter(user_id=request.user.id)
+			
+			bookmark= serializers.serialize("json",queryset )
+			folder_list = serializers.serialize("json",folders )
 
-		context = {
-		    "bookmark_set": queryset,
-		    "bookmark_list" : a 
-		}
-		try:
-			if request.user.id != None:
-				return render(request,'collections.html', context)
-			else:
-				request.session['previousPage'] = 'tera_dashboard_view'
-				return redirect('ra:tera_login_view')
-		except:
+			context = {
+				"folder_set": folders,
+			    "bookmark_list" : bookmark,
+			    "folder_list": folder_list
+			}
+			return render(request,'collections.html', context)
+		else:
 			request.session['previousPage'] = 'tera_dashboard_view'
 			return redirect('ra:tera_login_view')
+		# except:
+		# 	request.session['previousPage'] = 'tera_dashboard_view'
+		# 	return redirect('ra:tera_login_view')
 
 	def post(self, request):
 
@@ -449,76 +453,14 @@ class TeraDashboardView(View):
 				User_bookmark.objects.filter(id=request.POST['bID']).update(isRemoved=3)
 				return HttpResponse('')
 
+			elif action == 'addToFolder':
+				fID = request.POST['fID']
+				bID = request.POST['bID']
+				print(fID +" "+ bID)
+				Bookmark_folder.objects.create(user=request.user, folder=Folder.objects.get(id=fID), bookmark = User_bookmark.objects.get(id=bID) )
+				print("suceed")
+				return HttpResponse('')
 
-	    
-
-
-class TeraCreateJournalCitationView(View):
-	def get(self,request):
-		return render(request,'citejournal.html')
-
-	def post(self, request):
-	 	form = CiteJournalForm(request.POST)
-	 	if form.is_valid():
-	 		contrib = request.POST.get("contributor")
-	 		firstname = request.POST.get("fname")
-	 		midnitial = request.POST.get("minitial")
-	 		lastname = request.POST.get("lname")
-	 		artitle = request.POST.get("ar_title")
-	 		jourtitle = request.POST.get("jour_title")
-	 		vol = request.POST.get("volume")
-	 		iss = request.POST.get("issue")
-	 		ser = request.POST.get("series")
-	 		datepublished = request.POST.get("pubdate")
-	 		start = request.POST.get("pagestart")
-	 		end = request.POST.get("pagend")
-	 		anno = request.POST.get("annotation")
-	 		citeformat = request.POST.get("citationformat")
-	 		reftype = request.POST.get("referencetype")
-	 		form = Citations(contributor = contrib, fname = firstname, minitial = midnitial, lname = lastname, 
-	 			ar_title = artitle, jour_title = jourtitle, volume = vol, issue = iss, series = ser, pubdate = datepublished, 
-	 			pagestart = start, pagend = end, annotation = anno, citationformat=citeformat, referencetype = reftype)
-	 		form.save()
-
-	 		print('Data Successfully Recorded!')
-	 		return redirect('ra:journal-citation-result-inprint')
-	 		
-	 	else:
-	 		print(form.errors)
-	 		return HttpResponse('Sorry, Failed to Record Data.')
-
-class TeraCreateBookCitationView(View):
-	def get(self,request):
-		return render(request,'citebook.html')
-
-class CitationDeleteView(View):
-	def get(self,request):
-		return render(request,'citedeleted.html')
-
-class JournalCitationResult(View):
-	def get(self, request):
-		qs_journalcitation = Citations.objects.order_by('-id')
-
-		context = {'results' : qs_journalcitation }	
-		return render(request, 'citejournalresult_inprint.html', context)
-
-class CitationHistory(View):
-	def get(self, request):
-		qs_journalcitation = Citations.objects.order_by('-id')
-
-		context = {'results' : qs_journalcitation }	
-		return render(request, 'citationhistory.html', context)
-
-		if 'btnDelete' in request.POST:	
-				print('delete button clicked')
-				journal_id = request.POST.get("journal-id")
-				journaldelete = Citations.objects.filter(id=journal_id).delete()
-				print('Recorded Deleted')
-		return redirect('ra:deletion_confirmation')
-
-def TeraLogout(request):
-    logout(request)
-    return redirect('ra:tera_index_view')
 
 def TeraAccountSettingsView(request):
     if request.method == 'POST':
@@ -537,4 +479,15 @@ def TeraAccountSettingsView(request):
         'form': form
     })
 
-						
+
+
+class adminChartView(View):
+	def get(self, request):
+		return render(request, 'adminCharts.html')
+
+
+class adminTableView(View):
+	def get(self, request):
+		return render(request, 'adminTables.html')
+
+
