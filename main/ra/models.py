@@ -51,6 +51,7 @@ class User_bookmark (models.Model):
 	isRemoved = models.IntegerField(default = 0)
 	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
 	isFavorite = models.BooleanField(default=False)
+	date_removed = models.DateTimeField(blank = True, null = True)
 
 	class Meta:
 		db_table = "User_bookmark"
@@ -79,20 +80,26 @@ class User_file(models.Model):
 
 
 class Group(models.Model):
-	name = models.CharField(max_length=50)
+	name = models.CharField(max_length=50) #add not null and not blank here
 	description = models.CharField(max_length=200)
 	owner = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
-	member = models.IntegerField(blank = True)
 	date_created = models.DateTimeField(default=datetime.now())
 	class Meta:
 		db_table = "Group"
+
+class Group_member(models.Model):
+	group = models.ForeignKey(Group, null = False, blank = False, on_delete = models.CASCADE)
+	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
+	class Meta:
+		db_table = "Group_member"
 
 class Group_bookmark(models.Model):
 	group =models.ForeignKey(Group, null = False, blank = False, on_delete = models.CASCADE)
 	bookmark = models.ForeignKey(User_bookmark, null = False, blank = False, on_delete = models.CASCADE)
 	added_by = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
 	date_added = models.DateTimeField(default=datetime.now())
-	is_trash = models.IntegerField(default=0)
+	is_removed = models.IntegerField(default=0)
+	date_removed = models.DateTimeField(blank=True,null = True)
 
 	class Meta:
 		db_table = "Group_bookmark"
@@ -111,6 +118,8 @@ class Bookmark_folder (models.Model):
 	folder = models.ForeignKey(Folder, null = False, blank = False, on_delete = models.CASCADE)
 	bookmark = models.ForeignKey(User_bookmark, null = False, blank = False, on_delete = models.CASCADE)
 	date_added = models.DateTimeField(default=datetime.now())
+	is_removed = models.IntegerField(default=0)
+	date_removed = models.DateTimeField(blank=True,null = True)
 
 	class Meta:
 		db_table = "Bookmark_folder"	
