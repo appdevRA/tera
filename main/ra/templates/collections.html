@@ -370,12 +370,14 @@ function permanentdelete_item(clicked_id){
     
 }
 
-function delete_item(clicked_id){
+function delete_item(clicked_id, i, action_type){
   
+   // alert(i+"  "+ action_type)
    
-   for(i=0; i< markers.length;i++){
-      if(markers[i]['pk'] == clicked_id & markers[i]['fields']['isRemoved'] == 0){
+      if(action_type == 1){
         markers[i]['fields']['isRemoved'] = 1;
+        a = new Date()
+        markers[i]['fields']['date_removed'] = a.toDateString().slice(3,) +"  "+ a.toTimeString().slice(0,13);
         $.ajax({
                       type:"POST",
                       url:"",
@@ -386,9 +388,10 @@ function delete_item(clicked_id){
                         csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
                       }
         }); 
-        break;
-      } else if(markers[i]['pk'] == clicked_id & markers[i]['fields']['isRemoved'] == 1){
+
+      }else{
         markers[i]['fields']['isRemoved'] = 0;
+        markers[i]['fields']['date_removed'] =null;
         $.ajax({
                       type:"POST",
                       url:"",
@@ -399,9 +402,9 @@ function delete_item(clicked_id){
                         csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
                       }
         }); 
-        break;
       }
-   }
+      
+   
    
    showRows(tab)
   
@@ -472,7 +475,14 @@ function showRows(rowType, bookmak_folder_list, faction_id){
             for(i=0; i< markers.length;i++){
              
 
-                if( markers[i]['fields']['isRemoved'] == 0 & markers[i]['fields']['isFavorite'] == 0){
+                if( markers[i]['fields']['isRemoved'] == 0 ){
+                      date_add= new Date(markers[i]['fields']['dateAdded'])
+                      date_acc= new Date(markers[i]['fields']['dateAccessed'])
+                      if( markers[i]['fields']['isFavorite'] == 0){
+                        favorite ="<td><i id='"+ markers[i]['pk']+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>"
+                      }else{
+                        favorite ="<td><i id='"+ markers[i]['pk']+"' class='fas fa-star' style='cursor: pointer; color:red' onclick='favorite_item(this.id)'></i></td>"
+                      }
 
                       if(markers[i]['fields']['websiteTitle'] == "Springeropen.com"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
@@ -485,8 +495,8 @@ function showRows(rowType, bookmak_folder_list, faction_id){
                         "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
                         "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
 
-                        "<td>" + markers[i]['fields']['dateAdded'].slice(0,-8).replace('T',' ') + "</td>" +
-                        "<td>" + markers[i]['fields']['dateAccessed'].slice(0,-8).replace('T',' ') +"</td>" + 
+                        "<td>" + date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5) + "</td>" +
+                        "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
                         "<td><i id='"+ markers[i]['pk'] +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
 
 
@@ -500,47 +510,14 @@ function showRows(rowType, bookmak_folder_list, faction_id){
 
 
 
-                          "<td><i id='"+ markers[i]['pk']+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>" +
-                        "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer; font-size: 90%' onclick='delete_item(this.id)'></i></td>" +
+                          favorite+
+                        "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer; font-size: 90%' onclick='delete_item(this.id,"+i+","+1+")'></i></td>" +
                        
 
                        "</tr>"
 
                         );  
-                }  else if(markers[i]['fields']['isRemoved'] == 0 & markers[i]['fields']['isFavorite'] == 1){
-                      if(markers[i]['fields']['websiteTitle'] == "Springeropen.com"){
-                          sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
-                        } else if(markers[i]['fields']['websiteTitle'] == "Sciencedirect.com"){
-                          sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 25px;'></td>"
-                        } 
-                      
-                       $('#itemArea').append(
-                        "<tr>"+
-                        sitelogo+
-                        "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
-                        "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
-
-                        "<td>" +  markers[i]['fields']['dateAdded'].slice(0,-8).replace('T',' ') + "</td>" +
-                        "<td>" +  markers[i]['fields']['dateAccessed'].slice(0,-8).replace('T',' ') +"</td>" + 
-                        "<td><i id='"+ markers[i]['pk']+"' class='fas fa-info-circle fa-lg' style='cursor: pointer; ' onclick='get_detail(this.id)'></i></td>" +
-
-                         "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ markers[i]['pk']+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
-                         "<div id='folderList_dropdown"+i+"' class='dropdown-content' style='min-width: 15%; margin-left: -8% '>"+
-                         "<ul id='add_to_folderList_ul"+i+"'>"+
-                     
-                              
-                          "</ul> </div> </td>" +
-
-
-                          "<td><i id='"+ markers[i]['pk']+"' class='fas fa-star' style='cursor: pointer;color:red' onclick='favorite_item(this.id)'></i></td>" +
-                        
-                        "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer;font-size: 90%' onclick='delete_item(this.id)'></i></td>" +
-                       
-
-                       "</tr>"
-
-                        );  
-                }
+                }  
                  
             }
 
@@ -553,6 +530,7 @@ function showRows(rowType, bookmak_folder_list, faction_id){
         for(i=0; i< markers.length;i++){
 
             if( markers[i]['fields']['isRemoved'] == 1){
+              date_acc= new Date(markers[i]['fields']['dateAccessed'])
               if(markers[i]['fields']['websiteTitle'] == "Springeropen.com"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
                         } else if(markers[i]['fields']['websiteTitle'] == "Sciencedirect.com"){
@@ -567,16 +545,16 @@ function showRows(rowType, bookmak_folder_list, faction_id){
                 "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
                 "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
 
-                "<td>" +  markers[i]['fields']['dateAdded'].slice(0,-8).replace('T',' ') + "</td>" +
-                "<td>" +  markers[i]['fields']['dateAccessed'].slice(0,-8).replace('T',' ') +"</td>" + 
+                "<td>" +  markers[i]['fields']['date_removed'].slice(0,-8).replace('T',' ')  + "</td>" +
+               "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
 
-                "<td><i id='"+ markers[i]['pk']+"' class='fas fa-undo' style='cursor: pointer' onclick='delete_item(this.id)'></i></td>" +
+                "<td><i id='"+ markers[i]['pk']+"' class='fas fa-undo' style='cursor: pointer' onclick='delete_item(this.id,"+i+", "+0+")'></i></td>" +
                 "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer' onclick='permanentdelete_item(this.id)'></i></td>" +
 
-               
-               
-        
-        
+              
+                      
+
+                        
 
 
 
@@ -603,7 +581,7 @@ function showRows(rowType, bookmak_folder_list, faction_id){
                         for(i=0; i< markers.length;i++){
                             for(ii=0; ii < array.length;ii++){
                               if( markers[i]['pk'] == array[ii].b_ID){
-
+                                  console.log(array[ii].BF_ID+"  "+array[ii].b_ID)
                                       if(markers[i]['fields']['websiteTitle'] == "Springeropen.com"){
                                         sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
                                       } else if(markers[i]['fields']['websiteTitle'] == "Sciencedirect.com"){
@@ -620,8 +598,8 @@ function showRows(rowType, bookmak_folder_list, faction_id){
                                   "<td>" +  array[ii].date.slice(0,-7).replace('T',' ') + "</td>" +
                                   "<td>" +  markers[i]['fields']['dateAccessed'].slice(0,-8).replace('T',' ') +"</td>" + 
 
-                                  "<td><i id='"+ array[ii].bf_ID+"' class='fas fa-undo' style='cursor: pointer' onclick='delete_item(this.id)'></i></td>" +
-                                  "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer' onclick='permanentdelete_item(this.id)'></i></td>" +
+                                  "<td><i id='"+ array[ii].BF_ID+"' class='fas fa-undo' style='cursor: pointer' onclick='remove_from_faction(this.id,1)'></i></td>" +
+                                  "<td><i id='"+ array[ii].BF_ID+"' class='fas fa-trash-alt' style='cursor: pointer' onclick='remove_from_faction(this.id,2)'></i></td>" +
 
                                  "</tr>"
 
@@ -636,13 +614,24 @@ function showRows(rowType, bookmak_folder_list, faction_id){
           document.getElementById(rowType).style.color= "#800000";
           document.getElementById('recentlyAddedIcon').style.color= "#800000";
 
-          var then = new Date(markers[0]['fields']['dateAdded']), // month is zero based
+           // month is zero based
           now  = new Date;               // no arguments -> current date
-          days = Math.round((now - then) / (1000 * 60 * 60 * 24));
+          
         
           for(i=0; i< markers.length;i++){
-              
-                if( markers[i]['fields']['isRemoved'] == 0 & markers[i]['fields']['isFavorite'] == 0 & days <= 7){
+              var then = new Date(markers[i]['fields']['dateAdded']),
+              days = Math.round((now - then) / (1000 * 60 * 60 * 24));
+                if( markers[i]['fields']['isRemoved'] == 0 & days <= 7){
+                   
+
+                        date_add= new Date(markers[i]['fields']['dateAdded'])
+                      date_acc= new Date(markers[i]['fields']['dateAccessed'])
+
+                      if( markers[i]['fields']['isFavorite'] == 0){
+                        favorite ="<td><i id='"+ markers[i]['pk']+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>"
+                      }else{
+                        favorite ="<td><i id='"+ markers[i]['pk']+"' class='fas fa-star' style='cursor: pointer; color:red' onclick='favorite_item(this.id)'></i></td>"
+                      }
 
                       if(markers[i]['fields']['websiteTitle'] == "Springeropen.com"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
@@ -655,8 +644,8 @@ function showRows(rowType, bookmak_folder_list, faction_id){
                         "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
                         "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
 
-                        "<td>" + markers[i]['fields']['dateAdded'].slice(0,-8).replace('T',' ') + "</td>" +
-                        "<td>" + markers[i]['fields']['dateAccessed'].slice(0,-8).replace('T',' ') +"</td>" + 
+                        "<td>" + date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5) + "</td>" +
+                        "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
                         "<td><i id='"+ markers[i]['pk'] +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
 
 
@@ -670,60 +659,36 @@ function showRows(rowType, bookmak_folder_list, faction_id){
 
 
 
-                          "<td><i id='"+ markers[i]['pk']+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>" +
+                          favorite +
                         "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer; font-size: 90%' onclick='delete_item(this.id)'></i></td>" +
                        
 
                        "</tr>"
 
                         );  
-                }  else if(markers[i]['fields']['isRemoved'] == 0 & markers[i]['fields']['isFavorite'] == 1 & days <= 7){
-                      if(markers[i]['fields']['websiteTitle'] == "Springeropen.com"){
-                          sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
-                        } else if(markers[i]['fields']['websiteTitle'] == "Sciencedirect.com"){
-                          sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 25px;'></td>"
-                        } 
-                      
-                       $('#itemArea').append(
-                        "<tr>"+
-                        sitelogo+
-                        "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
-                        "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
-
-                        "<td>" +  markers[i]['fields']['dateAdded'].slice(0,-8).replace('T',' ') + "</td>" +
-                        "<td>" +  markers[i]['fields']['dateAccessed'].slice(0,-8).replace('T',' ') +"</td>" + 
-                        "<td><i id='"+ markers[i]['pk']+"' class='fas fa-info-circle fa-lg' style='cursor: pointer; ' onclick='get_detail(this.id)'></i></td>" +
-
-                         "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ markers[i]['pk']+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
-                         "<div id='folderList_dropdown"+i+"' class='dropdown-content' style='min-width: 15%; margin-left: -8% '>"+
-                         "<ul id='add_to_folderList_ul"+i+"'>"+
-                     
-                              
-                          "</ul> </div> </td>" +
-
-
-                          "<td><i id='"+ markers[i]['pk']+"' class='fas fa-star' style='cursor: pointer;color:red' onclick='favorite_item(this.id)'></i></td>" +
-                        
-                        "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer;font-size: 90%' onclick='delete_item(this.id)'></i></td>" +
-                       
-
-                       "</tr>"
-
-                        );  
-                }
+                }  
          
           }
     } else if(rowType =='recentlyRead'){
           document.getElementById(rowType).style.backgroundColor= "#c9c9c9";
           document.getElementById(rowType).style.color= "#800000";
           document.getElementById('recentlyReadIcon').style.color= "#800000";
-          var then = new Date(markers[0]['fields']['dateAccessed']), // month is zero based
-          now  = new Date;               // no arguments -> current date
-          days = Math.round((now - then) / (1000 * 60 * 60 * 24));
-          
+          now  = new Date;
           for(i=0; i< markers.length;i++){
-              
-                if( markers[i]['fields']['isRemoved'] == 0 & markers[i]['fields']['isFavorite'] == 0 & days <= 3){
+                var then = new Date(markers[i]['fields']['dateAccessed']), // month is zero based
+                               // no arguments -> current date
+                days = Math.round((now - then) / (1000 * 60 * 60 * 24));
+               
+                if( markers[i]['fields']['isRemoved'] == 0 & days <= 3){
+                      date_add= new Date(markers[i]['fields']['dateAdded'])
+                      date_acc= new Date(markers[i]['fields']['dateAccessed'])
+
+                      if( markers[i]['fields']['isFavorite'] == 0){
+                        favorite ="<td><i id='"+ markers[i]['pk']+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>"
+                      }else{
+                        favorite ="<td><i id='"+ markers[i]['pk']+"' class='fas fa-star' style='cursor: pointer; color:red' onclick='favorite_item(this.id)'></i></td>"
+                      }
+
 
                       if(markers[i]['fields']['websiteTitle'] == "Springeropen.com"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
@@ -736,8 +701,8 @@ function showRows(rowType, bookmak_folder_list, faction_id){
                         "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
                         "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
 
-                        "<td>" + markers[i]['fields']['dateAdded'].slice(0,-8).replace('T',' ') + "</td>" +
-                        "<td>" + markers[i]['fields']['dateAccessed'].slice(0,-8).replace('T',' ') +"</td>" + 
+                        "<td>" + date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5) + "</td>" +
+                        "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
                         "<td><i id='"+ markers[i]['pk'] +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
 
 
@@ -751,47 +716,14 @@ function showRows(rowType, bookmak_folder_list, faction_id){
 
 
 
-                          "<td><i id='"+ markers[i]['pk']+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>" +
+                          favorite+
                         "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer; font-size: 90%' onclick='delete_item(this.id)'></i></td>" +
                        
 
                        "</tr>"
 
                         );  
-                }  else if(markers[i]['fields']['isRemoved'] == 0 & markers[i]['fields']['isFavorite'] == 1 & days <= 3){
-                      if(markers[i]['fields']['websiteTitle'] == "Springeropen.com"){
-                          sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
-                        } else if(markers[i]['fields']['websiteTitle'] == "Sciencedirect.com"){
-                          sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 25px;'></td>"
-                        } 
-                      
-                       $('#itemArea').append(
-                        "<tr>"+
-                        sitelogo+
-                        "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
-                        "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
-
-                        "<td>" +  markers[i]['fields']['dateAdded'].slice(0,-8).replace('T',' ') + "</td>" +
-                        "<td>" +  markers[i]['fields']['dateAccessed'].slice(0,-8).replace('T',' ') +"</td>" + 
-                        "<td><i id='"+ markers[i]['pk']+"' class='fas fa-info-circle fa-lg' style='cursor: pointer; ' onclick='get_detail(this.id)'></i></td>" +
-
-                         "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ markers[i]['pk']+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
-                         "<div id='folderList_dropdown"+i+"' class='dropdown-content' style='min-width: 15%; margin-left: -8% '>"+
-                         "<ul id='add_to_folderList_ul"+i+"'>"+
-                     
-                              
-                          "</ul> </div> </td>" +
-
-
-                          "<td><i id='"+ markers[i]['pk']+"' class='fas fa-star' style='cursor: pointer;color:red' onclick='favorite_item(this.id)'></i></td>" +
-                        
-                        "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer;font-size: 90%' onclick='delete_item(this.id)'></i></td>" +
-                       
-
-                       "</tr>"
-
-                        );  
-                }
+                }  
          
           }
     } else if(rowType =='favorite'){
@@ -851,7 +783,16 @@ function showRows(rowType, bookmak_folder_list, faction_id){
       for(ii=0;ii < array.length;ii++){
           if(markers[i]['pk'] == array[ii].b_ID){
 
-                if( markers[i]['fields']['isRemoved'] == 0 & markers[i]['fields']['isFavorite'] == 0){
+                if( markers[i]['fields']['isRemoved'] == 0 ){
+                    date_add= new Date(markers[i]['fields']['dateAdded'])
+                      date_acc= new Date(markers[i]['fields']['dateAccessed'])
+
+                      if( markers[i]['fields']['isFavorite'] == 0){
+                        favorite ="<td><i id='"+ markers[i]['pk']+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>"
+                      }else{
+                        favorite ="<td><i id='"+ markers[i]['pk']+"' class='fas fa-star' style='cursor: pointer; color:red' onclick='favorite_item(this.id)'></i></td>"
+                      }
+
 
                       if(markers[i]['fields']['websiteTitle'] == "Springeropen.com"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
@@ -864,8 +805,8 @@ function showRows(rowType, bookmak_folder_list, faction_id){
                         "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
                         "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
 
-                        "<td>" + markers[i]['fields']['dateAdded'].slice(0,-8).replace('T',' ') + "</td>" +
-                        "<td>" + markers[i]['fields']['dateAccessed'].slice(0,-8).replace('T',' ') +"</td>" + 
+                        "<td>" + date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5) + "</td>" +
+                        "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
                         "<td><i id='"+ markers[i]['pk'] +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
 
 
@@ -878,48 +819,14 @@ function showRows(rowType, bookmak_folder_list, faction_id){
 
 
 
-
-                          "<td><i id='"+ markers[i]['pk']+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>" +
+                          favorite+
                         "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer; font-size: 90%' onclick='remove_from_faction("+array[ii].bf_ID+")'></i></td>" +
                        
 
                        "</tr>"
 
                         );  
-                }  else if(markers[i]['fields']['isRemoved'] == 0 & markers[i]['fields']['isFavorite'] == 1){
-                      if(markers[i]['fields']['websiteTitle'] == "Springeropen.com"){
-                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
-                        } else if(markers[i]['fields']['websiteTitle'] == "Sciencedirect.com"){
-                          sitelogo =  "<td><img class='logo-style' src='{% static 'images/science direct.PNG' %}' style='height: 25px;'></td>"
-                        } 
-                      
-                       $('#itemArea').append(
-                        "<tr>"+
-                        sitelogo+
-                        "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
-                        "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
-
-                        "<td>" +  markers[i]['fields']['dateAdded'].slice(0,-8).replace('T',' ') + "</td>" +
-                        "<td>" +  markers[i]['fields']['dateAccessed'].slice(0,-8).replace('T',' ') +"</td>" + 
-                        "<td><i id='"+ markers[i]['pk']+"' class='fas fa-info-circle fa-lg' style='cursor: pointer; ' onclick='get_detail(this.id)'></i></td>" +
-
-                         "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ markers[i]['pk']+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
-                         "<div id='folderList_dropdown"+i+"' class='dropdown-content' style='min-width: 15%; margin-left: -8% '>"+
-                         "<ul id='add_to_folderList_ul"+i+"'>"+
-                     
-                              
-                          "</ul> </div> </td>" +
-
-
-                          "<td><i id='"+ markers[i]['pk']+"' class='fas fa-star' style='cursor: pointer;color:red' onclick='favorite_item(this.id)'></i></td>" +
-                        
-                        "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer;font-size: 90%' onclick='onclick='remove_from_faction("+array[ii].bf_ID+")'></i></td>" +
-                       
-
-                       "</tr>"
-
-                        );  
-                }
+                }  
           }
         
       }
@@ -930,7 +837,15 @@ function showRows(rowType, bookmak_folder_list, faction_id){
       for(ii=0;ii < array.length;ii++){
           if(markers[i]['pk'] == array[ii].b_ID){
 
-                if( markers[i]['fields']['isRemoved'] == 0 & markers[i]['fields']['isFavorite'] == 0){
+                if( markers[i]['fields']['isRemoved'] == 0){
+                  date_add= new Date(markers[i]['fields']['dateAdded'])
+                      date_acc= new Date(markers[i]['fields']['dateAccessed'])
+
+                      if( markers[i]['fields']['isFavorite'] == 0){
+                        favorite ="<td><i id='"+ markers[i]['pk']+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>"
+                      }else{
+                        favorite ="<td><i id='"+ markers[i]['pk']+"' class='fas fa-star' style='cursor: pointer; color:red' onclick='favorite_item(this.id)'></i></td>"
+                      }
 
                       if(markers[i]['fields']['websiteTitle'] == "Springeropen.com"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
@@ -943,8 +858,8 @@ function showRows(rowType, bookmak_folder_list, faction_id){
                         "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
                         "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
 
-                        "<td>" + markers[i]['fields']['dateAdded'].slice(0,-8).replace('T',' ') + "</td>" +
-                        "<td>" + markers[i]['fields']['dateAccessed'].slice(0,-8).replace('T',' ') +"</td>" + 
+                        "<td>" + date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5) + "</td>" +
+                        "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
                         "<td><i id='"+ markers[i]['pk'] +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
 
 
@@ -954,51 +869,18 @@ function showRows(rowType, bookmak_folder_list, faction_id){
                      
                               
                           "</ul> </div> </td>" +
+                          favorite+
 
 
 
 
-                          "<td><i id='"+ markers[i]['pk']+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>" +
                         "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer; font-size: 90%' onclick='remove_from_faction("+array[ii].bf_ID+")'></i></td>" +
                        
 
                        "</tr>"
 
-                        );  
-                }  else if(markers[i]['fields']['isRemoved'] == 0 & markers[i]['fields']['isFavorite'] == 1){
-                      if(markers[i]['fields']['websiteTitle'] == "Springeropen.com"){
-                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
-                        } else if(markers[i]['fields']['websiteTitle'] == "Sciencedirect.com"){
-                          sitelogo =  "<td><img class='logo-style' src='{% static 'images/science direct.PNG' %}' style='height: 25px;'></td>"
-                        } 
-                      
-                       $('#itemArea').append(
-                        "<tr>"+
-                        sitelogo+
-                        "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
-                        "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
-
-                        "<td>" +  markers[i]['fields']['dateAdded'].slice(0,-8).replace('T',' ') + "</td>" +
-                        "<td>" +  markers[i]['fields']['dateAccessed'].slice(0,-8).replace('T',' ') +"</td>" + 
-                        "<td><i id='"+ markers[i]['pk']+"' class='fas fa-info-circle fa-lg' style='cursor: pointer; ' onclick='get_detail(this.id)'></i></td>" +
-
-                         "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ markers[i]['pk']+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
-                         "<div id='folderList_dropdown"+i+"' class='dropdown-content' style='min-width: 15%; margin-left: -8% '>"+
-                         "<ul id='add_to_folderList_ul"+i+"'>"+
-                     
-                              
-                          "</ul> </div> </td>" +
-
-
-                          "<td><i id='"+ markers[i]['pk']+"' class='fas fa-star' style='cursor: pointer;color:red' onclick='favorite_item(this.id)'></i></td>" +
-                        
-                        "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer;font-size: 90%' onclick='remove_from_faction("+faction_id+", this.id)'></i></td>" +
-                       
-
-                       "</tr>"
-
-                        );  
-                }
+                        );   
+                }  
           }
         
       }
@@ -1356,7 +1238,7 @@ function display_faction_bookmarks(clicked_id, faction){
   } else{
     ID = clicked_id
   }
-faction_id = ID
+  faction_id = ID
     if(faction == 'folders'){
           $.ajax({
 
@@ -1414,7 +1296,7 @@ faction_id = ID
 }
 
 
-function remove_from_faction(bf_ID){
+function remove_from_faction(bf_ID, action_type){
 
       
 
@@ -1424,6 +1306,7 @@ function remove_from_faction(bf_ID){
 
                       data:{
                         action: 'remove_from_faction',
+                        action_type: action_type,
                         faction_type: tab,
                         faction_id: bf_ID,
                         csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()

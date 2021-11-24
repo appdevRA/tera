@@ -443,10 +443,10 @@ class TeraDashboardView(View):
 				User_bookmark.objects.filter(id=request.POST['bID']).update(isRemoved=1, date_removed= datetime.now())
 				return HttpResponse('')
 			elif action == 'unTrashItem':
-				User_bookmark.objects.filter(id=request.POST['bID']).update(isRemoved=0)
+				User_bookmark.objects.filter(id=request.POST['bID']).update(isRemoved=0,date_removed= None)
 				return HttpResponse('')
 			elif action == 'deleteItem':
-				User_bookmark.objects.filter(id=request.POST['bID']).update(isRemoved=3)
+				User_bookmark.objects.filter(id=request.POST['bID']).update(isRemoved=2, date_removed= datetime.now())
 				return HttpResponse('')
 
 			elif action == 'add_bookmark_to_folder':
@@ -534,6 +534,20 @@ class TeraDashboardView(View):
 
 					Group_bookmark.objects.filter(id =faction_id).update(is_removed = 1, date_removed= datetime.now())
 					return HttpResponse('')
+
+				if request.POST['faction_type'] == 'trash':
+					# print(type(request.POST['action_type']))
+					if request.POST['action_type'] == '1': #if action_type is restore 
+
+						faction_id = request.POST['faction_id']
+						Bookmark_folder.objects.filter(id =faction_id).update(is_removed = 0, date_removed=None)
+						return HttpResponse('')
+
+					else:
+						faction_id = request.POST['faction_id']
+						Bookmark_folder.objects.filter(id =faction_id).update(is_removed = 2, date_removed=datetime.now())
+						return HttpResponse('')
+
 			
 			elif action == 'get_folder_trash':
 				print('olok')
