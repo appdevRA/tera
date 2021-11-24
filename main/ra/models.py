@@ -80,7 +80,7 @@ class User_file(models.Model):
 
 
 class Group(models.Model):
-	name = models.CharField(max_length=50) #add not null and not blank here
+	name = models.CharField(max_length=50, unique=True) #add not null and not blank here
 	description = models.CharField(max_length=200)
 	owner = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
 	date_created = models.DateTimeField(default=datetime.now())

@@ -532,7 +532,11 @@ function showRows(rowType, bookmak_folder_list, faction_id){
 
             if( markers[i]['fields']['isRemoved'] == 1){
               date_acc= new Date(markers[i]['fields']['dateAccessed'])
-              date_add= new Date(markers[i]['fields']['date_removed'])
+              if(typeof(markers[i]['fields']['date_removed']) == 'string'){
+              date_add= new Date(markers[i]['fields']['date_removed'].replace('T',' ').slice(0,-8))
+              } else{
+                date_add= new Date(markers[i]['fields']['date_removed'])
+              } 
               if(markers[i]['fields']['websiteTitle'] == "Springeropen.com"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
                         } else if(markers[i]['fields']['websiteTitle'] == "Sciencedirect.com"){
@@ -566,6 +570,8 @@ function showRows(rowType, bookmak_folder_list, faction_id){
                 
               
             }
+
+
          
         }
 
@@ -734,26 +740,25 @@ function showRows(rowType, bookmak_folder_list, faction_id){
           document.getElementById(rowType).style.color= "#800000";
           document.getElementById('favoriteIcon').style.color= "#800000";
           for(i=0; i< markers.length;i++){
-             if(markers[i]['fields']['websiteTitle'] == "Springeropen.com"){
+            
+            if( markers[i]['fields']['isFavorite'] == 1 & markers[i]['fields']['isRemoved'] == 0){
+                   date_add= new Date(markers[i]['fields']['dateAdded'])
+                      date_acc= new Date(markers[i]['fields']['dateAccessed'])
+                   
+
+                    if(markers[i]['fields']['websiteTitle'] == "Springeropen.com"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
                         } else if(markers[i]['fields']['websiteTitle'] == "Sciencedirect.com"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/science direct.PNG' %}' style='height: 25px;'></td>"
                         } 
-            if( markers[i]['fields']['isFavorite'] == 1 & markers[i]['fields']['isRemoved'] == 0){
-
-                    // var dt = new Date( markers[i]['fields']['dateAdded']);
-                    // var access = new Date( markers[i]['fields']['dateAccessed']);
-                    //       added =  (("0"+dt.getDate()).slice(-2)) +"/"+ (("0"+(dt.getMonth()+1)).slice(-2)) +"/"+ (dt.getFullYear()) +" "+ (("0"+dt.getHours()).slice(-2)) +":"+ (("0"+dt.getMinutes()).slice(-2));
-
-                    //       accessed =  (("0"+access.getDate()).slice(-2)) +"/"+ (("0"+(access.getMonth()+1)).slice(-2)) +"/"+ (access.getFullYear()) +" "+ (("0"+access.getHours()).slice(-2)) +":"+ (("0"+access.getMinutes()).slice(-2));
               $('#itemArea').append(
                 "<tr>"+
                 sitelogo +
                 "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
                 "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'> <span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
 
-                "<td>" +  markers[i]['fields']['dateAdded'].slice(0,-8).replace('T',' ') + "</td>" +
-                "<td>" +  markers[i]['fields']['dateAccessed'].slice(0,-8).replace('T',' ') +"</td>" + 
+               "<td>" + date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5) + "</td>" +
+                        "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
                "<td><i id='"+ markers[i]['pk']+"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
                            
                           "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ markers[i]['pk']+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
