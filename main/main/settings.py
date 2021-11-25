@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 STATICFILES_DIRS = [
     "C:/Users/carme/OneDrive/Documents/GitHub/tera/main/ra",
     "C:/Users/Valued Client/Desktop/tera/main/ra",
+    "C:/Users/Talatagod/Desktop/ad/tera/main/ra",
 ]
 
 # Application definition

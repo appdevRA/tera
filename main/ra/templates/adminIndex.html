@@ -12,7 +12,16 @@
         <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" />
         <link href="{% static 'css/adminStyles.css' %}" rel="stylesheet" /> 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
+
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> 
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+            
     </head>
+
     <body class="sb-nav-fixed">
 	
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
@@ -110,8 +119,48 @@
                             <li class="breadcrumb-item active">Dashboard</li>
                         </ol>
 						
-						<p align="right"><a type = "button" class="button button1" id="" href=""> <span class="fa fa-plus"> </span> ADD USER</a></p>
-						
+						<p align="right"><a type = "button" class="button button1" href='#addUser' data-toggle='modal' data-target='#addUser'> <span class="fa fa-plus"> </span>ADD USER</a></p>
+	
+                        <!-- The Modal -->
+                        <div class="modal fade" id="addUser" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
+                          <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header text-center">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="align-items: right;">
+
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                                <div class="modal-body mx-3">
+                                <div class="md-form mb-5">
+                              
+                                 <center> 
+                                 <form action = "" method = "POST" autocomplete = "off" enctype="multipart/form-data">
+                                  {% csrf_token %}
+                                    <h4 style="color: #800000">ADD USER</h4><br><br>
+                                    This is for adding a user<br>
+                                    <b>do you want to add some users?<br><br><br>
+                           
+                                <center>
+                                      <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                        <button type=“button” class="buttoncancel" data-dismiss="modal">Cancel</button>
+                                        </div>
+                                        <input value="search_result_view" name="previousPage" hidden>
+                                        <div class="form-group col-md-6"> 
+                                            <button type="submit" class="buttonlogin"> Register</button>
+                                        </div> 
+                                         </div>
+                                      </center>
+                                       </form>
+                                      </center>
+                                    </div></div>
+                                  </div>
+                                  
+                              </div>
+                            </div>
+                            </div>
+
+
                         <div class="row">
                             <div class="col-xl-3 col-md-6">
                                 <div class="card bg-primary text-white mb-4">

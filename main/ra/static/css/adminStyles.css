@@ -11686,3 +11686,25 @@ body {
   font-size: 0.75rem;
   border-radius: 0.25rem !important;
 }
+
+.buttoncancel {
+  background-color:   #FFD700;
+  border: none;
+  color: white;
+  padding: 14px 40px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 12px;
+}
+
+.buttonlogin {
+  background-color: #800000;
+  border: none;
+  color: white;
+  padding: 14px 40px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 12px;
+}

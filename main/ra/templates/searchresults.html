@@ -1,22 +1,43 @@
 <!DOCTYPE html>
 {% load static %}
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Results</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link rel="stylesheet" href="{% static 'css/navbarstyle.css' %}">
-    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+   
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400&display=swap" rel="stylesheet">
-    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js" type="text/javascript"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+        <link rel="stylesheet" href="{% static 'css/navbarstyle.css' %}">
+    <!-- <link rel="stylesheet" href="{% static 'css/modal.css' %}"> -->
+    <style type="text/css">
+      table {
+        border-collapse: collapse;
+        width: 70%;
+      }
+
+      th, td {
+        text-align: left;
+        padding: 8px;
+      }
+
+      tr:nth-child(even) {background-color: #f2f2f2;}
+    </style>
+
 </head>
 <style>
   .filterbutton {
   border: none;
   background: #f2f2f2;
-  color: #800000;
+  color: black;
   font-weight: lighter;
   padding: 10px 10px;
   text-align: center;
@@ -26,163 +47,232 @@
   margin: 2px 2px;
   cursor: pointer;
 }
+  .filterbutton:hover{
+  color: red;
+}
+/* The container */
+.container {
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Hide the browser's default radio button */
+.container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Create a custom radio button */
+.checkmark {
+  position: absolute;
+  top: 2;
+  left: 5px;
+  height: 15px;
+  width: 15px;
+  background-color: #eee;
+  border-radius: 50%;
+}
+
+/* On mouse-over, add a grey background color */
+.container:hover input ~ .checkmark {
+  background-color: #ffd700;
+}
+
+/* When the radio button is checked, add a maroon background */
+.container input:checked ~ .checkmark {
+  background-color: #800000;
+}
+
+/* Create the indicator (the dot/circle - hidden when not checked) */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the indicator (dot/circle) when checked */
+.container input:checked ~ .checkmark:after {
+  display: block;
+}
+
+/* Style the indicator (dot/circle) */
+.container .checkmark:after {
+  top: 4px;
+  left: 4px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: white;
+}
 </style>
 </style>
 <body style="background-color: #f3f3f3">
-     <nav>
-      <div class="logo"><a href="{% url 'ra:tera_homepage_view'%}"><img class="logo-style" src="{% static 'images/teralogo.png' %}"></a></div>
+      <nav>
+      <div class="logo"><a href="{% url 'ra:index_view'%}"><img class="logo-style" src="{% static 'images/teralogo.png' %}"></a></div>
       <label for="btn" class="icon">
         <span class=></span>
       </label>
      
       <ul>     
-      <li><a href="#">Recommendations</a></li>
-      <li><a href="#">Home</a></li>
+       
+      
 
-       <li>
-                <label for="btn-2" class="show">My Account <i class="fa fa-user" aria-hidden="true"></i></label>
-                <a href="#">My Account <i class="fa fa-user" aria-hidden="true"></i></a>
+      
+        
+{% if is_authenticated == 'True' %}
+      <li id="myAccount">   
+
+                
+                <a href="#" style="color: #8f2929">My Account <i class="fa fa-user" aria-hidden="true"></i></a>
                 
                 <ul>
-                <li><a href="{% url 'ra:tera_dashboard_view'%}">Dashboard</a></li>  
-                <li><a href="#">Bookmarks</a></li>
-                <li><a href="#">Folders</a></li>
-                <li><a href="{% url 'ra:tera_account_settings'%}">Settings</a></li>
-                <li><a href="#modalLogoutForm" data-toggle="modal" data-target="#modalLogoutForm" >Logout </a></li>
+                <li><a href="{% url 'ra:tera_dashboard_view'%}">Collections</a></li>  
+                  <li><a href="{% url 'ra:tera_account_settings' %}">Settings</a></li>  
+                <li>
+                  <form  action = "" method = "POST" autocomplete = "off" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <button type="submit" class="btn " name="btnLogout" style="background-color: white"> &nbsp;Logout </button>
+                  </form>
+                </li>
                 </ul>
       </li>
-      </ul>
-  </nav>
-    <div class="left-tab" style="border-right:2px"></div>
+      {% endif %}
 
-    <div class="wrapper">
-     <div class="main_content">
-        <div class="header">
-          <div class="wrap">
-                      <div class="search-container">
-                        <div class="search">
-                           <form id= "form1" action = "" method = "POST" autocomplete = "off" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            <input type="text" placeholder="" name = "searchbar" class="input" value="{{ keyword }}" style="width: 500%; margin-left: -200%">
-                            <div class="autocom-box">
-                              <!-- here list are inserted from javascript -->
-                            </div>
-                            
-                            <button type="submit" class="button" style="align-items: center; padding-left: 15px;"  name="btnSearchbar" id="btnSearchbar" >
-                              <i class="fa fa-search" aria-hidden="true"></i></button>
-                              
-                          </form>
+      {% if is_authenticated == 'False' %}
+    <br>
+                
+                 <a href="{% url 'ra:tera_login_view'%}" style="font-size: 130%; ">Login </a>
+              
+                     {% endif %}
+      </ul>
+        </nav>
+
+    
+      
+      <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3" style=" margin-right: -5%; margin-left: 5%">
+
+          <div class="main-menu" >
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            
+            <h4>Site Filter</h4>
+          <div class="left-side-bar">
+            <ul>
+             <label id="Springeropen.com" class="site-filter container" onclick="search(this.id, 'site')"> Springeropen.com<input type="radio" checked="checked" name="radio" value="Springeropen.com"><span class="checkmark"></span></label>
+             <label id="Sciencedirect.com" class="site-filter container" onclick="search(this.id, 'site')"> Sciencedirect.com <input type="radio" name="radio" value="Sciencedirect.com"><span class="checkmark"></span></label>
+             <label id="Scirp.org" class="site-filter container" onclick="search(this.id, 'site')">Scirp.org<input type="radio" name="radio" value="Scirp.org"><span class="checkmark"></span></label>
+             <label id="Tandfonline.com" class="site-filter container" onclick="search(this.id, 'site')"> Tandfonline.com<input type="radio" name="radio" value="Tandfonline.com"><span class="checkmark"></span></label>
+             <label id="Zlibrary.org" class="site-filter container" onclick="search(this.id, 'site')"> Zlibrary.org<input type="radio" name="radio" value="Zlibrary.org"><span class="checkmark"></span></label>
+             <label id="" class="site-filter container" onclick="search(this.id, 'site')"> Cambridgecore.org<input type="radio" name="radio" value="Cambridgecore.org"><span class="checkmark"></span></label>
+             <label id="Herdin.ph" class="site-filter container" onclick="search(this.id, 'site')"> Herdin.ph<input type="radio" name="radio" value="Herdin.ph"><span class="checkmark"></span></label>
+             
+              
+              
+ 
+            </ul>
+          </div>
+        
+
+          </div>
+        </div>
+    
+        <div class="col-sm-6">
+          <div class="wrapper">
+          <div class="main_content">
+          <div class="header">
+                      <div class="search-container" style="margin-left: -25%">
+                        <div >
+                              <br><br> <br>    <br><br> <br>    <br><br> <br>
+                           
+                            <input id="input" type="text" placeholder="" name="search" class="input" value="{{ keyword }}" style="width: 192%; height: 120%; margin-left: -80%; border-color: #f3f3f3; background-color: #f3f3f3"><hr style="width: 197%; margin-left: -72%; height: 1px; background-color: #6b6b6c; margin-top: -1.5%;">
+                            <button id="searchButton" class="btn" style=" margin-top: -30%; margin-left:  111% ;background: none  "  name="" id="btnSearchbar"  onclick="search('','search')"> 
+                              <i class="fa fa-search" aria-hidden="true" style=" color: #800000; font-size: 150%"></i></button>
+                          
                         </div>
                       </div>
                   </div>  
          
       </div>
-        <center>
-           <form id= "form1" action = "" method = "POST" autocomplete = "off" enctype="multipart/form-data">
-            {% csrf_token %}
-          <input type="button" class="filterbutton" value="Articles">
-           <input type="button" class="filterbutton" value="|">
-             <button type="submit" class="filterbutton" name="btnJournal" id="btnJournal" > Journals</button>
-                              
-             <input type="button" class="filterbutton" value="|" >
-            <input type="button" class="filterbutton" value="E-Books">
-            <input type="button" class="filterbutton" value="|">
-            <input type="button" class="filterbutton" value="Books">
-           <input type="button" class="filterbutton" value="|">
-            <input type="button" class="filterbutton" value="Dissertations">
-             <input type="hidden" class="filterbutton" name = "search" value="{{keyword}}">
-           </form>
-      </center>
-      <div class="info">
+          
       
-          <div>
-            {%for row in springers %} <!-- get rows of springers-->
-             
-            {% with forloop.counter as outer_counter %} <!-- retrieve loop counter of rows-->
+
+         
+
+          <button id="article" type="submit" class="filterbutton" name="btnArticles" id="btnArticles"  onclick="search(this.id,'itemType')"> Articles 
+
             
-              {%for column in row %} <!-- access the columns of rows in springers -->
-              
-              {% if forloop.counter == 1 %}
-              {% for link in springLinks %}
-              {% if forloop.counter == outer_counter %}  <!-- to prevent from displaying all the links in springlinks-->
-              <div style="color: black"><a href="{{link}}" > <b> {{column}} </b> </a></div>  <!-- display title of links -->
-              {% endif %}
-              {% endfor %}
-              {% endif %}
+            <div id="articlehr" style="border: thin solid red; width: 100%; margin-top: 10%; display: none;"></div></button>
+           <input id="article|" type="button" class="filterbutton" value="|">
 
-              {% if forloop.counter == 2 %}
-              <div style="color: black; font-weight: lighter;font-size: 13px;margin-bottom: 1px">  {{ column }} </div>
-              {% endif %}
+          <button id="journal" type="submit" class="filterbutton" name="btnJournal" id="btnJournal" onclick="search(this.id,'itemType')"> Journals
+          <div id="journalhr" style="border: thin solid red; width: 100%; margin-top: 9%;display: none;"></div>
+          </button>
+            <input id="journal|" type="button" class="filterbutton" value="|" >
 
-              {% if forloop.counter == 3 %}
-              <div style="color: black; font-weight: lighter; font-size: 10px; padding-bottom: 25px"><i>  {{ column }} </i></div>
-              {% endif %}
+          <button id="book" type="submit" class="filterbutton" name="btnBook" id="btnBook" onclick="search(this.id,'itemType')"> Books
+             <div id="bookhr" style="border: thin solid red; width: 100%; margin-top: 15%;display: none;"></div>
+          </button>
+            <input  id="book|" type="button" class="filterbutton" value="|">
 
-              {% endfor %}
+            <button id="database" type="submit" class="filterbutton" name="btnBook" id="btnBook" onclick="search(this.id,'itemType')"> Databases
+               <div id="databasehr" style="border: thin solid red; width: 100%; margin-top: 7%;display: none;"></div>
+             </button>
+           <input  id="database|" type="button" class="filterbutton" value="|">
 
-            {% endwith %}
-
-            {% endfor %}
-            </div>
-
-            <div>
-            {%for row in scienceDirects %}
-             
-            {% with forloop.counter as outer_counter %}
+            <button id="dissertation" type="submit" class="filterbutton" name="btnBook" id="btnBook" onclick="search(this.id,'itemType')"> Dissertations
+               <div id="dissertationhr" style="border: thin solid red; width: 100%; margin-top: 7%;display: none;"></div>
+             </button>
+           
             
-              {%for column in row %}
-              
-              {% if forloop.counter == 1 %}
-              {% for link in scienceLinks %}
-              {% if forloop.counter == outer_counter %}
-              <div style="color: black"><a href="https://www.sciencedirect.com/{{link}}" > <b> {{column}} </b> </a></div>
-              {% endif %}
-              {% endfor %}
-              {% endif %}
-
-              {% if forloop.counter == 2 %}
-              <div style="color: black;font-weight: lighter; font-size: 12px">  <i>{{ column }}</i> </div>
-              {% endif %}
-
-
-              {% endfor %}
-
-              {% endwith %}
-            {% endfor %}
+             
+             
+         
+         
+          <div class="wrapper">
+       <div class="main_content">
+          <div class="header" ><br><br><br><br><br><br>
+                <em style="font-size: 120%"> Search results for <a style="color: #800000" id="displayWord">{{keyword}}</a></em>   <br><br><br><br>
+                  <table class="table" id="itemTable">
+                    <thead>
+                      <tr>
+                        <th></th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody id="itemArea">
+                     
+                    </tbody>
+                  </table>
+                </div>
             </div>
-        </div> 
-
-          <div class="pagination">
-
-            <div class="perpage" id="example_length">
-              <label>Show 
-                <select name="example_length" aria-controls="example" class="page active">
-                  <option value="10">10</option>
-                  <option value="25">25</option>
-                  <option value="50">50</option>
-                  <option value="100">100</option>
-                </select>
-              entries</label>
             </div>
 
-            <ul class="ulclass">
-               <!-- <li class="btn prev"><span><i class="fas fa-angle-left"></i>Prev</span></li>
-                <li class="numb active"><span>1</span></li>
-                <li class="numb"><span>2</span></li>
-                <li class="dots"><span>...</span></li>
-                <li class="numb"><span>4</span></li>
-                <li class="numb"><span>5</span></li>
-                <li class="dots"><span>...</span></li>
-                <li class="numb"><span>7</span></li>
-                <li class="btn next"><span>Next<i class="fas fa-angle-right"></i></span></li> -->
-            </ul>
+
+
+
+
+
           </div>
-
-          <script  src= "{% static 'js/script.js' %}"></script>
-
-      
-
-      </div> <!-- main content end -->
+          </div>
+                 
+             
+            </div>  
+          </div>
+      </div>
     </div>
 
     <div class="right-tab" style="border-left:2px"></div>
@@ -190,10 +280,483 @@
 
         <!-- <div class="header">All</div> -->
         
-  
+    </div>
 
-    
+<div class="modal fade" id="modalLogoutForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"  style=“color: yellow”; >
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+      
+         <center> 
+         <form action = "" method = "POST" autocomplete = "off" enctype="multipart/form-data">
+          {% csrf_token %}
+            <h4 style="color: #800000">PLEASE LOG IN</h4> <br><br>
+            Bookmark feature requires an account<br>
+            <b>do you want to log in?</b><br><br><br><br>
+       
+   
+        <center>
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                <button type=“button” class="buttoncancel" data-dismiss="modal">Cancel</button>
+                </div>
+                <input value="search_result_view" name="previousPage" hidden>
+                <div class="form-group col-md-6"> 
+                    <button type="submit" name="buttonLogin"class="buttonlogout"> Login</button>
+                </div> 
+         </div>
+      </center>
+       </form>
+      </center>
+    </div></div>
+      </div>
+      
+  </div>
+</div></div>
     
 </body>
-<script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js"></script>
+
 </html>
+
+
+
+
+<script type="text/javascript">
+  
+ user_id = "{{is_authenticated}}"
+ site = "{{website}}"
+ type = "{{itemType}}"
+ prox = "{{proxy}}"
+ keyword = "{{keyword}}"
+ 
+  $(document).ready(function($) {
+     // showRows()
+  radio=  document.getElementsByName("radio")
+
+  for(i=0;i< radio.length;i++){
+   
+    if(radio[i].value == site){
+      radio[i].click()
+    }
+  }
+        var input = document.getElementById("input");
+      input.addEventListener("keyup", function(event) {
+        if (event.keyCode === 13) {
+         event.preventDefault();
+         document.getElementById("searchButton").click();
+        }
+      });
+
+
+});
+
+
+function showRows(markers, links){
+
+  for(i=0; i< markers.length;i++){
+    
+    
+          if(markers[i].length == 2){
+              
+                        if(user_id == 'True' | user_id == true){
+                          $('#itemArea').append(
+                                "<tr> " +
+                           "<td><a href='"+ links[i]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;font-size: 115%'><strong>" +
+                                markers[i][0] + "</strong></span></a><br>" +
+
+                                " <em>"+ markers[i][1]+"</em><br><br></td>" +
+
+                                  "<td><a class='btnBookmark' > <i id='"+markers[i][0]+"||"+links[i]+"' class='fa fa-bookmark' style='color: red;' onClick='reply_click(this.id)'></i></a> </td>"+ "</tr>" );  
+                        } else{
+                          $('#itemArea').append(
+                                "<tr> " +
+                           "<td><a href='"+ links[i]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;'><strong>" +
+                                markers[i][0] + "</strong></span></a><br>" +
+
+                                " <em>"+ markers[i][1]+"</em><br><br></td>" +
+
+                                  "<td><a class='btnBookmark' >  <i href='#modalLogoutForm' data-toggle='modal' data-target='#modalLogoutForm'style='color: red;'class='fa fa-bookmark'></i></a> </td><br><br>  "+ "</tr>" );  
+                        }
+
+            } else if(markers[i].length == 3 ){
+              
+                        if(user_id == 'True' | user_id == true){
+                          $('#itemArea').append(
+                                "<tr> " +
+                           "<td><a href='"+ links[i]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;font-size: 120%'><strong>" +
+                                markers[i][0] + "</strong></span></a><br>" +
+
+                                " <area>"+ markers[i][1]+"</area><br>" +
+                                 " <a>"+ markers[i][2]+"</a><br><br><br><br></td>" +
+
+                                  "<td><a class='btnBookmark' cursor: pointer > <i id='"+markers[i][0]+"||"+links[i]+"' class='fa fa-bookmark' style='color: red;' onClick='reply_click(this.id)'></i></a> </td>"+ "</tr>" );  
+                        } else{
+                          $('#itemArea').append(
+                                "<tr> " +
+                           "<td><a href='"+ links[i]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;font-size: 120%'><strong>" +
+                                markers[i][0] + "</strong></span></a><br>" +
+
+                                " <em>"+ markers[i][1]+"</em><br>" +
+                                 " <em>"+ markers[i][2]+"</em><br><br></td>" +
+
+                                  "<td><a class='btnBookmark' >  <i href='#modalLogoutForm' data-toggle='modal' data-target='#modalLogoutForm'style='color: red; cursor: pointer' class='fa fa-bookmark'></i></a> </td></tr>" );  
+                        }
+
+            }  else if(markers[i].length == 4){
+                
+                        if(user_id == 'True' | user_id == true){
+                          
+                          $('#itemArea').append(
+                                "<tr> " +
+                           "<td ><a href='"+ links[i]+"' ><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 80ch; font-size: 120%; '><b>" +
+                                markers[i][0] + "</b></span></a><br> " +
+
+                                " <area style=' font-size: 120%;  max-width: 60ch;'>"+ markers[i][1]+"</area><br>" +
+                                 " <em>"+ markers[i][2]+"</em><br>" +
+                                 " <area>"+ markers[i][3]+"</area><br><br><br><br></td>" +
+
+                                   "<td><a class='btnBookmark' > <i id='"+markers[i][0]+"||"+links[i]+"' class='fa fa-bookmark' style='color: red; cursor: pointer' onClick='reply_click(this.id)'></i></a> </td>"+ "</tr>" );  
+                        } else{
+                          $('#itemArea').append(
+                                "<tr> " +
+                           "<td><a href='"+ links[i]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;'><strong>" +
+                                markers[i][0] + "</strong></span></a><br>" +
+
+                               " <area style=' font-size: 120%;  max-width: 60ch;'>"+ markers[i][1]+"</area><br>" +
+                                 " <em>"+ markers[i][2]+"</em><br>" +
+                                 " <em>"+ markers[i][3]+"</em><br><br><br></td>" +
+
+                                  "<td><a class='btnBookmark' >  <i href='#modalLogoutForm' data-toggle='modal' data-target='#modalLogoutForm'style='color: red;cursor: pointer'class='fa fa-bookmark'></i></a> </td>"+ "</tr> <br><br>" );  
+                        }
+            }  else if(markers[i].length == 5){
+                
+                        if(user_id == 'True' | user_id == true){
+                          
+                          $('#itemArea').append(
+                                "<tr> " +
+                           "<td ><a href='"+ links[i]+"' ><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 80ch; font-size: 120%; '><b>" +
+                                markers[i][0] + "</b></span></a><br> " +
+
+                                " <area style=' font-size: 120%;  max-width: 60ch;'>"+ markers[i][1]+"</area><br>" +
+                                 " <em>"+ markers[i][2]+"</em><br>" +
+                                 " <area>"+ markers[i][3]+"</area><br></td>" +
+                                 " <area>"+ markers[i][4]+"</area><br><br><br><br></td>" +
+
+                                   "<td><a class='btnBookmark' > <i id='"+markers[i][0]+"||"+links[i]+"' class='fa fa-bookmark' style='color: red; cursor: pointer' onClick='reply_click(this.id)'></i></a> </td>"+ "</tr>" );  
+                        } else{
+                          $('#itemArea').append(
+                                "<tr> " +
+                           "<td><a href='"+ links[i]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;'><strong>" +
+                                markers[i][0] + "</strong></span></a><br>" +
+
+                               " <area style=' font-size: 120%;  max-width: 60ch;'>"+ markers[i][1]+"</area><br>" +
+                                 " <em>"+ markers[i][2]+"</em><br>" +
+                                " <area>"+ markers[i][3]+"</area><br></td>" +
+                                 " <area>"+ markers[i][4]+"</area><br><br><br><br></td>" +
+
+                                  "<td><a class='btnBookmark' >  <i href='#modalLogoutForm' data-toggle='modal' data-target='#modalLogoutForm'style='color: red;cursor: pointer'class='fa fa-bookmark'></i></a> </td>"+ "</tr> <br><br>" );  
+                        }
+            }  else if(markers[i].length == 6){
+                
+                        if(user_id == 'True' | user_id == true){
+                          
+                          $('#itemArea').append(
+                                "<tr> " +
+                           "<td ><a href='"+ links[i]+"' ><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 80ch; font-size: 120%; '><b>" +
+                                markers[i][0] + "</b></span></a><br> " +
+
+                                " <area style=' font-size: 120%;  max-width: 60ch;'>"+ markers[i][1]+"</area><br>" +
+                                 " <em>"+ markers[i][2]+"</em><br>" +
+                                 " <area>"+ markers[i][3]+"</area><br></td>" +
+                                 " <area>"+ markers[i][4]+"</area><br></td>" +
+                                 " <area>"+ markers[i][5]+"</area><br><br><br><br></td>" +
+
+                                   "<td><a class='btnBookmark' > <i id='"+markers[i][0]+"||"+links[i]+"' class='fa fa-bookmark' style='color: red; cursor: pointer' onClick='reply_click(this.id)'></i></a> </td>"+ "</tr>" );  
+                        } else{
+                          $('#itemArea').append(
+                                "<tr> " +
+                           "<td><a href='"+ links[i]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;'><strong>" +
+                                markers[i][0] + "</strong></span></a><br>" +
+
+                               " <area style=' font-size: 120%;  max-width: 60ch;'>"+ markers[i][1]+"</area><br>" +
+                                 " <em>"+ markers[i][2]+"</em><br>" +
+                                " <area>"+ markers[i][3]+"</area><br></td>" +
+                                 " <area>"+ markers[i][4]+"</area><br></td>" +
+                                 " <area>"+ markers[i][5]+"</area><br><br><br><br></td>" +
+
+                                  "<td><a class='btnBookmark' >  <i href='#modalLogoutForm' data-toggle='modal' data-target='#modalLogoutForm'style='color: red;cursor: pointer'class='fa fa-bookmark'></i></a> </td>"+ "</tr> <br><br>" );  
+                        }
+            }               
+  }
+}
+
+
+function clearRow(tableName){
+  var table = document.getElementById(tableName);
+    //or use :  var table = document.all.tableid;
+    
+    for(var i = table.rows.length - 1; i > 0; i--)
+    {
+        table.deleteRow(i);
+    }
+
+}
+
+
+function search(clicked_id, searchType){
+    
+    keyword = document.getElementById('input').value
+    clearRow("itemTable")
+    
+    if(searchType == 'search'){ 
+      
+        document.getElementById('displayWord').style.display ="none"
+        $.ajax({
+                type:"POST",
+                url:"",
+
+                data:{
+                  action: "search",
+                  word: keyword,
+                  site: website,
+                  itemType: type,
+                  proxy: prox,
+                  pageNumber: 1,
+                  csrfmiddlewaretoken: "{{csrf_token}}"
+                },
+                success: function(response){
+                  markers = response.results
+                  
+                  links = response.links
+                  showRows(markers, links)
+                  user_id = response.is_authenticated
+                  prox =  response.proxy
+                  // console.log(response)
+                  document.getElementById('displayWord').innerHTML = keyword
+                  document.getElementById('displayWord').style.display ="inline"
+                  
+             
+                }
+          }); 
+// document.getElementById('articlehr').style.display = "block";
+
+    } else if( searchType == 'itemType'){
+        type = clicked_id
+        
+        document.getElementById('displayWord').style.display ="none"
+        navhr(type)
+        $.ajax({
+                type:"POST",
+                url:"",
+
+                data:{
+                  action: "search",
+                  word: keyword,
+                  site: website,
+                  itemType: type,
+                  proxy: prox,
+                  pageNumber: 1,
+                  csrfmiddlewaretoken: "{{csrf_token}}"
+                },
+                success: function(response){
+                  markers = response.results
+                  
+                  links = response.links
+                  showRows(markers, links)
+                  user_id = response.is_authenticated
+                  prox =  response.proxy
+                  // console.log(response)
+                  document.getElementById('displayWord').innerHTML = keyword
+                  document.getElementById('displayWord').style.display ="inline"
+                  
+             
+                }
+          }); 
+        
+    } else if( searchType == 'site'){
+      
+      website = clicked_id
+      document.getElementById('displayWord').style.display ="none"
+      if(clicked_id == 'Sciencedirect.com'){
+        if(type != 'journal' & type != 'book'){
+          type = 'journal'
+        }
+        document.getElementById('article').style.display="none"
+        document.getElementById('article|').style.display="none"
+        document.getElementById('database').style.display="none"
+        document.getElementById('database|').style.display="none"
+        document.getElementById('journal').style.display="inline"
+        document.getElementById('journal|').style.display="inline"
+        document.getElementById('book').style.display="inline"
+        document.getElementById('book|').style.display="inline"
+        navhr(type)
+      } else if(clicked_id == 'Springeropen.com'){
+          if(type != 'article' & type != 'book'){
+          type = 'article'
+        
+        }
+
+        document.getElementById('journal').style.display="none"
+        document.getElementById('journal|').style.display="none"
+        document.getElementById('database').style.display="none"
+        document.getElementById('database|').style.display="none"
+        document.getElementById('article').style.display="inline"
+        document.getElementById('article|').style.display="inline"
+        document.getElementById('book').style.display="inline"
+        document.getElementById('book|').style.display="inline"
+        navhr(type)
+      } else if(clicked_id == 'Scirp.org'){
+        if(type != 'article' & type != 'journal'){
+          type = 'article'
+        }
+        document.getElementById('book').style.display="none"
+        document.getElementById('book|').style.display="none"
+        document.getElementById('database').style.display="none"
+        document.getElementById('database|').style.display="none"
+        document.getElementById('article').style.display="inline"
+        document.getElementById('article|').style.display="inline"
+         document.getElementById('journal').style.display="inline"
+        document.getElementById('journal|').style.display="inline"
+        navhr(type)
+      }else if(clicked_id == 'Zlibrary.org'){
+        if(type != 'article' & type != 'book'){
+          type = 'article'
+        }
+        document.getElementById('journal').style.display="none"
+        document.getElementById('journal|').style.display="none"
+        document.getElementById('database').style.display="none"
+        document.getElementById('database|').style.display="none"
+        document.getElementById('article').style.display="inline"
+        document.getElementById('article|').style.display="inline"
+        document.getElementById('book').style.display="inline"
+        document.getElementById('book|').style.display="inline"
+        navhr(type)
+      }else if(clicked_id == 'Herdin.ph'){
+        if(type != 'book' & type != 'journal'){
+          type = 'journal'
+        }
+        document.getElementById('article').style.display="none"
+        document.getElementById('article|').style.display="none"
+        document.getElementById('database').style.display="none"
+        document.getElementById('database|').style.display="none"
+        document.getElementById('journal').style.display="inline"
+        document.getElementById('journal|').style.display="inline"
+        document.getElementById('book').style.display="inline"
+        document.getElementById('book|').style.display="inline"
+        navhr(type)
+
+      } else if(clicked_id == 'Tandfonline.com'){
+        if(type != 'article' & type != 'journal' & type != 'database'){
+          type = 'article'
+        }
+        document.getElementById('book').style.display="none"
+        document.getElementById('book|').style.display="none"
+        document.getElementById('journal').style.display="inline"
+        document.getElementById('journal|').style.display="inline"
+        document.getElementById('article').style.display="inline"
+        document.getElementById('article|').style.display="inline"
+        document.getElementById('database').style.display="inline"
+        document.getElementById('database|').style.display="inline"
+        navhr(type)
+
+      }
+      $.ajax({
+                type:"POST",
+                url:"",
+
+                data:{
+                  action: "search",
+                  word: keyword,
+                  site: website,
+                  itemType: type,
+                  proxy: prox,
+                  pageNumber: 1,
+                  csrfmiddlewaretoken: "{{csrf_token}}"
+                },
+                success: function(response){
+                  markers = response.results
+                  
+                  links = response.links
+                  showRows(markers, links)
+                  user_id = response.is_authenticated
+                  prox =  response.proxy
+                  // console.log(response)
+                  document.getElementById('displayWord').innerHTML = keyword
+                  document.getElementById('displayWord').style.display ="inline"
+                  
+             
+                }
+
+          }); 
+    }
+    
+        
+}
+
+
+
+function reply_click(clicked_id){
+      if(document.getElementById(clicked_id).style.color == "red"){
+        document.getElementById(clicked_id).style.color = "#e07878";
+        $.ajax({
+                      type:"POST",
+                      url:"",
+                      
+                      data:{
+                        action: "add",
+                        reftype: type, 
+                        website: website,
+                        bookmark: clicked_id,
+                        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                      }
+        });      
+      } else{
+        document.getElementById(clicked_id).style.color = "red";
+         $.ajax({
+                      type:"POST",
+                      url:"",
+                      
+                      data:{
+                        action: "remove",
+                        bookmark: clicked_id,
+                        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                      }
+        });      
+      }
+
+        
+}
+
+
+
+function navhr(type){
+  document.getElementById('articlehr').style.display = "none"
+  document.getElementById('journalhr').style.display = "none"
+  document.getElementById('bookhr').style.display = "none"
+  document.getElementById('dissertationhr').style.display = "none"
+  document.getElementById('databasehr').style.display = "none"
+  if(type == 'article'){
+    document.getElementById('articlehr').style.display = "block"
+  } else if(type == 'journal'){
+    document.getElementById('journalhr').style.display = "block"
+  } else if(type == 'book'){
+    document.getElementById('bookhr').style.display = "block"
+  } else if(type == 'dissertation'){
+    document.getElementById('dissertationhr').style.display = "block"
+  }else if(type == 'database'){
+    document.getElementById('databasehr').style.display = "block"
+  }
+
+}
+
+
+
+
+
+
+</script>
