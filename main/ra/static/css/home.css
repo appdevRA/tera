@@ -12,7 +12,7 @@ body{
 }
 nav{
   background: #fff;
-  box-shadow: 0 2px 3px #ffd700;
+ 
 
 }
 nav:after{
@@ -53,8 +53,7 @@ nav ul li a{
 nav ul li a:hover{
   color: #ffd700;
   border-radius: 5px;
-  box-shadow:  0 0 5px #ffd700,
-               0 0 5px #ffd700;
+  
 }
 nav ul ul li a:hover{
   box-shadow: none;

@@ -201,9 +201,7 @@ section.home{
   color: #717171;
 }
 
-.main_content{
-  overflow-y: scroll; 
-}
+
 .wrapper .main_content .info div{
   margin-bottom: 1%;
   line-height: 15px;
