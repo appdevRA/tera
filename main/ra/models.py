@@ -44,8 +44,8 @@ class User_bookmark (models.Model):
 	edition =models.CharField(max_length = 20,blank= True)
 	publisher = models.CharField(max_length = 1000, blank= True)
 	publicationYear = models.CharField(max_length= 20,blank= True)
-	dateAccessed = models.DateTimeField(default = datetime.now())
-	dateAdded = models.DateTimeField(default=datetime.now() )
+	dateAccessed = models.DateTimeField(default = timezone.now)
+	dateAdded = models.DateTimeField(auto_now_add = True )
 	DOI = models.CharField(max_length = 200,blank= True)
 	ISSN = models.CharField(max_length = 100,blank= True)
 	isRemoved = models.IntegerField(default = 0)
@@ -80,24 +80,22 @@ class User_file(models.Model):
 
 
 class Group(models.Model):
-	name = models.CharField(max_length=50, unique=True) #add not null and not blank here
+	name = models.CharField(max_length=50) #add not null and not blank here
 	description = models.CharField(max_length=200)
-	owner = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
-	date_created = models.DateTimeField(default=datetime.now())
+	owner = models.ForeignKey(User, related_name='User', on_delete = models.CASCADE)
+	date_created = models.DateTimeField(auto_now_add= True)
+	is_removed = models.IntegerField(default=0)
+	member = models.ManyToManyField(User)
 	class Meta:
 		db_table = "Group"
 
-class Group_member(models.Model):
-	group = models.ForeignKey(Group, null = False, blank = False, on_delete = models.CASCADE)
-	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
-	class Meta:
-		db_table = "Group_member"
+
 
 class Group_bookmark(models.Model):
 	group =models.ForeignKey(Group, null = False, blank = False, on_delete = models.CASCADE)
 	bookmark = models.ForeignKey(User_bookmark, null = False, blank = False, on_delete = models.CASCADE)
 	added_by = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
-	date_added = models.DateTimeField(default=datetime.now())
+	date_added = models.DateTimeField(default=timezone.now)
 	is_removed = models.IntegerField(default=0)
 	date_removed = models.DateTimeField(blank=True,null = True)
 
@@ -106,9 +104,10 @@ class Group_bookmark(models.Model):
 
 
 class Folder(models.Model):
-	name = models.CharField(max_length=25, unique=True)
+	name = models.CharField(max_length=25)
 	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE, default=None)
-	date_created = models.DateTimeField(default=datetime.now())
+	date_created = models.DateTimeField(default=timezone.now)
+	is_removed = models.IntegerField(default=0)
 
 	class Meta:
 		db_table = "Folder"	
@@ -117,7 +116,7 @@ class Bookmark_folder (models.Model):
 	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
 	folder = models.ForeignKey(Folder, null = False, blank = False, on_delete = models.CASCADE)
 	bookmark = models.ForeignKey(User_bookmark, null = False, blank = False, on_delete = models.CASCADE)
-	date_added = models.DateTimeField(default=datetime.now())
+	date_added = models.DateTimeField(default=timezone.now)
 	is_removed = models.IntegerField(default=0)
 	date_removed = models.DateTimeField(blank=True,null = True)
 
@@ -136,7 +135,7 @@ class Site (models.Model):
 	name = models.CharField(max_length= 100)
 	url= models.CharField(max_length= 300)
 	added_by = models.ForeignKey(Admin, null = False, blank = False, on_delete = models.DO_NOTHING)
-	date_added = models.DateTimeField(default=datetime.now())
+	date_added = models.DateTimeField(auto_now_add=True)
 
 	class Meta:
 		db_table = "Site"	
@@ -146,7 +145,7 @@ class User_access (models.Model):
 	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
 	department = models.ForeignKey(Department, null = False, blank = False, on_delete = models.CASCADE)
 	site = models.ForeignKey(Site, null = False, blank = False, on_delete = models.CASCADE)
-	date_of_access = models.DateTimeField(default=datetime.now())
+	date_of_access = models.DateTimeField(auto_now_add=True)
 
 	class Meta:
 		db_table = "User_access"	
@@ -161,7 +160,7 @@ class Headers (models.Model):
 
 class Practice (models.Model):
 	text =  models.CharField(max_length = 5)
-	time = models.DateTimeField(default=datetime.now())
+	time = models.DateTimeField(default=timezone.now())
 
 
 	class Meta:

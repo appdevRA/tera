@@ -376,8 +376,14 @@ class TeraSearchResultsView(View):
 class TeraDashboardView(View):
 
 	def get(self,request):
-		# Group.objects.create(name='wala', owner=request.user, member = 1)
+		# Department.objects.create(abbv='CCS', name="College of Computer Studies")
+		# User.objects.create(username='mondejars', password= make_password('12345'), department= Department.objects.get(id=1))
+		# Group.objects.get(id=1).member.add(User.objects.get(username='mondejars'))
+		#.distinct()
+		
+		
 		# Folder.objects.all().delete()
+		# User_bookmark.objects.all().delete()
 		request.session['previousPage'] = "tera_dashboard_view"
 		# try:
 			# cursor = connection.cursor()   
@@ -388,11 +394,11 @@ class TeraDashboardView(View):
 
 
 		if request.user.id != None:
-			query = Q(owner=request.user)
-			# query.add(Q(member=1) ,Q.OR)
+			
+			# query.add(Q(group_member=request.user.id) ,Q.OR)
 			queryset = User_bookmark.objects.filter(user_id=request.user.id)
 			folders =	Folder.objects.filter(user_id=request.user)
-			groups = Group.objects.filter(query)
+			groups = Group.objects.filter(Q(owner= request.user) | Q(member=request.user))
 			bookmark= serializers.serialize("json",queryset )
 			folder_list = serializers.serialize("json",folders )
 			group_list = serializers.serialize("json",groups )
@@ -440,20 +446,20 @@ class TeraDashboardView(View):
 				User_bookmark.objects.filter(id=request.POST['bID']).update(isFavorite=0)
 				return HttpResponse('')
 			elif action == 'trashItem':
-				User_bookmark.objects.filter(id=request.POST['bID']).update(isRemoved=1, date_removed= datetime.now())
+				User_bookmark.objects.filter(id=request.POST['bID']).update(isRemoved=1, date_removed= timezone.now())
 				return HttpResponse('')
 			elif action == 'unTrashItem':
 				User_bookmark.objects.filter(id=request.POST['bID']).update(isRemoved=0,date_removed= None)
 				return HttpResponse('')
 			elif action == 'deleteItem':
-				User_bookmark.objects.filter(id=request.POST['bID']).update(isRemoved=2, date_removed= datetime.now())
+				User_bookmark.objects.filter(id=request.POST['bID']).update(isRemoved=2, date_removed= timezone.now())
 				return HttpResponse('')
 
 			elif action == 'add_bookmark_to_folder':
 				ID = request.POST['fID']
 				bID = request.POST['bID']
 				
-				if Folder.objects.filter(id=ID).exists():
+				if Folder.objects.filter(id=ID, user = request.user).exists():
 					print('yes folder')
 					Bookmark_folder.objects.create(user=request.user, folder=Folder.objects.get(id=ID), bookmark = User_bookmark.objects.get(id=bID) )
 					print("bookmark folder added")
@@ -470,13 +476,21 @@ class TeraDashboardView(View):
 
 			elif action == 'add_folder':
 				name = request.POST['name']
-				Folder.objects.create(user=request.user, name = name)
-				folders = Folder.objects.filter(user=request.user).values()
-				a = list(folders)	
+				did_exist = Folder.objects.filter(user_id = request.user, name = name).exists()
 				
-				context = {
-			    "folder_list": a
-				}
+				if did_exist == False:
+					Folder.objects.create(user=request.user, name = name)
+					folders = Folder.objects.filter(user=request.user).values()
+					a = list(folders)	
+				
+					context = {
+				    "folder_list": a,
+				    "did_exist": False
+					}
+				else:
+					context = {
+				    "did_exist": True
+					}
 				
 				return JsonResponse(context)
 
@@ -509,10 +523,12 @@ class TeraDashboardView(View):
 			elif action == 'get_group_bookmarks':
 				gID = request.POST['gID']
 				cursor = connection.cursor()   
-				cursor.execute("SELECT gf.id AS bf_ID, gf.bookmark_id AS b_ID FROM User_bookmark b, Group_bookmark gf WHERE gf.group_id = "+ str(gID)+" AND gf.bookmark_id = b.id AND gf.is_removed = 0") #| get rows of for a specific date|
+				cursor.execute("SELECT gf.id AS bf_ID, b.* FROM User_bookmark b, Group_bookmark gf WHERE gf.group_id = "+ str(gID)+" AND gf.bookmark_id = b.id AND gf.is_removed = 0") #| get rows of for a specific date|
 				a = dictfetchall(cursor)
-				# print(a)
 				
+				for b in a:
+					print("\n\n\n")
+					print(b)
 				context = {
 			    "bookmarks": a
 				}
@@ -525,14 +541,14 @@ class TeraDashboardView(View):
 					faction_id = request.POST['faction_id']
 					
 
-					Bookmark_folder.objects.filter(id =faction_id).update(is_removed = 1, date_removed= datetime.now())
+					Bookmark_folder.objects.filter(id =faction_id).update(is_removed = 1, date_removed= timezone.now())
 					return HttpResponse('')
 
 				if request.POST['faction_type'] == 'groups':
 					faction_id = request.POST['faction_id']
 					
 
-					Group_bookmark.objects.filter(id =faction_id).update(is_removed = 1, date_removed= datetime.now())
+					Group_bookmark.objects.filter(id =faction_id).update(is_removed = 1, date_removed= timezone.now())
 					return HttpResponse('')
 
 				if request.POST['faction_type'] == 'trash':
@@ -545,12 +561,12 @@ class TeraDashboardView(View):
 
 					else:
 						faction_id = request.POST['faction_id']
-						Bookmark_folder.objects.filter(id =faction_id).update(is_removed = 2, date_removed=datetime.now())
+						Bookmark_folder.objects.filter(id =faction_id).update(is_removed = 2, date_removed=timezone.now)
 						return HttpResponse('')
 
 			
 			elif action == 'get_folder_trash':
-				print('olok')
+				
 				cursor = connection.cursor()   
 				cursor.execute("SELECT bf.id AS BF_ID, bf.bookmark_id AS b_ID, bf.date_removed AS date FROM Bookmark_folder bf, User_bookmark b WHERE  bf.user_id = "+ str(request.user.id)+" AND bf.user_id = b.user_id AND bf.bookmark_id = b.id AND bf.is_removed = 1") #| get rows of for a specific date|
 				a = dictfetchall(cursor)
@@ -559,6 +575,13 @@ class TeraDashboardView(View):
 			    "bookmarks": a
 				}
 				return JsonResponse(context)
+
+			elif action == 'open_link':
+				bID = request.POST['bID']
+
+				User_bookmark.objects.filter(id = bID).update(dateAccessed = timezone.now())
+				return HttpResponse('')
+			
 
 def TeraAccountSettingsView(request):
     if request.method == 'POST':

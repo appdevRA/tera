@@ -106,7 +106,7 @@ tr:hover {
       </li>
 
         </ul>
-<!-- The Modal -->
+<!-- Add Folder Modal -->
                   <div class="modal fade" id="addtoFolderModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                     <div class="modal-content">
@@ -124,18 +124,19 @@ tr:hover {
                             
                             
                             
-                            <input type="text" placeholder="Enter Collection Name" style="width: 80%" id="foldername_input" value="My collection" required>
+                            <input type="text" placeholder="Enter Collection Name" style="width: 80%" id="foldername_input" value="My collection" required><br>
+                            <a id="add_folder_error" style="color: red; visibility: hidden">Folder name already exist</a>
                            <br><br><br>
                        
                    
                         <center>
                               <div class="form-row">
                                 <div class="form-group col-md-6">
-                                <button type=“button” class="buttoncancel" data-dismiss="modal">Cancel</button>
+                                <button id="dismiss-modal_folder" type=“button” class="buttoncancel" data-dismiss="modal">Cancel</button>
                                 </div>
                               
                                 <div class="form-group col-md-6"> 
-                                    <button type="submit" name="buttonLogin"class="buttonlogout"  data-dismiss="modal" onclick="create_folder('folders')"> Create</button>
+                                    <button type="submit" name="buttonLogin"class="buttonlogout"   onclick="create_folder('folders')"> Create</button>
                                 </div> 
                          </div>
                       </center>
@@ -167,17 +168,20 @@ tr:hover {
                             
                             
                             <input type="text" placeholder="Enter Collection Name" style="width: 80%" id="groupname_input" value="My group" required>
+                           <br>
+                            <a id="add_folder_error" style="color: red; visibility: hidden">Folder name already exist</a>
+
                            <br><br><br>
                        
                    
                         <center>
                               <div class="form-row">
                                 <div class="form-group col-md-6">
-                                <button type=“button” class="buttoncancel" data-dismiss="modal">Cancel</button>
+                               <button id="dismiss-modal_group" type=“button” class="buttoncancel" data-dismiss="modal">Cancel</button>
                                 </div>
                                 
                                 <div class="form-group col-md-6"> 
-                                    <button type="submit" name="buttonLogin"class="buttonlogout"  data-dismiss="modal" onclick="create_folder('groups')"> Create</button>
+                                    <button type="submit" name="buttonLogin"class="buttonlogout"   onclick="create_folder('groups')" data-dismiss="modal"> Create</button>
                                 </div> 
                          </div>
                       </center>
@@ -300,10 +304,12 @@ tr:hover {
    var groups = {{group_list | safe}}
     tab = 'all'
     var faction_id
+    var faction_markers
 $(document).ready(function($) {
   showRows('all')
 
-
+// $('#addtoFolderModal').modal('show') 
+// $('#addtoFolderModal').modal('hide') 
 
   // document.getElementById("folderList_dropdown1").classList.toggle("hide");
   //      $(".clickable-row").click(function() {
@@ -461,6 +467,7 @@ function favorite_item(clicked_id){
 
 
 function showRows(rowType, bookmak_folder_list, faction_id){
+
   clearRow("detailTable")
   clearStyle();
   clearRow('itemTable');
@@ -478,7 +485,11 @@ function showRows(rowType, bookmak_folder_list, faction_id){
 
                 if( markers[i]['fields']['isRemoved'] == 0 ){
                       date_add= new Date(markers[i]['fields']['dateAdded'])
+                      
+
+                       date_add= new Date(markers[i]['fields']['dateAdded'])
                       date_acc= new Date(markers[i]['fields']['dateAccessed'])
+
                       if( markers[i]['fields']['isFavorite'] == 0){
                         favorite ="<td><i id='"+ markers[i]['pk']+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>"
                       }else{
@@ -490,11 +501,12 @@ function showRows(rowType, bookmak_folder_list, faction_id){
                         } else if(markers[i]['fields']['websiteTitle'] == "Sciencedirect.com"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 25px;'></td>"
                         } 
+
                        $('#itemArea').append(
                         "<tr>"+
                         sitelogo +
                         "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
-                        "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
+                        "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i]['pk'] +","+i+")'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
 
                         "<td>" + date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5) + "</td>" +
                         "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
@@ -532,11 +544,11 @@ function showRows(rowType, bookmak_folder_list, faction_id){
 
             if( markers[i]['fields']['isRemoved'] == 1){
               date_acc= new Date(markers[i]['fields']['dateAccessed'])
-              if(typeof(markers[i]['fields']['date_removed']) == 'string'){
-              date_add= new Date(markers[i]['fields']['date_removed'].replace('T',' ').slice(0,-8))
-              } else{
-                date_add= new Date(markers[i]['fields']['date_removed'])
-              } 
+              // if(typeof(markers[i]['fields']['date_removed']) == 'string'){
+              // date_removed= new Date(markers[i]['fields']['date_removed'].replace('T',' ').slice(0,-8))
+              // } else{
+                date_removed= new Date(markers[i]['fields']['date_removed'])
+              // } 
               if(markers[i]['fields']['websiteTitle'] == "Springeropen.com"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
                         } else if(markers[i]['fields']['websiteTitle'] == "Sciencedirect.com"){
@@ -549,9 +561,9 @@ function showRows(rowType, bookmak_folder_list, faction_id){
 
                 sitelogo+
                 "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
-                "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
+                "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i]['pk'] +","+i+")'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
 
-                "<td>" +  date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5)  + "</td>" +
+                "<td>" +  date_removed.toDateString().slice(3,)+" "+date_removed.toTimeString().slice(0,5)  + "</td>" +
                "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
 
                 "<td><i id='"+ markers[i]['pk']+"' class='fas fa-undo' style='cursor: pointer' onclick='delete_item(this.id,"+i+", "+0+")'></i></td>" +
@@ -589,8 +601,8 @@ function showRows(rowType, bookmak_folder_list, faction_id){
                         for(i=0; i< markers.length;i++){
                             for(ii=0; ii < array.length;ii++){
                               if( markers[i]['pk'] == array[ii].b_ID){
-                                 date_acc= new Date(markers[i]['fields']['dateAccessed'])
-                                date_add= new Date(array[ii].date)
+                                
+
                                       if(markers[i]['fields']['websiteTitle'] == "Springeropen.com"){
                                         sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
                                       } else if(markers[i]['fields']['websiteTitle'] == "Sciencedirect.com"){
@@ -602,9 +614,10 @@ function showRows(rowType, bookmak_folder_list, faction_id){
 
                                   sitelogo+
                                   "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
-                                  "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
-                                  "<td>" +  date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5)  + "</td>" +
-                                  "<td>" +  date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5)  + "</td>" +
+                                  "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i]['pk'] +","+i+")'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
+                                  "<td>" +  new Date(array[ii].date+'Z').toDateString().slice(3,)+" "+new Date(array[ii].date+'Z').toTimeString().slice(0,5)+ "</td>" +
+                                  "<td>" +  new Date(markers[i]['fields']['dateAccessed']).toDateString().slice(3,)+" "+new Date(markers[i]['fields']['dateAccessed']).toTimeString().slice(0,5)+ "</td>" +
+                                  
 
                                   "<td><i id='"+ array[ii].BF_ID+"' class='fas fa-undo' style='cursor: pointer' onclick='remove_from_faction(this.id,1)'></i></td>" +
                                   "<td><i id='"+ array[ii].BF_ID+"' class='fas fa-trash-alt' style='cursor: pointer' onclick='remove_from_faction(this.id,2)'></i></td>" +
@@ -650,7 +663,7 @@ function showRows(rowType, bookmak_folder_list, faction_id){
                         "<tr>"+
                         sitelogo +
                         "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
-                        "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
+                        "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i]['pk'] +","+i+")'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
 
                         "<td>" + date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5) + "</td>" +
                         "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
@@ -707,7 +720,7 @@ function showRows(rowType, bookmak_folder_list, faction_id){
                         "<tr>"+
                         sitelogo +
                         "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
-                        "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
+                        "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i]['pk'] +","+i+")'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
 
                         "<td>" + date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5) + "</td>" +
                         "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
@@ -755,7 +768,7 @@ function showRows(rowType, bookmak_folder_list, faction_id){
                 "<tr>"+
                 sitelogo +
                 "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
-                "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'> <span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
+                "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i]['pk'] +","+i+")'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
 
                "<td>" + date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5) + "</td>" +
                         "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
@@ -810,7 +823,7 @@ function showRows(rowType, bookmak_folder_list, faction_id){
                         "<tr>"+
                         sitelogo +
                         "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
-                        "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
+                        "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i]['pk'] +","+i+")'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
 
                         "<td>" + date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5) + "</td>" +
                         "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
@@ -839,38 +852,38 @@ function showRows(rowType, bookmak_folder_list, faction_id){
       }
       }
     } else if(rowType =='groups'){
-      for(i=0; i< markers.length;i++){
 
-      for(ii=0;ii < array.length;ii++){
-          if(markers[i]['pk'] == array[ii].b_ID){
+      for(i=0;i < array.length;i++){
+        
 
-                if( markers[i]['fields']['isRemoved'] == 0){
-                  date_add= new Date(markers[i]['fields']['dateAdded'])
-                      date_acc= new Date(markers[i]['fields']['dateAccessed'])
+               
 
-                      if( markers[i]['fields']['isFavorite'] == 0){
-                        favorite ="<td><i id='"+ markers[i]['pk']+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>"
+                  date_add= new Date(array[i].dateAdded+'Z')
+                      date_acc= new Date(array[i].dateAccessed+'Z')
+
+                      if( array[i].isFavorite == 0){
+                        favorite ="<td><i id='"+ array[i].id+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>"
                       }else{
-                        favorite ="<td><i id='"+ markers[i]['pk']+"' class='fas fa-star' style='cursor: pointer; color:red' onclick='favorite_item(this.id)'></i></td>"
+                        favorite ="<td><i id='"+ array[i].id+"' class='fas fa-star' style='cursor: pointer; color:red' onclick='favorite_item(this.id)'></i></td>"
                       }
 
-                      if(markers[i]['fields']['websiteTitle'] == "Springeropen.com"){
+                      if(array[i].websiteTitle == "Springeropen.com"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
-                        } else if(markers[i]['fields']['websiteTitle'] == "Sciencedirect.com"){
+                        } else if(array[i].websiteTitle == "Sciencedirect.com"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/science direct.PNG' %}' style='height: 25px;'></td>"
                         } 
                        $('#itemArea').append(
                         "<tr>"+
                         sitelogo +
-                        "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
-                        "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
+                        "<td>"+ array[i].itemType +  "</td>"+
+                       "<td><a href='"+ array[i].url+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ array[i].id +","+i+")'>" + array[i].title +  "</span></a></td>"+
 
                         "<td>" + date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5) + "</td>" +
                         "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
-                        "<td><i id='"+ markers[i]['pk'] +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
+                        "<td><i id='"+ array[i].id +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
 
 
-                         "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ markers[i]['pk']+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
+                         "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ array[i].id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
                          "<div id='folderList_dropdown"+i+"' class='dropdown-content' style='min-width: 15%; margin-left: -8% '>"+
                          "<ul id='add_to_folderList_ul"+i+"'>"+
                      
@@ -881,22 +894,37 @@ function showRows(rowType, bookmak_folder_list, faction_id){
 
 
 
-                        "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer; font-size: 90%' onclick='remove_from_faction("+array[ii].bf_ID+")'></i></td>" +
+                        "<td><i id='"+ array[i].id+"' class='fas fa-trash-alt' style='cursor: pointer; font-size: 90%' onclick='remove_from_faction("+array[i].bf_ID+")'></i></td>" +
                        
 
                        "</tr>"
 
                         );   
-                }  
-          }
+                
+        
         
       }
-      }
+      
     }
 
 
 }
 
+function open_link(clicked_id, i){
+ 
+  markers[i]['fields']['dateAccessed'] = new Date()
+  $.ajax({
+                      type:"POST",
+                      url:"",
+
+                      data:{
+                        action: 'open_link',
+                        bID: clicked_id,
+                        
+                        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                      }
+        }); 
+}
 function clearRow(tableName){
   var table = document.getElementById(tableName);
     //or use :  var table = document.all.tableid;
@@ -938,45 +966,84 @@ function clearStyle(){
 }
 function get_detail(clicked_id){
     var id = parseInt(clicked_id);
-  
+    
     clearRow("detailTable")   
 
-   for(i=0; i< markers.length;i++){
-      if(markers[i]['pk'] == id){
-          var dt = new Date( markers[i]['fields']['dateAdded']);
-          var access = new Date( markers[i]['fields']['dateAccessed']);
-           added =  (("0"+dt.getDate()).slice(-2)) +"/"+ (("0"+(dt.getMonth()+1)).slice(-2)) +"/"+ (dt.getFullYear()) +" "+ (("0"+dt.getHours()).slice(-2)) +":"+ (("0"+dt.getMinutes()).slice(-2));
+   if(tab != 'groups'){
+    for(i=0; i< markers.length;i++){
+         if(markers[i]['pk'] == id){
+   
+             var added = new Date( markers[i]['fields']['dateAdded']);
+             var accessed = new Date( markers[i]['fields']['dateAccessed']);
+              
+              
+          $('#detailArea').append("<tr ><td style='text-align: right; vertical-align:top'> Website: </td>"+ "<td> <a href='https://"+markers[i]['fields']['websiteTitle']+ "'>"+ markers[i]['fields']['websiteTitle'] +  "</a></td></tr>" );  
+          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Item type: </td>"+ "<td>"+ markers[i]['fields']['itemType'] +  "</td></tr>" );  
+          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> URL: </td>"+ "<td><a href='"+markers[i]['fields']['url']+"' target='_blank'>"+ markers[i]['fields']['url'] +  "</td></tr>" );  
+          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Title: </td>"+ "<td>"+ markers[i]['fields']['title'] +  "</td></tr>" );  
+          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Author: </td>"+ "<td>"+ markers[i]['fields']['author'] +  "</td></tr>" );  
+          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Abstract: </td>"+ "<td>"+ markers[i]['fields']['description'] +  "</td></tr>" );  
+          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Collection: </td>"+ "<td>"+ markers[i]['fields']['journalItBelongs'] +  "</td></tr>" );  
+          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Publication Year: </td>"+ "<td>"+ markers[i]['fields']['publicationYear'] +  "</td></tr>" );  
+          $('#detailArea').append(
+           "<tr><td style='text-align: right; vertical-align:top'> Publisher: </td>"+ "<td>"+ markers[i]['fields']['publisher'] +  "</td></tr>" +
+           "<tr><td style='text-align: right; vertical-align:top'> Volume: </td>"+ "<td>"+ markers[i]['fields']['volume'] +  "</td></tr>" +
+           "<tr><td style='text-align: right; vertical-align:top'> Edition: </td>"+ "<td>"+ markers[i]['fields']['edition'] +  "</td></tr>" +
+           "<tr><td style='text-align: right; vertical-align:top'> Citation: </td>"+ "<td>"+ markers[i]['fields']['numOfCitation'] +  "</td></tr>" +
+           "<tr><td style='text-align: right; vertical-align:top'> Downloads: </td>"+ "<td>"+ markers[i]['fields']['numOfDownload'] +  "</td></tr>" +
+           "<tr><td style='text-align: right; vertical-align:top'> Pages: </td>"+ "<td>"+ markers[i]['fields']['numOfPages'] +  "</td></tr>" +
+           "<tr><td style='text-align: right; vertical-align:top'> DOI: </td>"+ "<td>"+ markers[i]['fields']['DOI'] +  "</td></tr>" +
+           "<tr><td style='text-align: right; vertical-align:top'> ISSN: </td>"+ "<td>"+ markers[i]['fields']['ISSN'] +  "</td></tr>" +
+           
+           "<tr><td style='text-align: right; vertical-align:top'> Date added: </td>"+ "<td>"+ added.toDateString().slice(3,)+" "+added.toTimeString().slice(0,5) +  "</td></tr>"+
+           "<tr><td style='text-align: right; vertical-align:top'> Date Accessed: </td>"+ "<td>"+ accessed.toDateString().slice(3,)+" "+accessed.toTimeString().slice(0,5) +  "</td></tr>" 
+   
+   
+   
+           );  
+   
+          break;
+         }
+     } 
+   }
 
-            accessed =  (("0"+access.getDate()).slice(-2)) +"/"+ (("0"+(access.getMonth()+1)).slice(-2)) +"/"+ (access.getFullYear()) +" "+ (("0"+access.getHours()).slice(-2)) +":"+ (("0"+access.getMinutes()).slice(-2));
-           markers[i]['fields']['publisher'] = ''
-       $('#detailArea').append("<tr ><td style='text-align: right; vertical-align:top'> Website: </td>"+ "<td> <a href='https://"+markers[i]['fields']['websiteTitle']+ "'>"+ markers[i]['fields']['websiteTitle'] +  "</a></td></tr>" );  
-       $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Item type: </td>"+ "<td>"+ markers[i]['fields']['itemType'] +  "</td></tr>" );  
-       $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> URL: </td>"+ "<td><a href='"+markers[i]['fields']['url']+"' target='_blank'>"+ markers[i]['fields']['url'] +  "</td></tr>" );  
-       $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Title: </td>"+ "<td>"+ markers[i]['fields']['title'] +  "</td></tr>" );  
-       $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Author: </td>"+ "<td>"+ markers[i]['fields']['author'] +  "</td></tr>" );  
-       $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Abstract: </td>"+ "<td>"+ markers[i]['fields']['description'] +  "</td></tr>" );  
-       $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Collection: </td>"+ "<td>"+ markers[i]['fields']['journalItBelongs'] +  "</td></tr>" );  
-       $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Publication Year: </td>"+ "<td>"+ markers[i]['fields']['publicationYear'] +  "</td></tr>" );  
-       $('#detailArea').append(
-        "<tr><td style='text-align: right; vertical-align:top'> Publisher: </td>"+ "<td>"+ markers[i]['fields']['publisher'] +  "</td></tr>" +
-        "<tr><td style='text-align: right; vertical-align:top'> Volume: </td>"+ "<td>"+ markers[i]['fields']['volume'] +  "</td></tr>" +
-        "<tr><td style='text-align: right; vertical-align:top'> Edition: </td>"+ "<td>"+ markers[i]['fields']['edition'] +  "</td></tr>" +
-        "<tr><td style='text-align: right; vertical-align:top'> Citation: </td>"+ "<td>"+ markers[i]['fields']['numOfCitation'] +  "</td></tr>" +
-        "<tr><td style='text-align: right; vertical-align:top'> Downloads: </td>"+ "<td>"+ markers[i]['fields']['numOfDownload'] +  "</td></tr>" +
-        "<tr><td style='text-align: right; vertical-align:top'> Pages: </td>"+ "<td>"+ markers[i]['fields']['numOfPages'] +  "</td></tr>" +
-        "<tr><td style='text-align: right; vertical-align:top'> DOI: </td>"+ "<td>"+ markers[i]['fields']['DOI'] +  "</td></tr>" +
-        "<tr><td style='text-align: right; vertical-align:top'> ISSN: </td>"+ "<td>"+ markers[i]['fields']['ISSN'] +  "</td></tr>" +
-        
-        "<tr><td style='text-align: right; vertical-align:top'> Date added: </td>"+ "<td>"+ added +  "</td></tr>"+
-        "<tr><td style='text-align: right; vertical-align:top'> Date Accessed: </td>"+ "<td>"+ accessed +  "</td></tr>" 
+    if(tab == 'groups'){
+      for(i=0; i< faction_markers.length;i++){
+        if(faction_markers[i].id == id){
+          
+
+            var added = new Date( faction_markers[i].date_removed+'Z');
+            var accessed = new Date( faction_markers[i].dateAccessed+'Z');
+             
+         $('#detailArea').append("<tr ><td style='text-align: right; vertical-align:top'> Website: </td>"+ "<td> <a href='https://"+faction_markers[i].websiteTitle+ "'>"+ faction_markers[i].websiteTitle +  "</a></td></tr>" );  
+         $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Item type: </td>"+ "<td>"+ faction_markers[i].itemType +  "</td></tr>" );  
+         $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> URL: </td>"+ "<td><a href='"+faction_markers[i].url+"' target='_blank'>"+ faction_markers[i].url +  "</td></tr>" );  
+         $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Title: </td>"+ "<td>"+ faction_markers[i].title +  "</td></tr>" );  
+         $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Author: </td>"+ "<td>"+ faction_markers[i].author +  "</td></tr>" );  
+         $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Abstract: </td>"+ "<td>"+ faction_markers[i].description +  "</td></tr>" );  
+         $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Collection: </td>"+ "<td>"+ faction_markers[i].journalItBelongs +  "</td></tr>" );  
+         $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Publication Year: </td>"+ "<td>"+ faction_markers[i].publicationYear +  "</td></tr>" );  
+         $('#detailArea').append(
+          "<tr><td style='text-align: right; vertical-align:top'> Publisher: </td>"+ "<td>"+ faction_markers[i].publisher +  "</td></tr>" +
+          "<tr><td style='text-align: right; vertical-align:top'> Volume: </td>"+ "<td>"+ faction_markers[i].volume +  "</td></tr>" +
+          "<tr><td style='text-align: right; vertical-align:top'> Edition: </td>"+ "<td>"+ faction_markers[i].edition +  "</td></tr>" +
+          "<tr><td style='text-align: right; vertical-align:top'> Citation: </td>"+ "<td>"+ faction_markers[i].numOfCitation +  "</td></tr>" +
+          "<tr><td style='text-align: right; vertical-align:top'> Downloads: </td>"+ "<td>"+ faction_markers[i].numOfDownload +  "</td></tr>" +
+          "<tr><td style='text-align: right; vertical-align:top'> Pages: </td>"+ "<td>"+ faction_markers[i].numOfPages +  "</td></tr>" +
+          "<tr><td style='text-align: right; vertical-align:top'> DOI: </td>"+ "<td>"+ faction_markers[i].DOI +  "</td></tr>" +
+          "<tr><td style='text-align: right; vertical-align:top'> ISSN: </td>"+ "<td>"+ faction_markers[i].ISSN +  "</td></tr>" +
+          
+          "<tr><td style='text-align: right; vertical-align:top'> Date added: </td>"+ "<td>"+ added +  "</td></tr>"+
+          "<tr><td style='text-align: right; vertical-align:top'> Date Accessed: </td>"+ "<td>"+ accessed +  "</td></tr>" 
 
 
 
-        );  
+          );  
 
-       break;
-      }
-  }
+         break;
+        }
+      } 
+    }
   
   
 }
@@ -1044,55 +1111,36 @@ function sort(n){
 function bookmarkToFolder_dropdown(clicked_id, bookmark_id) {
   $("#add_to_folderList_ul"+clicked_id).empty();
 
-  var ul = document.getElementById("add_to_folderList_ul"+clicked_id);
-     
-            var li = document.createElement("li");
-            li.appendChild(document.createTextNode("Folders:"));
-            li.setAttribute("style", "padding-left:3%;");
-            ul.appendChild(li);
+
+            if(folders.length >= 1){
+              $('#add_to_folderList_ul'+clicked_id).append("<li style='padding-left:3%;'>Folders:</li>");
 
             for(i=0;i< folders.length;i++){
-              
-              var li = document.createElement("li");
-
               try{
-                 li.appendChild(document.createTextNode(folders[i]['fields']['name']));
-                 li.setAttribute("id", folders[i]['pk']); // added line
+                $('#add_to_folderList_ul'+clicked_id).append(
+                "<li id='"+folders[i]['pk']+"' style='padding-left:20%; cursor:pointer' onclick='submit_add_folder(this.id,"+bookmark_id+")' >"+folders[i]['fields']['name']+"</li><br>");
               } catch{
-                 li.appendChild(document.createTextNode(folders[i].name));
-                 li.setAttribute("id", folders[i].id);
+                $('#add_to_folderList_ul'+clicked_id).append(
+                "<li id='"+folders[i].id+"' style='padding-left:20%; cursor:pointer' onclick='submit_add_folder(this.id,"+bookmark_id+")'>"+folders[i].name+"</li><br>");
               }
-             
-              li.setAttribute("style", "padding-left:20%; cursor:pointer"); 
-              li.setAttribute("onclick", "submit_add_folder(this.id,"+bookmark_id+")"); 
-              ul.appendChild(li);
+              
+            }
             }
 
             if(groups.length >= 1){
-              var li = document.createElement("li");
-              li.appendChild(document.createTextNode(" "));
-              ul.appendChild(li);
-              var li = document.createElement("li");
-              li.appendChild(document.createTextNode("Groups:"));
-              li.setAttribute("style", "padding-left:3%;");
-              ul.appendChild(li);
-
+             
+              $('#add_to_folderList_ul'+clicked_id).append("<li style='padding-left:3%;'>Groups:</li>");
             for(i=0;i< groups.length;i++){
               
-              var li = document.createElement("li");
               try{
-                li.appendChild(document.createTextNode(groups[i]['fields']['name']));
-                li.setAttribute("id", groups[i]['pk']); // added line
+                $('#add_to_folderList_ul'+clicked_id).append(
+                "<li id='"+groups[i]['pk']+"' style='padding-left:20%; cursor:pointer' onclick='submit_add_folder(this.id,"+bookmark_id+")'>"+groups[i]['fields']['name']+"</li>");
               } catch{
-                li.appendChild(document.createTextNode(groups[i].name));
-                li.setAttribute("id", groups[i].id); // added line
+                $('#add_to_folderList_ul'+clicked_id).append(
+                "<li id='"+groups[i].id+"' style='padding-left:20%; cursor:pointer' onclick='submit_add_folder(this.id,"+bookmark_id+")'>"+groups[i].name+"</li>");
               }
-              li.setAttribute("style", "padding-left:20%; cursor:pointer"); 
-              li.setAttribute("onclick", "submit_add_folder(this.id,"+bookmark_id+")"); 
-              ul.appendChild(li);
             }
-          }
-      
+            }
           
             
         
@@ -1103,6 +1151,8 @@ function bookmarkToFolder_dropdown(clicked_id, bookmark_id) {
   document.getElementById("folderList_dropdown"+ clicked_id).classList.toggle("show");
   // alert(clicked_id)
 }
+
+
 
 function submit_add_folder(folder_id, bookmark_id){
 
@@ -1136,42 +1186,54 @@ function display_dropdown(dropdown_type) {
         if(dropdown_type == 'folders' ){
 
                 $("#mycollection_ul").empty();
-                var ul = document.getElementById("mycollection_ul");
+
+                 
+
+               
                     for(i=0;i< folders.length;i++){
-                      
-                      var li = document.createElement("li");
-                      try{
-                      li.appendChild(document.createTextNode(folders[i]['fields']['name']));
-                      li.setAttribute("id", "folder"+folders[i]['pk']); // added line
-                    }catch{
-                       li.appendChild(document.createTextNode(folders[i].name));
-                      li.setAttribute("id", "folder"+folders[i].id); // added line
-                    }
-                      li.setAttribute("style", "padding-left:20%;padding-bottom: 3%;padding-top: 3%; cursor:pointer"); 
-                      li.setAttribute("onclick", "display_faction_bookmarks(this.id,'folders')"); 
-                      li.setAttribute("class", "faction_dropdown"); 
-                      ul.appendChild(li);
+                        try{
+                          $('#mycollection_ul').append(
+                          "<li id='folder"+folders[i]['pk']+"' style='padding-left:20%;padding-bottom: 3%;padding-top: 3%; cursor:pointer' onclick='display_faction_bookmarks(this.id, event)' class='faction_dropdown' oncontextmenu='delete_folder_rightClick(this.id, event)'>"+folders[i]['fields']['name']+"</li>"+
+                          "<center><div id='folder"+folders[i]['pk']+"_dropdown' class='dropdown-content' style='min-width: 50%; margin-left: 40%; cursor: pointer; margin-top: -8%; z-index:1 ' onclick='delete_faction(this.id,"+i+")'>"+
+                         "<ul style='padding-top:7%;padding-bottom:7%'>"+
+                            "<div>delete</div>"+
+                              
+                          "</ul> </div></center>");
+                        } catch{
+                           $('#mycollection_ul').append(
+                          "<li id='folder"+folders[i].id+"' style='padding-left:20%;padding-bottom: 3%;padding-top: 3%; cursor:pointer' onclick='display_faction_bookmarks(this.id, event)' class='faction_dropdown' oncontextmenu='delete_folder_rightClick(this.id, event)'>"+folders[i].name+"</li>"+
+                          "<center><div id='folder"+folders[i].id+"_dropdown' class='dropdown-content' style='min-width: 50%; margin-left: 40%; cursor: pointer; margin-top: -8%; z-index:1 ' onclick='delete_faction(this.id,"+i+")'>"+
+                         "<ul style='padding-top:7%;padding-bottom:7%'>"+
+                            "<div>delete</div>"+
+                              
+                          "</ul> </div></center>");
+                        }
                     }
          
         } else if(dropdown_type == 'groups'){
          
 
               $("#mygroup_ul").empty();
-              var ul = document.getElementById("mygroup_ul");
+            
                   for(i=0;i< groups.length;i++){
                     
-                    var li = document.createElement("li");
                     try{
-                      li.appendChild(document.createTextNode(groups[i]['fields']['name']));
-                      li.setAttribute("id", "group"+groups[i]['pk']); // added line
-                    }catch{
-                       li.appendChild(document.createTextNode(groups[i].name));
-                      li.setAttribute("id", "group"+groups[i].id); // added line
-                    }
-                    li.setAttribute("style", "padding-left:20%;padding-bottom: 3%;padding-top: 3%; cursor:pointer"); 
-                    li.setAttribute("onclick", "display_faction_bookmarks(this.id,'groups')"); 
-                    li.setAttribute("class", "faction_dropdown"); 
-                    ul.appendChild(li);
+                          $('#mygroup_ul').append(
+                          "<li id='groups"+groups[i]['pk']+"' style='padding-left:20%;padding-bottom: 3%;padding-top: 3%; cursor:pointer' onclick='display_faction_bookmarks(this.id, event)' class='faction_dropdown' oncontextmenu='delete_folder_rightClick(this.id, event)'>"+groups[i]['fields']['name']+"</li>"+
+                          "<center><div id='groups"+groups[i]['pk']+"_dropdown' class='dropdown-content' style='min-width: 50%; margin-left: 40%; cursor: pointer; margin-top: -8%; z-index:1 ' onclick='delete_faction(this.id,"+i+")' >"+
+                         "<ul style='padding-top:7%;padding-bottom:7%'>"+
+                            "<div>delete</div>"+
+                              
+                          "</ul> </div></center>");
+                        } catch{
+                           $('#mygroup_ul').append(
+                          "<li id='groups"+groups[i].id+"' style='padding-left:20%;padding-bottom: 3%;padding-top: 3%; cursor:pointer' onclick='display_faction_bookmarks(this.id, event)' class='faction_dropdown' oncontextmenu='delete_folder_rightClick(this.id, event)'>"+groups[i].name+"</li>"+
+                          "<center><div id='groups"+groups[i].id+"_dropdown' class='dropdown-content' style='min-width: 50%; margin-left: 40%; cursor: pointer; margin-top: -8%; z-index:1' onclick='delete_faction(this.id,"+i+")'>"+
+                         "<ul style='padding-top:7%;padding-bottom:7%'>"+
+                            "<div>delete</div>"+
+                              
+                          "</ul> </div></center>");
+                        }
                   }
           } 
 
@@ -1180,6 +1242,26 @@ function display_dropdown(dropdown_type) {
   
   
 }
+function delete_faction(clicked_id, i){
+  faction = clicked_id.slice(0,6)
+  if(faction == 'folder'){
+        folders.splice(i,1)
+        display_dropdown('folders')
+  }
+    
+  else if(faction == 'groups'){
+        groups.splice(i,1)
+        display_dropdown('groups')
+  }
+    
+// alert(i)
+
+}
+function delete_folder_rightClick(clicked_id, event){
+  event.preventDefault();
+  document.getElementById(clicked_id +"_dropdown").classList.toggle("show");
+}
+
 
 
 function create_folder(create_type){
@@ -1201,13 +1283,18 @@ function create_folder(create_type){
                         },
 
                         success: function(response){
-                           folders = response.folder_list
-                          
-                           
-                        display_dropdown('folders')
-                          // alert('add success')
-                          
+                           // folders = response.folder_list
+                           if( response.did_exist == true){
+                                document.getElementById("add_folder_error").style.visibility ="visible";
+                           }else{
+                                  document.getElementById("dismiss-modal_folder").click()
+                                  
+                                  folders = response.folder_list
+                                  display_dropdown('folders')
+                           }
+
                         }
+                        
 
 
                     
@@ -1238,68 +1325,73 @@ function create_folder(create_type){
 }
 
 
-function display_faction_bookmarks(clicked_id, faction){
+function display_faction_bookmarks(clicked_id, event){
+  faction = clicked_id.slice(0,6)
   
-  if(typeof(clicked_id) == 'string'){
-    ID = clicked_id.replace("folder",'').replace('group','')  
-  } else{
-    ID = clicked_id
-  }
-  faction_id = ID
-    if(faction == 'folders'){
-          $.ajax({
+  
 
-                    type:"POST",
-                    url:"",
+      if(typeof(clicked_id) == 'string'){
+          ID = clicked_id.replace("folder",'').replace('groups','')  
+        } else{
+          ID = clicked_id
+        }
+        faction_id = ID
+          if(faction == 'folder'){
+                $.ajax({
 
-                    data:{
-                      action: 'get_folder_bookmarks',
-                      fID: ID,
-                      
-                      csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
-                    },
+                          type:"POST",
+                          url:"",
 
-                    success: function(response){
-                        array = response.bookmarks
-                       
-                        showRows('folders', array, ID)
-                        
-                        try{
-                            document.getElementById(clicked_id).style.backgroundColor= "#c9c9c9";
-                            document.getElementById(clicked_id).style.color= "#800000";
-                        } catch{
-                            document.getElementById('folder'+clicked_id).style.backgroundColor= "#c9c9c9";
-                            document.getElementById('folder'+clicked_id).style.color= "#800000";
-                        }
-                    }
+                          data:{
+                            action: 'get_folder_bookmarks',
+                            fID: ID,
+                            
+                            csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                          },
 
-          }); 
-    } else if(faction == 'groups'){
-          $.ajax({
-                    type:"POST",
-                    url:"",
+                          success: function(response){
+                              array = response.bookmarks
+                             
+                              showRows('folders', array, ID)
+                              
+                              try{
+                                  document.getElementById(clicked_id).style.backgroundColor= "#c9c9c9";
+                                  document.getElementById(clicked_id).style.color= "#800000";
+                              } catch{
+                                  document.getElementById('folder'+clicked_id).style.backgroundColor= "#c9c9c9";
+                                  document.getElementById('folder'+clicked_id).style.color= "#800000";
+                              }
+                          }
 
-                    data:{
-                      action: 'get_group_bookmarks',
-                      gID: ID,
-                      
-                      csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
-                    },
-                    success: function(response){
-                        array = response.bookmarks
-                        
-                         
-                        showRows('groups', array, ID)
-                        try{
-                            document.getElementById(clicked_id).style.backgroundColor= "#c9c9c9";
-                            document.getElementById(clicked_id).style.color= "#800000";
-                        } catch{
-                            document.getElementById('group'+clicked_id).style.backgroundColor= "#c9c9c9";
-                            document.getElementById('group'+clicked_id).style.color= "#800000";
-                        }
-                    }
-          }); 
-    }
+                }); 
+          } else if(faction == 'groups'){
+                $.ajax({
+                          type:"POST",
+                          url:"",
+
+                          data:{
+                            action: 'get_group_bookmarks',
+                            gID: ID,
+                            
+                            csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                          },
+                          success: function(response){
+                              array = response.bookmarks
+                              faction_markers = array
+                               
+                              showRows('groups', array, ID)
+                              try{
+                                  document.getElementById(clicked_id).style.backgroundColor= "#c9c9c9";
+                                  document.getElementById(clicked_id).style.color= "#800000";
+                              } catch{
+                                  document.getElementById('group'+clicked_id).style.backgroundColor= "#c9c9c9";
+                                  document.getElementById('group'+clicked_id).style.color= "#800000";
+                              }
+                          }
+                }); 
+          }
+  
+  
 }
 
 
@@ -1321,16 +1413,19 @@ function remove_from_faction(bf_ID, action_type){
 
                       success: function(){
                        
-                        
-                         
-                        display_faction_bookmarks(faction_id, tab)
+                        if(tab == 'folders')
+                          display_faction_bookmarks("folder"+faction_id)
+                        else if(tab == 'groups')
+                          display_faction_bookmarks("groups"+faction_id)
+                        else
+                          showRows(tab)
                       }
                       
 
         }); 
   
    
-   showRows(tab)
+   
   
     
 }
