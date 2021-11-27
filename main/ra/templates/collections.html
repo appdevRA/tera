@@ -298,16 +298,21 @@ tr:hover {
 
 
 <script type="text/javascript">
-  var markers = {{ bookmark_list|safe }}
+   var markers= {{bookmark_list | safe}}
+
    var folders ={{folder_list | safe}}
-  var bookmark_folder
+  
    var groups = {{group_list | safe}}
     tab = 'all'
+    var bookmark_folder
     var faction_id
     var faction_markers
-$(document).ready(function($) {
-  showRows('all')
+     
 
+$(document).ready(function($) {
+  
+
+showRows('all')
 // $('#addtoFolderModal').modal('show') 
 // $('#addtoFolderModal').modal('hide') 
 
@@ -350,12 +355,13 @@ $(document).ready(function($) {
 
 });
 
+
 function permanentdelete_item(clicked_id){
   
    
    for(i=0; i< markers.length;i++){
-      if(markers[i]['pk'] == clicked_id ){
-        markers[i]['fields']['isRemoved'] = 3;
+      if(markers[i].id == clicked_id ){
+        markers[i].isRemoved = 3;
         $.ajax({
                       type:"POST",
                       url:"",
@@ -381,8 +387,8 @@ function delete_item(clicked_id, i, action_type){
    // alert(i+"  "+ action_type)
    
       if(action_type == 1){
-        markers[i]['fields']['isRemoved'] = 1;
-         markers[i]['fields']['date_removed'] = new Date()
+        markers[i].isRemoved = 1;
+         markers[i].date_removed = new Date()
         // a = new Date()
         // markers[i]['fields']['date_removed'] = a.toDateString().slice(3,) +"  "+ a.toTimeString().slice(0,13);
         $.ajax({
@@ -397,8 +403,8 @@ function delete_item(clicked_id, i, action_type){
         }); 
 
       }else{
-        markers[i]['fields']['isRemoved'] = 0;
-        markers[i]['fields']['date_removed'] =null;
+        markers[i].isRemoved = 0;
+        markers[i].date_removed =null;
         $.ajax({
                       type:"POST",
                       url:"",
@@ -425,9 +431,9 @@ function favorite_item(clicked_id){
   // alert(tab)
    
    for(i=0; i< markers.length;i++){
-      if(markers[i]['pk'] == clicked_id){
-        if(markers[i]['fields']['isFavorite'] == 0){
-          markers[i]['fields']['isFavorite'] = 1;  
+      if(markers[i].id == clicked_id){
+        if(markers[i].isFavorite == 0){
+          markers[i].isFavorite = 1;  
           // clearRow('itemArea')
           showRows(tab)
           $.ajax({
@@ -441,8 +447,8 @@ function favorite_item(clicked_id){
                       }
         }); 
 
-        } else if(markers[i]['fields']['isFavorite'] == 1){
-          markers[i]['fields']['isFavorite'] = 0;  
+        } else if(markers[i].isFavorite == 1){
+          markers[i].isFavorite = 0;  
            showRows(tab)
             $.ajax({
                       type:"POST",
@@ -466,7 +472,7 @@ function favorite_item(clicked_id){
 }
 
 
-function showRows(rowType, bookmak_folder_list, faction_id){
+function showRows(rowType, array, faction_id){
 
   clearRow("detailTable")
   clearStyle();
@@ -483,37 +489,38 @@ function showRows(rowType, bookmak_folder_list, faction_id){
             for(i=0; i< markers.length;i++){
              
 
-                if( markers[i]['fields']['isRemoved'] == 0 ){
-                      date_add= new Date(markers[i]['fields']['dateAdded'])
-                      
+                if( markers[i].isRemoved == 0 ){
+                    console.log(typeof(markers[i].dateAccessed))
+                      date_add= new Date(markers[i].dateAdded+'Z')
+                      if(typeof(markers[i].dateAccessed) == 'string')
+                        date_acc= new Date(markers[i].dateAccessed+'Z')
+                      else
+                        date_acc= new Date(markers[i].dateAccessed)
 
-                       date_add= new Date(markers[i]['fields']['dateAdded'])
-                      date_acc= new Date(markers[i]['fields']['dateAccessed'])
-
-                      if( markers[i]['fields']['isFavorite'] == 0){
-                        favorite ="<td><i id='"+ markers[i]['pk']+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>"
+                      if( markers[i].isFavorite == 0){
+                        favorite ="<td><i id='"+ markers[i].id+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>"
                       }else{
-                        favorite ="<td><i id='"+ markers[i]['pk']+"' class='fas fa-star' style='cursor: pointer; color:red' onclick='favorite_item(this.id)'></i></td>"
+                        favorite ="<td><i id='"+ markers[i].id+"' class='fas fa-star' style='cursor: pointer; color:red' onclick='favorite_item(this.id)'></i></td>"
                       }
 
-                      if(markers[i]['fields']['websiteTitle'] == "Springeropen.com"){
+                      if(markers[i].websiteTitle == "Springeropen.com"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
-                        } else if(markers[i]['fields']['websiteTitle'] == "Sciencedirect.com"){
+                        } else if(markers[i].websiteTitle == "Sciencedirect.com"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 25px;'></td>"
                         } 
 
                        $('#itemArea').append(
                         "<tr>"+
                         sitelogo +
-                        "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
-                        "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i]['pk'] +","+i+")'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
+                        "<td>"+ markers[i].itemType +  "</td>"+
+                        "<td><a href='"+ markers[i].url+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i].id +","+i+")'>" + markers[i].title +  "</span></a></td>"+
 
                         "<td>" + date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5) + "</td>" +
                         "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
-                        "<td><i id='"+ markers[i]['pk'] +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
+                        "<td><i id='"+ markers[i].id +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
 
 
-                         "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ markers[i]['pk']+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
+                         "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ markers[i].id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
                          "<div id='folderList_dropdown"+i+"' class='dropdown-content' style='min-width: 15%; margin-left: -8% '>"+
                          "<ul id='add_to_folderList_ul"+i+"'>"+
                      
@@ -524,7 +531,7 @@ function showRows(rowType, bookmak_folder_list, faction_id){
 
 
                           favorite+
-                        "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer; font-size: 90%' onclick='delete_item(this.id,"+i+","+1+")'></i></td>" +
+                        "<td><i id='"+ markers[i].id+"' class='fas fa-trash-alt' style='cursor: pointer; font-size: 90%' onclick='delete_item(this.id,"+i+","+1+")'></i></td>" +
                        
 
                        "</tr>"
@@ -542,32 +549,32 @@ function showRows(rowType, bookmak_folder_list, faction_id){
 
         for(i=0; i< markers.length;i++){
 
-            if( markers[i]['fields']['isRemoved'] == 1){
-              date_acc= new Date(markers[i]['fields']['dateAccessed'])
-              // if(typeof(markers[i]['fields']['date_removed']) == 'string'){
-              // date_removed= new Date(markers[i]['fields']['date_removed'].replace('T',' ').slice(0,-8))
-              // } else{
-                date_removed= new Date(markers[i]['fields']['date_removed'])
+            if( markers[i].isRemoved == 1){
+              if(typeof(markers[i].dateAccessed) == 'string')
+                date_acc= new Date(markers[i].dateAccessed+'Z')
+              else
+                date_acc= new Date(markers[i].dateAccessed)
+                date_removed= new Date(markers[i].date_removed)
               // } 
-              if(markers[i]['fields']['websiteTitle'] == "Springeropen.com"){
+              if(markers[i].websiteTitle == "Springeropen.com"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
-                        } else if(markers[i]['fields']['websiteTitle'] == "Sciencedirect.com"){
+                        } else if(markers[i].websiteTitle == "Sciencedirect.com"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 25px;'></td>"
                         } 
                    
 
               $('#itemArea').append(
-                "<tr class='clickable-row' data-href='" + markers[i]['fields']['url'] + "'>" +
+                "<tr class='clickable-row' data-href='" + markers[i].url + "'>" +
 
                 sitelogo+
-                "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
-                "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i]['pk'] +","+i+")'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
+                "<td>"+ markers[i].itemType +  "</td>"+
+                "<td><a href='"+ markers[i].url+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i].id +","+i+")'>" + markers[i].title +  "</span></a></td>"+
 
                 "<td>" +  date_removed.toDateString().slice(3,)+" "+date_removed.toTimeString().slice(0,5)  + "</td>" +
                "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
 
-                "<td><i id='"+ markers[i]['pk']+"' class='fas fa-undo' style='cursor: pointer' onclick='delete_item(this.id,"+i+", "+0+")'></i></td>" +
-                "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer' onclick='permanentdelete_item(this.id)'></i></td>" +
+                "<td><i id='"+ markers[i].id+"' class='fas fa-undo' style='cursor: pointer' onclick='delete_item(this.id,"+i+", "+0+")'></i></td>" +
+                "<td><i id='"+ markers[i].id+"' class='fas fa-trash-alt' style='cursor: pointer' onclick='permanentdelete_item(this.id)'></i></td>" +
 
               
                       
@@ -600,23 +607,23 @@ function showRows(rowType, bookmak_folder_list, faction_id){
                        
                         for(i=0; i< markers.length;i++){
                             for(ii=0; ii < array.length;ii++){
-                              if( markers[i]['pk'] == array[ii].b_ID){
+                              if( markers[i].id == array[ii].b_ID){
                                 
 
-                                      if(markers[i]['fields']['websiteTitle'] == "Springeropen.com"){
+                                      if(markers[i].websiteTitle == "Springeropen.com"){
                                         sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
-                                      } else if(markers[i]['fields']['websiteTitle'] == "Sciencedirect.com"){
+                                      } else if(markers[i].websiteTitle == "Sciencedirect.com"){
                                         sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 25px;'></td>"
                                       } 
 
                                 $('#itemArea').append(
-                                  "<tr class='clickable-row' data-href='" + markers[i]['fields']['url'] + "'>" +
+                                  "<tr class='clickable-row' data-href='" + markers[i].url + "'>" +
 
                                   sitelogo+
-                                  "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
-                                  "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i]['pk'] +","+i+")'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
+                                  "<td>"+ markers[i].itemType +  "</td>"+
+                                  "<td><a href='"+ markers[i].url+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i].id +","+i+")'>" + markers[i].title +  "</span></a></td>"+
                                   "<td>" +  new Date(array[ii].date+'Z').toDateString().slice(3,)+" "+new Date(array[ii].date+'Z').toTimeString().slice(0,5)+ "</td>" +
-                                  "<td>" +  new Date(markers[i]['fields']['dateAccessed']).toDateString().slice(3,)+" "+new Date(markers[i]['fields']['dateAccessed']).toTimeString().slice(0,5)+ "</td>" +
+                                  "<td>" +  new Date(markers[i].dateAccessed).toDateString().slice(3,)+" "+new Date(markers[i].dateAccessed).toTimeString().slice(0,5)+ "</td>" +
                                   
 
                                   "<td><i id='"+ array[ii].BF_ID+"' class='fas fa-undo' style='cursor: pointer' onclick='remove_from_faction(this.id,1)'></i></td>" +
@@ -640,37 +647,41 @@ function showRows(rowType, bookmak_folder_list, faction_id){
           
         
           for(i=0; i< markers.length;i++){
-              var then = new Date(markers[i]['fields']['dateAdded']),
+              var then = new Date(markers[i].dateAdded),
               days = Math.round((now - then) / (1000 * 60 * 60 * 24));
-                if( markers[i]['fields']['isRemoved'] == 0 & days <= 7){
+                if( markers[i].isRemoved == 0 & days <= 7){
                    
 
-                        date_add= new Date(markers[i]['fields']['dateAdded'])
-                      date_acc= new Date(markers[i]['fields']['dateAccessed'])
+                      date_add= new Date(markers[i].dateAdded+'Z')
+                      if(typeof(markers[i].dateAccessed) == 'string')
+                        date_acc= new Date(markers[i].dateAccessed+'Z')
+                      else
+                        date_acc= new Date(markers[i].dateAccessed)
 
-                      if( markers[i]['fields']['isFavorite'] == 0){
-                        favorite ="<td><i id='"+ markers[i]['pk']+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>"
+                      if( markers[i].isFavorite == 0){
+                        favorite ="<td><i id='"+ markers[i].id+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>"
                       }else{
-                        favorite ="<td><i id='"+ markers[i]['pk']+"' class='fas fa-star' style='cursor: pointer; color:red' onclick='favorite_item(this.id)'></i></td>"
+                        favorite ="<td><i id='"+ markers[i].id+"' class='fas fa-star' style='cursor: pointer; color:red' onclick='favorite_item(this.id)'></i></td>"
                       }
 
-                      if(markers[i]['fields']['websiteTitle'] == "Springeropen.com"){
+                      if(markers[i].websiteTitle == "Springeropen.com"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
-                        } else if(markers[i]['fields']['websiteTitle'] == "Sciencedirect.com"){
+                        } else if(markers[i].websiteTitle == "Sciencedirect.com"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 25px;'></td>"
                         } 
+
                        $('#itemArea').append(
                         "<tr>"+
                         sitelogo +
-                        "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
-                        "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i]['pk'] +","+i+")'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
+                        "<td>"+ markers[i].itemType +  "</td>"+
+                        "<td><a href='"+ markers[i].url+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i].id +","+i+")'>" + markers[i].title +  "</span></a></td>"+
 
                         "<td>" + date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5) + "</td>" +
                         "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
-                        "<td><i id='"+ markers[i]['pk'] +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
+                        "<td><i id='"+ markers[i].id +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
 
 
-                         "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ markers[i]['pk']+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
+                         "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ markers[i].id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
                          "<div id='folderList_dropdown"+i+"' class='dropdown-content' style='min-width: 15%; margin-left: -8% '>"+
                          "<ul id='add_to_folderList_ul"+i+"'>"+
                      
@@ -680,8 +691,8 @@ function showRows(rowType, bookmak_folder_list, faction_id){
 
 
 
-                          favorite +
-                        "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer; font-size: 90%' onclick='delete_item(this.id)'></i></td>" +
+                          favorite+
+                        "<td><i id='"+ markers[i].id+"' class='fas fa-trash-alt' style='cursor: pointer; font-size: 90%' onclick='delete_item(this.id,"+i+","+1+")'></i></td>" +
                        
 
                        "</tr>"
@@ -696,38 +707,42 @@ function showRows(rowType, bookmak_folder_list, faction_id){
           document.getElementById('recentlyReadIcon').style.color= "#800000";
           now  = new Date;
           for(i=0; i< markers.length;i++){
-                var then = new Date(markers[i]['fields']['dateAccessed']), // month is zero based
+                var then = new Date(markers[i].dateAccessed), // month is zero based
                                // no arguments -> current date
                 days = Math.round((now - then) / (1000 * 60 * 60 * 24));
                
-                if( markers[i]['fields']['isRemoved'] == 0 & days <= 3){
-                      date_add= new Date(markers[i]['fields']['dateAdded'])
-                      date_acc= new Date(markers[i]['fields']['dateAccessed'])
+                if( markers[i].isRemoved == 0 & days <= 3){
 
-                      if( markers[i]['fields']['isFavorite'] == 0){
-                        favorite ="<td><i id='"+ markers[i]['pk']+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>"
+                      date_add= new Date(markers[i].dateAdded+'Z')
+                      if(typeof(markers[i].dateAccessed) == 'string')
+                        date_acc= new Date(markers[i].dateAccessed+'Z')
+                      else
+                        date_acc= new Date(markers[i].dateAccessed)
+
+                      if( markers[i].isFavorite == 0){
+                        favorite ="<td><i id='"+ markers[i].id+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>"
                       }else{
-                        favorite ="<td><i id='"+ markers[i]['pk']+"' class='fas fa-star' style='cursor: pointer; color:red' onclick='favorite_item(this.id)'></i></td>"
+                        favorite ="<td><i id='"+ markers[i].id+"' class='fas fa-star' style='cursor: pointer; color:red' onclick='favorite_item(this.id)'></i></td>"
                       }
 
-
-                      if(markers[i]['fields']['websiteTitle'] == "Springeropen.com"){
+                      if(markers[i].websiteTitle == "Springeropen.com"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
-                        } else if(markers[i]['fields']['websiteTitle'] == "Sciencedirect.com"){
+                        } else if(markers[i].websiteTitle == "Sciencedirect.com"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 25px;'></td>"
                         } 
+
                        $('#itemArea').append(
                         "<tr>"+
                         sitelogo +
-                        "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
-                        "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i]['pk'] +","+i+")'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
+                        "<td>"+ markers[i].itemType +  "</td>"+
+                        "<td><a href='"+ markers[i].url+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i].id +","+i+")'>" + markers[i].title +  "</span></a></td>"+
 
                         "<td>" + date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5) + "</td>" +
                         "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
-                        "<td><i id='"+ markers[i]['pk'] +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
+                        "<td><i id='"+ markers[i].id +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
 
 
-                         "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ markers[i]['pk']+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
+                         "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ markers[i].id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
                          "<div id='folderList_dropdown"+i+"' class='dropdown-content' style='min-width: 15%; margin-left: -8% '>"+
                          "<ul id='add_to_folderList_ul"+i+"'>"+
                      
@@ -738,7 +753,7 @@ function showRows(rowType, bookmak_folder_list, faction_id){
 
 
                           favorite+
-                        "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer; font-size: 90%' onclick='delete_item(this.id)'></i></td>" +
+                        "<td><i id='"+ markers[i].id+"' class='fas fa-trash-alt' style='cursor: pointer; font-size: 90%' onclick='delete_item(this.id,"+i+","+1+")'></i></td>" +
                        
 
                        "</tr>"
@@ -754,34 +769,34 @@ function showRows(rowType, bookmak_folder_list, faction_id){
           document.getElementById('favoriteIcon').style.color= "#800000";
           for(i=0; i< markers.length;i++){
             
-            if( markers[i]['fields']['isFavorite'] == 1 & markers[i]['fields']['isRemoved'] == 0){
-                   date_add= new Date(markers[i]['fields']['dateAdded'])
-                      date_acc= new Date(markers[i]['fields']['dateAccessed'])
+            if( markers[i].isFavorite == 1 & markers[i].isRemoved == 0){
+                   date_add= new Date(markers[i].dateAdded)
+                      date_acc= new Date(markers[i].dateAccessed)
                    
 
-                    if(markers[i]['fields']['websiteTitle'] == "Springeropen.com"){
+                    if(markers[i].websiteTitle == "Springeropen.com"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
-                        } else if(markers[i]['fields']['websiteTitle'] == "Sciencedirect.com"){
+                        } else if(markers[i].websiteTitle == "Sciencedirect.com"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/science direct.PNG' %}' style='height: 25px;'></td>"
                         } 
               $('#itemArea').append(
                 "<tr>"+
                 sitelogo +
-                "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
-                "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i]['pk'] +","+i+")'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
+                "<td>"+ markers[i].itemType +  "</td>"+
+                "<td><a href='"+ markers[i].url+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i].id +","+i+")'>" + markers[i].title +  "</span></a></td>"+
 
                "<td>" + date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5) + "</td>" +
                         "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
-               "<td><i id='"+ markers[i]['pk']+"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
+               "<td><i id='"+ markers[i].id+"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
                            
-                          "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ markers[i]['pk']+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
+                          "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ markers[i].id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
                          "<div id='folderList_dropdown"+i+"' class='dropdown-content' style='min-width: 15%; margin-left: -8% '>"+
                          "<ul id='add_to_folderList_ul"+i+"'>"+
                      
                               
                           "</ul> </div> </td>" +
 
-                          "<td><i id='"+ markers[i]['pk']+"' class='fas fa-minus' style='cursor: pointer;color:red' onclick='favorite_item(this.id)'></i></td>" +
+                          "<td><i id='"+ markers[i].id+"' class='fas fa-minus' style='cursor: pointer;color:red' onclick='favorite_item(this.id)'></i></td>" +
                         
                         
                        
@@ -798,58 +813,59 @@ function showRows(rowType, bookmak_folder_list, faction_id){
          
         }
     } else if(rowType =='folders'){
-      for(i=0; i< markers.length;i++){
+        for(i=0;i < array.length;i++){
+        
 
-      for(ii=0;ii < array.length;ii++){
-          if(markers[i]['pk'] == array[ii].b_ID){
+               
 
-                if( markers[i]['fields']['isRemoved'] == 0 ){
-                    date_add= new Date(markers[i]['fields']['dateAdded'])
-                      date_acc= new Date(markers[i]['fields']['dateAccessed'])
+                  date_add= new Date(array[i].dateAdded+'Z')
+                      if(typeof(markers[i].dateAccessed) == 'string')
+                        date_acc= new Date(markers[i].dateAccessed+'Z')
+                      else
+                        date_acc= new Date(markers[i].dateAccessed)
 
-                      if( markers[i]['fields']['isFavorite'] == 0){
-                        favorite ="<td><i id='"+ markers[i]['pk']+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>"
+                      if( array[i].isFavorite == 0){
+                        favorite ="<td><i id='"+ array[i].id+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>"
                       }else{
-                        favorite ="<td><i id='"+ markers[i]['pk']+"' class='fas fa-star' style='cursor: pointer; color:red' onclick='favorite_item(this.id)'></i></td>"
+                        favorite ="<td><i id='"+ array[i].id+"' class='fas fa-star' style='cursor: pointer; color:red' onclick='favorite_item(this.id)'></i></td>"
                       }
 
-
-                      if(markers[i]['fields']['websiteTitle'] == "Springeropen.com"){
+                      if(array[i].websiteTitle == "Springeropen.com"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
-                        } else if(markers[i]['fields']['websiteTitle'] == "Sciencedirect.com"){
+                        } else if(array[i].websiteTitle == "Sciencedirect.com"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/science direct.PNG' %}' style='height: 25px;'></td>"
                         } 
                        $('#itemArea').append(
                         "<tr>"+
                         sitelogo +
-                        "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
-                        "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i]['pk'] +","+i+")'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
+                        "<td>"+ array[i].itemType +  "</td>"+
+                       "<td><a href='"+ array[i].url+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ array[i].id +","+i+")'>" + array[i].title +  "</span></a></td>"+
 
                         "<td>" + date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5) + "</td>" +
                         "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
-                        "<td><i id='"+ markers[i]['pk'] +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
+                        "<td><i id='"+ array[i].id +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
 
 
-                         "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ markers[i]['pk']+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
+                         "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ array[i].id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
                          "<div id='folderList_dropdown"+i+"' class='dropdown-content' style='min-width: 15%; margin-left: -8% '>"+
                          "<ul id='add_to_folderList_ul"+i+"'>"+
                      
                               
                           "</ul> </div> </td>" +
-
-
-
                           favorite+
-                        "<td><i id='"+ markers[i]['pk']+"' class='fas fa-trash-alt' style='cursor: pointer; font-size: 90%' onclick='remove_from_faction("+array[ii].bf_ID+")'></i></td>" +
+
+
+
+
+                        "<td><i id='"+ array[i].id+"' class='fas fa-trash-alt' style='cursor: pointer; font-size: 90%' onclick='remove_from_faction("+array[i].bf_ID+")'></i></td>" +
                        
 
                        "</tr>"
 
-                        );  
-                }  
-          }
+                        );   
+                
         
-      }
+        
       }
     } else if(rowType =='groups'){
 
@@ -859,7 +875,10 @@ function showRows(rowType, bookmak_folder_list, faction_id){
                
 
                   date_add= new Date(array[i].dateAdded+'Z')
-                      date_acc= new Date(array[i].dateAccessed+'Z')
+                      if(typeof(markers[i].dateAccessed) == 'string')
+                        date_acc= new Date(markers[i].dateAccessed+'Z')
+                      else
+                        date_acc= new Date(markers[i].dateAccessed)
 
                       if( array[i].isFavorite == 0){
                         favorite ="<td><i id='"+ array[i].id+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>"
@@ -911,8 +930,11 @@ function showRows(rowType, bookmak_folder_list, faction_id){
 }
 
 function open_link(clicked_id, i){
- 
-  markers[i]['fields']['dateAccessed'] = new Date()
+
+
+  markers[i].dateAccessed = new Date()
+  console.log(markers[i].dateAccessed+"  "+i)
+
   $.ajax({
                       type:"POST",
                       url:"",
@@ -971,29 +993,29 @@ function get_detail(clicked_id){
 
    if(tab != 'groups'){
     for(i=0; i< markers.length;i++){
-         if(markers[i]['pk'] == id){
+         if(markers[i].id == id){
    
-             var added = new Date( markers[i]['fields']['dateAdded']);
-             var accessed = new Date( markers[i]['fields']['dateAccessed']);
+             var added = new Date( markers[i].dateAdded);
+             var accessed = new Date( markers[i].dateAccessed);
               
               
-          $('#detailArea').append("<tr ><td style='text-align: right; vertical-align:top'> Website: </td>"+ "<td> <a href='https://"+markers[i]['fields']['websiteTitle']+ "'>"+ markers[i]['fields']['websiteTitle'] +  "</a></td></tr>" );  
-          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Item type: </td>"+ "<td>"+ markers[i]['fields']['itemType'] +  "</td></tr>" );  
-          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> URL: </td>"+ "<td><a href='"+markers[i]['fields']['url']+"' target='_blank'>"+ markers[i]['fields']['url'] +  "</td></tr>" );  
-          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Title: </td>"+ "<td>"+ markers[i]['fields']['title'] +  "</td></tr>" );  
-          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Author: </td>"+ "<td>"+ markers[i]['fields']['author'] +  "</td></tr>" );  
-          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Abstract: </td>"+ "<td>"+ markers[i]['fields']['description'] +  "</td></tr>" );  
-          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Collection: </td>"+ "<td>"+ markers[i]['fields']['journalItBelongs'] +  "</td></tr>" );  
-          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Publication Year: </td>"+ "<td>"+ markers[i]['fields']['publicationYear'] +  "</td></tr>" );  
+          $('#detailArea').append("<tr ><td style='text-align: right; vertical-align:top'> Website: </td>"+ "<td> <a href='https://"+markers[i].websiteTitle+ "'>"+ markers[i].websiteTitle +  "</a></td></tr>" );  
+          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Item type: </td>"+ "<td>"+ markers[i].itemType +  "</td></tr>" );  
+          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> URL: </td>"+ "<td><a href='"+markers[i].url+"' target='_blank'>"+ markers[i].url +  "</td></tr>" );  
+          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Title: </td>"+ "<td>"+ markers[i].title +  "</td></tr>" );  
+          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Author: </td>"+ "<td>"+ markers[i].author +  "</td></tr>" );  
+          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Abstract: </td>"+ "<td>"+ markers[i].description +  "</td></tr>" );  
+          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Collection: </td>"+ "<td>"+ markers[i].journalItBelongs +  "</td></tr>" );  
+          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Publication Year: </td>"+ "<td>"+ markers[i].publicationYear +  "</td></tr>" );  
           $('#detailArea').append(
-           "<tr><td style='text-align: right; vertical-align:top'> Publisher: </td>"+ "<td>"+ markers[i]['fields']['publisher'] +  "</td></tr>" +
-           "<tr><td style='text-align: right; vertical-align:top'> Volume: </td>"+ "<td>"+ markers[i]['fields']['volume'] +  "</td></tr>" +
-           "<tr><td style='text-align: right; vertical-align:top'> Edition: </td>"+ "<td>"+ markers[i]['fields']['edition'] +  "</td></tr>" +
-           "<tr><td style='text-align: right; vertical-align:top'> Citation: </td>"+ "<td>"+ markers[i]['fields']['numOfCitation'] +  "</td></tr>" +
-           "<tr><td style='text-align: right; vertical-align:top'> Downloads: </td>"+ "<td>"+ markers[i]['fields']['numOfDownload'] +  "</td></tr>" +
-           "<tr><td style='text-align: right; vertical-align:top'> Pages: </td>"+ "<td>"+ markers[i]['fields']['numOfPages'] +  "</td></tr>" +
-           "<tr><td style='text-align: right; vertical-align:top'> DOI: </td>"+ "<td>"+ markers[i]['fields']['DOI'] +  "</td></tr>" +
-           "<tr><td style='text-align: right; vertical-align:top'> ISSN: </td>"+ "<td>"+ markers[i]['fields']['ISSN'] +  "</td></tr>" +
+           "<tr><td style='text-align: right; vertical-align:top'> Publisher: </td>"+ "<td>"+ markers[i].publisher +  "</td></tr>" +
+           "<tr><td style='text-align: right; vertical-align:top'> Volume: </td>"+ "<td>"+ markers[i].volume +  "</td></tr>" +
+           "<tr><td style='text-align: right; vertical-align:top'> Edition: </td>"+ "<td>"+ markers[i].edition +  "</td></tr>" +
+           "<tr><td style='text-align: right; vertical-align:top'> Citation: </td>"+ "<td>"+ markers[i].numOfCitation +  "</td></tr>" +
+           "<tr><td style='text-align: right; vertical-align:top'> Downloads: </td>"+ "<td>"+ markers[i].numOfDownload +  "</td></tr>" +
+           "<tr><td style='text-align: right; vertical-align:top'> Pages: </td>"+ "<td>"+ markers[i].numOfPages +  "</td></tr>" +
+           "<tr><td style='text-align: right; vertical-align:top'> DOI: </td>"+ "<td>"+ markers[i].DOI +  "</td></tr>" +
+           "<tr><td style='text-align: right; vertical-align:top'> ISSN: </td>"+ "<td>"+ markers[i].ISSN +  "</td></tr>" +
            
            "<tr><td style='text-align: right; vertical-align:top'> Date added: </td>"+ "<td>"+ added.toDateString().slice(3,)+" "+added.toTimeString().slice(0,5) +  "</td></tr>"+
            "<tr><td style='text-align: right; vertical-align:top'> Date Accessed: </td>"+ "<td>"+ accessed.toDateString().slice(3,)+" "+accessed.toTimeString().slice(0,5) +  "</td></tr>" 
@@ -1116,15 +1138,13 @@ function bookmarkToFolder_dropdown(clicked_id, bookmark_id) {
               $('#add_to_folderList_ul'+clicked_id).append("<li style='padding-left:3%;'>Folders:</li>");
 
             for(i=0;i< folders.length;i++){
-              try{
+              
                 $('#add_to_folderList_ul'+clicked_id).append(
-                "<li id='"+folders[i]['pk']+"' style='padding-left:20%; cursor:pointer' onclick='submit_add_folder(this.id,"+bookmark_id+")' >"+folders[i]['fields']['name']+"</li><br>");
-              } catch{
-                $('#add_to_folderList_ul'+clicked_id).append(
-                "<li id='"+folders[i].id+"' style='padding-left:20%; cursor:pointer' onclick='submit_add_folder(this.id,"+bookmark_id+")'>"+folders[i].name+"</li><br>");
-              }
+                "<li id='folder"+folders[i].id+"' style='padding-left:20%; cursor:pointer' onclick='submit_add_folder(this.id,"+bookmark_id+")'>"+folders[i].name+"</li>");
+              
               
             }
+            $('#add_to_folderList_ul'+clicked_id).append("<br>");
             }
 
             if(groups.length >= 1){
@@ -1132,13 +1152,10 @@ function bookmarkToFolder_dropdown(clicked_id, bookmark_id) {
               $('#add_to_folderList_ul'+clicked_id).append("<li style='padding-left:3%;'>Groups:</li>");
             for(i=0;i< groups.length;i++){
               
-              try{
+              
                 $('#add_to_folderList_ul'+clicked_id).append(
-                "<li id='"+groups[i]['pk']+"' style='padding-left:20%; cursor:pointer' onclick='submit_add_folder(this.id,"+bookmark_id+")'>"+groups[i]['fields']['name']+"</li>");
-              } catch{
-                $('#add_to_folderList_ul'+clicked_id).append(
-                "<li id='"+groups[i].id+"' style='padding-left:20%; cursor:pointer' onclick='submit_add_folder(this.id,"+bookmark_id+")'>"+groups[i].name+"</li>");
-              }
+                "<li id='groups"+groups[i].id+"' style='padding-left:20%; cursor:pointer' onclick='submit_add_folder(this.id,"+bookmark_id+")'>"+groups[i].name+"</li>");
+              
             }
             }
           
@@ -1155,6 +1172,8 @@ function bookmarkToFolder_dropdown(clicked_id, bookmark_id) {
 
 
 function submit_add_folder(folder_id, bookmark_id){
+  id = folder_id.slice(6,)
+  faction =folder_id.slice(0,6)
 
   
 
@@ -1163,9 +1182,10 @@ function submit_add_folder(folder_id, bookmark_id){
                       url:"",
 
                       data:{
-                        action: 'add_bookmark_to_folder',
+                        action: 'add_bookmark_to_faction',
                         bID: bookmark_id,
-                        fID: folder_id,
+                        faction_id: id,
+                        faction: faction,
                         csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
                       }
         }); 
@@ -1191,15 +1211,7 @@ function display_dropdown(dropdown_type) {
 
                
                     for(i=0;i< folders.length;i++){
-                        try{
-                          $('#mycollection_ul').append(
-                          "<li id='folder"+folders[i]['pk']+"' style='padding-left:20%;padding-bottom: 3%;padding-top: 3%; cursor:pointer' onclick='display_faction_bookmarks(this.id, event)' class='faction_dropdown' oncontextmenu='delete_folder_rightClick(this.id, event)'>"+folders[i]['fields']['name']+"</li>"+
-                          "<center><div id='folder"+folders[i]['pk']+"_dropdown' class='dropdown-content' style='min-width: 50%; margin-left: 40%; cursor: pointer; margin-top: -8%; z-index:1 ' onclick='delete_faction(this.id,"+i+")'>"+
-                         "<ul style='padding-top:7%;padding-bottom:7%'>"+
-                            "<div>delete</div>"+
-                              
-                          "</ul> </div></center>");
-                        } catch{
+                        
                            $('#mycollection_ul').append(
                           "<li id='folder"+folders[i].id+"' style='padding-left:20%;padding-bottom: 3%;padding-top: 3%; cursor:pointer' onclick='display_faction_bookmarks(this.id, event)' class='faction_dropdown' oncontextmenu='delete_folder_rightClick(this.id, event)'>"+folders[i].name+"</li>"+
                           "<center><div id='folder"+folders[i].id+"_dropdown' class='dropdown-content' style='min-width: 50%; margin-left: 40%; cursor: pointer; margin-top: -8%; z-index:1 ' onclick='delete_faction(this.id,"+i+")'>"+
@@ -1207,7 +1219,7 @@ function display_dropdown(dropdown_type) {
                             "<div>delete</div>"+
                               
                           "</ul> </div></center>");
-                        }
+                        
                     }
          
         } else if(dropdown_type == 'groups'){
@@ -1217,15 +1229,7 @@ function display_dropdown(dropdown_type) {
             
                   for(i=0;i< groups.length;i++){
                     
-                    try{
-                          $('#mygroup_ul').append(
-                          "<li id='groups"+groups[i]['pk']+"' style='padding-left:20%;padding-bottom: 3%;padding-top: 3%; cursor:pointer' onclick='display_faction_bookmarks(this.id, event)' class='faction_dropdown' oncontextmenu='delete_folder_rightClick(this.id, event)'>"+groups[i]['fields']['name']+"</li>"+
-                          "<center><div id='groups"+groups[i]['pk']+"_dropdown' class='dropdown-content' style='min-width: 50%; margin-left: 40%; cursor: pointer; margin-top: -8%; z-index:1 ' onclick='delete_faction(this.id,"+i+")' >"+
-                         "<ul style='padding-top:7%;padding-bottom:7%'>"+
-                            "<div>delete</div>"+
-                              
-                          "</ul> </div></center>");
-                        } catch{
+                   
                            $('#mygroup_ul').append(
                           "<li id='groups"+groups[i].id+"' style='padding-left:20%;padding-bottom: 3%;padding-top: 3%; cursor:pointer' onclick='display_faction_bookmarks(this.id, event)' class='faction_dropdown' oncontextmenu='delete_folder_rightClick(this.id, event)'>"+groups[i].name+"</li>"+
                           "<center><div id='groups"+groups[i].id+"_dropdown' class='dropdown-content' style='min-width: 50%; margin-left: 40%; cursor: pointer; margin-top: -8%; z-index:1' onclick='delete_faction(this.id,"+i+")'>"+
@@ -1233,7 +1237,7 @@ function display_dropdown(dropdown_type) {
                             "<div>delete</div>"+
                               
                           "</ul> </div></center>");
-                        }
+                        
                   }
           } 
 
@@ -1245,11 +1249,40 @@ function display_dropdown(dropdown_type) {
 function delete_faction(clicked_id, i){
   faction = clicked_id.slice(0,6)
   if(faction == 'folder'){
+
+        faction_id = clicked_id.replace('folder','').replace('_dropdown','')
+                $.ajax({
+
+                    type:"POST",
+                    url:"",
+
+                    data:{
+                      action: 'delete_faction',
+                      faction_type: faction,
+                      id: faction_id,
+                      
+                      csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                    },
+                }); 
         folders.splice(i,1)
         display_dropdown('folders')
   }
     
   else if(faction == 'groups'){
+        faction_id = clicked_id.replace('groups','').replace('_dropdown','')
+                $.ajax({
+
+                    type:"POST",
+                    url:"",
+
+                    data:{
+                      action: 'delete_faction',
+                      faction_type: faction,
+                      id: faction_id,
+                      
+                      csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                    },
+                }); 
         groups.splice(i,1)
         display_dropdown('groups')
   }

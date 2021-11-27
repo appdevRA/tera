@@ -79,7 +79,7 @@ class User_file(models.Model):
 		db_table = "User_files"
 
 
-class Group(models.Model):
+class User_group(models.Model):
 	name = models.CharField(max_length=50) #add not null and not blank here
 	description = models.CharField(max_length=200)
 	owner = models.ForeignKey(User, related_name='User', on_delete = models.CASCADE)
@@ -87,12 +87,12 @@ class Group(models.Model):
 	is_removed = models.IntegerField(default=0)
 	member = models.ManyToManyField(User)
 	class Meta:
-		db_table = "Group"
+		db_table = "User_group"
 
 
 
 class Group_bookmark(models.Model):
-	group =models.ForeignKey(Group, null = False, blank = False, on_delete = models.CASCADE)
+	group =models.ForeignKey(User_group, null = False, blank = False, on_delete = models.CASCADE)
 	bookmark = models.ForeignKey(User_bookmark, null = False, blank = False, on_delete = models.CASCADE)
 	added_by = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
 	date_added = models.DateTimeField(default=timezone.now)

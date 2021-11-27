@@ -10,20 +10,22 @@ import requests
 from requests import ReadTimeout, ConnectTimeout, HTTPError, Timeout, ConnectionError
 import random
 import time
+from django.http import JsonResponse
+import json
+from fake_useragent import UserAgent
 
 
-def dictfetchall(cursor):
-    "Return all rows from a cursor as a dict"
-    columns = [col[0] for col in cursor.description]
-    return [
-        dict(zip(columns, row))
-        for row in cursor.fetchall()
-    ]
+
+
+
 
 
 def scrape(word, proxy, refType, site, header, pageNumber):
 
-
+    if site == 'Open Textbook Library':
+        return OTL(word, proxy, refType, pageNumber)
+    if site == 'UNESCO Digital Library':
+        return UNESCO(word, proxy, refType, pageNumber)
     if site == 'Springeropen.com':
         return springer(word, proxy, refType,pageNumber)
     elif site == 'Sciencedirect.com':
@@ -39,7 +41,84 @@ def scrape(word, proxy, refType, site, header, pageNumber):
 
 
 
+def OTL(word, proxy, refType, pageNumber): # pagination starts with index 1 diri
+    rows =[]
 
+    if refType == 'Text book':
+        response = requests.get('https://open.umn.edu/opentextbooks/textbooks?term='+word+'&commit=Go&page='+str(pageNumber), headers = headers(), timeout=2) #articles 
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        rowsss = soup.findAll('div', class_='col-sm-9 info')
+
+        for row in rowsss:
+            title = row.h2.text #title
+            link = row.h2.a['href']
+            author = row.p.text.replace('\n','  ') # 
+            publisher = row.p.find_next().text.replace('\n','  ')
+            description = row.p.find_next().find_next().text.replace('\n','  ')
+
+            a={
+                "title": title,
+                "author": author,
+                "description": description,
+                "publisher": publisher,
+                "website": 'Open Textbook Library',
+                "link": link
+
+            }
+            
+            rows.append(a)
+
+    return rows
+
+
+def OER(word, proxy, refType, pageNumber): # paginattion diri ky sumpay walay page-page, by 10, 20,50,100 ang makita sa screen
+    rows =[]
+    
+
+ 
+
+    response = requests.get('https://www.oercommons.org/search?batch_size=20&sort_by=search&view_mode=summary&f.search='+ word+'&f.sublevel=college-upper-division&f.sublevel=graduate-professional&f.sublevel=career-technical&f.sublevel=community-college-lower-division&f.sublevel=adult-education', headers=headers())
+    soup = BeautifulSoup(response.content, 'html.parser')
+    
+    # with open ('C:/Users/Valued Client/Desktop/html/OER.html', 'r', errors='ignore') as html_file:
+    #     content = html_file.read()
+        
+    #     soup = BeautifulSoup(content, 'html.parser')
+        # print(soup.prettify())
+    rowsss = soup.findAll('div', class_='item-details col-md-8 col-xs-11')
+    
+    for i,row in enumerate(rowsss):
+        if i >= (pageNumber*10)-10:
+            title = row.div.a.text # title
+            link = row.div.a['href'] # title
+            description = row.find('div', class_='abstract-short').p.text.replace('\n','').replace('  ','') # short description
+            x = row.find('dl', class_='item-info visible-md-block visible-lg-block').dt
+            array =[]
+            ii=1
+            while(x != None):
+                if(ii%2 != 0):
+                    array.append(x.text)
+                else:
+                    array[ii-1] = array[ii-1]+ x.text
+                
+                x= x.find_next_sibling()
+            
+
+            a={
+                "title": title,
+                "author": '',
+                "description": description,
+                "publisher": array,
+                "website": 'Open Educational Resources',
+                "link": link
+            }
+            
+            rows.append(a)
+        if i >= (pageNumber*10)-1:
+            break
+
+    return rows
 
 
 def springer(word, proxy, refType, pageNumber): # INDEX 1 STARTING SA PAGINATION DIRI
@@ -713,12 +792,13 @@ def proxy_generator2():
 
 
 def headers(): 
-    ua = random.choice(userAgents)  
+    ua = UserAgent()
+
     headers = {
-                    'user-agent': ua,
+                    'user-agent': ua.random,
                     'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
                     'accept-language': 'en-US,en;q=0.9',
-                    'referer': 'https://google.com/',
+                    'referer': 'https://ocw.mit.edu/',
                     'Upgrade-Insecure-Requests': '1',          
     }
     return headers
@@ -757,17 +837,24 @@ def testProxy(proxies, ptype):
        
         
 
-userAgents = [ 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36',
-                'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.106 Safari/537.36'
-                'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36',
-                'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36',
-                'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36',
-                'Mozilla/5.0 (Windows NT 5.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36',
-                'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36',
-                'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36',
-                'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36',
-                'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.140 Safari/537.36',                
-                ]
+# userAgents = [ 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36',
+#                 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.106 Safari/537.36'
+#                 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36',
+#                 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36',
+#                 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36',
+#                 'Mozilla/5.0 (Windows NT 5.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36',
+#                 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36',
+#                 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36',
+#                 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36',
+#                 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.140 Safari/537.36',                
+#                 ]
     
 
 
+def dictfetchall(cursor):
+    "Return all rows from a cursor as a dict"
+    columns = [col[0] for col in cursor.description]
+    return [
+        dict(zip(columns, row))
+        for row in cursor.fetchall()
+    ]
