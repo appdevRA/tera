@@ -13,10 +13,10 @@ import time
 from django.http import JsonResponse
 import json
 from fake_useragent import UserAgent
+from requests_html import HTMLSession
+from threading import Thread
 
-
-
-
+session= HTMLSession()
 
 
 
@@ -40,6 +40,215 @@ def scrape(word, proxy, refType, site, header, pageNumber):
         return zLibrary(word, proxy, refType, pageNumber)
 
 
+
+
+def render_html():
+    url = 'https://ocw.mit.edu/search/ocwsearch.htm?q=war'
+    r = session.get(url,headers=headers())
+    r.html.render(sleep=1,keep_page=True)
+    soup = BeautifulSoup(r.html.html, 'html.parser')
+    title = soup.findAll('div', class_='gsc-cursor-page', attrs={'class':'gsc-cursor-page', 'aria-label':'Page 3'})
+    title.click()
+    print(title)
+    # for i,a in enumerate(title):
+    #     print(a.text, i)
+
+def UNESCO(refType):
+    # isbn is for 
+    rows =[]
+    headers = { # for 1st page
+    'authority': 'unesdoc.unesco.org',
+    'sec-ch-ua': '" Not A;Brand";v="99", "Chromium";v="96", "Microsoft Edge";v="96"',
+    'x-inmedia-authorization': 'Bearer null 5e0790bc-ca31-40d3-9a28-3687b0b04d01 307584887',
+    'x-microsite-id': 'mainSite',
+    'content-type': 'application/json',
+    'sec-ch-ua-mobile': '?0',
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.55 Safari/537.36 Edg/96.0.1054.34',
+    'sec-ch-ua-platform': '"Windows"',
+    'accept': '*/*',
+    'origin': 'https://unesdoc.unesco.org',
+    'sec-fetch-site': 'same-origin',
+    'sec-fetch-mode': 'cors',
+    'sec-fetch-dest': 'empty',
+    'referer': 'https://unesdoc.unesco.org/search/e25dd84b-36d7-4de3-9a0f-59208c45a581',
+    'accept-language': 'en-US,en;q=0.9',
+    'cookie': 'consent_cookie_usage=agreed; _ga=GA1.3.1917778646.1638009010; _ga=GA1.2.1917778646.1638009010; JSESSIONID=C32D5FCB4761AF6EC52DC9E9E1423742; _gid=GA1.3.155193290.1638167610',
+    }
+
+    data = '{"query":["tsunami"],"queryid":"e25dd84b-36d7-4de3-9a0f-59208c45a581","sf":"+TypeOfDocumentFacet:UnescoPhysicalDocument","includeFacets":true,"pageSize":8,"includeSearchRestrictions":true,"useSpellcheck":true,"locale":"en"}'
+
+    a = requests.post('https://unesdoc.unesco.org/in/rest/api/search', headers=headers, data=data)
+    b = a.json()
+
+    for c in b['resultSet']:
+        z=[]
+        array = []
+        title = c['title'][0]['value']  
+        author = 'Author:  '
+        link = 'https://unesdoc.unesco.org/ark:/' + c['ark'][0]['value']
+        language = 'Language:  '
+        dateYear = 'Year of Publication:  '
+        isbn = 'ISBN:  '
+        collation = 'Collation:  '
+
+        try:
+            if len(c['meta']['authorPerson']) > 1:
+                for d in c['meta']['authorPerson']:
+                    author = author+", " + d['value']
+            else:
+                author = author + d['value']
+            
+        except KeyError:
+            if len(c['meta']['authorCorporate']) > 1 :
+                for d in c['meta']['authorCorporate']:
+                    author = author+", " + d['value']
+            else:
+                author = author + d['value']
+        except:
+            author=None
+
+
+        try:
+            if len(c['meta']['language']) > 1:
+                for d in c['meta']['language']:
+                    language = language+", "+ d['value']
+            else:
+                language = language+ d['value']
+         
+        except KeyError:
+            language =''
+
+        if len(c['meta']['dateYear']) > 1:
+            for d in c['meta']['dateYear']:
+                dateYear = dateYear+", "+ d['value']
+        else:
+            dateYear = dateYear+ d['value']
+
+
+
+        if refType == 'Article':
+            z.append(title)
+            z.append(author)
+            z.append(language)
+            z.append(dateYear)
+            z.append(link)
+            rows.append(z)
+
+
+        elif refType == 'Book':
+            try:
+                if len(c['meta']['isbn']) > 1:
+                    for d in c['meta']['isbn']:
+                        isbn = isbn+", "+ d['value']
+                else:
+                     isbn = isbn + d['value']
+            except KeyError:
+                isbn = "Document Code:  "
+                if len(c['meta']['callnumber']) > 1:
+                    for d in c['meta']['callnumber']:
+                        isbn = isbn +", "+ d['value']
+                else:
+                     isbn = isbn + d['value']
+               
+            except:
+                isbn = ''
+
+            try:
+                if len(c['meta']['descriptionPhysical']) > 1:
+                    for d in c['meta']['descriptionPhysical']:
+                        collation =collation+ ", " + d['value']
+                else:
+                    collation =collation + d['value']
+            except:
+                collation = ''
+
+            z.append(title)
+            z.append(author)
+            z.append(collation)
+            z.append(language)
+            z.append(isbn)
+            z.append(dateYear)
+            z.append(link)
+            rows.append(z)
+
+        elif refType == 'Program and Meeting Document': 
+            try:
+                isbn = "Document Code:  "
+                if len(c['meta']['callnumber']) > 1:
+                    for d in c['meta']['callnumber']:
+                        isbn = isbn+", "+ d['value']
+                else:
+                     isbn = isbn + d['value']
+            except:
+                isbn = ''
+
+        
+
+        # try:
+        #     isbn ="ISBN: "+c['meta']['isbn'][0]['value']
+        # except KeyError:
+        #     isbn ="Document Code: "+c['meta']['callnumber'][0]['value']
+
+        
+        
+        
+         
+       
+
+        
+
+    # headers = { # for next page 2 and so on
+    # 'authority': 'unesdoc.unesco.org',
+    # 'sec-ch-ua': '" Not A;Brand";v="99", "Chromium";v="96", "Microsoft Edge";v="96"',
+    # 'x-inmedia-authorization': 'Bearer null 5e0790bc-ca31-40d3-9a28-3687b0b04d01 307434452',
+    # 'x-microsite-id': 'mainSite',
+    # 'content-type': 'application/json',
+    # 'sec-ch-ua-mobile': '?0',
+    # 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.55 Safari/537.36 Edg/96.0.1054.34',
+    # 'sec-ch-ua-platform': '"Windows"',
+    # 'accept': '*/*',
+    # 'origin': 'https://unesdoc.unesco.org',
+    # 'sec-fetch-site': 'same-origin',
+    # 'sec-fetch-mode': 'cors',
+    # 'sec-fetch-dest': 'empty',
+    # 'referer': 'https://unesdoc.unesco.org/search/b3f5ddbf-3e97-4641-8e07-97ab959cc31c',
+    # 'accept-language': 'en-US,en;q=0.9',
+    # 'cookie': 'consent_cookie_usage=agreed; _ga=GA1.3.1917778646.1638009010; _ga=GA1.2.1917778646.1638009010; JSESSIONID=C32D5FCB4761AF6EC52DC9E9E1423742; _gid=GA1.3.155193290.1638167610; _gat_UA60257183=1',
+    # }
+
+    ## for books:
+    # data = '{"includeFacets":false,"order":"score_DESC;id_DESC","query":["war"],"queryid":"b3f5ddbf-3e97-4641-8e07-97ab959cc31c","sf":"+TypeOfDocumentFacet:UnescoPhysicalDocument","mappedFQ":{:{"ZMATFacet":{"SER":false,"ART":false,"BKP":false,"STI":false,"ISS":false,"DGN":false,"CIR":false,"PGD":false,"DEP":false,"MOV":false}},"pageNo":2,"pageSize":8,"locale":"en"}' 
+
+    # response = requests.post('https://unesdoc.unesco.org/in/rest/api/search', headers=headers, data=data)
+
+def KHAN():
+    print('olok')
+    # t = Thread(target=render_html)
+    # t.start()
+    # print('scrape started')
+    # t.join()
+    # print('scrape stopped')
+
+    
+    # soup = BeautifulSoup(response.content, 'html.parser')
+    # print(soup.prettify())
+
+    # for b in :
+    #     print(b)
+    # request = session.get(url)
+    # request.html.render()
+  
+    # soup = BeautifulSoup(request.html.html, 'html.parser')
+    # print(soup.prettify())
+
+    # params = (
+    #     ('adpage', '1'),
+    #     ('rurl', 'https://www.khanacademy.org/search?referer=%2F&page_search_query=war'),
+    #     ('referer', 'https://www.khanacademy.org/'),
+    # )
+
+    # response = requests.get('https://www.khanacademy.org/search?referer=%2F&page_search_query=war', headers=headers(),timeout=20)#, params=params)
+    
 
 def OTL(word, proxy, refType, pageNumber): # pagination starts with index 1 diri
     rows =[]
@@ -75,10 +284,24 @@ def OTL(word, proxy, refType, pageNumber): # pagination starts with index 1 diri
 def OER(word, proxy, refType, pageNumber): # paginattion diri ky sumpay walay page-page, by 10, 20,50,100 ang makita sa screen
     rows =[]
     
+    batch_start = 0
+    batch_size = 10
 
+    if pageNumber*10 > 10:
+        batch_size = 20
+    elif pageNumber*10 > 20:
+        batch_size = 50
+    elif pageNumber*10 > 50:
+        batch_size = 100
+    elif pageNumber*10 > 100:
+        batch_start = 100
+    elif pageNumber*10 > 200:
+        batch_start = 200
+
+    
  
 
-    response = requests.get('https://www.oercommons.org/search?batch_size=20&sort_by=search&view_mode=summary&f.search='+ word+'&f.sublevel=college-upper-division&f.sublevel=graduate-professional&f.sublevel=career-technical&f.sublevel=community-college-lower-division&f.sublevel=adult-education', headers=headers())
+    response = requests.get('https://www.oercommons.org/search?batch_size='+batch_size+'&batch_start='+batch_start+'&sort_by=search&view_mode=summary&f.search='+ word+'&f.sublevel=college-upper-division&f.sublevel=graduate-professional&f.sublevel=career-technical&f.sublevel=community-college-lower-division&f.sublevel=adult-education', headers=headers())
     soup = BeautifulSoup(response.content, 'html.parser')
     
     # with open ('C:/Users/Valued Client/Desktop/html/OER.html', 'r', errors='ignore') as html_file:
@@ -89,7 +312,7 @@ def OER(word, proxy, refType, pageNumber): # paginattion diri ky sumpay walay pa
     rowsss = soup.findAll('div', class_='item-details col-md-8 col-xs-11')
     
     for i,row in enumerate(rowsss):
-        if i >= (pageNumber*10)-10:
+        if i >= (pageNumber*10)-10: # get first 10 results in the page
             title = row.div.a.text # title
             link = row.div.a['href'] # title
             description = row.find('div', class_='abstract-short').p.text.replace('\n','').replace('  ','') # short description
@@ -115,9 +338,10 @@ def OER(word, proxy, refType, pageNumber): # paginattion diri ky sumpay walay pa
             }
             
             rows.append(a)
+            print(i)
         if i >= (pageNumber*10)-1:
             break
-
+        
     return rows
 
 

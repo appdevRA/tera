@@ -80,9 +80,14 @@ class practice(View):
 		#     # "bookmark_list" : a 
 		# }
 		# return HttpResponse()
+
+
 		# OTL('war', 1232, 'Text book', 1)
-		OER(1)
-		# print(headers())
+		# a = OER('animals', 'proxy', 'Text book', 2)
+		# for b in a:
+		# 	print(b['title'])
+		
+		UNESCO('Article')
 		return HttpResponse('wala') #,context)
 
 	def post(self, request):
