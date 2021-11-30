@@ -19,6 +19,12 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+        <!-- //Ryan sample -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" rel="stylesheet"/>
+
             
     </head>
 
@@ -205,15 +211,39 @@
                                     <div class="card-header">
                                         <i class="fas fa-chart-area me-1"></i>
                                         Active Users
+                                        <section style="float: right;">
+                                        <!-- <input onchange="filterData()" type="date" id="startdate" align="right" value="2021-03-01">
+                                        <input onchange="filterData()" type="date" id="enddate" align="right" value="2021-03-07" > -->
+                                        <div id="dialog" title="Filter Access">
+                                          <br>
+                                          <input onchange="filterData()" type="date" id="startdate" align="right" value="2021-03-01" style="width: 127px; font-size: 15px;">
+                                          <input onchange="filterData()" type="date" id="enddate" align="right" value="2021-03-07" style="float: right; width: 127px; font-size: 15px;">
+                                                                               
+                                        </div>
+                                         <input type="button" class="btn btn-primary btn-sm" id="target" value="Filter" style="float: right;"/>
+                                        </section>
                                     </div>
                                     <div class="card-body"><canvas id="myAreaChart" width="100%" height="40"></canvas></div>
                                 </div>
                             </div>
+
                             <div class="col-xl-6">
                                 <div class="card mb-4">
                                     <div class="card-header">
                                         <i class="fas fa-chart-bar me-1"></i>
                                         Site Access
+                                        <!-- <div id="dialog" title="Filter Access" style="margin-left: 20px">
+                                          <input onchange="filterData()" type="date" id="startdate" align="right" value="2021-03-01">
+                                        <input onchange="filterData()" type="date" id="enddate" align="right" value="2021-03-07" >
+                                            <div style="margin-left: 30px;">
+                                                <br>
+                                                <button class="btn btn-primary btn-sm" type="reset">Cancel</button>
+                                                <button class="btn btn-primary btn-sm" type="submit" style="margin-left: 20px">Submit</button>
+                                            </div>
+                                            
+                                            
+                                        </div> -->
+                                       <!--  <input type="button" class="btn btn-primary btn-sm" id="target" value="Filter" style="float: right;" /> -->
                                     </div>
                                     <div class="card-body"><canvas id="myBarChart" width="100%" height="40"></canvas></div>
                                 </div>
@@ -730,5 +760,44 @@
         <script src="{% static 'adminAssets/demo/chart-bar-demo.js' %}"></script>
         <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
         <script src="{% static 'js/datatables-simple-demo.js' %}"></script>
+
+
+        <script>
+            $('#dialog').hide();
+            $('#target').click(function() {
+              $('#dialog').show();
+              $('#dialog').dialog();
+            });
+        </script>
+
     </body>
 </html>
+
+<script type="text/javascript"> 
+
+function filterData() {
+  const dates2 = [...dates];
+  console.log(dates2);
+  const startdate = document.getElementById('startdate');
+  const enddate = document.getElementById('enddate');
+
+  //get the index number in array
+  const indexstartdate = dates2.indexOf(startdate.value);
+  const indexenddate = dates2.indexOf(enddate.value);
+  //console.log(indexstartdate);
+
+  //slice bread ay slice the array(pie) only showing the selected section/slice diay
+  const filterDate = dates2.slice(indexstartdate, indexenddate + 1);
+
+  //replace the labels in the charts
+  myAreaChart.config.data.labels = filterDate;
+
+  //datapoints
+  const datapoints2 = [...datapoints];
+  const filterDatapoints = datapoints2.slice(indexstartdate, indexenddate + 1);
+
+  myAreaChart.config.data.datasets[0].data = filterDatapoints;
+
+  myAreaChart.update();
+}
+</script>

@@ -6,12 +6,14 @@ document.getElementById("myAreaChart")
 // Area Chart Example
 var ctx = document.getElementById("myAreaChart");
 
-labels =["March 1", "March 2", "Mar 3", "Mar 4", "Mar 5", "Mar 6", "Mar 7", "Mar 8", "Mar 9", "Mar 10", "Mar 11", "Mar 12", "Mar 13"]
-var myLineChart = new Chart(ctx, {
 
-  type: 'line',
-  data: {
-    labels: labels,
+const dates = ['2021-03-01', '2021-03-02', '2021-03-03', '2021-03-04', '2021-03-05', '2021-03-06', '2021-03-07'];
+const datapoints= [10000, 30162, 26263, 18394, 18287, 28682, 31274, 33259, 25849, 24159, 32651, 31984, 38451];
+  
+
+const data = {
+    type: 'line',
+    labels: dates,
     datasets: [{
       label: "Active Users",
       lineTension: 0.3,
@@ -24,9 +26,9 @@ var myLineChart = new Chart(ctx, {
       pointHoverBackgroundColor: "rgba(243, 246, 85)",
       pointHitRadius: 50,
       pointBorderWidth: 2,
-      data: [10000, 30162, 26263, 18394, 18287, 28682, 31274, 33259, 25849, 24159, 32651, 31984, 38451],
+      data: datapoints,
     }],
-  },
+ 
   options: {
     scales: {
       xAxes: [{
@@ -55,4 +57,22 @@ var myLineChart = new Chart(ctx, {
       display: false
     }
   }
-});
+};
+
+
+const config = {
+      type: 'line',
+      data,
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    };
+
+const myAreaChart = new Chart(
+  document.getElementById('myAreaChart'),
+  config
+);
