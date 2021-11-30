@@ -4,6 +4,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <title>Collections</title>
+  <link rel="shortcut icon" href="{% static 'images/teralogo.png' %}">
    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
@@ -44,11 +46,36 @@ tr:hover {
   background-color: #c4c4c4
 
 }
-/*td:hover {
-  background-color: #c4c4c4
 
-}*/
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 100%;
+  overflow: auto;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown a:hover {background-color: #ddd;}
+
+.show {display: block;}
+
+
 </style>
+
 </head>
 {% endblock headerinclude %}
 
@@ -88,13 +115,42 @@ tr:hover {
         <ul>
             <section class="home">
                 <li id="all" class="menu-item" onclick="showRows(this.id)" ><i id="allIcon" class="fa fa-bookmark"></i> &nbsp; &nbsp; &nbsp; &nbsp;All References</li>
+
                 <li id="recentlyAdded" class="menu-item" onclick="showRows(this.id)" ><i id="recentlyAddedIcon" class="fa fa-history"></i>&nbsp; &nbsp;&nbsp; &nbsp; Recently Added</li>
+
                 <li id="recentlyRead" class="menu-item" onclick="showRows(this.id)" ><i id="recentlyReadIcon" class="fa fa-bookmark"></i>&nbsp; &nbsp;&nbsp; &nbsp; Recently Read</li>
+
                 <li id="favorite" class="menu-item" onclick="showRows(this.id)" ><i id="favoriteIcon" class="fa fa-star"></i>&nbsp; &nbsp; &nbsp; &nbsp;Favorites</li>
+
                 <li id="trash" class="menu-item" onclick="showRows(this.id)"><i id="trashIcon" class="fa fa-trash" ></i>&nbsp; &nbsp; &nbsp; &nbsp;Trash</li>
-                <li class="menu-item"><i class="fa fa-folder"></i>&nbsp; &nbsp;&nbsp; &nbsp;  <b>My Collections </b> <i class="fa fa-plus" style="font-size:10px;" name="addfolder" href='#addtoFolderModal' data-toggle='modal' data-target='#addtoFolderModal' ></i></li>
+
+                <li class="collapsible menu-item"><i class="fa fa-folder"></i>&nbsp; &nbsp;&nbsp; &nbsp;  <b>My Collections </b> <i class="fa fa-plus" style="font-size:10px;" name="addfolder" href='#addtoFolderModal' data-toggle='modal' data-target='#addtoFolderModal' ></i></li>
+                    <ul>
+                    <li class="menu-item" style="padding-left: 20%"> Sample Folder One</li>
+                    <li class="menu-item" style="padding-left: 20%"> Sample Folder Two</li>
+                    <li class="menu-item" style="padding-left: 20%"> Sample Folder Three</li>
+                    </ul>
+                    
                                
-                <li class="menu-item"><i class="fa fa-group" style="font-size: 20px"></i> &nbsp; &nbsp; &nbsp; <b>Private Groups</b> <i class="fa fa-plus" style="font-size: 10px;"></i></li>
+                <li class="collapsible menu-item" onclick="functionCollapse()"><i class="fa fa-group"></i> &nbsp; &nbsp; &nbsp; <b>Private Groups</b> <i class="fa fa-plus" style="font-size: 10px;" name="addgroup" href="#addtoGroupModal" data-toggle='modal' data-target='#addtoGroupModal'></i></li>
+                    <ul id="folders">
+                    <li class="menu-item" style="padding-left: 20%"> Sample Folder One</li>
+                    <li class="menu-item" style="padding-left: 20%"> Sample Folder Two</li>
+                    <li class="menu-item" style="padding-left: 20%"> Sample Folder Three</li>
+                    </ul>
+
+                 <div>
+                  <i onclick="myFunction()" class="fa fa-plus"></i>
+                  <div id="myDropdown" class="dropdown-content">
+                    <ul>
+                                    <li class="menu-item" style="padding-left: 20%"> Sample Folder One</li>
+                                    <li class="menu-item" style="padding-left: 20%"> Sample Folder Two</li>
+                                    <li class="menu-item" style="padding-left: 20%"> Sample Folder Three</li>
+                                    </ul>
+                  </div>
+                </div>
+
+                </li>
 
                </section>             
         </ul>
@@ -124,46 +180,93 @@ tr:hover {
                     <tbody id="itemArea">
                       
                     </tbody>
+
                   </table>
                 </div>
             </div>
-            <!-- The Modal -->
+            <!-- Folders Modal -->
                   <div class="modal fade" id="addtoFolderModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header text-center">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"  style=“color: yellow”; >
-          <span aria-hidden="true">&times;</span>
-        </button>
-        <div class="modal-body mx-3">
-        <div class="md-form mb-5">
-      
-         <center> 
-         <form action = "" method = "POST" autocomplete = "off" enctype="multipart/form-data">
-          {% csrf_token %}
-            <h4 style="color: #800000">PLEASE LOG IN</h4> <br><br>
-            Bookmark feature requires an account<br>
-            <b>do you want to log in?</b><br><br><br><br>
-       
-   
-        <center>
-              <div class="form-row">
-                <div class="form-group col-md-6">
-                <button type=“button” class="buttoncancel" data-dismiss="modal">Cancel</button>
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header text-center">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"  style=“color: yellow”; >
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                        <div class="modal-body mx-3">
+                        <div class="md-form mb-5">
+                      
+                         <center> 
+                         <form action = "" method = "POST" autocomplete = "off" enctype="multipart/form-data">
+                          {% csrf_token %}
+                            <p style="font-size: 25px; color: #800000">Create a New Collection</p>
+                            <p style="font-size: 15px">Please provide a name for your collection.</p>
+                            <hr>
+                            <label for="foldername"><b>Collection Name</b></label><br>
+                            <input type="text" placeholder="Enter Collection Name" style="width: 80%" name="foldername" required>
+                           <br><br><br>
+                       
+                   
+                        <center>
+                              <div class="form-row">
+                                <div class="form-group col-md-6">
+                                <button type=“button” class="buttoncancel" data-dismiss="modal">Cancel</button>
+                                </div>
+                                <input value="search_result_view" name="previousPage" hidden>
+                                <div class="form-group col-md-6"> 
+                                    <button type="submit" name="buttonLogin"class="buttonlogout"> Create</button>
+                                </div> 
+                         </div>
+                      </center>
+                       </form>
+                      </center>
+                    </div></div>
+                      </div>
+                      
+                  </div>
                 </div>
-                <input value="search_result_view" name="previousPage" hidden>
-                <div class="form-group col-md-6"> 
-                    <button type="submit" name="buttonLogin"class="buttonlogout"> Login</button>
-                </div> 
-         </div>
-      </center>
-       </form>
-      </center>
-    </div></div>
-      </div>
-      
-  </div>
-</div></div>
+                </div>
+
+                 <!-- Collab Modal -->
+                  <div class="modal fade" id="addtoGroupModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header text-center">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"  style=“color: yellow”; >
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                        <div class="modal-body mx-3">
+                        <div class="md-form mb-5">
+                      
+                         <center> 
+                         <form action = "" method = "POST" autocomplete = "off" enctype="multipart/form-data">
+                          {% csrf_token %}
+                            <p style="font-size: 25px; color: #800000">Create Collaboration Group</p>
+                            <p style="font-size: 15px">Please provide a name for your group.</p>
+                            <hr>
+                            <label for="foldername"><b>Collaboration Group Name</b></label><br>
+                            <input type="text" placeholder="Enter Group Name" style="width: 80%" name="groupname" required>
+                           <br><br><br>
+                       
+                   
+                        <center>
+                              <div class="form-row">
+                                <div class="form-group col-md-6">
+                                <button type=“button” class="buttoncancel" data-dismiss="modal">Cancel</button>
+                                </div>
+                                <input value="search_result_view" name="previousPage" hidden>
+                                <div class="form-group col-md-6"> 
+                                    <button type="submit" name="buttonLogin"class="buttonlogout"> Create</button>
+                                </div> 
+                         </div>
+                      </center>
+                       </form>
+                      </center>
+                    </div></div>
+                      </div>
+                      
+                  </div>
+                </div>
+                </div>
           </div>  
                  
         </div>
@@ -191,6 +294,49 @@ tr:hover {
     
     
 </body>
+<script>
+  // for collapsibles
+function functionCollapse() {
+  document.getElementById("folders").classList.toggle("show");
+}
+
+var coll = document.getElementsByClassName("collapsible");
+var i;
+
+for (i = 0; i < coll.length; i++) {
+  coll[i].addEventListener("click", function() {
+    this.classList.toggle("active");
+    var content = this.nextElementSibling;
+    if (content.style.display === "block") {
+      content.style.display = "none";
+    } else {
+      content.style.display = "block";
+    }
+  });
+}
+</script> 
+
+<script>
+/* When the user clicks on the button, 
+toggle between hiding and showing the dropdown content */
+function myFunction() {
+  document.getElementById("myDropdown").classList.toggle("show");
+}
+
+// Close the dropdown if the user clicks outside of it
+window.onclick = function(event) {
+  if (!event.target.matches('.fa-plus')) {
+    var dropdowns = document.getElementsByClassName("dropdown-content");
+    var i;
+    for (i = 0; i < dropdowns.length; i++) {
+      var openDropdown = dropdowns[i];
+      if (openDropdown.classList.contains('show')) {
+        openDropdown.classList.remove('show');
+      }
+    }
+  }
+}
+</script>        
 
 
 <script type="text/javascript">
@@ -431,7 +577,8 @@ function showRows(rowType){
                    
                       
                        $('#itemArea').append(
-                        "<tr><td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>" +
+                        "<tr>"+
+                        "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>" +
                         "<td>"+ markers[i]['fields']['itemType'] +  "</td>"+
                         "<td><a href='"+ markers[i]['fields']['url']+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i]['fields']['title'] +  "</span></a></td>"+
 
@@ -665,7 +812,7 @@ function sort(n){
       one from current row and one from the next: */
       x = rows[i].getElementsByTagName("TD")[n];
       y = rows[i + 1].getElementsByTagName("TD")[n];
-      // alert(rows[i].getElementsByTagName("TD")[1].text)
+      //alert(rows[i].getElementsByTagName("TD")[1].text)
       /* Check if the two rows should switch place,
       based on the direction, asc or desc: */
       if (dir == "asc") {
@@ -700,7 +847,10 @@ function sort(n){
   }
 }    
 
+
+
 </script> 
 
 
 </html>
+

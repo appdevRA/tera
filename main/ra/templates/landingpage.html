@@ -4,6 +4,7 @@
   <head>
     <meta charset="utf-8">
     <title>Landing Page</title>
+    <link rel="shortcut icon" href="{% static 'images/teralogo.png' %}">
     <link rel="stylesheet" href="{% static 'css/landingpage.css' %}">
     <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
     <script src="https://kit.fontawesome.com/a076d05399.js"></script>
@@ -46,7 +47,7 @@
                 
                 <ul>
                 <li><a href="{% url 'ra:tera_dashboard_view'%}">Collections</a></li>  
-                <li><a href="{% url 'ra:tera_account_settings'%}">Change pass</a></li>
+                <li><a href="{% url 'ra:tera_account_settings'%}">Settings</a></li>
                 <li>
                   <form  action = "" method = "POST" autocomplete = "off" enctype="multipart/form-data">
                     {% csrf_token %}
