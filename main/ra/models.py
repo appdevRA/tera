@@ -27,6 +27,14 @@ class Admin (models.Model):
 		db_table = "Admin"
 
 
+class Folder(models.Model):
+	name = models.CharField(max_length=25)
+	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE, default=None)
+	date_created = models.DateTimeField(default=timezone.now)
+	is_removed = models.IntegerField(default=0)
+
+	class Meta:
+		db_table = "Folder"	
 
 class User_bookmark (models.Model):
 	websiteTitle = models.CharField(max_length = 1000, null = False)
@@ -52,6 +60,7 @@ class User_bookmark (models.Model):
 	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
 	isFavorite = models.BooleanField(default=False)
 	date_removed = models.DateTimeField(blank = True, null = True)
+	folder = models.ManyToManyField(Folder)
 
 	class Meta:
 		db_table = "User_bookmark"
@@ -103,14 +112,7 @@ class Group_bookmark(models.Model):
 		db_table = "Group_bookmark"
 
 
-class Folder(models.Model):
-	name = models.CharField(max_length=25)
-	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE, default=None)
-	date_created = models.DateTimeField(default=timezone.now)
-	is_removed = models.IntegerField(default=0)
 
-	class Meta:
-		db_table = "Folder"	
 
 class Bookmark_folder (models.Model):
 	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)

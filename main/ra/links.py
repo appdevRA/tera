@@ -53,32 +53,36 @@ def render_html():
     # for i,a in enumerate(title):
     #     print(a.text, i)
 
-def UNESCO(refType):
+
+
+    
+
+def UNESCO(word, refType, pageNumber):
     # isbn is for 
     rows =[]
-    headers = { # for 1st page
-    'authority': 'unesdoc.unesco.org',
-    'sec-ch-ua': '" Not A;Brand";v="99", "Chromium";v="96", "Microsoft Edge";v="96"',
-    'x-inmedia-authorization': 'Bearer null 5e0790bc-ca31-40d3-9a28-3687b0b04d01 307584887',
-    'x-microsite-id': 'mainSite',
-    'content-type': 'application/json',
-    'sec-ch-ua-mobile': '?0',
-    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.55 Safari/537.36 Edg/96.0.1054.34',
-    'sec-ch-ua-platform': '"Windows"',
-    'accept': '*/*',
-    'origin': 'https://unesdoc.unesco.org',
-    'sec-fetch-site': 'same-origin',
-    'sec-fetch-mode': 'cors',
-    'sec-fetch-dest': 'empty',
-    'referer': 'https://unesdoc.unesco.org/search/e25dd84b-36d7-4de3-9a0f-59208c45a581',
-    'accept-language': 'en-US,en;q=0.9',
-    'cookie': 'consent_cookie_usage=agreed; _ga=GA1.3.1917778646.1638009010; _ga=GA1.2.1917778646.1638009010; JSESSIONID=C32D5FCB4761AF6EC52DC9E9E1423742; _gid=GA1.3.155193290.1638167610',
+    headers = {
+        'authority': 'unesdoc.unesco.org',
+        'sec-ch-ua': '" Not A;Brand";v="99", "Chromium";v="96", "Microsoft Edge";v="96"',
+        'x-inmedia-authorization': 'Bearer null e2229ff2-73dd-498c-8c52-3f8694622c7b 310378718',
+        'x-microsite-id': 'mainSite',
+        'content-type': 'application/json',
+        'sec-ch-ua-mobile': '?0',
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.55 Safari/537.36 Edg/96.0.1054.34',
+        'sec-ch-ua-platform': '"Windows"',
+        'accept': '*/*',
+        'origin': 'https://unesdoc.unesco.org',
+        'sec-fetch-site': 'same-origin',
+        'sec-fetch-mode': 'cors',
+        'sec-fetch-dest': 'empty',
+        'referer': 'https://unesdoc.unesco.org/search/2bc5c5b6-62ce-4b5f-aa27-4679499c1830',
+        'accept-language': 'en-US,en;q=0.9',
+        'cookie': 'consent_cookie_usage=agreed; _ga=GA1.3.1917778646.1638009010; _ga=GA1.2.1917778646.1638009010; _gid=GA1.3.155193290.1638167610; _gid=GA1.2.155193290.1638167610; JSESSIONID=8E242AEF08998954AA5D8316AD325D42; _gat_UA60257183=1',
     }
 
-    data = '{"query":["tsunami"],"queryid":"e25dd84b-36d7-4de3-9a0f-59208c45a581","sf":"+TypeOfDocumentFacet:UnescoPhysicalDocument","includeFacets":true,"pageSize":8,"includeSearchRestrictions":true,"useSpellcheck":true,"locale":"en"}'
+    data = '{"includeFacets":true,"order":"score_DESC;id_DESC","query":["'+word+'"],"queryid":"2bc5c5b6-62ce-4b5f-aa27-4679499c1830","sf":"+TypeOfDocumentFacet:UnescoPhysicalDocument","mappedFQ":{"ZMATFacet":{"SER":false,"BKP":false,"STI":false,"ISS":false,"BKS":false,"DGN":false,"CIR":false,"PGD":false,"DEP":false,"MOV":false}},"pageNo":'+ str(pageNumber)+',"pageSize":8,"locale":"en"}'
 
-    a = requests.post('https://unesdoc.unesco.org/in/rest/api/search', headers=headers, data=data)
-    b = a.json()
+    response = requests.post('https://unesdoc.unesco.org/in/rest/api/search', headers=headers, data=data)
+    b = response.json()
 
     for c in b['resultSet']:
         z=[]
@@ -96,14 +100,25 @@ def UNESCO(refType):
                 for d in c['meta']['authorPerson']:
                     author = author+", " + d['value']
             else:
-                author = author + d['value']
+                author = author + c['meta']['authorPerson'][0]['value']
             
         except KeyError:
-            if len(c['meta']['authorCorporate']) > 1 :
-                for d in c['meta']['authorCorporate']:
-                    author = author+", " + d['value']
-            else:
-                author = author + d['value']
+            try:
+                if len(c['meta']['authorCorporate']) > 1 :
+                    for d in c['meta']['authorCorporate']:
+                        author = author+", " + d['value']
+                else:
+                    author = author + c['meta']['authorCorporate'][0]['value']
+            except KeyError:
+                author = 'Conference:  '
+                try:
+                    if len(c['meta']['authorEvent']) > 1 :
+                        for d in c['meta']['authorEvent']:
+                            author = author+", " + d['value']
+                    else:
+                        author = author + c['meta']['authorEvent'][0]['value']
+                except:
+                    author = None
         except:
             author=None
 
@@ -113,7 +128,7 @@ def UNESCO(refType):
                 for d in c['meta']['language']:
                     language = language+", "+ d['value']
             else:
-                language = language+ d['value']
+                language = language+ c['meta']['language'][0]['value']
          
         except KeyError:
             language =''
@@ -122,7 +137,7 @@ def UNESCO(refType):
             for d in c['meta']['dateYear']:
                 dateYear = dateYear+", "+ d['value']
         else:
-            dateYear = dateYear+ d['value']
+            dateYear = dateYear+ c['meta']['dateYear'][0]['value']
 
 
 
@@ -172,8 +187,9 @@ def UNESCO(refType):
             rows.append(z)
 
         elif refType == 'Program and Meeting Document': 
+            isbn = "Document Code:  "
             try:
-                isbn = "Document Code:  "
+                
                 if len(c['meta']['callnumber']) > 1:
                     for d in c['meta']['callnumber']:
                         isbn = isbn+", "+ d['value']
@@ -182,6 +198,17 @@ def UNESCO(refType):
             except:
                 isbn = ''
 
+            z.append(title)
+            z.append(author)
+            z.append(isbn)
+            z.append(collation)
+            z.append(language)
+            
+            z.append(dateYear)
+            z.append(link)
+            rows.append(z)
+
+    return rows    
         
 
         # try:
@@ -221,34 +248,7 @@ def UNESCO(refType):
 
     # response = requests.post('https://unesdoc.unesco.org/in/rest/api/search', headers=headers, data=data)
 
-def KHAN():
-    print('olok')
-    # t = Thread(target=render_html)
-    # t.start()
-    # print('scrape started')
-    # t.join()
-    # print('scrape stopped')
 
-    
-    # soup = BeautifulSoup(response.content, 'html.parser')
-    # print(soup.prettify())
-
-    # for b in :
-    #     print(b)
-    # request = session.get(url)
-    # request.html.render()
-  
-    # soup = BeautifulSoup(request.html.html, 'html.parser')
-    # print(soup.prettify())
-
-    # params = (
-    #     ('adpage', '1'),
-    #     ('rurl', 'https://www.khanacademy.org/search?referer=%2F&page_search_query=war'),
-    #     ('referer', 'https://www.khanacademy.org/'),
-    # )
-
-    # response = requests.get('https://www.khanacademy.org/search?referer=%2F&page_search_query=war', headers=headers(),timeout=20)#, params=params)
-    
 
 def OTL(word, proxy, refType, pageNumber): # pagination starts with index 1 diri
     rows =[]
@@ -260,23 +260,20 @@ def OTL(word, proxy, refType, pageNumber): # pagination starts with index 1 diri
         rowsss = soup.findAll('div', class_='col-sm-9 info')
 
         for row in rowsss:
+            z=[]
             title = row.h2.text #title
             link = row.h2.a['href']
             author = row.p.text.replace('\n','  ') # 
             publisher = row.p.find_next().text.replace('\n','  ')
             description = row.p.find_next().find_next().text.replace('\n','  ')
-
-            a={
-                "title": title,
-                "author": author,
-                "description": description,
-                "publisher": publisher,
-                "website": 'Open Textbook Library',
-                "link": link
-
-            }
+            z.append(title)
+            z.append(author)
+            z.append(description)
+            z.append(publisher)
+            z.append(link)
             
-            rows.append(a)
+            
+            rows.append(z)
 
     return rows
 
@@ -298,9 +295,6 @@ def OER(word, proxy, refType, pageNumber): # paginattion diri ky sumpay walay pa
     elif pageNumber*10 > 200:
         batch_start = 200
 
-    
- 
-
     response = requests.get('https://www.oercommons.org/search?batch_size='+batch_size+'&batch_start='+batch_start+'&sort_by=search&view_mode=summary&f.search='+ word+'&f.sublevel=college-upper-division&f.sublevel=graduate-professional&f.sublevel=career-technical&f.sublevel=community-college-lower-division&f.sublevel=adult-education', headers=headers())
     soup = BeautifulSoup(response.content, 'html.parser')
     
@@ -313,8 +307,9 @@ def OER(word, proxy, refType, pageNumber): # paginattion diri ky sumpay walay pa
     
     for i,row in enumerate(rowsss):
         if i >= (pageNumber*10)-10: # get first 10 results in the page
+            z=[]
             title = row.div.a.text # title
-            link = row.div.a['href'] # title
+            link = row.div.a['href'] # link
             description = row.find('div', class_='abstract-short').p.text.replace('\n','').replace('  ','') # short description
             x = row.find('dl', class_='item-info visible-md-block visible-lg-block').dt
             array =[]
@@ -327,18 +322,15 @@ def OER(word, proxy, refType, pageNumber): # paginattion diri ky sumpay walay pa
                 
                 x= x.find_next_sibling()
             
-
-            a={
-                "title": title,
-                "author": '',
-                "description": description,
-                "publisher": array,
-                "website": 'Open Educational Resources',
-                "link": link
-            }
+            z.append(title)
+            z.append(description)
+            for iii in array:
+                z.append(iii)
             
-            rows.append(a)
-            print(i)
+            z.append(link)
+            
+            rows.append(z)
+            print(title)
         if i >= (pageNumber*10)-1:
             break
         

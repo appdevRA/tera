@@ -86,8 +86,8 @@ class practice(View):
 		# a = OER('animals', 'proxy', 'Text book', 2)
 		# for b in a:
 		# 	print(b['title'])
-		
-		UNESCO('Article')
+		KHAN('war', 'refType', 1)
+		# UNESCO('Article')
 		return HttpResponse('wala') #,context)
 
 	def post(self, request):
@@ -208,7 +208,7 @@ class TeraSearchResultsView(View):
 
 	def get(self,request):
 		request.session['previousPage'] ='search_result_view'
-		# header = ast.literal_eval(Headers.objects.get(id=2).text)	# converting b from string to dictionary
+		# header = ast.literal_eval(Headers.objects.get(id=2).text)	# converting from string to dictionary
 		# header = request.session.get('header')
 		word = request.session.get('word')
 
@@ -531,7 +531,7 @@ class TeraDashboardView(View):
 			elif action == 'get_folder_bookmarks':
 				fID = request.POST['fID']
 				cursor = connection.cursor()   
-				cursor.execute("SELECT bf.id AS bf_ID, b.* FROM User_bookmark b, Bookmark_folder bf WHERE bf.folder_id = "+ str(fID)+" AND bf.bookmark_id = b.id AND bf.user_id = "+ str(request.user.id)+" AND bf.is_removed = 0") #| get rows of for a specific date|
+				cursor.execute("SELECT bf.id AS bf_ID, b.* FROM User_bookmark b, Bookmark_folder bf WHERE bf.folder_id = "+ str(fID)+" AND bf.bookmark_id = b.id AND bf.user_id = "+ str(request.user.id)+" AND bf.is_removed = 0 AND b.isRemoved = 0") #| get rows of for a specific date|
 				a = dictfetchall(cursor)
 				# print(a)
 				print(len(a))
