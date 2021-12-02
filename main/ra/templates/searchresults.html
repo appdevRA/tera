@@ -172,17 +172,12 @@
             <h4>Site Filter</h4>
           <div class="left-side-bar">
             <ul>
-             <label id="Springeropen.com" class="site-filter container" onclick="search(this.id, 'site')"> Springeropen.com<input type="radio" checked="checked" name="radio" value="Springeropen.com"><span class="checkmark"></span></label>
-             <label id="Sciencedirect.com" class="site-filter container" onclick="search(this.id, 'site')"> Sciencedirect.com <input type="radio" name="radio" value="Sciencedirect.com"><span class="checkmark"></span></label>
-             <label id="Scirp.org" class="site-filter container" onclick="search(this.id, 'site')">Scirp.org<input type="radio" name="radio" value="Scirp.org"><span class="checkmark"></span></label>
-             <label id="Tandfonline.com" class="site-filter container" onclick="search(this.id, 'site')"> Tandfonline.com<input type="radio" name="radio" value="Tandfonline.com"><span class="checkmark"></span></label>
-             <label id="Zlibrary.org" class="site-filter container" onclick="search(this.id, 'site')"> Zlibrary.org<input type="radio" name="radio" value="Zlibrary.org"><span class="checkmark"></span></label>
-             <label id="" class="site-filter container" onclick="search(this.id, 'site')"> Cambridgecore.org<input type="radio" name="radio" value="Cambridgecore.org"><span class="checkmark"></span></label>
-             <label id="Herdin.ph" class="site-filter container" onclick="search(this.id, 'site')"> Herdin.ph<input type="radio" name="radio" value="Herdin.ph"><span class="checkmark"></span></label>
+             <label id="Springeropen" class="site-filter container" onclick="search(this.id, 'site')"> Springeropen<input type="radio" checked="checked" name="radio" value="Springeropen.com"><span class="checkmark"></span></label>
+             <label id="UNESCO Digital Library" class="site-filter container" onclick="search(this.id, 'site')">UNESCO Digital Library<input type="radio" name="radio" value="Tandfonline.com"><span class="checkmark"></span></label>
+             <label id="Open Textbook Library" class="site-filter container" onclick="search(this.id, 'site')">Open Textbook Library<input type="radio" name="radio" value="Zlibrary.org"><span class="checkmark"></span></label>
+             <label id="OER" class="site-filter container" onclick="search(this.id, 'site')"> OER Commons<input type="radio" name="radio" value="OER Commons"><span class="checkmark"></span></label>
              
-              
-              
- 
+
             </ul>
           </div>
         
@@ -331,7 +326,7 @@
  user_id = "{{is_authenticated}}"
  site = "{{website}}"
  type = "{{itemType}}"
- prox = "{{proxy}}"
+ isGet = "{{isGet}}"
  keyword = "{{keyword}}"
  
   $(document).ready(function($) {
@@ -371,11 +366,11 @@ function showRows(markers, links){
 
                                 " <em>"+ markers[i][1]+"</em><br><br></td>" +
 
-                                  "<td><a class='btnBookmark' > <i id='"+markers[i][0]+"||"+links[i]+"' class='fa fa-bookmark' style='color: red;' onClick='reply_click(this.id)'></i></a> </td>"+ "</tr>" );  
+                                  "<td><a class='btnBookmark' > <i id='"+markers[i][0]+"||"+markers[i][markers[i].length-1]+"' class='fa fa-bookmark' style='color: red;' onClick='reply_click(this.id)'></i></a> </td>"+ "</tr>" );  
                         } else{
                           $('#itemArea').append(
                                 "<tr> " +
-                           "<td><a href='"+ links[i]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;'><strong>" +
+                           "<td><a href='"+ markers[i][markers[i].length-1]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;'><strong>" +
                                 markers[i][0] + "</strong></span></a><br>" +
 
                                 " <em>"+ markers[i][1]+"</em><br><br></td>" +
@@ -388,17 +383,17 @@ function showRows(markers, links){
                         if(user_id == 'True' | user_id == true){
                           $('#itemArea').append(
                                 "<tr> " +
-                           "<td><a href='"+ links[i]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;font-size: 120%'><strong>" +
+                           "<td><a href='"+ markers[i][markers[i].length-1]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;font-size: 120%'><strong>" +
                                 markers[i][0] + "</strong></span></a><br>" +
 
                                 " <area>"+ markers[i][1]+"</area><br>" +
                                  " <a>"+ markers[i][2]+"</a><br><br><br><br></td>" +
 
-                                  "<td><a class='btnBookmark' cursor: pointer > <i id='"+markers[i][0]+"||"+links[i]+"' class='fa fa-bookmark' style='color: red;' onClick='reply_click(this.id)'></i></a> </td>"+ "</tr>" );  
+                                  "<td><a class='btnBookmark' cursor: pointer > <i id='"+markers[i][0]+"||"+markers[i][markers[i].length-1]+"' class='fa fa-bookmark' style='color: red;' onClick='reply_click(this.id)'></i></a> </td>"+ "</tr>" );  
                         } else{
                           $('#itemArea').append(
                                 "<tr> " +
-                           "<td><a href='"+ links[i]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;font-size: 120%'><strong>" +
+                           "<td><a href='"+ markers[i][markers[i].length-1]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;font-size: 120%'><strong>" +
                                 markers[i][0] + "</strong></span></a><br>" +
 
                                 " <em>"+ markers[i][1]+"</em><br>" +
@@ -413,14 +408,14 @@ function showRows(markers, links){
                           
                           $('#itemArea').append(
                                 "<tr> " +
-                           "<td ><a href='"+ links[i]+"' ><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 80ch; font-size: 120%; '><b>" +
+                           "<td ><a href='"+ markers[i][markers[i].length-1]+"' ><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 80ch; font-size: 120%; '><b>" +
                                 markers[i][0] + "</b></span></a><br> " +
 
                                 " <area style=' font-size: 120%;  max-width: 60ch;'>"+ markers[i][1]+"</area><br>" +
                                  " <em>"+ markers[i][2]+"</em><br>" +
                                  " <area>"+ markers[i][3]+"</area><br><br><br><br></td>" +
 
-                                   "<td><a class='btnBookmark' > <i id='"+markers[i][0]+"||"+links[i]+"' class='fa fa-bookmark' style='color: red; cursor: pointer' onClick='reply_click(this.id)'></i></a> </td>"+ "</tr>" );  
+                                   "<td><a class='btnBookmark' > <i id='"+markers[i][0]+"||"+markers[i][markers[i].length-1]+"' class='fa fa-bookmark' style='color: red; cursor: pointer' onClick='reply_click(this.id)'></i></a> </td>"+ "</tr>" );  
                         } else{
                           $('#itemArea').append(
                                 "<tr> " +
@@ -439,7 +434,7 @@ function showRows(markers, links){
                           
                           $('#itemArea').append(
                                 "<tr> " +
-                           "<td ><a href='"+ links[i]+"' ><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 80ch; font-size: 120%; '><b>" +
+                           "<td ><a href='"+ markers[i][markers[i].length-1]+"' ><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 80ch; font-size: 120%; '><b>" +
                                 markers[i][0] + "</b></span></a><br> " +
 
                                 " <area style=' font-size: 120%;  max-width: 60ch;'>"+ markers[i][1]+"</area><br>" +
@@ -447,11 +442,11 @@ function showRows(markers, links){
                                  " <area>"+ markers[i][3]+"</area><br></td>" +
                                  " <area>"+ markers[i][4]+"</area><br><br><br><br></td>" +
 
-                                   "<td><a class='btnBookmark' > <i id='"+markers[i][0]+"||"+links[i]+"' class='fa fa-bookmark' style='color: red; cursor: pointer' onClick='reply_click(this.id)'></i></a> </td>"+ "</tr>" );  
+                                   "<td><a class='btnBookmark' > <i id='"+markers[i][0]+"||"+markers[i][markers[i].length-1]+"' class='fa fa-bookmark' style='color: red; cursor: pointer' onClick='reply_click(this.id)'></i></a> </td>"+ "</tr>" );  
                         } else{
                           $('#itemArea').append(
                                 "<tr> " +
-                           "<td><a href='"+ links[i]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;'><strong>" +
+                           "<td><a href='"+ markers[i][markers[i].length-1]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;'><strong>" +
                                 markers[i][0] + "</strong></span></a><br>" +
 
                                " <area style=' font-size: 120%;  max-width: 60ch;'>"+ markers[i][1]+"</area><br>" +
@@ -467,7 +462,7 @@ function showRows(markers, links){
                           
                           $('#itemArea').append(
                                 "<tr> " +
-                           "<td ><a href='"+ links[i]+"' ><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 80ch; font-size: 120%; '><b>" +
+                           "<td ><a href='"+ markers[i][markers[i].length-1]+"' ><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 80ch; font-size: 120%; '><b>" +
                                 markers[i][0] + "</b></span></a><br> " +
 
                                 " <area style=' font-size: 120%;  max-width: 60ch;'>"+ markers[i][1]+"</area><br>" +
@@ -476,11 +471,11 @@ function showRows(markers, links){
                                  " <area>"+ markers[i][4]+"</area><br></td>" +
                                  " <area>"+ markers[i][5]+"</area><br><br><br><br></td>" +
 
-                                   "<td><a class='btnBookmark' > <i id='"+markers[i][0]+"||"+links[i]+"' class='fa fa-bookmark' style='color: red; cursor: pointer' onClick='reply_click(this.id)'></i></a> </td>"+ "</tr>" );  
+                                   "<td><a class='btnBookmark' > <i id='"+markers[i][0]+"||"+ markers[i][markers[i].length-1]+"' class='fa fa-bookmark' style='color: red; cursor: pointer' onClick='reply_click(this.id)'></i></a> </td>"+ "</tr>" );  
                         } else{
                           $('#itemArea').append(
                                 "<tr> " +
-                           "<td><a href='"+ links[i]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;'><strong>" +
+                           "<td><a href='"+ markers[i][markers[i].length-1]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;'><strong>" +
                                 markers[i][0] + "</strong></span></a><br>" +
 
                                " <area style=' font-size: 120%;  max-width: 60ch;'>"+ markers[i][1]+"</area><br>" +
@@ -488,6 +483,37 @@ function showRows(markers, links){
                                 " <area>"+ markers[i][3]+"</area><br></td>" +
                                  " <area>"+ markers[i][4]+"</area><br></td>" +
                                  " <area>"+ markers[i][5]+"</area><br><br><br><br></td>" +
+
+                                  "<td><a class='btnBookmark' >  <i href='#modalLogoutForm' data-toggle='modal' data-target='#modalLogoutForm'style='color: red;cursor: pointer'class='fa fa-bookmark'></i></a> </td>"+ "</tr> <br><br>" );  
+                        }
+             }  else if(markers[i].length == 7){
+                
+                        if(user_id == 'True' | user_id == true){
+                          
+                          $('#itemArea').append(
+                                "<tr> " +
+                           "<td ><a href='"+ markers[i][markers[i].length-1]+"' ><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 80ch; font-size: 120%; '><b>" +
+                                markers[i][0] + "</b></span></a><br> " +
+
+                                " <area style=' font-size: 120%;  max-width: 60ch;'>"+ markers[i][1]+"</area><br>" +
+                                 " <em>"+ markers[i][2]+"</em><br>" +
+                                 " <area>"+ markers[i][3]+"</area><br></td>" +
+                                 " <area>"+ markers[i][4]+"</area><br></td>" +
+                                 " <area>"+ markers[i][5]+"</area><br><br><br><br></td>" +
+
+                                   "<td><a class='btnBookmark' > <i id='"+markers[i][0]+"||"+ markers[i][markers[i].length-1]+"' class='fa fa-bookmark' style='color: red; cursor: pointer' onClick='reply_click(this.id)'></i></a> </td>"+ "</tr>" );  
+                        } else{
+                          $('#itemArea').append(
+                                "<tr> " +
+                           "<td><a href='"+ markers[i][markers[i].length-1]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;'><strong>" +
+                                markers[i][0] + "</strong></span></a><br>" +
+
+                               " <area style=' font-size: 120%;  max-width: 60ch;'>"+ markers[i][1]+"</area><br>" +
+                                 " <em>"+ markers[i][2]+"</em><br>" +
+                                " <area>"+ markers[i][3]+"</area><br></td>" +
+                                 " <area>"+ markers[i][4]+"</area><br></td>" +
+                                 " <area>"+ markers[i][5]+"</area><br></td>" +
+                                 " <area>"+ markers[i][6]+"</area><br><br><br><br></td>" +
 
                                   "<td><a class='btnBookmark' >  <i href='#modalLogoutForm' data-toggle='modal' data-target='#modalLogoutForm'style='color: red;cursor: pointer'class='fa fa-bookmark'></i></a> </td>"+ "</tr> <br><br>" );  
                         }
@@ -525,7 +551,6 @@ function search(clicked_id, searchType){
                   word: keyword,
                   site: website,
                   itemType: type,
-                  proxy: prox,
                   pageNumber: 1,
                   csrfmiddlewaretoken: "{{csrf_token}}"
                 },
@@ -535,7 +560,6 @@ function search(clicked_id, searchType){
                   links = response.links
                   showRows(markers, links)
                   user_id = response.is_authenticated
-                  prox =  response.proxy
                   // console.log(response)
                   document.getElementById('displayWord').innerHTML = keyword
                   document.getElementById('displayWord').style.display ="inline"
@@ -543,7 +567,7 @@ function search(clicked_id, searchType){
              
                 }
           }); 
-// document.getElementById('articlehr').style.display = "block";
+      // document.getElementById('articlehr').style.display = "block";
 
     } else if( searchType == 'itemType'){
         type = clicked_id
@@ -559,7 +583,6 @@ function search(clicked_id, searchType){
                   word: keyword,
                   site: website,
                   itemType: type,
-                  proxy: prox,
                   pageNumber: 1,
                   csrfmiddlewaretoken: "{{csrf_token}}"
                 },
@@ -569,7 +592,7 @@ function search(clicked_id, searchType){
                   links = response.links
                   showRows(markers, links)
                   user_id = response.is_authenticated
-                  prox =  response.proxy
+
                   // console.log(response)
                   document.getElementById('displayWord').innerHTML = keyword
                   document.getElementById('displayWord').style.display ="inline"
@@ -595,7 +618,7 @@ function search(clicked_id, searchType){
         document.getElementById('book').style.display="inline"
         document.getElementById('book|').style.display="inline"
         navhr(type)
-      } else if(clicked_id == 'Springeropen.com'){
+      } else if(clicked_id == 'Springeropen'){
           if(type != 'article' & type != 'book'){
           type = 'article'
         
@@ -674,7 +697,6 @@ function search(clicked_id, searchType){
                   word: keyword,
                   site: website,
                   itemType: type,
-                  proxy: prox,
                   pageNumber: 1,
                   csrfmiddlewaretoken: "{{csrf_token}}"
                 },
@@ -684,7 +706,6 @@ function search(clicked_id, searchType){
                   links = response.links
                   showRows(markers, links)
                   user_id = response.is_authenticated
-                  prox =  response.proxy
                   // console.log(response)
                   document.getElementById('displayWord').innerHTML = keyword
                   document.getElementById('displayWord').style.display ="inline"

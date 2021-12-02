@@ -20,27 +20,22 @@ session= HTMLSession()
 
 
 
-def scrape(word, proxy, refType, site, header, pageNumber):
-
-    if site == 'Open Textbook Library':
-        return OTL(word, proxy, refType, pageNumber)
-    if site == 'UNESCO Digital Library':
-        return UNESCO(word, proxy, refType, pageNumber)
-    if site == 'Springeropen.com':
-        return springer(word, proxy, refType,pageNumber)
-    elif site == 'Sciencedirect.com':
-        return scienceDirect(word, proxy, refType, pageNumber, header)
-    elif site == 'Scirp.org':
-        return scirp(word, proxy, refType, pageNumber)
-    elif site == 'Tandfonline.com':
-        return tandFOnline(word, proxy, refType, pageNumber)
-    elif site == 'Herdin.ph':
-        return herdin(word, proxy, refType, pageNumber)
-    elif site == 'Zlibrary.org':
-        return zLibrary(word, proxy, refType, pageNumber)
-
-
-
+def scrape(word, refType, site, header, pageNumber):
+    
+    print(site, refType)
+              
+              
+              
+    if site == 'Springeropen':
+        return springer(word, refType,pageNumber)
+    elif site == 'UNESCO Digital Library':
+        return UNESCO(word, refType, pageNumber)
+    elif site == 'Open Textbook Library':
+        return OTL(word, refType, pageNumber)
+    elif site == 'Scientific Reseach Publisher':
+        return scirp(word, refType, pageNumber)
+    elif site == 'OER Commons':
+        return OTL(word, refType, pageNumber)
 
 def render_html():
     url = 'https://ocw.mit.edu/search/ocwsearch.htm?q=war'
@@ -141,7 +136,7 @@ def UNESCO(word, refType, pageNumber):
 
 
 
-        if refType == 'Article':
+        if refType == 'article':
             z.append(title)
             z.append(author)
             z.append(language)
@@ -150,7 +145,7 @@ def UNESCO(word, refType, pageNumber):
             rows.append(z)
 
 
-        elif refType == 'Book':
+        elif refType == 'book':
             try:
                 if len(c['meta']['isbn']) > 1:
                     for d in c['meta']['isbn']:
@@ -158,15 +153,16 @@ def UNESCO(word, refType, pageNumber):
                 else:
                      isbn = isbn + d['value']
             except KeyError:
-                isbn = "Document Code:  "
-                if len(c['meta']['callnumber']) > 1:
-                    for d in c['meta']['callnumber']:
-                        isbn = isbn +", "+ d['value']
-                else:
-                     isbn = isbn + d['value']
+                try:
+                    isbn = "Document Code:  "
+                    if len(c['meta']['callnumber']) > 1:
+                        for d in c['meta']['callnumber']:
+                            isbn = isbn +", "+ d['value']
+                    else:
+                         isbn = isbn + d['value']
                
-            except:
-                isbn = ''
+                except:
+                    isbn = ''
 
             try:
                 if len(c['meta']['descriptionPhysical']) > 1:
@@ -184,6 +180,7 @@ def UNESCO(word, refType, pageNumber):
             z.append(isbn)
             z.append(dateYear)
             z.append(link)
+            print(z,"\n\n\n")
             rows.append(z)
 
         elif refType == 'Program and Meeting Document': 
@@ -246,11 +243,11 @@ def UNESCO(word, refType, pageNumber):
     ## for books:
     # data = '{"includeFacets":false,"order":"score_DESC;id_DESC","query":["war"],"queryid":"b3f5ddbf-3e97-4641-8e07-97ab959cc31c","sf":"+TypeOfDocumentFacet:UnescoPhysicalDocument","mappedFQ":{:{"ZMATFacet":{"SER":false,"ART":false,"BKP":false,"STI":false,"ISS":false,"DGN":false,"CIR":false,"PGD":false,"DEP":false,"MOV":false}},"pageNo":2,"pageSize":8,"locale":"en"}' 
 
-    # response = requests.post('https://unesdoc.unesco.org/in/rest/api/search', headers=headers, data=data)
+    # response = requests.post('https://unesdoc.unesco.org/in/rest/api/search', headers=headers, data=data) 8 items per page, page start @ index 1
 
 
 
-def OTL(word, proxy, refType, pageNumber): # pagination starts with index 1 diri
+def OTL(word, refType, pageNumber): # pagination starts with index 1 diri
     rows =[]
 
     if refType == 'Text book':
@@ -278,7 +275,7 @@ def OTL(word, proxy, refType, pageNumber): # pagination starts with index 1 diri
     return rows
 
 
-def OER(word, proxy, refType, pageNumber): # paginattion diri ky sumpay walay page-page, by 10, 20,50,100 ang makita sa screen
+def OER(word, refType, pageNumber): # paginattion diri ky sumpay walay page-page, by 10, 20,50,100 ang makita sa screen
     rows =[]
     
     batch_start = 0
@@ -337,27 +334,28 @@ def OER(word, proxy, refType, pageNumber): # paginattion diri ky sumpay walay pa
     return rows
 
 
-def springer(word, proxy, refType, pageNumber): # INDEX 1 STARTING SA PAGINATION DIRI
+def springer(word,refType, pageNumber): # INDEX 1 STARTING SA PAGINATION DIRI
     
     springers = []
-    springLinks = []
+    
     
     if refType == 'article':
-        x = False
-        while(x == False):
-            try:
-                response = requests.get('https://www.springeropen.com/search?searchType=publisherSearch&sort=Relevance&query=' + word +'&page='+ str(pageNumber), headers = headers(), proxies={'https:': proxy}, timeout=2) #articles 
-                x = True
-            except ConnectionError:
-                print('Connection Error')
-                return False
+        # x = False
+        # while(x == False):
+        #     try:
+        #         response = requests.get('https://www.springeropen.com/search?searchType=publisherSearch&sort=Relevance&query=' + word +'&page='+ str(pageNumber), headers = headers(), timeout=2) #articles 
+        #         x = True
+        #     except ConnectionError:
+        #         print('Connection Error')
+        #         return False
 
-            except ConnectTimeout:
-                print('Connect Timeout')
+        #     except ConnectTimeout:
+        #         print('Connect Timeout')
                 
-            except ReadTimeout:
-                print('except')
+        #     except ReadTimeout:
+        #         print('except')
         
+        response = requests.get('https://www.springeropen.com/search?searchType=publisherSearch&sort=Relevance&query=' + word +'&page='+ str(pageNumber), headers = headers(), timeout=2) #articles 
         soup = BeautifulSoup(response.content, 'html.parser')
 
     
@@ -378,32 +376,18 @@ def springer(word, proxy, refType, pageNumber): # INDEX 1 STARTING SA PAGINATION
                     z = []
                                         
                     z.append(a.text.replace('\n','')) # store title to list
-                    z.append(div.p.text) # store description of link to list
                     z.append(p.text) # store author to list
+                    z.append(div.p.text) # store description of link to list
                     div2 = article.find('div',class_='c-meta')
                     z.append(div2.text) # store date&type to list
-
-                    springLinks.append(a.a['href']) # extract link and store to list
+                    z.append(a.a['href'])
+                   # extract link and store to list
                     
                     springers.append(z)
-        return springers, springLinks
+        return springers
     elif refType == 'book':
-        x = False
-        while(x == False):
-            try:
-                response = requests.get('https://www.springer.com/gp/search?dnc=true&facet-type=type__book&page='+ str(pageNumber) +'&query='+ word+'&submit=Submit', headers = headers(), proxies={'https:': proxy}, timeout=2) #books
-                x = True
-                
-            except ConnectionError:
-                print('Connection Error')
-                return False
-
-            except ConnectTimeout:
-                print('Connect Timeout')
-                
-            except ReadTimeout:
-                print('except')
-        
+      
+        response = requests.get('https://www.springer.com/gp/search?dnc=true&facet-type=type__book&page='+ str(pageNumber) +'&query='+ word+'&submit=Submit', headers = headers(), timeout=2) #books
         soup = BeautifulSoup(response.content, 'html.parser')
         rows = soup.find('div', id='result-list')
         
@@ -418,8 +402,8 @@ def springer(word, proxy, refType, pageNumber): # INDEX 1 STARTING SA PAGINATION
                 if editorial != None:
                     z.append(editorial.h4.a.text) #title
                     z.append(editorial.div.text) #desicription
-                    springLinks.append(editorial.h4.a['href'])
-                    
+                    z.append(editorial.h4.a['href'])
+
                 elif books1 != None:
                     
                     z.append(books1.h4.a.text) #title
@@ -427,7 +411,7 @@ def springer(word, proxy, refType, pageNumber): # INDEX 1 STARTING SA PAGINATION
                     z.append(books1.div.text) #desicription
                     z.append(books1.find('p', class_='format').text) #format
                     #z.append(books1.find('p', class_='price-container price-loaded').span.text) #price
-                    springLinks.append('https://www.springer.com' +books1.h4.a['href'])
+                    z.append('https://www.springer.com' +books1.h4.a['href'])
      
                 elif books2 != None:
                     z.append(books2.h4.a.text) #title
@@ -435,18 +419,18 @@ def springer(word, proxy, refType, pageNumber): # INDEX 1 STARTING SA PAGINATION
                     z.append(books2.div.text) #desicription
                     z.append(books2.find('p', class_='format').text) #format
                     #z.append(books2.find('p', class_='price-container price-loaded').text) #price
-                    springLinks.append('https://www.springer.com' +books2.h4.a['href'])
+                    z.append('https://www.springer.com' +books2.h4.a['href'])
 
                 springers.append(z)
 
     
-            return springers, springLinks
+            return springers
 
 def details(link, proxy, refType ):
-    
+    print(refType)
     ref = refType.split(' ')
 
-    if refType == 'Springeropen.com article':
+    if refType == 'Springeropen article':
         # with open ('C:/Users/Valued Client/Desktop/html/sprigner DETAILS.html', 'r', errors='ignore') as html_file:
         #     content = html_file.read()
             # soup = BeautifulSoup(content, 'html.parser')
@@ -487,7 +471,7 @@ def details(link, proxy, refType ):
         
         return details
 
-    elif refType == 'Springeropen.com book':
+    elif refType == 'Springeropen book':
         response = requests.get(link + '#about',headers=headers(), proxies={'https:': proxy})
         soup = BeautifulSoup(response.content, 'html.parser')
 
@@ -614,31 +598,35 @@ def scienceDirect(word,proxy, refType, pageNumber, header):
     return scienceDirects, scienceLinks
 
 
-def scirp(word, proxy, refType, pageNumber):
+def scirp(word, refType, pageNumber):
     
     scirp = []
     scirpLinks = []         
     
-    x = False
-    while(x == False):
-        try:
-            if refType == 'article':
-                response = requests.get('https://www.scirp.org/journal/articles.aspx?searchcode='+ word+'&searchfield=All&page=1', headers = headers(), proxies={'https:': proxy}, timeout=2) # article                   #
-                x = True
-            else:
-                response = requests.get('https://www.scirp.org/journal/articles.aspx?searchcode='+ word +'&searchfield=jname&page=1&skid=0', headers = headers(), proxies={'https:': proxy}, timeout=2) #journal
-                x = True
-        except ConnectionError:
-            print('Connection Error')
-            return False
+    # x = False
+    # while(x == False):
+    #     try:
+    #         if refType == 'article':
+    #             response = requests.get('https://www.scirp.org/journal/articles.aspx?searchcode='+ word+'&searchfield=All&page=1', headers = headers(),  timeout=2) # article                   #
+    #             x = True
+    #         else:
+    #             response = requests.get('https://www.scirp.org/journal/articles.aspx?searchcode='+ word +'&searchfield=jname&page=1&skid=0', headers = headers(), timeout=2) #journal
+    #             x = True
+    #     except ConnectionError:
+    #         print('Connection Error')
+    #         return False
 
-        except ConnectTimeout:
-            print('Connect Timeout')
+    #     except ConnectTimeout:
+    #         print('Connect Timeout')
                 
-        except ReadTimeout:
-            print('ReadTimeout')
+    #     except ReadTimeout:
+    #         print('ReadTimeout')
         
-
+    if refType == 'article':
+        response = requests.get('https://www.scirp.org/journal/articles.aspx?searchcode='+ word+'&searchfield=All&page=1', headers = headers(),  timeout=2) # article                   #
+        
+    else:
+        response = requests.get('https://www.scirp.org/journal/articles.aspx?searchcode='+ word +'&searchfield=jname&page=1&skid=0', headers = headers(), timeout=2) #journal
     soup = BeautifulSoup(response.content, 'html.parser')
     a=soup.find('ul', class_='list-unstyled list_link').findAll('li')
    
@@ -1053,18 +1041,7 @@ def testProxy(proxies, ptype):
        
         
 
-# userAgents = [ 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36',
-#                 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.106 Safari/537.36'
-#                 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36',
-#                 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36',
-#                 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36',
-#                 'Mozilla/5.0 (Windows NT 5.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36',
-#                 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36',
-#                 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36',
-#                 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36',
-#                 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.140 Safari/537.36',                
-#                 ]
-    
+
 
 
 def dictfetchall(cursor):
@@ -1074,3 +1051,10 @@ def dictfetchall(cursor):
         dict(zip(columns, row))
         for row in cursor.fetchall()
     ]
+
+
+
+def recommend(bookmark_list):
+
+    for item in bookmark_list:
+        print(item['title'])

@@ -132,9 +132,9 @@ tr:hover {
                         <center>
                               <div class="form-row">
                                 <div class="form-group col-md-6">
-                                <button id="dismiss-modal_folder" type=“button” class="buttoncancel" data-dismiss="modal">Cancel</button>
+                                <button id="dismiss-modal_folder" type=“button” class="buttoncancel" data-dismiss="modal" onclick="hide_errorMessage()">Cancel</button>
                                 </div>
-                              
+                             
                                 <div class="form-group col-md-6"> 
                                     <button type="submit" name="buttonLogin"class="buttonlogout"   onclick="create_folder('folders')"> Create</button>
                                 </div> 
@@ -169,15 +169,15 @@ tr:hover {
                             
                             <input type="text" placeholder="Enter Collection Name" style="width: 80%" id="groupname_input" value="My group" required>
                            <br>
-                            <a id="add_folder_error" style="color: red; visibility: hidden">Folder name already exist</a>
+                            <a id="" style="color: red; visibility: hidden">Group name already exist</a>
 
                            <br><br><br>
-                       
+
                    
                         <center>
                               <div class="form-row">
                                 <div class="form-group col-md-6">
-                               <button id="dismiss-modal_group" type=“button” class="buttoncancel" data-dismiss="modal">Cancel</button>
+                               <button id="dismiss-modal_group" type=“button” class="buttoncancel" data-dismiss="modal" onclick="hide_errorMessage()">Cancel</button>
                                 </div>
                                 
                                 <div class="form-group col-md-6"> 
@@ -194,6 +194,52 @@ tr:hover {
 
                   </div>
                   </div>  
+
+                  <!-- Add Member Modal -->
+                  <div class="modal fade" id="addMemberModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header text-center">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"  style=“color: yellow”; >
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                        <div class="modal-body mx-3">
+                        <div class="md-form mb-5">
+                      
+                         <center> 
+                       
+                          {% csrf_token %}
+                            <p style="font-size: 25px; color: #800000">Enter Student ID</p>
+                            
+                            
+                            <input type="text" placeholder="18-5126-269" style="width: 80%" id="idNumber_input" value="" required><br>
+                          <center>
+                            <a id="user_does_not_exist" style="color: red; display: none">User does not exist</a>
+                            <a id="user_already_member" style="color: red; display: none">User already a member</a>
+                            <a id="user_is_owner" style="color: red; display: none">User is the owner</a>
+                          </center>
+                           <br><br><br>
+                       
+                   
+                        <center>
+                              <div class="form-row">
+                                <div class="form-group col-md-6">
+                                <button id="dismiss-modal_member" type=“button” class="buttoncancel" data-dismiss="modal" onclick="hide_errorMessage()">Cancel</button>
+                                </div>
+                              
+                                <div class="form-group col-md-6"> 
+                                    <button type="submit" name="buttonLogin"class="buttonlogout"   onclick="add_member()"> Add</button>
+                                </div> 
+                         </div>
+                      </center>
+                      
+                      </center>
+                    </div></div>
+                      </div>
+                      
+                  </div>
+                </div>
+                </div>
     
   </nav>
 
@@ -204,14 +250,15 @@ tr:hover {
       <div class="main-menu" style="border-right:2px #800000 solid;">
         <ul>
             <section class="home">
-                <li id="all" class="menu-item" onclick="showRows(this.id)" ><i id="allIcon" class="fa fa-bookmark"></i> &nbsp; &nbsp; &nbsp; &nbsp;All References</li>
+                <li id="all" class="menu-item" onclick="showRows(this.id)" ><i id="allIcon" class="fa fa-bookmark"></i> &nbsp; &nbsp; &nbsp; &nbsp;My Collections</li>
                 <li id="recentlyAdded" class="menu-item" onclick="showRows(this.id)" ><i id="recentlyAddedIcon" class="fa fa-history"></i>&nbsp; &nbsp;&nbsp; &nbsp; Recently Added</li>
                 <li id="recentlyRead" class="menu-item" onclick="showRows(this.id)" ><i id="recentlyReadIcon" class="fa fa-bookmark"></i>&nbsp; &nbsp;&nbsp; &nbsp; Recently Read</li>
                 <li id="favorite" class="menu-item" onclick="showRows(this.id)" ><i id="favoriteIcon" class="fa fa-star"></i>&nbsp; &nbsp; &nbsp; &nbsp;Favorites</li>
                 <li id="trash" class="menu-item" onclick="showRows(this.id)"><i id="trashIcon" class="fa fa-trash" ></i>&nbsp; &nbsp; &nbsp; &nbsp;Trash</li>
 
-                                                                                                                       <!-- onclick="display_folder('collections')" -->
-                <li id="collections" class="collapsible menu-item" onclick="display_dropdown('folders')"><i class="fa fa-folder"></i>&nbsp; &nbsp;&nbsp; &nbsp;  <b >My Collections </b> <button  style="font-size: 140%;border: solid #f1f1f1; color: red; font-weight:bold; margin-left: 17%" name="addfolder" href="#addtoFolderModal" data-toggle='modal' data-target='#addtoFolderModal'>  +</button></li> 
+
+
+                <li id="collections" class="collapsible menu-item" onclick="display_dropdown('folders')"><i class="fa fa-folder"></i>&nbsp; &nbsp;&nbsp; &nbsp;  <b >My Folders </b> <button  style="font-size: 140%;border: solid #f1f1f1; color: red; font-weight:bold; margin-left: 17%" name="addfolder" href="#addtoFolderModal" data-toggle='modal' data-target='#addtoFolderModal'>  +</button></li> 
                 
                     <ul id="mycollection_ul" style="display: none">
                       
@@ -286,9 +333,9 @@ tr:hover {
        <tbody id="detailArea" style="overflow: none;">
 
        </tbody>
-
+ 
      </table>
-   
+   <ul id='group_detail_ul' style='margin-left: 10%; '></ul>
     </div>
   
 
@@ -307,10 +354,10 @@ tr:hover {
     var bookmark_folder
     var faction_id
     var faction_markers
-     
+    var group_id
 
 $(document).ready(function($) {
-  
+ 
 
 showRows('all')
 // $('#addtoFolderModal').modal('show') 
@@ -427,15 +474,27 @@ function delete_item(clicked_id, i, action_type){
 
 
 
-function favorite_item(clicked_id){
-  // alert(tab)
+function favorite_item(clicked_id,ii){
+  
    
    for(i=0; i< markers.length;i++){
       if(markers[i].id == clicked_id){
+
         if(markers[i].isFavorite == 0){
+
           markers[i].isFavorite = 1;  
           // clearRow('itemArea')
-          showRows(tab)
+          if(tab=='folders'){
+
+            bookmark_folder[ii].isFavorite = true
+            alert(bookmark_folder[ii].isFavorite)
+          showRows(tab,bookmark_folder)
+          } else if(tab=='groups'){
+            bookmark_folder[ii].isFavorite = 1
+            showRows(tab,bookmark_folder)
+          }else{
+            showRows(tab)
+          } 
           $.ajax({
                       type:"POST",
                       url:"",
@@ -449,7 +508,15 @@ function favorite_item(clicked_id){
 
         } else if(markers[i].isFavorite == 1){
           markers[i].isFavorite = 0;  
-           showRows(tab)
+           if(tab=='folders'){
+            bookmark_folder[ii].isFavorite = false
+          showRows(tab,bookmark_folder)
+          } else if(tab=='groups'){
+            bookmark_folder[ii].isFavorite = 0
+            showRows(tab,bookmark_folder)
+          }else{
+            showRows(tab)
+          } 
             $.ajax({
                       type:"POST",
                       url:"",
@@ -481,7 +548,7 @@ function showRows(rowType, array, faction_id){
   tab = rowType;
  
     if(rowType == 'all'){
-
+      $("#group_detail_ul").empty();
       document.getElementById(rowType).style.backgroundColor= "#c9c9c9";
       document.getElementById(rowType).style.color= "#800000";
       document.getElementById('allIcon').style.color= "#800000";
@@ -490,7 +557,8 @@ function showRows(rowType, array, faction_id){
              
 
                 if( markers[i].isRemoved == 0 ){
-                    console.log(typeof(markers[i].dateAccessed))
+
+                   
                       date_add= new Date(markers[i].dateAdded+'Z')
                       if(typeof(markers[i].dateAccessed) == 'string')
                         date_acc= new Date(markers[i].dateAccessed+'Z')
@@ -543,6 +611,7 @@ function showRows(rowType, array, faction_id){
 
 
     } else if(rowType =='trash'){
+      $("#group_detail_ul").empty();
       document.getElementById(rowType).style.backgroundColor= "#c9c9c9";
       document.getElementById(rowType).style.color= "#800000";
       document.getElementById('trashIcon').style.color= "#800000";
@@ -594,50 +663,51 @@ function showRows(rowType, array, faction_id){
          
         }
 
-        $.ajax({
-                      type:"POST",
-                      url:"",
+      //   $.ajax({
+      //                 type:"POST",
+      //                 url:"",
 
-                      data:{
-                        action: 'get_folder_trash',
-                        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
-                      }, 
-                      success: function(response){
-                        array = response.bookmarks
+      //                 data:{
+      //                   action: 'get_folder_trash',
+      //                   csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+      //                 }, 
+      //                 success: function(response){
+      //                   array = response.bookmarks
                        
-                        for(i=0; i< markers.length;i++){
-                            for(ii=0; ii < array.length;ii++){
-                              if( markers[i].id == array[ii].b_ID){
+      //                   for(i=0; i< markers.length;i++){
+      //                       for(ii=0; ii < array.length;ii++){
+      //                         if( markers[i].id == array[ii].b_ID){
                                 
 
-                                      if(markers[i].websiteTitle == "Springeropen.com"){
-                                        sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
-                                      } else if(markers[i].websiteTitle == "Sciencedirect.com"){
-                                        sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 25px;'></td>"
-                                      } 
+      //                                 if(markers[i].websiteTitle == "Springeropen.com"){
+      //                                   sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
+      //                                 } else if(markers[i].websiteTitle == "Sciencedirect.com"){
+      //                                   sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 25px;'></td>"
+      //                                 } 
 
-                                $('#itemArea').append(
-                                  "<tr class='clickable-row' data-href='" + markers[i].url + "'>" +
+      //                           $('#itemArea').append(
+      //                             "<tr class='clickable-row' data-href='" + markers[i].url + "'>" +
 
-                                  sitelogo+
-                                  "<td>"+ markers[i].itemType +  "</td>"+
-                                  "<td><a href='"+ markers[i].url+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i].id +","+i+")'>" + markers[i].title +  "</span></a></td>"+
-                                  "<td>" +  new Date(array[ii].date+'Z').toDateString().slice(3,)+" "+new Date(array[ii].date+'Z').toTimeString().slice(0,5)+ "</td>" +
-                                  "<td>" +  new Date(markers[i].dateAccessed).toDateString().slice(3,)+" "+new Date(markers[i].dateAccessed).toTimeString().slice(0,5)+ "</td>" +
+      //                             sitelogo+
+      //                             "<td>"+ markers[i].itemType +  "</td>"+
+      //                             "<td><a href='"+ markers[i].url+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i].id +","+i+")'>" + markers[i].title +  "</span></a></td>"+
+      //                             "<td>" +  new Date(array[ii].date+'Z').toDateString().slice(3,)+" "+new Date(array[ii].date+'Z').toTimeString().slice(0,5)+ "</td>" +
+      //                             "<td>" +  new Date(markers[i].dateAccessed).toDateString().slice(3,)+" "+new Date(markers[i].dateAccessed).toTimeString().slice(0,5)+ "</td>" +
                                   
 
-                                  "<td><i id='"+ array[ii].BF_ID+"' class='fas fa-undo' style='cursor: pointer' onclick='remove_from_faction(this.id,1)'></i></td>" +
-                                  "<td><i id='"+ array[ii].BF_ID+"' class='fas fa-trash-alt' style='cursor: pointer' onclick='remove_from_faction(this.id,2)'></i></td>" +
+      //                             "<td><i id='"+ array[ii].BF_ID+"' class='fas fa-undo' style='cursor: pointer' onclick='remove_from_faction(this.id,1)'></i></td>" +
+      //                             "<td><i id='"+ array[ii].BF_ID+"' class='fas fa-trash-alt' style='cursor: pointer' onclick='remove_from_faction(this.id,2)'></i></td>" +
 
-                                 "</tr>"
+      //                            "</tr>"
 
-                                  );  
-                              }
-                            }
-                        }                    
-      }
-                }); 
+      //                             );  
+      //                         }
+      //                       }
+      //                   }                    
+      // }
+      //           }); 
     } else if(rowType =='recentlyAdded'){
+          $("#group_detail_ul").empty();
           document.getElementById(rowType).style.backgroundColor= "#c9c9c9";
           document.getElementById(rowType).style.color= "#800000";
           document.getElementById('recentlyAddedIcon').style.color= "#800000";
@@ -702,6 +772,7 @@ function showRows(rowType, array, faction_id){
          
           }
     } else if(rowType =='recentlyRead'){
+          $("#group_detail_ul").empty();
           document.getElementById(rowType).style.backgroundColor= "#c9c9c9";
           document.getElementById(rowType).style.color= "#800000";
           document.getElementById('recentlyReadIcon').style.color= "#800000";
@@ -763,7 +834,7 @@ function showRows(rowType, array, faction_id){
          
           }
     } else if(rowType =='favorite'){
-      
+          $("#group_detail_ul").empty();
           document.getElementById(rowType).style.backgroundColor= "#c9c9c9";
           document.getElementById(rowType).style.color= "#800000";
           document.getElementById('favoriteIcon').style.color= "#800000";
@@ -813,21 +884,18 @@ function showRows(rowType, array, faction_id){
          
         }
     } else if(rowType =='folders'){
+      bookmark_folder = array
+        $("#group_detail_ul").empty();
         for(i=0;i < array.length;i++){
         
-
-               
-
-                  date_add= new Date(array[i].dateAdded+'Z')
-                      if(typeof(markers[i].dateAccessed) == 'string')
-                        date_acc= new Date(markers[i].dateAccessed+'Z')
-                      else
-                        date_acc= new Date(markers[i].dateAccessed)
-
-                      if( array[i].isFavorite == 0){
-                        favorite ="<td><i id='"+ array[i].id+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>"
+                      date_add= new Date(array[i].dateAdded)
+                  
+                  date_acc= new Date(array[i].dateAccessed)
+                      
+                      if( array[i].isFavorite == false | array[i].isFavorite == 0){
+                        favorite ="<td><i id='"+ array[i].id+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id,"+i+")'></i></td>"
                       }else{
-                        favorite ="<td><i id='"+ array[i].id+"' class='fas fa-star' style='cursor: pointer; color:red' onclick='favorite_item(this.id)'></i></td>"
+                        favorite ="<td><i id='"+ array[i].id+"' class='fas fa-star' style='cursor: pointer; color:red' onclick='favorite_item(this.id,"+i+")'></i></td>"
                       }
 
                       if(array[i].websiteTitle == "Springeropen.com"){
@@ -857,7 +925,7 @@ function showRows(rowType, array, faction_id){
 
 
 
-                        "<td><i id='"+ array[i].id+"' class='fas fa-trash-alt' style='cursor: pointer; font-size: 90%' onclick='remove_from_faction("+array[i].bf_ID+")'></i></td>" +
+                        "<td><i id='"+ array[i].id+"' class='fas fa-trash-alt' style='cursor: pointer; font-size: 90%' onclick='remove_from_faction("+faction_id+", 0,"+array[i].id+")'></i></td>" +
                        
 
                        "</tr>"
@@ -868,22 +936,19 @@ function showRows(rowType, array, faction_id){
         
       }
     } else if(rowType =='groups'){
-
+      bookmark_folder = array
+      group_id = faction_id
+     
       for(i=0;i < array.length;i++){
-        
 
-               
-
-                  date_add= new Date(array[i].dateAdded+'Z')
-                      if(typeof(markers[i].dateAccessed) == 'string')
-                        date_acc= new Date(markers[i].dateAccessed+'Z')
-                      else
-                        date_acc= new Date(markers[i].dateAccessed)
+                  date_add= new Date(array[i].dateAdded)
+                    
+                        date_acc= new Date(array[i].dateAccessed)
 
                       if( array[i].isFavorite == 0){
-                        favorite ="<td><i id='"+ array[i].id+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>"
+                        favorite ="<td><i id='"+ array[i].id+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id,"+i+")'></i></td>"
                       }else{
-                        favorite ="<td><i id='"+ array[i].id+"' class='fas fa-star' style='cursor: pointer; color:red' onclick='favorite_item(this.id)'></i></td>"
+                        favorite ="<td><i id='"+ array[i].id+"' class='fas fa-star' style='cursor: pointer; color:red' onclick='favorite_item(this.id,"+i+")'></i></td>"
                       }
 
                       if(array[i].websiteTitle == "Springeropen.com"){
@@ -902,7 +967,7 @@ function showRows(rowType, array, faction_id){
                         "<td><i id='"+ array[i].id +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
 
 
-                         "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ array[i].id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
+                         // "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ array[i].id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
                          "<div id='folderList_dropdown"+i+"' class='dropdown-content' style='min-width: 15%; margin-left: -8% '>"+
                          "<ul id='add_to_folderList_ul"+i+"'>"+
                      
@@ -913,7 +978,7 @@ function showRows(rowType, array, faction_id){
 
 
 
-                        "<td><i id='"+ array[i].id+"' class='fas fa-trash-alt' style='cursor: pointer; font-size: 90%' onclick='remove_from_faction("+array[i].bf_ID+")'></i></td>" +
+                        "<td><i id='"+ array[i].id+"' class='fas fa-trash-alt' style='cursor: pointer; font-size: 90%' onclick='remove_from_faction("+faction_id+",0 ,  "+array[i].id+")'></i></td>" +
                        
 
                        "</tr>"
@@ -923,7 +988,7 @@ function showRows(rowType, array, faction_id){
         
         
       }
-      
+      get_detail(faction_id, true)
     }
 
 
@@ -933,7 +998,7 @@ function open_link(clicked_id, i){
 
 
   markers[i].dateAccessed = new Date()
-  console.log(markers[i].dateAccessed+"  "+i)
+  
 
   $.ajax({
                       type:"POST",
@@ -986,15 +1051,50 @@ function clearStyle(){
     // document.getElementById('recentAddedIcon').style.color= "grey";
     // document.getElementById('recentReadIcon').style.color= "grey";
 }
-function get_detail(clicked_id){
+function get_detail(clicked_id, isGroup_detail){
     var id = parseInt(clicked_id);
-    
+    $("#group_detail_ul").empty();
     clearRow("detailTable")   
+    
 
-   if(tab != 'groups'){
+   if(isGroup_detail == true){
+
+      
+
+        
+          for(i=0;i< groups.length;i++){
+            if(groups[i].id == clicked_id){
+              
+               date = new Date(groups[i].date_created)
+             $('#group_detail_ul').append("<br><div><b>Group name:</b> &nbsp; "+groups[i].name+"</div> "+
+              // "<br><div><b>Description:</b>&nbsp; "+group[0]['description']+"</div>" +
+              "<br><div><b>Owner:</b> &nbsp; "+groups[i].owner_id[0]['first_name']+" "+groups[i].owner_id[0]['last_name'] +"</div>" + 
+              "<br><div><b>Date created:</b>  &nbsp;"+ date.toDateString().slice(3,)+" "+date.toTimeString().slice(0,5)+"</div>" + 
+              "<br><div style='margin-left:-5%'><i class='fas fa-user-plus' style='font-size:90%; cursor:pointer;' href='#addMemberModal' data-toggle='modal' data-target='#addMemberModal'></i> &nbsp; <b>Member(s)</b>: </div>"
+
+            );  
+           member = groups[i]['members']
+           for(i=0;i<member.length;i++){
+            $('#group_detail_ul').append("<div class='member' style='margin-left:25%'> "+ member[i]['first_name']+" "+ member[i]['last_name']+" </div>" );
+            }
+              // console.log(document.getElementById('group_detail').style.display = "block" )
+
+            }
+          }
+           
+            
+            
+                
+      
+        
+
+
+   }
+    if(tab != 'groups'){
+      $("#group_detail_ul").empty();
     for(i=0; i< markers.length;i++){
          if(markers[i].id == id){
-   
+             
              var added = new Date( markers[i].dateAdded);
              var accessed = new Date( markers[i].dateAccessed);
               
@@ -1027,9 +1127,9 @@ function get_detail(clicked_id){
           break;
          }
      } 
-   }
-
-    if(tab == 'groups'){
+   }else {
+     
+     
       for(i=0; i< faction_markers.length;i++){
         if(faction_markers[i].id == id){
           
@@ -1360,7 +1460,7 @@ function create_folder(create_type){
 
 function display_faction_bookmarks(clicked_id, event){
   faction = clicked_id.slice(0,6)
-  
+
   
 
       if(typeof(clicked_id) == 'string'){
@@ -1411,7 +1511,8 @@ function display_faction_bookmarks(clicked_id, event){
                           success: function(response){
                               array = response.bookmarks
                               faction_markers = array
-                               
+                              get_detail(ID, true)
+
                               showRows('groups', array, ID)
                               try{
                                   document.getElementById(clicked_id).style.backgroundColor= "#c9c9c9";
@@ -1428,7 +1529,7 @@ function display_faction_bookmarks(clicked_id, event){
 }
 
 
-function remove_from_faction(bf_ID, action_type){
+function remove_from_faction(bf_ID, action_type, bookmark_id){
 
       
 
@@ -1441,6 +1542,7 @@ function remove_from_faction(bf_ID, action_type){
                         action_type: action_type,
                         faction_type: tab,
                         faction_id: bf_ID,
+                        b_id: bookmark_id,
                         csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
                       }, 
 
@@ -1461,6 +1563,55 @@ function remove_from_faction(bf_ID, action_type){
    
   
     
+}
+
+
+function hide_errorMessage(){
+  document.getElementById('user_is_owner').style.display="none"
+  document.getElementById('user_already_member').style.display="none"
+  document.getElementById('user_does_not_exist').style.display="none"
+  document.getElementById('add_folder_error').style.visibility="hidden"
+                           
+}
+function add_member(){
+    username = document.getElementById('idNumber_input').value
+
+        $.ajax({
+              type:"POST",
+              url:"",
+
+              data:{
+                action: 'add_member',
+                id: username,
+                gID: faction_id,
+                csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+              }, 
+
+              success: function(response){
+                result = response.result
+
+                document.getElementById('user_already_member').style.display='none'
+                document.getElementById('user_does_not_exist').style.display='none'
+                document.getElementById('user_is_owner').style.display='none'
+                if(result == 'member')
+                  document.getElementById('user_already_member').style.display='block'
+                else if(result == 'owner')
+                  document.getElementById('user_is_owner').style.display='block'
+                else if(result == 'added'){
+                  document.getElementById('dismiss-modal_member').click()
+                  alert("User Added")
+                }
+                  
+                  
+                
+              },
+              error: function(){
+                document.getElementById('user_already_member').style.display='none'
+                document.getElementById('user_does_not_exist').style.display='none'
+                document.getElementById('user_is_owner').style.display='none'
+                document.getElementById('user_does_not_exist').style.display='block'
+              }
+        }); 
 }
 
 </script> 

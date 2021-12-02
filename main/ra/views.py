@@ -46,10 +46,6 @@ class practice3(View):
 
 			
 			return HttpResponse(request.GET.get('search'))
-		
-		
-		
-
 
 class practice(View):
 	
@@ -86,7 +82,10 @@ class practice(View):
 		# a = OER('animals', 'proxy', 'Text book', 2)
 		# for b in a:
 		# 	print(b['title'])
-		KHAN('war', 'refType', 1)
+		
+
+		for b in a:
+			print(b[0])
 		# UNESCO('Article')
 		return HttpResponse('wala') #,context)
 
@@ -212,7 +211,7 @@ class TeraSearchResultsView(View):
 		# header = request.session.get('header')
 		word = request.session.get('word')
 
-		proxy = request.session.get('proxy')
+		
 
 		if request.session.get('website') != None:
 			website = request.session.get('website')
@@ -226,7 +225,7 @@ class TeraSearchResultsView(View):
 						
 		context = {
 							'keyword': word,
-							'proxy': proxy,
+							'isGet': True,
 							'website': website,
 							'itemType': itemType,
 							'is_authenticated': str(request.user.is_authenticated)
@@ -244,76 +243,28 @@ class TeraSearchResultsView(View):
 
 			if action == "search":
 
-
-				if request.POST['proxy'] == None:
-					proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
-					proxy = testProxy(proxies,1)
-
-
-					word = request.POST['word']
-					website = request.POST['site']
-					itemType = request.POST['itemType']
-					request.session['website'] =website
-					request.session['itemType'] = itemType
-					request.session['word'] = word
-
-					a = scrape(word,proxy,itemType , website,' ', request.POST['pageNumber'])
-					
-					while (a == False):
-						proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
-						proxy = testProxy(proxies,1)
-						request.session['proxy'] = proxy
-						a = scrape(request.POST['word'],proxy, itemType,website ,' ', request.POST['pageNumber'])
+				print("search")
+				word = request.POST['word']
+				request.session['word'] = word
 				
+				print(word,)
+				website = request.POST['site']
+				itemType = request.POST['itemType']
+				request.session['website'] =website
+				request.session['itemType'] = itemType
 
 
-					results = a[0]	
-					links = a[1]
-					# print(results)
-					context = {
-						'results': results,
-						'links': links,
-						'proxy': proxy,
-						'is_authenticated': request.user.is_authenticated
-					}
-					return JsonResponse(context)
+				a = scrape(word,itemType , website,' ', request.POST['pageNumber'])
+				print(len(a))
 
-
-
-
-
-				else:
-					print("search")
-					word = request.POST['word']
-					request.session['word'] = word
-					proxy = request.POST['proxy']
-					
-					website = request.POST['site']
-					itemType = request.POST['itemType']
-					request.session['website'] =website
-					request.session['itemType'] = itemType
-
-
-					a = scrape(word,proxy,itemType , website,' ', request.POST['pageNumber'])
-					
-					while (a == False):
-						proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
-						proxy = testProxy(proxies,1)
-						request.session['proxy'] = proxy
-						a = scrape(request.POST['word'],proxy, itemType,website ,' ', request.POST['pageNumber'])
+				results = a	
 				
-
-
-					results = a[0]	
-					links = a[1]
-					# print(results)
-					context = {
-						'results': results,
-						'links': links,
-						'proxy': proxy,
-						'is_authenticated': request.user.is_authenticated
-					}
-					return JsonResponse(context)
+				# print(results)
+				context = {
+					'results': results,
+					'is_authenticated': request.user.is_authenticated
+				}
+				return JsonResponse(context)
 					
 			elif action == "add":
 				print('bookmark button clicked')
@@ -325,31 +276,31 @@ class TeraSearchResultsView(View):
 				# print(title, url, siteRef)
 				detail = details(url, request.session.get('proxy'),siteRef)
 
-				websiteTitle = detail['websiteTitle']
-				itemType = detail['itemType']
-				author = detail['author']
-				description = detail['description']
-				journalItBelongs = detail['journalItBelongs']
-				volume = detail['volume']
-				doi = detail['doi']
-				publicationYear = detail['publishYear']
-				subtitle = detail['subtitle']
-				citation = detail['citation']
-				downloads = detail['downloads']
-				publisher = detail['publisher']
-				edition = detail['edition']
-				pages = detail['pages']
-				# author description publication volume doi
+				# websiteTitle = detail['websiteTitle']
+				# itemType = detail['itemType']
+				# author = detail['author']
+				# description = detail['description']
+				# journalItBelongs = detail['journalItBelongs']
+				# volume = detail['volume']
+				# doi = detail['doi']
+				# publicationYear = detail['publishYear']
+				# subtitle = detail['subtitle']
+				# citation = detail['citation']
+				# downloads = detail['downloads']
+				# publisher = detail['publisher']
+				# edition = detail['edition']
+				# pages = detail['pages']
+				# # author description publication volume doi
 				
 				
-				# print(websiteTitle + '\n'+itemType + '\n'+title + '\n' +link + '\n' +author+ '\n' +description+ '\n' +publication+ '\n' +volume+ '\n' +doi)
-				if request.POST['reftype'] == "article":
-					User_bookmark.objects.create(user = request.user,title = title,websiteTitle= websiteTitle,itemType= itemType,author = author, description= description, url = url, journalItBelongs= journalItBelongs, volume = volume, DOI = doi)
-				elif itemType == "book":
-					User_bookmark.objects.create(user = request.user,title = title,websiteTitle= websiteTitle,subtitle = subtitle, 
-						itemType= itemType,author = author,numOfCitation = citation,numOfDownload= downloads,publisher=publisher, 
-						description= description, url = url, edition = edition,numOfPages = pages,
-						 DOI = doi)
+				# # print(websiteTitle + '\n'+itemType + '\n'+title + '\n' +link + '\n' +author+ '\n' +description+ '\n' +publication+ '\n' +volume+ '\n' +doi)
+				# if request.POST['reftype'] == "article":
+				# 	User_bookmark.objects.create(user = request.user,title = title,websiteTitle= websiteTitle,itemType= itemType,author = author, description= description, url = url, journalItBelongs= journalItBelongs, volume = volume, DOI = doi)
+				# elif itemType == "book":
+				# 	User_bookmark.objects.create(user = request.user,title = title,websiteTitle= websiteTitle,subtitle = subtitle, 
+				# 		itemType= itemType,author = author,numOfCitation = citation,numOfDownload= downloads,publisher=publisher, 
+				# 		description= description, url = url, edition = edition,numOfPages = pages,
+				# 		 DOI = doi)
 				return HttpResponse('')
 			else:
 				string = bookmark.split('||')
@@ -384,7 +335,6 @@ class TeraDashboardView(View):
 
 	def get(self,request):
 		# Department.objects.create(abbv='CCS', name="College of Computer Studies")
-		# User.objects.create(username='mondejars', password= make_password('12345'), department= Department.objects.get(id=1))
 		# Group.objects.get(id=1).member.add(User.objects.get(username='mondejars'))
 		#.distinct()
 		
@@ -401,23 +351,36 @@ class TeraDashboardView(View):
 
 
 		if request.user.id != None:
+			query_group = User_group.objects.filter(Q(owner= request.user) | Q(member=request.user))
+			groups = list(query_group.values())
+			for b in groups:
+				b['owner_id']= list(User.objects.filter(id=b['owner_id']).values('first_name',"last_name"))
+				c = User_group.objects.get(id=b['id'])
+				b['members']= list(c.member.values('first_name','last_name'))
+
+			# 	b['owner_id']= list(User.objects.filter(id=b['owner_id']).values('first_name',"last_name"))
+			# 	print(User_group.objects.get(Q(member=request.user)).member.all())
+
+
 			
-			cursor = connection.cursor()   
-			cursor.execute("SELECT DISTINCT b.* FROM User_group g, user_group_member gm, Group_bookmark gb, User_bookmark b, Bookmark_folder fb"+
-			" WHERE (gm.user_group_id = g.id AND (g.owner_id = "+str(request.user.id)+" OR gm.user_id = "+str(request.user.id)+") "+
-						" AND gb.group_id = g.id AND gb.bookmark_id = b.id AND gb.is_removed=0) OR (fb.user_id = "+str(request.user.id)+" AND fb.bookmark_id = b.id AND fb.is_removed=0)"+
-			" OR b.user_id ="+str(request.user.id)+"")
+			# 	print(b['owner_id'])
+			# cursor = connection.cursor()   
+			# cursor.execute("SELECT DISTINCT b.* FROM User_group g, user_group_member gm, Group_bookmark gb, User_bookmark b, Bookmark_folder fb"+
+			# " WHERE (gm.user_group_id = g.id AND (g.owner_id = "+str(request.user.id)+" OR gm.user_id = "+str(request.user.id)+") "+
+			# 			" AND gb.group_id = g.id AND gb.bookmark_id = b.id AND gb.is_removed=0) OR (fb.user_id = "+str(request.user.id)+" AND fb.bookmark_id = b.id AND fb.is_removed=0)"+
+			# " OR b.user_id ="+str(request.user.id)+"")
 		
-			a = dictfetchall(cursor)
-			a = json.dumps(a, default=str)
+			# a = dictfetchall(cursor)
+			# a = json.dumps(a, default=str)
 			 
 
 			# print(bookmark)
-			# queryset = User_bookmark.objects.filter(user_id=request.user.id)
+			queryset = User_bookmark.objects.filter(Q(user_id=request.user.id) | Q(folders__user=request.user) ).values()
 			folders =	Folder.objects.filter(user_id=request.user, is_removed = 0).values()
-			groups = User_group.objects.filter(Q(owner= request.user) | Q(member=request.user)).values()
+			# groups = User_group.objects.filter(Q(owner= request.user) | Q(member=request.user)).values()
 			
 			# bookmark= serializers.serialize("json",a )
+			a = json.dumps(list(queryset), default=str)
 			folder_list = json.dumps(list(folders), default=str)
 			group_list = json.dumps(list(groups), default=str)
 
@@ -482,16 +445,24 @@ class TeraDashboardView(View):
 				
 				if faction =="folder":
 					print('yes folder')
-					Bookmark_folder.objects.create(user=request.user, folder=Folder.objects.get(id=ID), bookmark = User_bookmark.objects.get(id=bID) )
+					bookmark=User_bookmark.objects.get(id=bID)
+					bookmark.folders.add(Folder.objects.get(id=ID))
+					print(bookmark)
+					# User_bookmark.objects
+					# Bookmark_folder.objects.create(user=request.user, folder=Folder.objects.get(id=ID), bookmark = User_bookmark.objects.get(id=bID) )
 					print("bookmark folder added")
 					return HttpResponse('')
 
 				elif faction =="groups":
+					# bookmark = User_bookmark.objects.get(id=bID)
+					if Group_bookmark.objects.filter(group__id= ID,bookmark__id=bID, is_removed=0).exists():
+						return HttpResponse('')
+					else:
+						Group_bookmark.objects.create(added_by=request.user, group=User_group.objects.get(id=ID), bookmark = User_bookmark.objects.get(id=bID) )
+						# print("bookmark added to group")
+						return HttpResponse('')
 					
-					Group_bookmark.objects.create(added_by=request.user, group=User_group.objects.get(id=ID), bookmark = User_bookmark.objects.get(id=bID) )
-				
-					print("bookmark group added")
-					return HttpResponse('')
+					
 
 			
 
@@ -530,10 +501,12 @@ class TeraDashboardView(View):
 
 			elif action == 'get_folder_bookmarks':
 				fID = request.POST['fID']
-				cursor = connection.cursor()   
-				cursor.execute("SELECT bf.id AS bf_ID, b.* FROM User_bookmark b, Bookmark_folder bf WHERE bf.folder_id = "+ str(fID)+" AND bf.bookmark_id = b.id AND bf.user_id = "+ str(request.user.id)+" AND bf.is_removed = 0 AND b.isRemoved = 0") #| get rows of for a specific date|
-				a = dictfetchall(cursor)
+				queryset= User_bookmark.objects.filter(folders__id=fID, isRemoved=False).values()
+				# cursor = connection.cursor()   
+				# cursor.execute("SELECT bf.id AS bf_ID, b.* FROM User_bookmark b, Bookmark_folder bf WHERE bf.folder_id = "+ str(fID)+" AND bf.bookmark_id = b.id AND bf.user_id = "+ str(request.user.id)+" AND bf.is_removed = 0 AND b.isRemoved = 0") #| get rows of for a specific date|
+				# a = dictfetchall(cursor)
 				# print(a)
+				a = list(queryset)
 				print(len(a))
 				context = {
 			    "bookmarks": a
@@ -543,9 +516,11 @@ class TeraDashboardView(View):
 
 			elif action == 'get_group_bookmarks':
 				gID = request.POST['gID']
-				cursor = connection.cursor()   
-				cursor.execute("SELECT gf.id AS bf_ID, b.* FROM User_bookmark b, Group_bookmark gf WHERE gf.group_id = "+ str(gID)+" AND gf.bookmark_id = b.id AND gf.is_removed = 0") #| get rows of for a specific date|
-				a = dictfetchall(cursor)
+				bookmarks = User_bookmark.objects.filter(group_bookmark__group=User_group.objects.get(id=gID), group_bookmark__is_removed=0)
+				# cursor = connection.cursor()   
+				# cursor.execute("SELECT gf.id AS bf_ID, b.* FROM User_bookmark b, Group_bookmark gf WHERE gf.group_id = "+ str(gID)+" AND gf.bookmark_id = b.id AND gf.is_removed = 0") #| get rows of for a specific date|
+				# a = dictfetchall(cursor)
+				a = list(bookmarks.values())
 				
 				
 				context = {
@@ -555,19 +530,21 @@ class TeraDashboardView(View):
 				return JsonResponse(context)
 
 			elif action == 'remove_from_faction':
-				
-				if request.POST['faction_type'] == 'folders':
-					faction_id = request.POST['faction_id']
-					
+				faction_id = request.POST['faction_id']
+				bookmark_id = request.POST['b_id']
 
-					Bookmark_folder.objects.filter(id =faction_id).update(is_removed = 1, date_removed= timezone.now())
+				if request.POST['faction_type'] == 'folders':
+					bookmark = User_bookmark.objects.get(id=bookmark_id)
+					bookmark.folders.remove(Folder.objects.get(id=faction_id))
+					
+					
 					return HttpResponse('')
 
 				if request.POST['faction_type'] == 'groups':
 					faction_id = request.POST['faction_id']
 					
-
-					Group_bookmark.objects.filter(id =faction_id).update(is_removed = 1, date_removed= timezone.now())
+					
+					Group_bookmark.objects.filter(group__id=faction_id, bookmark__id=bookmark_id).update(is_removed = 1, date_removed= timezone.now())
 					return HttpResponse('')
 
 				if request.POST['faction_type'] == 'trash':
@@ -589,7 +566,6 @@ class TeraDashboardView(View):
 				cursor = connection.cursor()   
 				cursor.execute("SELECT bf.id AS BF_ID, bf.bookmark_id AS b_ID, bf.date_removed AS date FROM Bookmark_folder bf, User_bookmark b WHERE  bf.user_id = "+ str(request.user.id)+" AND bf.bookmark_id = b.id AND bf.is_removed = 1") #| get rows of for a specific date|
 				a = dictfetchall(cursor)
-				# b = cursor.fetchall()
 				context = {
 			    "bookmarks": a
 				}
@@ -614,6 +590,35 @@ class TeraDashboardView(View):
 					User_group.objects.filter(id = ID).update(is_removed = 1)
 					print('group deleted')
 					return HttpResponse('')
+
+			elif action == 'add_member':
+				username = request.POST['id']
+				gID = request.POST['gID']
+				print(gID)
+				
+				if User_group.objects.filter(id = gID,member__username= User.objects.get(username=username)).exists():
+					context={
+					"result":"member"
+					}
+					print('member')
+					return JsonResponse(context)
+
+				elif User_group.objects.filter(id = gID,owner__username= username).exists():
+					context={
+					"result":"owner"
+					}
+					print('owner')		
+					return JsonResponse(context)
+
+				elif User.objects.filter(username=username).exists():
+					User_group.objects.get(id=gID).member.add(User.objects.get(username=username))
+					print("added")
+					context={
+					"result":"added"
+					}
+					return JsonResponse(context)
+
+
 
 							
 

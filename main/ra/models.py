@@ -60,7 +60,8 @@ class User_bookmark (models.Model):
 	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
 	isFavorite = models.BooleanField(default=False)
 	date_removed = models.DateTimeField(blank = True, null = True)
-	folder = models.ManyToManyField(Folder)
+	folders = models.ManyToManyField(Folder, blank=True, related_name="bookmarks")
+	
 
 	class Meta:
 		db_table = "User_bookmark"
@@ -114,16 +115,7 @@ class Group_bookmark(models.Model):
 
 
 
-class Bookmark_folder (models.Model):
-	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
-	folder = models.ForeignKey(Folder, null = False, blank = False, on_delete = models.CASCADE)
-	bookmark = models.ForeignKey(User_bookmark, null = False, blank = False, on_delete = models.CASCADE)
-	date_added = models.DateTimeField(default=timezone.now)
-	is_removed = models.IntegerField(default=0)
-	date_removed = models.DateTimeField(blank=True,null = True)
-
-	class Meta:
-		db_table = "Bookmark_folder"	
+	
 
 
 	
