@@ -703,6 +703,7 @@ function search(clicked_id, searchType){
 function reply_click(clicked_id){
       if(document.getElementById(clicked_id).style.color == "red"){
         document.getElementById(clicked_id).style.color = "#e07878";
+        keyword= document.getElementById("input").value
         $.ajax({
                       type:"POST",
                       url:"",
@@ -712,6 +713,7 @@ function reply_click(clicked_id){
                         reftype: type, 
                         website: website,
                         bookmark: clicked_id,
+                        word: keyword,
                         csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
                       }
         });      

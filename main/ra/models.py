@@ -52,6 +52,7 @@ class User_bookmark (models.Model):
 	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
 	isFavorite = models.BooleanField(default=False)
 	date_removed = models.DateTimeField(blank = True, null = True)
+	keyword = models.CharField(max_length = 100,null=False, default ="")
 
 	class Meta:
 		db_table = "User_bookmark"

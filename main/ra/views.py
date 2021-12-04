@@ -22,6 +22,7 @@ from datetime import datetime
 from django.core import serializers
 from django.db.models import Q
 
+
 class adminIndexView(View):
 	def get(self, request):
 		print('olok')
@@ -80,6 +81,9 @@ class practice(View):
 		#     # "bookmark_list" : a 
 		# }
 		# return HttpResponse()
+
+		query= User_bookmark.objects.all().values('title','keyword')
+		recommend(list(query))
 		
 		return render(request,'practice.html')#,context)
 
@@ -311,6 +315,8 @@ class TeraSearchResultsView(View):
 			elif action == "add":
 				print('bookmark button clicked')
 				bookmark = request.POST['bookmark']
+				keyword=request.POST['word']
+				# print (keyword)
 				siteRef = request.POST['website'] +" " +request.POST['reftype']
 				string = bookmark.split('||')
 				title = string[0].replace('\n','').replace('  ','')
@@ -337,12 +343,12 @@ class TeraSearchResultsView(View):
 				
 				# print(websiteTitle + '\n'+itemType + '\n'+title + '\n' +link + '\n' +author+ '\n' +description+ '\n' +publication+ '\n' +volume+ '\n' +doi)
 				if request.POST['reftype'] == "article":
-					User_bookmark.objects.create(user = request.user,title = title,websiteTitle= websiteTitle,itemType= itemType,author = author, description= description, url = url, journalItBelongs= journalItBelongs, volume = volume, DOI = doi)
+					User_bookmark.objects.create(user = request.user,title = title,websiteTitle= websiteTitle,itemType= itemType,author = author, description= description, url = url, journalItBelongs= journalItBelongs, volume = volume, DOI = doi, keyword=keyword)
 				elif itemType == "book":
 					User_bookmark.objects.create(user = request.user,title = title,websiteTitle= websiteTitle,subtitle = subtitle, 
 						itemType= itemType,author = author,numOfCitation = citation,numOfDownload= downloads,publisher=publisher, 
 						description= description, url = url, edition = edition,numOfPages = pages,
-						 DOI = doi)
+						 DOI = doi, keyword = keyword  )
 				return HttpResponse('')
 			else:
 				string = bookmark.split('||')
