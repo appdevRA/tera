@@ -206,7 +206,7 @@ class TeraIndexView(View):
 
 
 class TeraSearchResultsView(View):
-	
+	a = 0
 
 	def get(self,request):
 		request.session['previousPage'] ='search_result_view'
@@ -245,8 +245,10 @@ class TeraSearchResultsView(View):
 			action = request.POST['action']
 
 			if action == "search":
-
-				print("search")
+				
+				print("is get? "+ request.POST['isGet'])
+				# print(type(request.POST['isGet']))
+				# print("search")
 				word = request.POST['word']
 				request.session['word'] = word
 				
@@ -258,14 +260,14 @@ class TeraSearchResultsView(View):
 
 
 				a = scrape(word,itemType , website,' ', request.POST['pageNumber'])
-				print(len(a))
 
 				results = a	
 				
 				# print(results)
 				context = {
 					'results': results,
-					'is_authenticated': request.user.is_authenticated
+					'is_authenticated': request.user.is_authenticated,
+					"isGet": False
 				}
 				return JsonResponse(context)
 					
@@ -378,11 +380,11 @@ class TeraDashboardView(View):
 			 
 
 			# print(bookmark)
-			queryset = User_bookmark.objects.filter(Q(user_id=request.user.id) | Q(folders__user=request.user) ).values()
+			queryset = User_bookmark.objects.filter((Q(user_id=request.user.id) | Q(folders__user=request.user)) &  (Q(isRemoved=1) | Q(isRemoved=0))).values()
 			folders =	Folder.objects.filter(user_id=request.user, is_removed = 0).values()
 			# groups = User_group.objects.filter(Q(owner= request.user) | Q(member=request.user)).values()
-			
 			# bookmark= serializers.serialize("json",a )
+
 			a = json.dumps(list(queryset), default=str)
 			folder_list = json.dumps(list(folders), default=str)
 			group_list = json.dumps(list(groups), default=str)

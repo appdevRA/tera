@@ -22,12 +22,12 @@ session= HTMLSession()
 
 def scrape(word, refType, site, header, pageNumber):
     
-    print(site, refType)
+    # print(site, refType)
               
               
               
     if site == 'Springeropen':
-        print("nisulod springer sa scrape")
+        
         return springer(word, refType,pageNumber)
     elif site == 'UNESCO_Digital_Library':
         return UNESCO(word, refType, pageNumber)
@@ -74,14 +74,15 @@ def UNESCO(word, refType, pageNumber):
         'cookie': 'consent_cookie_usage=agreed; _ga=GA1.3.1917778646.1638009010; _ga=GA1.2.1917778646.1638009010; _gid=GA1.3.155193290.1638167610; _gid=GA1.2.155193290.1638167610; JSESSIONID=8E242AEF08998954AA5D8316AD325D42; _gat_UA60257183=1',
     }
     x= False
+    data = {}
     while(x == False):
         try:
             if refType == 'article':
-                data = '{"includeFacets":true,"order":"score_DESC;id_DESC","query":["'+word+'"],"queryid":"eecdadaf-edec-4c69-bc64-a5cd63ad754c","sf":"+TypeOfDocumentFacet:UnescoPhysicalDocument","mappedFQ":{"ZMATFacet":{"SER":false,"BKP":false,"STI":false,"ISS":false,"BKS":false,"DGN":false,"CIR":false,"PGD":false,"DEP":false,"MOV":false}},"pageNo":'+ str(pageNumber)+',"pageSize":8,"locale":"en"}'
+                data = '{"includeFacets":true,"order":"score_DESC;id_DESC","query":["'+word+'"],"queryid":"eecdadaf-edec-4c69-bc64-a5cd63ad754c","sf":"+TypeOfDocumentFacet:UnescoPhysicalDocument","mappedFQ":{"ZMATFacet":{"SER":false,"BKP":false,"STI":false,"ISS":false,"BKS":false,"DGN":false,"CIR":false,"PGD":false,"DEP":false,"MOV":false}},"pageNo":'+ str(pageNumber)+',"locale":"en"}'
             elif refType == 'book':
-                data = '{"includeFacets":true,"order":"score_DESC;id_DESC","query":["'+word+'"],"queryid":"eecdadaf-edec-4c69-bc64-a5cd63ad754c","sf":"+TypeOfDocumentFacet:UnescoPhysicalDocument","mappedFQ":{"ZMATFacet":{"SER":false,"ART":false,"BKP":false,"STI":false,"ISS":false,"DGN":false,"CIR":false,"PGD":false,"DEP":false,"MOV":false}},"pageNo":'+ str(pageNumber)+',"pageSize":8,"locale":"en"}'
+                data = '{"includeFacets":true,"order":"score_DESC;id_DESC","query":["'+word+'"],"queryid":"eecdadaf-edec-4c69-bc64-a5cd63ad754c","sf":"+TypeOfDocumentFacet:UnescoPhysicalDocument","mappedFQ":{"ZMATFacet":{"SER":false,"ART":false,"BKP":false,"STI":false,"ISS":false,"DGN":false,"CIR":false,"PGD":false,"DEP":false,"MOV":false}},"pageNo":'+ str(pageNumber)+',"locale":"en"}'
             elif refType == 'event_document':
-                data = '{"includeFacets":true,"order":"score_DESC;id_DESC","query":["'+word+'"],"queryid":"eecdadaf-edec-4c69-bc64-a5cd63ad754c","sf":"+TypeOfDocumentFacet:UnescoPhysicalDocument","mappedFQ":{"ZMATFacet":{"SER":false,"ART":false,"BKP":false,"STI":false,"ISS":false,"BKS":false,"DGN":false,"CIR":false,"DEP":false,"MOV":false}},"pageNo":'+ str(pageNumber)+',"pageSize":8,"locale":"en"}'
+                data = '{"includeFacets":true,"order":"score_DESC;id_DESC","query":["'+word+'"],"queryid":"eecdadaf-edec-4c69-bc64-a5cd63ad754c","sf":"+TypeOfDocumentFacet:UnescoPhysicalDocument","mappedFQ":{"ZMATFacet":{"SER":false,"ART":false,"BKP":false,"STI":false,"ISS":false,"BKS":false,"DGN":false,"CIR":false,"DEP":false,"MOV":false}},"pageNo":'+ str(pageNumber)+',"locale":"en"}'
             
             x = True
         except ConnectionError:
@@ -336,7 +337,7 @@ def OER(word, refType, pageNumber): # paginattion diri ky sumpay walay page-page
         try:
             response = requests.get('https://www.oercommons.org/search?batch_size='+str(batch_size)+'&batch_start='+str(batch_start)+'&sort_by=search&view_mode=summary&f.search='+ word+'&f.sublevel=college-upper-division&f.sublevel=graduate-professional&f.sublevel=career-technical&f.sublevel=community-college-lower-division&f.sublevel=adult-education', headers=headers(), timeout=3)
             x = True
-            print("olok")
+            
         except ConnectionError:
             print('Connection Error')
 
@@ -817,7 +818,7 @@ def herdin(word, proxy,refType, pageNumber): # INDEX ZERO ANG STARTING SA ILA PA
                 response = requests.get('https://www.herdin.ph/index.php?option=com_herdin&view=publiclistowp&layout=list&type=researches&searchstr='+ word +'&res_source=journal&start=' + pageNumber, headers = headers(), proxies={'https:': proxy}, timeout=3) #article                                       
                 x = True
             elif refType == 'book' :
-                print('book')
+                
                 response = requests.get('https://www.herdin.ph/index.php?option=com_herdin&view=publiclistowp&layout=list&type=researches&searchstr='+ word + '&res_source=book&start=' + pageNumber, headers = headers(), proxies={'https:': proxy}, timeout=3) #books 
                 x = True
             elif refType == 'research project' :
