@@ -1,26 +1,31 @@
 from django.http import Http404
 from django.shortcuts import render, redirect
+from django.http import HttpResponse, JsonResponse
 from django.views.generic import View
-from django.http import HttpResponse
+
 from .forms import CreateFolderForm
-from .models import *
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth import update_session_auth_hash
+
+from django.contrib.auth.hashers import make_password
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
+from django.core import serializers
+from django.db import connection
+from django.db.models import Q
+
+from rest_framework import mixins, status, viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
+
+from . import serializers
+from .links import *
+from .models import *
+import ast
+import json
 from bs4 import BeautifulSoup
 from .links import *
 import requests
 
-import ast
-import json
-from django.contrib.auth.hashers import make_password
-from django.contrib import messages
-from django.http import JsonResponse
-from django.db import connection
-import MySQLdb as mdb
-from datetime import datetime
-from django.core import serializers
-from django.db.models import Q
 
 class adminIndexView(View):
 	def get(self, request):
@@ -82,10 +87,9 @@ class practice(View):
 		# a = OER('animals', 'proxy', 'Text book', 2)
 		# for b in a:
 		# 	print(b['title'])
-		
+		a= OER('peace', 'Text book', 1)
 
-		for b in a:
-			print(b[0])
+
 		# UNESCO('Article')
 		return HttpResponse('wala') #,context)
 
@@ -133,12 +137,11 @@ class TeraLoginUser(View):
 			user = authenticate(request, username=username, password=password)
 			if user is not None:
 				login(request, user)
-				
-				if request.session.get('proxy') == None:
-					proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
-					request.session['proxy'] = testProxy(proxies,1)
-					
-				return redirect('ra:'+ request.session.get('previousPage'))
+
+				if request.session.get('previousPage') == None:
+					return redirect("ra:index_view")
+				else:
+					return redirect('ra:'+ request.session.get('previousPage'))
 			else:
 				return render(request,'loginInvalid.html')
 		
@@ -216,7 +219,7 @@ class TeraSearchResultsView(View):
 		if request.session.get('website') != None:
 			website = request.session.get('website')
 		else:
-			website = "Springeropen.com"
+			website = "Springeropen"
 
 		if request.session.get('itemType') != None:
 			itemType = request.session.get('itemType')
@@ -247,7 +250,7 @@ class TeraSearchResultsView(View):
 				word = request.POST['word']
 				request.session['word'] = word
 				
-				print(word,)
+
 				website = request.POST['site']
 				itemType = request.POST['itemType']
 				request.session['website'] =website
@@ -666,3 +669,91 @@ class adminTableView(View):
 		# 		fldr = Folders.objects.filter(id=fid).delete()
 		# 		print('Recorded Deleted')
 		# 		return redirect('ra:tera_dashboard_view')
+
+
+class FolderViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    viewsets.GenericViewSet,):
+
+    queryset = Folder.objects.all()
+    serializer_class = serializers.FolderModelSerializer
+
+    def get_serializer_class(self):
+        if self.action == "retrieve":
+            return serializers.FolderRetrieveModelSerializer
+
+        return super().get_serializer_class()
+
+
+class UserBookmarkViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,):
+
+    queryset = User_bookmark.objects.all()
+    serializer_class = serializers.UserBookmarkModelSerializer
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        serializer = serializers.UserBookmarkQuerySerializer(data=self.request.query_params)
+
+        if not serializer.is_valid():
+            return queryset.removed(False)
+
+        removed = serializer.validated_data.get("removed")
+
+        if removed:
+            return queryset.removed()
+
+        queryset = queryset.removed(False)
+
+
+        recently_added = serializer.validated_data.get("recently_added")
+        if recently_added:
+            queryset = queryset.recently_added()
+
+
+        recently_read = serializer.validated_data.get("recently_read")
+        if recently_read:
+            queryset = queryset.recently_read()
+
+
+        favorite = serializer.validated_data.get("favorite")
+        if favorite is not None:
+            queryset = queryset.favorites(favorite)
+
+
+        folder = serializer.validated_data.get("folder")
+        if folder is not None:
+            queryset = queryset.folder(folder)
+
+        return queryset
+
+    # def list(self, request, *args, **kwargs):
+    # 	queryset = self.filter_queryset(self.get_queryset())
+
+    # 	page = self.paginate_queryset(queryset)
+
+    # 	if page is not None:
+    # 		serializer = self.get_serializer(page, many=True)
+    # 		return self.get_paginated_response(serializer.data)
+
+    # 	serializer = self.get_serializer(queryset, many=True)
+    # 	return Response(serializer.data)
+
+
+    @action(methods=["POST"], detail=True, url_path="toggle-favorite")
+    def toggle_favorite(self, *args, **kwargs):
+        instance = self.get_object()
+
+        instance.isFavorite = not instance.isFavorite
+        instance.save()
+
+        return Response(status=status.HTTP_200_OK)

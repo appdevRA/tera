@@ -172,10 +172,10 @@
             <h4>Site Filter</h4>
           <div class="left-side-bar">
             <ul>
-             <label id="Springeropen" class="site-filter container" onclick="search(this.id, 'site')"> Springeropen<input type="radio" checked="checked" name="radio" value="Springeropen.com"><span class="checkmark"></span></label>
-             <label id="UNESCO Digital Library" class="site-filter container" onclick="search(this.id, 'site')">UNESCO Digital Library<input type="radio" name="radio" value="Tandfonline.com"><span class="checkmark"></span></label>
-             <label id="Open Textbook Library" class="site-filter container" onclick="search(this.id, 'site')">Open Textbook Library<input type="radio" name="radio" value="Zlibrary.org"><span class="checkmark"></span></label>
-             <label id="OER" class="site-filter container" onclick="search(this.id, 'site')"> OER Commons<input type="radio" name="radio" value="OER Commons"><span class="checkmark"></span></label>
+             <label id="Springeropen" class="site-filter container" onclick="search(this.id, 'site')"> Springeropen<input id='Springeropen_radio' type="radio" checked="checked" name="radio" value="Springeropen"><span class="checkmark"></span></label>
+             <label id="UNESCO_Digital_Library" class="site-filter container" onclick="search(this.id, 'site')">UNESCO Digital Library<input id="UNESCO_Digital_Library_radio" type="radio" name="radio" value="Tandfonline.com"><span class="checkmark"></span></label>
+             <label id="Open_Textbook_Library" class="site-filter container" onclick="search(this.id, 'site')">Open Textbook Library<input id="Open_Textbook_Library_radio" type="radio" name="radio" value="Zlibrary.org"><span class="checkmark"></span></label>
+             <label id="OER_Commons" class="site-filter container" onclick="search(this.id, 'site')"> OER Commons<input type="radio" name="radio" id="OER_Commons_radio"><span class="checkmark"></span></label>
              
 
             </ul>
@@ -211,27 +211,39 @@
 
             
             <div id="articlehr" style="border: thin solid red; width: 100%; margin-top: 10%; display: none;"></div></button>
-           <input id="article|" type="button" class="filterbutton" value="|">
+            <input id="article|" type="button" class="filterbutton" value="|">
 
           <button id="journal" type="submit" class="filterbutton" name="btnJournal" id="btnJournal" onclick="search(this.id,'itemType')"> Journals
-          <div id="journalhr" style="border: thin solid red; width: 100%; margin-top: 9%;display: none;"></div>
-          </button>
+            <div id="journalhr" style="border: thin solid red; width: 100%; margin-top: 9%;display: none;"></div>
+            </button>
             <input id="journal|" type="button" class="filterbutton" value="|" >
 
-          <button id="book" type="submit" class="filterbutton" name="btnBook" id="btnBook" onclick="search(this.id,'itemType')"> Books
+          <button id="book" type="submit" class="filterbutton"  onclick="search(this.id,'itemType')"> Books
              <div id="bookhr" style="border: thin solid red; width: 100%; margin-top: 15%;display: none;"></div>
-          </button>
-            <input  id="book|" type="button" class="filterbutton" value="|">
+              </button>
+              <input  id="book|" type="button" class="filterbutton" value="|">
 
-            <button id="database" type="submit" class="filterbutton" name="btnBook" id="btnBook" onclick="search(this.id,'itemType')"> Databases
-               <div id="databasehr" style="border: thin solid red; width: 100%; margin-top: 7%;display: none;"></div>
+            <button id="Programme_and_meeting_document" type="submit" class="filterbutton"  onclick="search(this.id,'itemType')"> Programme and meeting document
+              <center>
+               <div id="Programme_and_meeting_documenthr" style="border: thin solid red; width: 50%; margin-top: 2%;display: none;"></div>
+               </center>
              </button>
-           <input  id="database|" type="button" class="filterbutton" value="|">
+              <input  id="Programme_and_meeting_document|" type="button" class="filterbutton" value="|">
+           
+           <button id="Text_book" type="submit" class="filterbutton" name="btnBook" onclick="search(this.id,'itemType')">   Text book
+            
+               <div id="Text_bookhr" style="border: thin solid red; width: 100%; margin-top: 7%;display: none;"></div>
+               
+             </button>
+              <input  id="Text_book|" type="button" class="filterbutton" value="|">
 
-            <button id="dissertation" type="submit" class="filterbutton" name="btnBook" id="btnBook" onclick="search(this.id,'itemType')"> Dissertations
+
+            <button id="dissertation" type="submit" class="filterbutton" name="btnBook"  onclick="search(this.id,'itemType')"> Dissertations
                <div id="dissertationhr" style="border: thin solid red; width: 100%; margin-top: 7%;display: none;"></div>
              </button>
-           
+            
+          
+
             
              
              
@@ -324,21 +336,16 @@
 <script type="text/javascript">
   
  user_id = "{{is_authenticated}}"
- site = "{{website}}"
+ website = "{{website}}"
  type = "{{itemType}}"
  isGet = "{{isGet}}"
  keyword = "{{keyword}}"
  
   $(document).ready(function($) {
      // showRows()
-  radio=  document.getElementsByName("radio")
+     search(website,'site')
 
-  for(i=0;i< radio.length;i++){
-   
-    if(radio[i].value == site){
-      radio[i].click()
-    }
-  }
+  
         var input = document.getElementById("input");
       input.addEventListener("keyup", function(event) {
         if (event.keyCode === 13) {
@@ -499,7 +506,8 @@ function showRows(markers, links){
                                  " <em>"+ markers[i][2]+"</em><br>" +
                                  " <area>"+ markers[i][3]+"</area><br></td>" +
                                  " <area>"+ markers[i][4]+"</area><br></td>" +
-                                 " <area>"+ markers[i][5]+"</area><br><br><br><br></td>" +
+                                 " <area>"+ markers[i][5]+"</area><br></td>" +
+                                 " <area>"+ markers[i][6]+"</area><br><br><br><br></td>" +
 
                                    "<td><a class='btnBookmark' > <i id='"+markers[i][0]+"||"+ markers[i][markers[i].length-1]+"' class='fa fa-bookmark' style='color: red; cursor: pointer' onClick='reply_click(this.id)'></i></a> </td>"+ "</tr>" );  
                         } else{
@@ -517,7 +525,73 @@ function showRows(markers, links){
 
                                   "<td><a class='btnBookmark' >  <i href='#modalLogoutForm' data-toggle='modal' data-target='#modalLogoutForm'style='color: red;cursor: pointer'class='fa fa-bookmark'></i></a> </td>"+ "</tr> <br><br>" );  
                         }
-            }               
+            } else if(markers[i].length == 8){
+                
+                        if(user_id == 'True' | user_id == true){
+                          
+                          $('#itemArea').append(
+                                "<tr> " +
+                           "<td ><a href='"+ markers[i][markers[i].length-1]+"' ><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 80ch; font-size: 120%; '><b>" +
+                                markers[i][0] + "</b></span></a><br> " +
+
+                                " <area style=' font-size: 120%;  max-width: 60ch;'>"+ markers[i][1]+"</area><br>" +
+                                 " <em>"+ markers[i][2]+"</em><br>" +
+                                 " <area>"+ markers[i][3]+"</area><br></td>" +
+                                 " <area>"+ markers[i][4]+"</area><br></td>" +
+                                 " <area>"+ markers[i][5]+"</area><br></td>" +
+                                 " <area>"+ markers[i][6]+"</area><br><br><br><br></td>" +
+
+                                   "<td><a class='btnBookmark' > <i id='"+markers[i][0]+"||"+ markers[i][markers[i].length-1]+"' class='fa fa-bookmark' style='color: red; cursor: pointer' onClick='reply_click(this.id)'></i></a> </td>"+ "</tr>" );  
+                        } else{
+                          $('#itemArea').append(
+                                "<tr> " +
+                           "<td><a href='"+ markers[i][markers[i].length-1]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;'><strong>" +
+                                markers[i][0] + "</strong></span></a><br>" +
+
+                               " <area style=' font-size: 120%;  max-width: 60ch;'>"+ markers[i][1]+"</area><br>" +
+                                 " <em>"+ markers[i][2]+"</em><br>" +
+                                " <area>"+ markers[i][3]+"</area><br></td>" +
+                                 " <area>"+ markers[i][4]+"</area><br></td>" +
+                                 " <area>"+ markers[i][5]+"</area><br></td>" +
+                                  " <area>"+ markers[i][6]+"</area><br></td>" +
+                                 " <area>"+ markers[i][7]+"</area><br><br><br><br></td>" +
+
+                                  "<td><a class='btnBookmark' >  <i href='#modalLogoutForm' data-toggle='modal' data-target='#modalLogoutForm'style='color: red;cursor: pointer'class='fa fa-bookmark'></i></a> </td>"+ "</tr> <br><br>" );  
+                        }
+            } else if(markers[i].length == 9){
+                
+                        if(user_id == 'True' | user_id == true){
+                          
+                          $('#itemArea').append(
+                                "<tr> " +
+                           "<td ><a href='"+ markers[i][markers[i].length-1]+"' ><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 80ch; font-size: 120%; '><b>" +
+                                markers[i][0] + "</b></span></a><br> " +
+
+                                " <area style=' font-size: 120%;  max-width: 60ch;'>"+ markers[i][1]+"</area><br>" +
+                                 " <em>"+ markers[i][2]+"</em><br>" +
+                                 " <area>"+ markers[i][3]+"</area><br></td>" +
+                                 " <area>"+ markers[i][4]+"</area><br></td>" +
+                                 " <area>"+ markers[i][5]+"</area><br><br><br><br></td>" +
+
+                                   "<td><a class='btnBookmark' > <i id='"+markers[i][0]+"||"+ markers[i][markers[i].length-1]+"' class='fa fa-bookmark' style='color: red; cursor: pointer' onClick='reply_click(this.id)'></i></a> </td>"+ "</tr>" );  
+                        } else{
+                          $('#itemArea').append(
+                                "<tr> " +
+                           "<td><a href='"+ markers[i][markers[i].length-1]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;'><strong>" +
+                                markers[i][0] + "</strong></span></a><br>" +
+
+                               " <area style=' font-size: 120%;  max-width: 60ch;'>"+ markers[i][1]+"</area><br>" +
+                                 " <em>"+ markers[i][2]+"</em><br>" +
+                                " <area>"+ markers[i][3]+"</area><br></td>" +
+                                 " <area>"+ markers[i][4]+"</area><br></td>" +
+                                 " <area>"+ markers[i][5]+"</area><br></td>" +
+                                  " <area>"+ markers[i][6]+"</area><br></td>" +
+                                  " <area>"+ markers[i][7]+"</area><br></td>" +
+                                 " <area>"+ markers[i][8]+"</area><br><br><br><br></td>" +
+
+                                  "<td><a class='btnBookmark' >  <i href='#modalLogoutForm' data-toggle='modal' data-target='#modalLogoutForm'style='color: red;cursor: pointer'class='fa fa-bookmark'></i></a> </td>"+ "</tr> <br><br>" );  
+                        }
+            }            
   }
 }
 
@@ -538,7 +612,7 @@ function search(clicked_id, searchType){
     
     keyword = document.getElementById('input').value
     clearRow("itemTable")
-    
+
     if(searchType == 'search'){ 
       
         document.getElementById('displayWord').style.display ="none"
@@ -560,7 +634,7 @@ function search(clicked_id, searchType){
                   links = response.links
                   showRows(markers, links)
                   user_id = response.is_authenticated
-                  // console.log(response)
+                  
                   document.getElementById('displayWord').innerHTML = keyword
                   document.getElementById('displayWord').style.display ="inline"
                   
@@ -589,11 +663,11 @@ function search(clicked_id, searchType){
                 success: function(response){
                   markers = response.results
                   
-                  links = response.links
-                  showRows(markers, links)
+            
+                  showRows(markers)
                   user_id = response.is_authenticated
 
-                  // console.log(response)
+                  
                   document.getElementById('displayWord').innerHTML = keyword
                   document.getElementById('displayWord').style.display ="inline"
                   
@@ -602,92 +676,89 @@ function search(clicked_id, searchType){
           }); 
         
     } else if( searchType == 'site'){
-      
+     document.getElementById(website+"_radio").click()
       website = clicked_id
       document.getElementById('displayWord').style.display ="none"
-      if(clicked_id == 'Sciencedirect.com'){
-        if(type != 'journal' & type != 'book'){
-          type = 'journal'
-        }
-        document.getElementById('article').style.display="none"
-        document.getElementById('article|').style.display="none"
-        document.getElementById('database').style.display="none"
-        document.getElementById('database|').style.display="none"
-        document.getElementById('journal').style.display="inline"
-        document.getElementById('journal|').style.display="inline"
-        document.getElementById('book').style.display="inline"
-        document.getElementById('book|').style.display="inline"
-        navhr(type)
-      } else if(clicked_id == 'Springeropen'){
+     if(clicked_id == 'Springeropen'){
+          
           if(type != 'article' & type != 'book'){
+
           type = 'article'
         
         }
-
         document.getElementById('journal').style.display="none"
         document.getElementById('journal|').style.display="none"
-        document.getElementById('database').style.display="none"
-        document.getElementById('database|').style.display="none"
+        document.getElementById('Programme_and_meeting_document').style.display="none"
+        document.getElementById('Programme_and_meeting_document|').style.display="none"
         document.getElementById('article').style.display="inline"
         document.getElementById('article|').style.display="inline"
         document.getElementById('book').style.display="inline"
         document.getElementById('book|').style.display="inline"
         navhr(type)
-      } else if(clicked_id == 'Scirp.org'){
-        if(type != 'article' & type != 'journal'){
-          type = 'article'
-        }
-        document.getElementById('book').style.display="none"
-        document.getElementById('book|').style.display="none"
-        document.getElementById('database').style.display="none"
-        document.getElementById('database|').style.display="none"
-        document.getElementById('article').style.display="inline"
-        document.getElementById('article|').style.display="inline"
-         document.getElementById('journal').style.display="inline"
-        document.getElementById('journal|').style.display="inline"
-        navhr(type)
-      }else if(clicked_id == 'Zlibrary.org'){
-        if(type != 'article' & type != 'book'){
+      }else if(clicked_id == 'UNESCO_Digital_Library'){
+        if(type != 'article' & type != 'book' & type != 'Programme_and_meeting_document'){
           type = 'article'
         }
         document.getElementById('journal').style.display="none"
         document.getElementById('journal|').style.display="none"
-        document.getElementById('database').style.display="none"
-        document.getElementById('database|').style.display="none"
+         document.getElementById('Text_book').style.display="none"
+        document.getElementById('Text_book|').style.display="none"
+        document.getElementById('Programme_and_meeting_document').style.display="inline"
+        
         document.getElementById('article').style.display="inline"
         document.getElementById('article|').style.display="inline"
         document.getElementById('book').style.display="inline"
         document.getElementById('book|').style.display="inline"
         navhr(type)
-      }else if(clicked_id == 'Herdin.ph'){
-        if(type != 'book' & type != 'journal'){
-          type = 'journal'
+      }else if(clicked_id == 'Open_Textbook_Library'){
+        
+        if(type != 'Text_book' ){
+          type = 'Text_book'
         }
         document.getElementById('article').style.display="none"
         document.getElementById('article|').style.display="none"
-        document.getElementById('database').style.display="none"
-        document.getElementById('database|').style.display="none"
-        document.getElementById('journal').style.display="inline"
-        document.getElementById('journal|').style.display="inline"
-        document.getElementById('book').style.display="inline"
-        document.getElementById('book|').style.display="inline"
-        navhr(type)
-
-      } else if(clicked_id == 'Tandfonline.com'){
-        if(type != 'article' & type != 'journal' & type != 'database'){
-          type = 'article'
-        }
+        document.getElementById('Programme_and_meeting_document').style.display="none"
+        document.getElementById('Programme_and_meeting_document|').style.display="none"
+        document.getElementById('journal').style.display="none"
+        document.getElementById('journal|').style.display="none"
         document.getElementById('book').style.display="none"
         document.getElementById('book|').style.display="none"
-        document.getElementById('journal').style.display="inline"
-        document.getElementById('journal|').style.display="inline"
-        document.getElementById('article').style.display="inline"
-        document.getElementById('article|').style.display="inline"
-        document.getElementById('database').style.display="inline"
-        document.getElementById('database|').style.display="inline"
+        document.getElementById('Text_book').style.display="inline"
+        document.getElementById('Text_book|').style.display="inline"
         navhr(type)
-
+      } else if(clicked_id == 'OER_Commons'){
+        
+        if(type != 'Text_book' ){
+          type = 'Text_book'
+        }
+        document.getElementById('article').style.display="none"
+        document.getElementById('article|').style.display="none"
+        document.getElementById('Programme_and_meeting_document').style.display="none"
+        document.getElementById('Programme_and_meeting_document|').style.display="none"
+        document.getElementById('journal').style.display="none"
+        document.getElementById('journal|').style.display="none"
+        document.getElementById('book').style.display="none"
+        document.getElementById('book|').style.display="none"
+        document.getElementById('Text_book').style.display="inline"
+        document.getElementById('Text_book|').style.display="inline"
+        navhr(type)
       }
+      // } else if(clicked_id == 'Tandfonline.com'){
+      //   if(type != 'article' & type != 'journal' & type != 'database'){
+      //     type = 'article'
+      //   }
+      //   document.getElementById('book').style.display="none"
+      //   document.getElementById('book|').style.display="none"
+      //   document.getElementById('journal').style.display="inline"
+      //   document.getElementById('journal|').style.display="inline"
+      //   document.getElementById('article').style.display="inline"
+      //   document.getElementById('article|').style.display="inline"
+      //   document.getElementById('database').style.display="inline"
+      //   document.getElementById('database|').style.display="inline"
+      //   navhr(type)
+
+      // }
+
       $.ajax({
                 type:"POST",
                 url:"",
@@ -703,10 +774,10 @@ function search(clicked_id, searchType){
                 success: function(response){
                   markers = response.results
                   
-                  links = response.links
-                  showRows(markers, links)
+                  
+                  showRows(markers)
                   user_id = response.is_authenticated
-                  // console.log(response)
+                
                   document.getElementById('displayWord').innerHTML = keyword
                   document.getElementById('displayWord').style.display ="inline"
                   
@@ -756,11 +827,13 @@ function reply_click(clicked_id){
 
 
 function navhr(type){
+  document.getElementById('Text_bookhr').style.display = "none"
+  document.getElementById('Programme_and_meeting_documenthr').style.display = "none"
   document.getElementById('articlehr').style.display = "none"
   document.getElementById('journalhr').style.display = "none"
   document.getElementById('bookhr').style.display = "none"
   document.getElementById('dissertationhr').style.display = "none"
-  document.getElementById('databasehr').style.display = "none"
+ 
   if(type == 'article'){
     document.getElementById('articlehr').style.display = "block"
   } else if(type == 'journal'){
@@ -769,8 +842,10 @@ function navhr(type){
     document.getElementById('bookhr').style.display = "block"
   } else if(type == 'dissertation'){
     document.getElementById('dissertationhr').style.display = "block"
-  }else if(type == 'database'){
-    document.getElementById('databasehr').style.display = "block"
+  }else if(type == 'Programme_and_meeting_document'){
+    document.getElementById('Programme_and_meeting_documenthr').style.display = "block"
+  }else if(type == 'Text_book'){
+    document.getElementById('Text_bookhr').style.display = "block"
   }
 
 }

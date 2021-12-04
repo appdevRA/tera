@@ -1,8 +1,8 @@
-from django.db import models
-from datetime import datetime
-from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
+from django.db import models
+from django.utils import timezone
 
+from .managers import UserBookmarkQuerySet
 
 
 class Department (models.Model):
@@ -62,9 +62,18 @@ class User_bookmark (models.Model):
 	date_removed = models.DateTimeField(blank = True, null = True)
 	folders = models.ManyToManyField(Folder, blank=True, related_name="bookmarks")
 	
+	objects = UserBookmarkQuerySet.as_manager()
 
 	class Meta:
 		db_table = "User_bookmark"
+
+	def delete(self):
+		self.isRemoved = 1
+		self.date_removed = timezone.now()
+		self.save()
+
+		return self
+
 
 class Dissertation(models.Model):
 	title = models.CharField(max_length=1000)
@@ -154,7 +163,7 @@ class Headers (models.Model):
 
 class Practice (models.Model):
 	text =  models.CharField(max_length = 5)
-	time = models.DateTimeField(default=timezone.now())
+	time = models.DateTimeField(default=timezone.now)
 
 
 	class Meta:

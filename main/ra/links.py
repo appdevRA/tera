@@ -27,15 +27,15 @@ def scrape(word, refType, site, header, pageNumber):
               
               
     if site == 'Springeropen':
+        print("nisulod springer sa scrape")
         return springer(word, refType,pageNumber)
-    elif site == 'UNESCO Digital Library':
+    elif site == 'UNESCO_Digital_Library':
         return UNESCO(word, refType, pageNumber)
-    elif site == 'Open Textbook Library':
+    elif site == 'Open_Textbook_Library':
         return OTL(word, refType, pageNumber)
-    elif site == 'Scientific Reseach Publisher':
-        return scirp(word, refType, pageNumber)
-    elif site == 'OER Commons':
-        return OTL(word, refType, pageNumber)
+
+    elif site == 'OER_Commons':
+        return OER(word, refType, pageNumber)
 
 def render_html():
     url = 'https://ocw.mit.edu/search/ocwsearch.htm?q=war'
@@ -73,9 +73,28 @@ def UNESCO(word, refType, pageNumber):
         'accept-language': 'en-US,en;q=0.9',
         'cookie': 'consent_cookie_usage=agreed; _ga=GA1.3.1917778646.1638009010; _ga=GA1.2.1917778646.1638009010; _gid=GA1.3.155193290.1638167610; _gid=GA1.2.155193290.1638167610; JSESSIONID=8E242AEF08998954AA5D8316AD325D42; _gat_UA60257183=1',
     }
+    x= False
+    while(x == False):
+        try:
+            if refType == 'article':
+                data = '{"includeFacets":true,"order":"score_DESC;id_DESC","query":["'+word+'"],"queryid":"eecdadaf-edec-4c69-bc64-a5cd63ad754c","sf":"+TypeOfDocumentFacet:UnescoPhysicalDocument","mappedFQ":{"ZMATFacet":{"SER":false,"BKP":false,"STI":false,"ISS":false,"BKS":false,"DGN":false,"CIR":false,"PGD":false,"DEP":false,"MOV":false}},"pageNo":'+ str(pageNumber)+',"pageSize":8,"locale":"en"}'
+            elif refType == 'book':
+                data = '{"includeFacets":true,"order":"score_DESC;id_DESC","query":["'+word+'"],"queryid":"eecdadaf-edec-4c69-bc64-a5cd63ad754c","sf":"+TypeOfDocumentFacet:UnescoPhysicalDocument","mappedFQ":{"ZMATFacet":{"SER":false,"ART":false,"BKP":false,"STI":false,"ISS":false,"DGN":false,"CIR":false,"PGD":false,"DEP":false,"MOV":false}},"pageNo":'+ str(pageNumber)+',"pageSize":8,"locale":"en"}'
+            elif refType == 'event_document':
+                data = '{"includeFacets":true,"order":"score_DESC;id_DESC","query":["'+word+'"],"queryid":"eecdadaf-edec-4c69-bc64-a5cd63ad754c","sf":"+TypeOfDocumentFacet:UnescoPhysicalDocument","mappedFQ":{"ZMATFacet":{"SER":false,"ART":false,"BKP":false,"STI":false,"ISS":false,"BKS":false,"DGN":false,"CIR":false,"DEP":false,"MOV":false}},"pageNo":'+ str(pageNumber)+',"pageSize":8,"locale":"en"}'
+            
+            x = True
+        except ConnectionError:
+            print('Connection Error')
 
-    data = '{"includeFacets":true,"order":"score_DESC;id_DESC","query":["'+word+'"],"queryid":"2bc5c5b6-62ce-4b5f-aa27-4679499c1830","sf":"+TypeOfDocumentFacet:UnescoPhysicalDocument","mappedFQ":{"ZMATFacet":{"SER":false,"BKP":false,"STI":false,"ISS":false,"BKS":false,"DGN":false,"CIR":false,"PGD":false,"DEP":false,"MOV":false}},"pageNo":'+ str(pageNumber)+',"pageSize":8,"locale":"en"}'
+        except ConnectTimeout:
+            print('Connect Timeout')
+            
+        except ReadTimeout:
+            print('except')
 
+    
+    
     response = requests.post('https://unesdoc.unesco.org/in/rest/api/search', headers=headers, data=data)
     b = response.json()
 
@@ -180,10 +199,10 @@ def UNESCO(word, refType, pageNumber):
             z.append(isbn)
             z.append(dateYear)
             z.append(link)
-            print(z,"\n\n\n")
+            
             rows.append(z)
 
-        elif refType == 'Program and Meeting Document': 
+        elif refType == 'Programme_and_meeting_document': 
             isbn = "Document Code:  "
             try:
                 
@@ -250,8 +269,23 @@ def UNESCO(word, refType, pageNumber):
 def OTL(word, refType, pageNumber): # pagination starts with index 1 diri
     rows =[]
 
-    if refType == 'Text book':
-        response = requests.get('https://open.umn.edu/opentextbooks/textbooks?term='+word+'&commit=Go&page='+str(pageNumber), headers = headers(), timeout=2) #articles 
+    x = False
+    while(x == False):
+        try:
+            if refType == 'Text_book':
+                response = requests.get('https://open.umn.edu/opentextbooks/textbooks?term='+word+'&commit=Go&page='+str(pageNumber), headers = headers(), timeout=2) #articles 
+
+            x = True
+        except ConnectionError:
+            print('Connection Error')
+
+        except ConnectTimeout:
+            print('Connect Timeout')
+            
+        except ReadTimeout:
+            print('except')
+
+    if refType == 'Text_book':
         soup = BeautifulSoup(response.content, 'html.parser')
 
         rowsss = soup.findAll('div', class_='col-sm-9 info')
@@ -269,7 +303,7 @@ def OTL(word, refType, pageNumber): # pagination starts with index 1 diri
             z.append(publisher)
             z.append(link)
             
-            
+        
             rows.append(z)
 
     return rows
@@ -278,10 +312,15 @@ def OTL(word, refType, pageNumber): # pagination starts with index 1 diri
 def OER(word, refType, pageNumber): # paginattion diri ky sumpay walay page-page, by 10, 20,50,100 ang makita sa screen
     rows =[]
     
+    pageNumber = int(pageNumber)
+
+    # primary source
+    # text book
+    # teaching/learning startegy
     batch_start = 0
     batch_size = 10
 
-    if pageNumber*10 > 10:
+    if (pageNumber)*10 > 10:
         batch_size = 20
     elif pageNumber*10 > 20:
         batch_size = 50
@@ -292,14 +331,24 @@ def OER(word, refType, pageNumber): # paginattion diri ky sumpay walay page-page
     elif pageNumber*10 > 200:
         batch_start = 200
 
-    response = requests.get('https://www.oercommons.org/search?batch_size='+batch_size+'&batch_start='+batch_start+'&sort_by=search&view_mode=summary&f.search='+ word+'&f.sublevel=college-upper-division&f.sublevel=graduate-professional&f.sublevel=career-technical&f.sublevel=community-college-lower-division&f.sublevel=adult-education', headers=headers())
+    x = False
+    while(x == False):
+        try:
+            response = requests.get('https://www.oercommons.org/search?batch_size='+str(batch_size)+'&batch_start='+str(batch_start)+'&sort_by=search&view_mode=summary&f.search='+ word+'&f.sublevel=college-upper-division&f.sublevel=graduate-professional&f.sublevel=career-technical&f.sublevel=community-college-lower-division&f.sublevel=adult-education', headers=headers(), timeout=3)
+            x = True
+            print("olok")
+        except ConnectionError:
+            print('Connection Error')
+
+        except ConnectTimeout:
+            print('Connect Timeout')
+            
+        except ReadTimeout:
+            print('except')
+
+
     soup = BeautifulSoup(response.content, 'html.parser')
     
-    # with open ('C:/Users/Valued Client/Desktop/html/OER.html', 'r', errors='ignore') as html_file:
-    #     content = html_file.read()
-        
-    #     soup = BeautifulSoup(content, 'html.parser')
-        # print(soup.prettify())
     rowsss = soup.findAll('div', class_='item-details col-md-8 col-xs-11')
     
     for i,row in enumerate(rowsss):
@@ -310,28 +359,31 @@ def OER(word, refType, pageNumber): # paginattion diri ky sumpay walay page-page
             description = row.find('div', class_='abstract-short').p.text.replace('\n','').replace('  ','') # short description
             x = row.find('dl', class_='item-info visible-md-block visible-lg-block').dt
             array =[]
-            ii=1
-            while(x != None):
-                if(ii%2 != 0):
-                    array.append(x.text)
-                else:
-                    array[ii-1] = array[ii-1]+ x.text
-                
-                x= x.find_next_sibling()
             
+            try:
+                while(x != None):
+                    y = x.find_next_sibling()
+                    array.append(x.text+" "+ y.text)
+                    
+                    x= y.find_next_sibling()
+            except: 
+                pass
+                
             z.append(title)
             z.append(description)
-            for iii in array:
-                z.append(iii)
+            
+            for item in array:
+                z.append(item)
             
             z.append(link)
             
             rows.append(z)
-            print(title)
+
         if i >= (pageNumber*10)-1:
             break
         
     return rows
+   
 
 
 def springer(word,refType, pageNumber): # INDEX 1 STARTING SA PAGINATION DIRI
@@ -339,26 +391,28 @@ def springer(word,refType, pageNumber): # INDEX 1 STARTING SA PAGINATION DIRI
     springers = []
     
     
-    if refType == 'article':
-        # x = False
-        # while(x == False):
-        #     try:
-        #         response = requests.get('https://www.springeropen.com/search?searchType=publisherSearch&sort=Relevance&query=' + word +'&page='+ str(pageNumber), headers = headers(), timeout=2) #articles 
-        #         x = True
-        #     except ConnectionError:
-        #         print('Connection Error')
-        #         return False
-
-        #     except ConnectTimeout:
-        #         print('Connect Timeout')
-                
-        #     except ReadTimeout:
-        #         print('except')
-        
-        response = requests.get('https://www.springeropen.com/search?searchType=publisherSearch&sort=Relevance&query=' + word +'&page='+ str(pageNumber), headers = headers(), timeout=2) #articles 
-        soup = BeautifulSoup(response.content, 'html.parser')
-
     
+    x = False
+    while(x == False):
+        try:
+            if refType == 'article':
+                response = requests.get('https://www.springeropen.com/search?searchType=publisherSearch&sort=Relevance&query=' + word +'&page='+ str(pageNumber), headers = headers(), timeout=2) #articles         
+            elif refType == 'book':
+                response = requests.get('https://www.springer.com/gp/search?dnc=true&facet-type=type__book&page='+ str(pageNumber) +'&query='+ word+'&submit=Submit', headers = headers(), timeout=2) #books
+            
+            x = True
+        except ConnectionError:
+            print('Connection Error')
+
+        except ConnectTimeout:
+            print('Connect Timeout')
+            
+        except ReadTimeout:
+            print('except')
+        
+
+    if refType == 'article':
+        soup = BeautifulSoup(response.content, 'html.parser')
         a= soup.find('ol', class_='c-list-group c-list-group--bordered c-list-group c-list-group--md')
 
         if a != None: #find ol tag where naa ang rows sa list
@@ -386,8 +440,6 @@ def springer(word,refType, pageNumber): # INDEX 1 STARTING SA PAGINATION DIRI
                     springers.append(z)
         return springers
     elif refType == 'book':
-      
-        response = requests.get('https://www.springer.com/gp/search?dnc=true&facet-type=type__book&page='+ str(pageNumber) +'&query='+ word+'&submit=Submit', headers = headers(), timeout=2) #books
         soup = BeautifulSoup(response.content, 'html.parser')
         rows = soup.find('div', id='result-list')
         
