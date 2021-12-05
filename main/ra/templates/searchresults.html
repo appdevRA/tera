@@ -376,7 +376,7 @@
 
 
 function showRows(markers, links){
-console.log(markers.length)
+  console.log(markers.length)
   for(i=0; i< markers.length;i++){
     
     
@@ -626,7 +626,6 @@ function clearRow(tableName){
 
 
 function search(clicked_id, searchType){
-    console.log("ni search")
     keyword = document.getElementById('input').value
     clearRow("itemTable")
 
@@ -815,6 +814,7 @@ function search(clicked_id, searchType){
 
 
 function reply_click(clicked_id){
+      keyword = document.getElementById('input').value
       if(document.getElementById(clicked_id).style.color == "red"){
         document.getElementById(clicked_id).style.color = "#e07878";
         $.ajax({
@@ -826,6 +826,7 @@ function reply_click(clicked_id){
                         reftype: type, 
                         website: website,
                         bookmark: clicked_id,
+                        word: keyword,
                         csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
                       }
         });      

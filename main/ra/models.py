@@ -61,6 +61,8 @@ class User_bookmark (models.Model):
 	isFavorite = models.BooleanField(default=False)
 	date_removed = models.DateTimeField(blank = True, null = True)
 	folders = models.ManyToManyField(Folder, blank=True, related_name="bookmarks")
+	keyword= models.CharField(max_length = 200,blank= False, null=False, default="")
+
 	
 	objects = UserBookmarkQuerySet.as_manager()
 

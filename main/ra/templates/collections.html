@@ -318,6 +318,9 @@ tr:hover {
                  
         </div>
         </div>
+
+        
+
     <div class="col-sm-3" style="overflow-x: scroll;  overflow-y: scroll;  height: 90vh">
       <br>
       <h4>Details</h4>
@@ -558,12 +561,10 @@ function showRows(rowType, array, faction_id){
 
                 if( markers[i].isRemoved == 0 ){
 
-                   
-                      date_add= new Date(markers[i].dateAdded+'Z')
-                      if(typeof(markers[i].dateAccessed) == 'string')
-                        date_acc= new Date(markers[i].dateAccessed+'Z')
-                      else
-                        date_acc= new Date(markers[i].dateAccessed)
+                      sitelogo=""
+                      date_add= new Date(markers[i].dateAdded)
+                      
+                      date_acc= new Date(markers[i].dateAccessed)
 
                       if( markers[i].isFavorite == 0){
                         favorite ="<td><i id='"+ markers[i].id+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>"
@@ -571,9 +572,9 @@ function showRows(rowType, array, faction_id){
                         favorite ="<td><i id='"+ markers[i].id+"' class='fas fa-star' style='cursor: pointer; color:red' onclick='favorite_item(this.id)'></i></td>"
                       }
 
-                      if(markers[i].websiteTitle == "Springeropen.com"){
+                      if(markers[i].websiteTitle == "Springeropen"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
-                        } else if(markers[i].websiteTitle == "Sciencedirect.com"){
+                        } else if(markers[i].websiteTitle == "Sciencedirect"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 25px;'></td>"
                         } 
 

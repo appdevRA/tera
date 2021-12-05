@@ -55,8 +55,8 @@ class practice3(View):
 class practice(View):
 	
 	def get(self, request):
-		# Department.objects.create(name='College of Computer Studies', abbv='CCS')
-		# User.objects.create(username='mondejar', password =make_password('12345'), department=Department.objects.get(abbv='CCS'))
+		# a= Department.objects.create(name='College of Computer Studies', abbv='CCS')
+		# User.objects.create(username='mondejar', password =make_password('12345'), department=a)
 		# User.objects.create(username='mondejar2', password = make_password('mondejar.12345'), department_id=2)
 		
 
@@ -87,11 +87,13 @@ class practice(View):
 		# a = OER('animals', 'proxy', 'Text book', 2)
 		# for b in a:
 		# 	print(b['title'])
-		a= OER('peace', 'Text book', 1)
+		# a= OER('peace', 'Text book', 1)
 
-
-		# UNESCO('Article')
-		return HttpResponse('wala') #,context)
+		query= User_bookmark.objects.all().values('title')
+		# print(query)
+		
+		
+		return HttpResponse(recommend(list(query))) #,context)
 
 	def post(self, request):
 		
@@ -152,7 +154,7 @@ class TeraLoginUser(View):
 			
 class TeraIndexView(View):
 	def get(self, request):
-		
+		# User_bookmark.objects.exclude(id=6).delete()
 
 		#proxies = proxy_generator2() #/ generating free proxies /
 		#for proxy in proxies:  #/ saving proxies to db /
@@ -160,17 +162,7 @@ class TeraIndexView(View):
 		#	proxy =Proxies(proxy = proxy)
 		#	proxy.save()
 		
-		if request.session.get('proxy') == None:
-			proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
-			request.session['proxy'] = testProxy(proxies,1)
-		else:
-			result = testProxy(request.session.get('proxy'),2) # test a single proxy
-
-			if result == False:
-				proxies = Proxies.objects.filter(isUsed = 0) # get all proxy from db
-				request.session['proxy'] = testProxy(proxies,1) # test a random proxy from db
-			else:
-				request.session['proxy'] = result
+		
 
 		request.session['previousPage'] = 'index_view'
 		
@@ -206,7 +198,7 @@ class TeraIndexView(View):
 
 
 class TeraSearchResultsView(View):
-	a = 0
+	
 
 	def get(self,request):
 		request.session['previousPage'] ='search_result_view'
@@ -273,6 +265,7 @@ class TeraSearchResultsView(View):
 					
 			elif action == "add":
 				print('bookmark button clicked')
+				keyword = request.POST['word']
 				bookmark = request.POST['bookmark']
 				siteRef = request.POST['website'] +" " +request.POST['reftype']
 				string = bookmark.split('||')
@@ -281,31 +274,35 @@ class TeraSearchResultsView(View):
 				# print(title, url, siteRef)
 				detail = details(url, request.session.get('proxy'),siteRef)
 
-				# websiteTitle = detail['websiteTitle']
-				# itemType = detail['itemType']
-				# author = detail['author']
-				# description = detail['description']
-				# journalItBelongs = detail['journalItBelongs']
-				# volume = detail['volume']
-				# doi = detail['doi']
-				# publicationYear = detail['publishYear']
-				# subtitle = detail['subtitle']
-				# citation = detail['citation']
-				# downloads = detail['downloads']
-				# publisher = detail['publisher']
-				# edition = detail['edition']
-				# pages = detail['pages']
-				# # author description publication volume doi
+				websiteTitle = detail['websiteTitle']
+				itemType = detail['itemType']
+				author = detail['author']
+				description = detail['description']
+				journalItBelongs = detail['journalItBelongs']
+				volume = detail['volume']
+				doi = detail['doi']
+				publicationYear = detail['publishYear']
+				subtitle = detail['subtitle']
+				citation = detail['citation']
+				downloads = detail['downloads']
+				publisher = detail['publisher']
+				edition = detail['edition']
+				pages = detail['pages']
+				# author description publication volume doi
 				
 				
-				# # print(websiteTitle + '\n'+itemType + '\n'+title + '\n' +link + '\n' +author+ '\n' +description+ '\n' +publication+ '\n' +volume+ '\n' +doi)
-				# if request.POST['reftype'] == "article":
-				# 	User_bookmark.objects.create(user = request.user,title = title,websiteTitle= websiteTitle,itemType= itemType,author = author, description= description, url = url, journalItBelongs= journalItBelongs, volume = volume, DOI = doi)
-				# elif itemType == "book":
-				# 	User_bookmark.objects.create(user = request.user,title = title,websiteTitle= websiteTitle,subtitle = subtitle, 
-				# 		itemType= itemType,author = author,numOfCitation = citation,numOfDownload= downloads,publisher=publisher, 
-				# 		description= description, url = url, edition = edition,numOfPages = pages,
-				# 		 DOI = doi)
+				# print(websiteTitle + '\n'+itemType + '\n'+title + '\n' +link + '\n' +author+ '\n' +description+ '\n' +publication+ '\n' +volume+ '\n' +doi)
+				if request.POST['reftype'] == "article":
+					User_bookmark.objects.create(
+						user = request.user,title = title,websiteTitle= websiteTitle,itemType= itemType,
+						author = author, description= description, url = url, journalItBelongs= journalItBelongs, 
+						volume = volume, DOI = doi, keyword=keyword
+						)
+				elif itemType == "book":
+					User_bookmark.objects.create(user = request.user,title = title,websiteTitle= websiteTitle,
+						subtitle = subtitle, itemType= itemType,author = author,numOfCitation = citation,
+						numOfDownload= downloads,publisher=publisher, description= description, url = url, 
+						edition = edition,numOfPages = pages, DOI = doi, keyword = keyword)
 				return HttpResponse('')
 			else:
 				string = bookmark.split('||')
