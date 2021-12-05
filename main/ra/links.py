@@ -25,88 +25,164 @@ import statistics
 
 session= HTMLSession()
 
-def recommend(bookmark_list):
+def modes(bookmark_list, all_bookmarks):
     title = ""
     metadata = pd.DataFrame(bookmark_list)
     modes =  metadata.mode(axis=0)
-    highest = -1
-    tfidf_mode = TfidfVectorizer(stop_words='english')
-    modes['title'] = modes['title'].fillna('')
-    tfidf_matrix_mode = tfidf_mode.fit_transform(modes['title'])
-    cosine_sim_mode = linear_kernel(tfidf_matrix_mode, tfidf_matrix_mode)
+    if len(modes) > 1:
+        print("length of modes is: ", len(modes))
+        highest = -1
+        tfidf_mode = TfidfVectorizer(stop_words='english')
+        modes['title'] = modes['title'].fillna('')
+        tfidf_matrix_mode = tfidf_mode.fit_transform(modes['title'])
+        cosine_sim_mode = linear_kernel(tfidf_matrix_mode, tfidf_matrix_mode)
 
 
-    for i, row in enumerate(cosine_sim_mode):
-        summ=0
-        for column in row:
-            if column != 1.0 or column != 1:
-                summ = summ + column
+        for i, row in enumerate(cosine_sim_mode):
+            summ=0
+            for column in row:
+                if column != 1.0 or column != 1:
+                    summ = summ + column
 
-        average = summ/(len(row))
-        print(average)
-        if average >= highest:
-            highest = average
-            index = i
+            average = summ/(len(row))
+            # print(average)
+            if average >= highest:
+                highest = average
+                index = i
 
 
 
-    for i, item in enumerate(modes['title']):
-        if index == i:
-            title = item
-            break
+        for i, item in enumerate(modes['title']):
+            if index == i:
+                title = item
+                break
+
+    
+        return recommend(all_bookmarks, title)
+    else:
+        return recommend(all_bookmarks, modes)
+
+def recommend(bookmark_list, title):
 
     print(title)
+    
 
-    #getting the most frequent reference bookmarked by all users
+    metadata = pd.DataFrame(bookmark_list)
+    print(metadata)
    
-    
-    # print(metadata)
-
-    #  #Define a TF-IDF Vectorizer Object. Remove all english stop words such as 'the', 'a'
     tfidf = TfidfVectorizer(stop_words='english')
-
-    # # #Replace NaN with an empty string
     metadata['title'] = metadata['title'].fillna('')
-
-    # # #Construct the required TF-IDF matrix by fitting and transforming the data
     tfidf_matrix = tfidf.fit_transform(metadata['title'])
-
-    # # #Output the shape of tfidf_matrix
-    # # #print(tfidf_matrix.shape)
-
-    # # #print(tfidf.get_feature_names()[10:20])
-
-    # # # Compute the cosine similarity matrix
+  
     cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
-    # # print(cosine_sim.shape)
-    # print(metadata['title'])
-
     
-
-    # print(len(cosine_sim[0]))
-    
-
-    # #Construct a reverse map of indices and movie titles
     indices = pd.Series(metadata.index, index=metadata['title']).drop_duplicates()
-    # #print(indices[:10])
+    
 
-    # Get the index of the reference that matches the title
-    idx = indices[title]
+    idx = indices[title['title']]
+    print(idx)
+    # # Get the pairwsie similarity scores of all movies with that movie
+    if len(idx) > 1:
+        sim_scores = list(enumerate(cosine_sim[idx[0]]))
+    else:
+        sim_scores = list(enumerate(cosine_sim[idx]))
 
-    # # Get the pairwsie similarity scores of all reference with that title
-    sim_scores = list(enumerate(cosine_sim[idx]))
-
-    # # Sort the references based on the similarity scores
+    # # Sort the movies based on the similarity scores
     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
 
-    # # Get the scores of the 10 most similar references
-    sim_scores = sim_scores[1:11]
+    # Get the scores of the 10 most similar movies
+    sim_scores = sim_scores[1:4]
 
-    # # Get the reference indices
-    ref_indices = [i[0] for i in sim_scores]
+    # Get the movie indices
+    movie_indices = [i[0] for i in sim_scores]
 
-    # # Return the top 10 most similar movies
-    print(metadata['title'].iloc[ref_indices])
+    # Return the top 10 most similar movies
+
+    return metadata['title'].iloc[movie_indices]
+
+
+# def recommend(bookmark_list):
+#     title = ""
+#     metadata = pd.DataFrame(bookmark_list)
+#     modes =  metadata.mode(axis=0)
+#     highest = -1
+#     tfidf_mode = TfidfVectorizer(stop_words='english')
+#     modes['title'] = modes['title'].fillna('')
+#     tfidf_matrix_mode = tfidf_mode.fit_transform(modes['title'])
+#     cosine_sim_mode = linear_kernel(tfidf_matrix_mode, tfidf_matrix_mode)
+
+
+#     for i, row in enumerate(cosine_sim_mode):
+#         summ=0
+#         for column in row:
+#             if column != 1.0 or column != 1:
+#                 summ = summ + column
+
+#         average = summ/(len(row))
+#         print(average)
+#         if average >= highest:
+#             highest = average
+#             index = i
+
+
+
+#     for i, item in enumerate(modes['title']):
+#         if index == i:
+#             title = item
+#             break
+
+#     print(title)
+
+#     #getting the most frequent reference bookmarked by all users
+   
+    
+#     # print(metadata)
+
+#     #  #Define a TF-IDF Vectorizer Object. Remove all english stop words such as 'the', 'a'
+#     tfidf = TfidfVectorizer(stop_words='english')
+
+#     # # #Replace NaN with an empty string
+#     metadata['title'] = metadata['title'].fillna('')
+
+#     # # #Construct the required TF-IDF matrix by fitting and transforming the data
+#     tfidf_matrix = tfidf.fit_transform(metadata['title'])
+
+#     # # #Output the shape of tfidf_matrix
+#     # # #print(tfidf_matrix.shape)
+
+#     # # #print(tfidf.get_feature_names()[10:20])
+
+#     # # # Compute the cosine similarity matrix
+#     cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
+#     # # print(cosine_sim.shape)
+#     # print(metadata['title'])
+
+    
+
+#     # print(len(cosine_sim[0]))
+    
+
+#     # #Construct a reverse map of indices and movie titles
+#     indices = pd.Series(metadata.index, index=metadata['title']).drop_duplicates()
+#     # #print(indices[:10])
+
+#     # Get the index of the reference that matches the title
+#     idx = indices[title]
+
+#     # # Get the pairwsie similarity scores of all reference with that title
+#     sim_scores = list(enumerate(cosine_sim[idx]))
+
+#     # # Sort the references based on the similarity scores
+#     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+
+#     # # Get the scores of the 10 most similar references
+#     sim_scores = sim_scores[1:11]
+
+#     # # Get the reference indices
+#     ref_indices = [i[0] for i in sim_scores]
+
+#     # # Return the top 10 most similar movies
+#     print(metadata['title'].iloc[ref_indices])
     # return metadata['title'].iloc[ref_indices]
 
 
@@ -115,7 +191,7 @@ def recommend(bookmark_list):
 #     #loading the dataset
 #     #for item in bookmark_list:
 #         #print(item['title'])
-#         #print(item['keyword'])
+#         #print(item['keywoard'])
 #     #loading the dataset
 #     #for item in bookmark_list:
 #         #print(item['title'])
@@ -169,6 +245,9 @@ def recommend(bookmark_list):
 
 #     # Return the top 10 most similar movies
 #     print(metadata['title'].iloc[ref_indices])
+
+
+
 
 def scrape(word, refType, site, header, pageNumber):
     

@@ -313,13 +313,41 @@ tr:hover {
                     </tbody>
                   </table>
                 </div>
+
             </div>
             
                  
         </div>
+<h4>Recommended For You</h4>
+<div class="wrapper">
+<div class="main_content">
+<div class="header" >
+<br>
+
+<table id="itemTable" class="table">
+<thead>
+
+<th >Title</th>
+
+<th></th>
+<th></th>
+</thead>
+{% for item in recommendation %}
+<tr>
+<td> {{item}} </td>
+
+<td><i class='fa fa-trash'></i></td>
+<td><i class='fa fa-bookmark' ></i></td>
+</tr>
+{% endfor %}
+</table>
+</div>
+</div>
+</div>
         </div>
 
         
+
 
     <div class="col-sm-3" style="overflow-x: scroll;  overflow-y: scroll;  height: 90vh">
       <br>
@@ -341,7 +369,9 @@ tr:hover {
    <ul id='group_detail_ul' style='margin-left: 10%; '></ul>
     </div>
   
+</div>
 
+</div>
     
     
 </body>

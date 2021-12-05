@@ -67,6 +67,9 @@ body{
 
 section.home{
     background-color: #f3f3f3;
+    right:0;
+    padding: 10px;
+    z-index: -1;
 }
 
 ::-webkit-scrollbar {

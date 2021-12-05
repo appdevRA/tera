@@ -38,6 +38,11 @@ class practice2(View):
 		
 		return HttpResponse(sinput +" "+site+" "+type)
 
+class addUser(View):
+	def get(self, request):
+		print('olok')
+		
+		return render(request,'addUser.html')
 
 		
 
@@ -89,11 +94,9 @@ class practice(View):
 		# 	print(b['title'])
 		# a= OER('peace', 'Text book', 1)
 
-		query= User_bookmark.objects.all().values('title')
-		# print(query)
 		
 		
-		return HttpResponse(recommend(list(query))) #,context)
+		return HttpResponse() #,context)
 
 	def post(self, request):
 		
@@ -155,7 +158,7 @@ class TeraLoginUser(View):
 class TeraIndexView(View):
 	def get(self, request):
 		# User_bookmark.objects.exclude(id=6).delete()
-
+		# logout(request)
 		#proxies = proxy_generator2() #/ generating free proxies /
 		#for proxy in proxies:  #/ saving proxies to db /
 			
@@ -348,12 +351,19 @@ class TeraDashboardView(View):
 			# cursor = connection.cursor()   
 			# cursor.execute("SELECT f.*, b.* FROM User_bookmark b, Folders f WHERE f.user_id = "+ request.user.id+" AND f.bookmark_id == b.id OR") #| get rows of for a specific date|
 			# row = cursor.fetchall()
-		
+
 
 
 
 		if request.user.id != None:
-			query_group = User_group.objects.filter(Q(owner= request.user) | Q(member=request.user))
+			query= User_bookmark.objects.filter(user=request.user).values('title')
+			queryAll= User_bookmark.objects.all().values('title')
+			# print(query)
+			recommendation = list(dict.fromkeys(modes(list(query),list(queryAll) )))
+
+
+			
+			query_group = User_group.objects.filter((Q(owner= request.user) | Q(member=request.user)), is_removed=0)
 			groups = list(query_group.values())
 			for b in groups:
 				b['owner_id']= list(User.objects.filter(id=b['owner_id']).values('first_name',"last_name"))
@@ -378,6 +388,7 @@ class TeraDashboardView(View):
 
 			# print(bookmark)
 			queryset = User_bookmark.objects.filter((Q(user_id=request.user.id) | Q(folders__user=request.user)) &  (Q(isRemoved=1) | Q(isRemoved=0))).values()
+			print(len(queryset))
 			folders =	Folder.objects.filter(user_id=request.user, is_removed = 0).values()
 			# groups = User_group.objects.filter(Q(owner= request.user) | Q(member=request.user)).values()
 			# bookmark= serializers.serialize("json",a )
@@ -390,7 +401,8 @@ class TeraDashboardView(View):
 				"bookmark_list": a,
 				"folder_set": folders,
 			    "folder_list": folder_list,
-			    "group_list":group_list
+			    "group_list":group_list,
+			    "recommendation": recommendation
 			}
 			return render(request,'collections.html', context)
 		else:
@@ -491,12 +503,16 @@ class TeraDashboardView(View):
 
 			elif action == 'add_group':
 				name = request.POST['name']
-				Group.objects.create(owner=request.user, name = name)
-				group = Group.objects.filter(owner=request.user).values()
-				a = list(group)	
+				User_group.objects.create(owner=request.user, name = name)
+				query_group = User_group.objects.filter((Q(owner= request.user) | Q(member=request.user)), is_removed=0)
+				groups = list(query_group.values())
+				for b in groups:
+					b['owner_id']= list(User.objects.filter(id=b['owner_id']).values('first_name',"last_name"))
+					c = User_group.objects.get(id=b['id'])
+					b['members']= list(c.member.values('first_name','last_name'))
 				
 				context = {
-			    "group_list": a
+			    "group_list": groups
 				}
 				
 				return JsonResponse(context)
