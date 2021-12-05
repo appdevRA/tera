@@ -26,6 +26,8 @@ def recommend(bookmark_list):
     #bookmark_list.append(a)
 
     metadata = pd.DataFrame(bookmark_list)
+    
+    #getting the most frequent reference bookmarked by all users
     print(metadata.mode(axis=0))
 
     #print (metadata.head(10))
