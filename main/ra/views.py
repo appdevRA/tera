@@ -88,12 +88,13 @@ class practice(View):
 		# for b in a:
 		# 	print(b['title'])
 		# a= OER('peace', 'Text book', 1)
+		#logout(request)
 
-		query= User_bookmark.objects.all().values('title')
+		#query= User_bookmark.objects.all().values('title')
 		# print(query)
 		
 		
-		return HttpResponse(recommend(list(query))) #,context)
+		return HttpResponse("hello") #,context)
 
 	def post(self, request):
 		
