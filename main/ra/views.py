@@ -61,7 +61,7 @@ class practice(View):
 	
 	def get(self, request):
 		# a= Department.objects.create(name='College of Computer Studies', abbv='CCS')
-		# User.objects.create(username='mondejar', password =make_password('12345'), department=a)
+		# User.objects.create(username='18-5126-269', password =make_password('12345'), department=a)
 		# User.objects.create(username='mondejar2', password = make_password('mondejar.12345'), department_id=2)
 		
 
@@ -518,7 +518,7 @@ class TeraDashboardView(View):
 			    "group_list": groups
 				}
 				
-				
+
 				return JsonResponse(context)
 
 			elif action == 'get_folder_bookmarks':
