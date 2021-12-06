@@ -318,32 +318,34 @@ tr:hover {
             
                  
         </div>
-<h4>Recommended For You</h4>
-<div class="wrapper">
-<div class="main_content">
-<div class="header" >
-<br>
+        <div id="recommendation">
+              <h4>Recommended For You</h4>
+              <div class="wrapper">
+              <div class="main_content">
+              <div class="header" >
+              <br>
 
-<table id="itemTable" class="table">
-<thead>
+              <table id="itemTable" class="table">
+              <thead>
 
-<th >Title</th>
+              <th >Title</th>
 
-<th></th>
-<th></th>
-</thead>
-{% for item in recommendation %}
-<tr>
-<td> {{item}} </td>
+              <th></th>
+              <th></th>
+              </thead>
+              {% for item in recommendation %}
+              <tr>
+              <td> {{item}} </td>
 
-<td><i class='fa fa-trash'></i></td>
-<td><i class='fa fa-bookmark' ></i></td>
-</tr>
-{% endfor %}
-</table>
-</div>
-</div>
-</div>
+              <td><i class='fa fa-trash'></i></td>
+              <td><i class='fa fa-bookmark' ></i></td>
+              </tr>
+              {% endfor %}
+              </table>
+              </div>
+              </div>
+              </div>
+        </div>
         </div>
 
         
@@ -573,7 +575,7 @@ function favorite_item(clicked_id,ii){
 
 
 function showRows(rowType, array, faction_id){
-
+   document.getElementById("recommendation").style.display = "none"
   clearRow("detailTable")
   clearStyle();
   clearRow('itemTable');
@@ -639,7 +641,7 @@ function showRows(rowType, array, faction_id){
                 }  
                  
             }
-
+            document.getElementById("recommendation").style.display = "inline"
 
     } else if(rowType =='trash'){
       $("#group_detail_ul").empty();
@@ -1091,7 +1093,7 @@ function get_detail(clicked_id, isGroup_detail){
    if(isGroup_detail == true){
 
       
-
+    console.log(groups)
         
           for(i=0;i< groups.length;i++){
             if(groups[i].id == clicked_id){
@@ -1104,10 +1106,12 @@ function get_detail(clicked_id, isGroup_detail){
               "<br><div style='margin-left:-5%'><i class='fas fa-user-plus' style='font-size:90%; cursor:pointer;' href='#addMemberModal' data-toggle='modal' data-target='#addMemberModal'></i> &nbsp; <b>Member(s)</b>: </div>"
 
             );  
-           member = groups[i]['members']
-           for(i=0;i<member.length;i++){
-            $('#group_detail_ul').append("<div class='member' style='margin-left:25%'> "+ member[i]['first_name']+" "+ member[i]['last_name']+" </div>" );
-            }
+             if(groups[i]['members'].length > 0){
+               member = groups[i]['members']
+               for(i=0;i<member.length;i++){
+                $('#group_detail_ul').append("<div class='member' style='margin-left:25%'> "+ member[i]['first_name']+" "+ member[i]['last_name']+" </div>" );
+                }
+              }
               // console.log(document.getElementById('group_detail').style.display = "block" )
 
             }
@@ -1160,7 +1164,7 @@ function get_detail(clicked_id, isGroup_detail){
      } 
    }else {
      
-     
+      faction_markers= array
       for(i=0; i< faction_markers.length;i++){
         if(faction_markers[i].id == id){
           
@@ -1541,9 +1545,9 @@ function display_faction_bookmarks(clicked_id, event){
                           },
                           success: function(response){
                               array = response.bookmarks
-                              faction_markers = array
-                              get_detail(ID, true)
-
+                              
+                              // get_detail(ID, true)
+                              console.log(faction_id)
                               showRows('groups', array, ID)
                               try{
                                   document.getElementById(clicked_id).style.backgroundColor= "#c9c9c9";

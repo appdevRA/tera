@@ -518,6 +518,7 @@ class TeraDashboardView(View):
 			    "group_list": groups
 				}
 				
+				
 				return JsonResponse(context)
 
 			elif action == 'get_folder_bookmarks':
