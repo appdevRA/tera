@@ -170,7 +170,7 @@ class TeraIndexView(View):
 		request.session['previousPage'] = 'index_view'
 		
 		context ={
-			"user_id": request.user.id
+			"user":request.user.is_authenticated
 		}
 		
 	

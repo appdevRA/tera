@@ -30,6 +30,7 @@
      
       <ul>   
       
+      {% if user == False %}
       <li id="login">
         <form action = "" method = "POST" autocomplete = "off" enctype="multipart/form-data">
       {% csrf_token %}
@@ -38,8 +39,9 @@
         <input name="previousPage" value="index_view" hidden>
 </form>
       </li>
-        <input id="user_id" value="{{user_id}}" hidden name="">
-
+      {% endif %}
+        
+      {% if user == True %}
        <li id="myAccount">   
 
                 <label for="btn-2" class="show">My Account <i class="fa fa-user" aria-hidden="true"></i></label>
@@ -56,6 +58,7 @@
                 </li>
                 </ul>
       </li>
+      {% endif %}
       </ul>
   </nav>
   
@@ -97,19 +100,14 @@
 
 
 <script type="text/javascript">
-  
+  user ="{{user_id}}"
 
 
 
 $(document).ready(function() {
            
            
-            if(document.getElementById("user_id").value == 0 || document.getElementById("user_id").value == "None"){
-                    
-                 document.getElementById("myAccount").style.display = "none"
-            }else{
-              document.getElementById("login").style.display = "none"
-             }
+           
           });
             
             
