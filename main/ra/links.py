@@ -78,13 +78,18 @@ def recommend(bookmark_list, title):
     
     indices = pd.Series(metadata.index, index=metadata['title']).drop_duplicates()
     
-
-    idx = indices[title['title']]
+    try:
+        idx = indices[title]
+    except:
+        try:
+            idx = indices[title['title']]
+        except:
+            idx = indices[title[0]['title']]
     print(idx)
     # # Get the pairwsie similarity scores of all movies with that movie
-    if len(idx) > 1:
+    try:
         sim_scores = list(enumerate(cosine_sim[idx[0]]))
-    else:
+    except:
         sim_scores = list(enumerate(cosine_sim[idx]))
 
     # # Sort the movies based on the similarity scores

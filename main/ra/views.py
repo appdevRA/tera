@@ -358,7 +358,7 @@ class TeraDashboardView(View):
 		if request.user.id != None:
 			query= User_bookmark.objects.filter(user=request.user).values('title')
 			recommendation = []
-			if len(query) > 0:
+			if query.exists() == True:
 				print('nisulod')
 				queryAll= User_bookmark.objects.all().values('title')
 				# print(query)
