@@ -977,6 +977,7 @@ function showRows(rowType, array, faction_id){
                   date_add= new Date(array[i].dateAdded)
                     
                         date_acc= new Date(array[i].dateAccessed)
+                        sitlogo=""
 
                       if( array[i].isFavorite == 0){
                         favorite ="<td><i id='"+ array[i].id+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id,"+i+")'></i></td>"
@@ -984,7 +985,7 @@ function showRows(rowType, array, faction_id){
                         favorite ="<td><i id='"+ array[i].id+"' class='fas fa-star' style='cursor: pointer; color:red' onclick='favorite_item(this.id,"+i+")'></i></td>"
                       }
 
-                      if(array[i].websiteTitle == "Springeropen.com"){
+                      if(array[i].websiteTitle == "Springeropen"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
                         } else if(array[i].websiteTitle == "Sciencedirect.com"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/science direct.PNG' %}' style='height: 25px;'></td>"
