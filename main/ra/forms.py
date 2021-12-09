@@ -17,5 +17,8 @@ class LoginUser(UserCreationForm):
 		fields = [ 'username', 'password' ]
 
 
-
+class CustomerForm(forms.ModelForm):
+	class Meta:
+		model = User_file
+		fields = [ 'file']
 		

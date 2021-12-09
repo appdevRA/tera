@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from django.views.generic import View
 
-from .forms import CreateFolderForm
+from .forms import *
 
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
@@ -26,7 +26,7 @@ from bs4 import BeautifulSoup
 from .links import *
 import requests
 import csv
-
+import io
 class adminIndexView(View):
 	def get(self, request):
 		print('olok')
@@ -60,23 +60,23 @@ class practice3(View):
 class practice(View):
 	
 	def get(self, request):
-		a_csv_file = open("C:/Users/Valued Client/Desktop/html/register.csv", "r")
-		dict_reader = csv.DictReader(a_csv_file)
+		# a_csv_file = open("C:/Users/Valued Client/Desktop/html/register.csv", "r")
+		# dict_reader = csv.DictReader(a_csv_file)
 
-		for i, a in enumerate(list(dict_reader)):
-			ordered_dict_from_csv = a
-			row = dict(ordered_dict_from_csv)
-			user = User(
-				username = row['username'], 
-				password=make_password(row['password']),
-				first_name= row['first_name'], 
-				last_name=row['last_name'], 
-				department =  Department.objects.get(abbv=row['department'])
-				)
-			try:
-				user.save()
-			except Exception as e:
-				print(str(e).replace("(","").replace(")",""), "at line ", i+2)
+		# for i, a in enumerate(list(dict_reader)):
+		# 	ordered_dict_from_csv = a
+		# 	row = dict(ordered_dict_from_csv)
+		# 	user = User(
+		# 		username = row['username'], 
+		# 		password=make_password(row['password']),
+		# 		first_name= row['first_name'], 
+		# 		last_name=row['last_name'], 
+		# 		department =  Department.objects.get(abbv=row['department'])
+		# 		)
+		# 	try:
+		# 		user.save()
+		# 	except Exception as e:
+		# 		print(str(e).replace("(","").replace(")",""), "at line ", i+2)
 			
 			
 		# for a in dict_from_csv:
@@ -121,15 +121,38 @@ class practice(View):
 		# a= OER('peace', 'Text book', 1)
 
 		
-		
-		return HttpResponse('') #,context)
+		return render(request,'practice.html')#,context)
 
 	def post(self, request):
 		
-		if request.method == 'POST':
-			
+		
+	
+		myfile = request.FILES['file']
+		file = myfile.read().decode('utf-8')
+		dict_reader = csv.DictReader(io.StringIO(file))
 
-			return HttpResponse('practice post')
+		# a_csv_file = open(a,'r')
+		# dict_reader = csv.DictReader(a_csv_file)
+		print(list(dict_reader))
+		# for i, a in enumerate(list(dict_reader)):
+		# 	ordered_dict_from_csv = a
+		# 	row = dict(ordered_dict_from_csv)
+		# 	print(a)
+
+			# user = User(
+			# 	username = row['username'], 
+			# 	password=make_password(row['password']),
+			# 	first_name= row['first_name'], 
+			# 	last_name=row['last_name'], 
+			# 	department =  Department.objects.get(abbv=row['department'])
+			# 	)
+			# try:
+			# 	user.save()
+			# except Exception as e:
+			# 	print(str(e).replace("(","").replace(")",""), "at line ", i+2)
+			
+		return HttpResponse('practice post')
+		
 			
 		
 		
