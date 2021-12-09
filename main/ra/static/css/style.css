@@ -134,6 +134,7 @@ section.home{
 
 .right-side-bar:hover{
     overflow-y: scroll;
+    
 }
 .right-side-bar li{
     display: block;

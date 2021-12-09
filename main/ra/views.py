@@ -25,7 +25,7 @@ import json
 from bs4 import BeautifulSoup
 from .links import *
 import requests
-
+import csv
 
 class adminIndexView(View):
 	def get(self, request):
@@ -60,6 +60,28 @@ class practice3(View):
 class practice(View):
 	
 	def get(self, request):
+		a_csv_file = open("C:/Users/Valued Client/Desktop/html/register.csv", "r")
+		dict_reader = csv.DictReader(a_csv_file)
+
+		for i, a in enumerate(list(dict_reader)):
+			ordered_dict_from_csv = a
+			row = dict(ordered_dict_from_csv)
+			user = User(
+				username = row['username'], 
+				password=make_password(row['password']),
+				first_name= row['first_name'], 
+				last_name=row['last_name'], 
+				department =  Department.objects.get(abbv=row['department'])
+				)
+			try:
+				user.save()
+			except Exception as e:
+				print(str(e).replace("(","").replace(")",""), "at line ", i+2)
+			
+			
+		# for a in dict_from_csv:
+		# 	print(a)
+		
 		# a= Department.objects.create(name='College of Computer Studies', abbv='CCS')
 		# User.objects.create(username='18-5126-269', password =make_password('12345'), department=a)
 
@@ -100,7 +122,7 @@ class practice(View):
 
 		
 		
-		return HttpResponse() #,context)
+		return HttpResponse('') #,context)
 
 	def post(self, request):
 		
@@ -327,6 +349,7 @@ class TeraSearchResultsView(View):
 			word = request.session.get('word')
 			proxy = request.session.get('proxy')
 			pp = request.session.get('previousPage')
+
 			logout(request)
 			request.session['previousPage'] = pp
 			request.session['word'] = word
@@ -364,7 +387,7 @@ class TeraDashboardView(View):
 			recommendation = []
 			if query.exists() == True:
 				print('nisulod')
-				queryAll= User_bookmark.objects.all().values('title')
+				queryAll= User_bookmark.objects.all().values()
 				# print(query)
 				recommendation = list(dict.fromkeys(modes(list(query),list(queryAll) )))
 
