@@ -8,16 +8,18 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>TERA</title>
+        <title>TERA Charts</title>
+        <link rel="shortcut icon" href="{% static 'images/teralogo.png' %}">
         <link href="{% static 'css/adminStyles.css' %}" rel="stylesheet" /> 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
     </head>
-    <body class="sb-nav-fixed">
-        <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+   <body class="sb-nav-fixed">
+    
+        <nav class="sb-topnav navbar navbar-expand" style="background-color: #808080">
             <!-- Navbar Brand-->
-            <a class="navbar-brand ps-3" href="index.html">TERA</a>
+            <a class="navbar-brand ps-3" href="{% url 'ra:admin_index_view' %}">Tera</a>
             <!-- Sidebar Toggle-->
-            <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+            <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" style="color: #ffd700; margin-left: 25px" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
             <!-- Navbar Search-->
             <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
                 <div class="input-group">
@@ -44,11 +46,26 @@
                     <div class="sb-sidenav-menu">
                         <div class="nav">
                             <div class="sb-sidenav-menu-heading">Core</div>
-                            <a class="nav-link" href="index.html">
-                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            <a class="nav-link" href="{% url 'ra:admin_index_view' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt" ></i></div>
                                 Dashboard
+
+                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseSummary" aria-expanded="false" aria-controls="collapseSummary">
+                                <div class="sb-nav-link-icon"><i class="far fa-clipboard"></i></div>
+                                Summary Reports
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                             </a>
-                            <div class="sb-sidenav-menu-heading">Interface</div>
+                            <div class="collapse" id="collapseSummary" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="{% url 'ra:admin_activeuser_view' %}">Active Users</a>
+                                    <a class="nav-link" href="{% url 'ra:admin_siteaccess_view' %}">Site Access</a>
+                                    <a class="nav-link" href="{% url 'ra:admin_colleges_view' %}">College Access</a>
+                                </nav>
+                            </div>
+
+
+                            </a>
+                            <div class="sb-sidenav-menu-heading">UI Elements</div>
                             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
                                 <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
                                 Layouts
@@ -56,8 +73,10 @@
                             </a>
                             <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link" href="layout-static.html">Static Navigation</a>
-                                    <a class="nav-link" href="layout-sidenav-light.html">Light Sidenav</a>
+                                    <a class="nav-link" href="layout-static.html">Colors</a>
+                                    <a class="nav-link" href="adminLayout-sidenav-light.html">Shapes</a>
+                                    <a class="nav-link" href="layout-sidenav-light.html">Images</a>
+                                    <a class="nav-link" href="layout-sidenav-light.html">Widgets</a>
                                 </nav>
                             </div>
                             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
@@ -82,21 +101,15 @@
                                         Error
                                         <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                                     </a>
-                                    <div class="collapse" id="pagesCollapseError" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordionPages">
-                                        <nav class="sb-sidenav-menu-nested nav">
-                                            <a class="nav-link" href="401.html">401 Page</a>
-                                            <a class="nav-link" href="404.html">404 Page</a>
-                                            <a class="nav-link" href="500.html">500 Page</a>
-                                        </nav>
-                                    </div>
+                          
                                 </nav>
                             </div>
                             <div class="sb-sidenav-menu-heading">Addons</div>
-                            <a class="nav-link" href="{% url 'ra:admin_chart_view' %}">
+                            <a class="nav-link" href="{% url 'ra:admin_charts_view' %}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
                                 Charts
                             </a>
-                            <a class="nav-link" href="{% url 'ra:admin_table_view' %}">
+                            <a class="nav-link" href="{% url 'ra:admin_tables_view' %}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                                 Tables
                             </a>
@@ -112,14 +125,8 @@
                             <li class="breadcrumb-item"><a href="{% url 'ra:admin_index_view' %}">Dashboard</a></li>
                             <li class="breadcrumb-item active">Charts</li>
                         </ol>
-                        <div class="card mb-4">
-                            <div class="card-body">
-                                Chart.js is a third party plugin that is used to generate the charts in this template. The charts below have been customized - for further customization options, please visit the official
-                                <a target="_blank" href="https://www.chartjs.org/docs/latest/">Chart.js documentation</a>
-                                .
-                            </div>
-                        </div>
-                        <div class="card mb-4">
+
+                        <div class="card mb-12">
                             <div class="card-header">
                                 <i class="fas fa-chart-area me-1"></i>
                                 Active Users
@@ -128,7 +135,7 @@
                             <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
                         </div>
                         <div class="row">
-                            <div class="col-lg-6">
+                            <div class="col-lg-12">
                                 <div class="card mb-4">
                                     <div class="card-header">
                                         <i class="fas fa-chart-bar me-1"></i>
@@ -138,11 +145,11 @@
                                     <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
                                 </div>
                             </div>
-                            <div class="col-lg-6">
+                            <div class="col-lg-12">
                                 <div class="card mb-4">
                                     <div class="card-header">
                                         <i class="fas fa-chart-pie me-1"></i>
-                                        Pie Chart Example
+                                        Colleges
                                     </div>
                                     <div class="card-body"><canvas id="myPieChart" width="100%" height="50"></canvas></div>
                                     <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>

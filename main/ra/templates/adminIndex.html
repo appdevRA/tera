@@ -9,17 +9,18 @@
         <meta name="description" content="" />
         <meta name="author" content="" />
         <title>Admin Page</title>
+        <link rel="shortcut icon" href="{% static 'images/teralogo.png' %}">
         <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" />
         <link href="{% static 'css/adminStyles.css' %}" rel="stylesheet" /> 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
     </head>
     <body class="sb-nav-fixed">
     
-        <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+        <nav class="sb-topnav navbar navbar-expand" style="background-color: #808080">
             <!-- Navbar Brand-->
-            <a class="navbar-brand ps-3" href="{index.html}">Tera</a>
+            <a class="navbar-brand ps-3" href="{% url 'ra:admin_index_view' %}">Tera</a>
             <!-- Sidebar Toggle-->
-            <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+            <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" style="color: #ffd700; margin-left: 25px" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
             <!-- Navbar Search-->
             <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
                 <div class="input-group">
@@ -46,9 +47,24 @@
                     <div class="sb-sidenav-menu">
                         <div class="nav">
                             <div class="sb-sidenav-menu-heading">Core</div>
-                            <a class="nav-link" href="index.html">
-                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            <a class="nav-link" href="{% url 'ra:admin_index_view' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt" ></i></div>
                                 Dashboard
+
+                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseSummary" aria-expanded="false" aria-controls="collapseSummary">
+                                <div class="sb-nav-link-icon"><i class="far fa-clipboard"></i></div>
+                                Summary Reports
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseSummary" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="{% url 'ra:admin_activeuser_view' %}">Active Users</a>
+                                    <a class="nav-link" href="{% url 'ra:admin_siteaccess_view' %}">Site Access</a>
+                                    <a class="nav-link" href="{% url 'ra:admin_colleges_view' %}">College Access</a>
+                                </nav>
+                            </div>
+
+
                             </a>
                             <div class="sb-sidenav-menu-heading">UI Elements</div>
                             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
@@ -90,11 +106,11 @@
                                 </nav>
                             </div>
                             <div class="sb-sidenav-menu-heading">Addons</div>
-                            <a class="nav-link" href="{% url 'ra:admin_chart_view' %}">
+                            <a class="nav-link" href="{% url 'ra:admin_charts_view' %}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
                                 Charts
                             </a>
-                            <a class="nav-link" href="{% url 'ra:admin_chart_view' %}">
+                            <a class="nav-link" href="{% url 'ra:admin_charts_view' %}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                                 Tables
                             </a>
@@ -198,25 +214,38 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-xl-6">
+                            <div class="col-xl-4">
                                 <div class="card mb-4">
                                     <div class="card-header">
                                         <i class="fas fa-chart-area me-1"></i>
                                         Active Users
                                     </div>
-                                    <div class="card-body"><canvas id="myAreaChart" width="100%" height="40"></canvas></div>
+                                    <div class="card-body"><canvas id="myAreaChart" width="100" height="60"></canvas></div>
                                 </div>
                             </div>
-                            <div class="col-xl-6">
+                            <div class="col-xl-4">
                                 <div class="card mb-4">
                                     <div class="card-header">
                                         <i class="fas fa-chart-bar me-1"></i>
                                         Site Access
                                     </div>
-                                    <div class="card-body"><canvas id="myBarChart" width="100%" height="40"></canvas></div>
+                                    <div class="card-body"><canvas id="myBarChart" width="100%" height="60"></canvas></div>
                                 </div>
                             </div>
+
+                            <div class="col-lg-4">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <i class="fas fa-chart-pie me-1"></i>
+                                        Colleges
+                                        </a>
+                                    </div>
+                                    <div class="card-body"><canvas id="myPieChart" width="100%" height="60"></canvas></div>
+                                </div>
+                            </div>
+
                         </div>
+
                         <div class="card mb-4">
                             <div class="card-header">
                                 <i class="fas fa-table me-1"></i>
@@ -235,7 +264,7 @@
                                     </thead>
                                     <tfoot>
                                         <tr>
-                                            <<th>Last Name</th>
+                                            <th>Last Name</th>
                                             <th>First Name</th>
                                             <th>College</th>
                                             <th>ID Number</th>
@@ -244,8 +273,8 @@
                                     </tfoot>
                                     <tbody>
                                         <tr>
-                                            <td>Mondejar</td>
-                                            <td>Yanni Jan</td>
+                                            <td>Emorecha</td>
+                                            <td>Jarry</td>
                                             <td>CCS</td>
                                             <td>123456</td>
                                             <td>2011/04/25</td>
@@ -571,7 +600,6 @@
                                             <td>Edinburgh</td>
                                             <td>43</td>
                                             <td>2013/02/01</td>
-                                            <td>$75,650</td>
                                         </tr>
                                         <tr>
                                             <td>Mondejar</td>
@@ -595,12 +623,11 @@
                                             <td>2011/04/25</td>
                                         </tr>
                                         <tr>
-                                            <td>Jonas Alexander</td>
+                                            <td>Jarry Emorecha</td>
                                             <td>Developer</td>
                                             <td>San Francisco</td>
                                             <td>30</td>
                                             <td>2010/07/14</td>
-                                            <td>$86,500</td>
                                         </tr>
                                         <tr>
                                             <td>Mondejar</td>
@@ -669,6 +696,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
         <script src="{% static 'adminAssets/demo/chart-area-demo.js' %}"></script>
         <script src="{% static 'adminAssets/demo/chart-bar-demo.js' %}"></script>
+        <script src="{% static 'adminAssets/demo/chart-pie-demo.js' %}"></script>
         <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
         <script src="{% static 'js/datatables-simple-demo.js' %}"></script>
     </body>
