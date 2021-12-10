@@ -12,6 +12,7 @@ urlpatterns = [
 			path('admin', views.adminIndexView.as_view(), name="admin_index_view"),
 			path('admin/charts', views.adminChartView.as_view(), name="admin_chart_view"),
 			path('admin/table', views.adminTableView.as_view(), name="admin_table_view"),
+			path('admin/registration', views.adminRegistrationView.as_view(), name="admin_registration_view"),
 			path('practice', views.practice.as_view(), name="practice"),
 			path('practice2/search?=<sinput>&site=<site>&type=<type>', views.practice2.as_view(), name="practice2"),
 			path('practice3', views.practice3.as_view(), name="practice34"),
