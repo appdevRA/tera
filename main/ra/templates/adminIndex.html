@@ -76,7 +76,23 @@
                                     <a class="nav-link" href="{% url 'ra:admin_registration_view' %}">Register User</a>
                                 </nav>
                             </div>
-
+                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+                                <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                                Resources
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="layout-static.html">Sites</a>
+                                    <a class="nav-link" href="{% url 'ra:admin_registration_view' %}">Dissertations</a>
+                                </nav>
+                            </div>
+                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+                                <div class="sb-nav-link-icon"><i class="fas fa-list"></i></div>
+                                Summary
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            
                             <div class="sb-sidenav-menu-heading">UI Elements</div>
                             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
                                 <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
@@ -136,55 +152,7 @@
                         <ol class="breadcrumb mb-4">
                             <li class="breadcrumb-item active">Dashboard</li>
                         </ol>
-                        
-                        <p align="right"><a  class="button button1" id="" href='{% url "ra:addUser_view" %}' data-toggle='modal' data-target='#addUserModal' > <span class="fa fa-plus"> </span> ADD USER</a></p>
 
-                        <!-- Add User Modal -->
-                  <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                      <div class="modal-header text-center">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"  style=“color: yellow”; >
-                          <span aria-hidden="true">&times;</span>
-                        </button>
-                        <div class="modal-body mx-3">
-                        <div class="md-form mb-5">
-                      
-                         <center> 
-                       
-                          
-                            <p style="font-size: 25px; color: #800000">Add User</p>
-                            
-                            
-                            
-                            <input type="text" placeholder="Lastname" style="width: 80%" id="lastname" value="" required><br>
-                            <input type="text" placeholder="Firstname" style="width: 80%" id="firstname" value="" required><br>
-                            <input type="text" placeholder="College" style="width: 80%" id="college" value="" required><br>
-                            <input type="text" placeholder="ID Number" style="width: 80%" id="idnumber" value="" required><br>
-                            <input type="text" placeholder="Password" style="width: 80%" id="password" value="" required><br>
-                            <a id="add_folder_error" style="color: red; visibility: hidden">User already exist</a>
-                           <br><br><br>
-                       
-                   
-                        <center>
-                              <div class="form-row">
-                                <div class="form-group col-md-6">
-                                <button id="dismiss-modal_folder" type=“button” class="buttoncancel" data-dismiss="modal" >Cancel</button>
-                                </div>
-                             
-                                <div class="form-group col-md-6"> 
-                                    <button type="submit" name="buttonLogin"class="buttonlogout"   > Add</button>
-                                </div> 
-                         </div>
-                      </center>
-                      
-                      </center>
-                    </div></div>
-                      </div>
-                      
-                  </div>
-                </div>
-                </div>
                         
                         <div class="row">
                             <div class="col-xl-3 col-md-6">
