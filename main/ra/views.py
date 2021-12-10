@@ -32,6 +32,7 @@ class adminIndexView(View):
 		print('olok')
 		
 		return render(request,'adminIndex.html')
+
 class practice2(View):
 	def get(self, request, sinput, site,type):
 		print('olok')
@@ -721,6 +722,10 @@ class adminChartView(View):
 class adminTableView(View):
 	def get(self, request):
 		return render(request, 'adminTables.html')
+
+class adminRegistrationView(View):
+	def get(self, request):
+		return render(request, 'adminRegistration.html')
 
 
 
