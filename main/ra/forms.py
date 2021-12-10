@@ -1,7 +1,7 @@
 from django import forms
 from .models import *
 from django.contrib.auth.forms import UserCreationForm 
-from django.contrib.auth.models import User
+
 
 
 		#fields = '__all__'
@@ -17,8 +17,9 @@ class LoginUser(UserCreationForm):
 		fields = [ 'username', 'password' ]
 
 
-class CustomerForm(forms.ModelForm):
+class CreateUserForm(forms.ModelForm):
 	class Meta:
-		model = User_file
-		fields = [ 'file']
+		model = User
+		# fields = ('first_name','last_name','username','password',)
+		fields = [ 'first_name','last_name','username','password']
 		

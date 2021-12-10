@@ -127,8 +127,8 @@ class practice(View):
 	def post(self, request):
 		
 		
-	
 		myfile = request.FILES['file']
+		print(type(myfile))
 		file = myfile.read().decode('utf-8')
 		dict_reader = csv.DictReader(io.StringIO(file))
 
@@ -724,10 +724,97 @@ class adminTableView(View):
 		return render(request, 'adminTables.html')
 
 class adminRegistrationView(View):
-	def get(self, request):
-		return render(request, 'adminRegistration.html')
+	def get(self, request, rtype):
+		# form = CreateUserForm(request.POST or None)
+		# context={
+		# 	"form": form
+		# }
+		
+
+		return render(request, 'adminRegistration.html',{"type": rtype})#, context)
+	def post(self, request, rtype):
+		
+
+		if 'btnRegister' in request.POST: 
+			form = CreateUserForm(request.POST)
+			if form.is_valid():
+				username=request.POST['username']
+				password=request.POST['password']
+				first_name=request.POST['first_name']
+				last_name=request.POST['last_name']
+				department=request.POST['department']
+				user = User(username=username,
+							password = password,
+							first_name = first_name,
+							last_name= last_name,
+							department = Department.objects.get(abbv=department)
+							)
+				user.save()
+				messages.success(request, "User added")
+				print("success", rtype)
+				return redirect('ra:admin_registration_view',  rtype=rtype)
+			else:
+				print("error")
+				return render(request, 'adminRegistration.html', {"form":form,"type": rtype})
+
+		if request.is_ajax():
+			print("nisulod asa ajax")
+			if request.POST['action'] == "register_csv":
+				users = json.loads(request.POST.get('users'))
+				didExcept = 0
+				errorRows=[]
+				for row in users:
+					user = User(
+						username = row['username'], 
+						password=make_password(row['password']),
+						first_name= row['first_name'], 
+						last_name=row['last_name'], 
+						department =  Department.objects.get(abbv=row['department'])
+						)
+					try:
+						user.save()
+					except Exception as e:
+						didExcept +=1
+						errorRows.append(row)
+
+				context ={
+					"didExcept": didExcept,
+					"errorRows": errorRows,
+					"usersCount": len(users)
+				}
+				return JsonResponse(context)
+		# elif 'readCSV' in request.POST:
+
+		try:
+			myfile = request.FILES['file']
+			file = myfile.read().decode('utf-8')
+			dict_reader = csv.DictReader(io.StringIO(file))
+			users =  list(dict_reader)
+
+			return render(request, 'adminRegistration.html', {"users":users, "type": rtype})
+		except:
+			messages.success(request, "please select a file first")
+			return redirect('ra:admin_registration_view', rtype=rtype)
 
 
+
+
+		# elif 'readCSVForm' in request.POST:
+
+		# 	return HttpResponse('olok')
+
+			
+
+		# elif request.is_ajax():
+		# 	action = request.POST['action']
+
+		# 	if action =='read':
+		# 		myfile = request.FILES['file']
+
+		# 		file = myfile.read().decode('utf-8')
+		# 		dict_reader = csv.DictReader(io.StringIO(file))
+
+		# 		print(list(dict_reader))
 
 # elif form.is_valid():
 		# 	folder = request.POST.get("foldername")

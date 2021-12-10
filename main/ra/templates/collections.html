@@ -576,7 +576,8 @@ function favorite_item(clicked_id,ii){
 
 function showRows(rowType, array, faction_id){
    document.getElementById("recommendation").style.display = "none"
-  clearRow("detailTable")
+  // clearRow("detailTable")
+  $("#detailTable").empty();
   clearStyle();
   clearRow('itemTable');
   // alert(faction_id)
