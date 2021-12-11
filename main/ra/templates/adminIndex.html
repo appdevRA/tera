@@ -57,10 +57,12 @@
                             </a>
                             <div class="collapse" id="collapseManageUser" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link" href="layout-static.html">Lorem Ipsum</a>
-                                    <a class="nav-link" href="adminLayout-sidenav-light.html">Lorem Ipsum</a>
-                                    <a class="nav-link" href="layout-sidenav-light.html">Lorem Ipsum</a>
-                                    <a class="nav-link" href="layout-sidenav-light.html">Lorem Ipsum</a>
+                                    <form>
+                                        <label for="file" class="nav-link">Upload CSV</label>
+                                        <input type="file" id="file" style="display: none" />
+                                        <label for="submit" class="nav-link">Submit</label>
+                                        <input type="submit" id="submit" style="display: none" />
+                                    </form>
                                 </nav>
                             </div>
                             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseResources" aria-expanded="false" aria-controls="collapseLayouts">
@@ -70,10 +72,11 @@
                             </a>
                             <div class="collapse" id="collapseResources" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link" href="layout-static.html">Lorem Ipsum</a>
-                                    <a class="nav-link" href="adminLayout-sidenav-light.html">Lorem Ipsum</a>
-                                    <a class="nav-link" href="layout-sidenav-light.html">Lorem Ipsum</a>
-                                    <a class="nav-link" href="layout-sidenav-light.html">Lorem Ipsum</a>
+                                    <form>
+                                        <label for="file" class="nav-link">Upload Dissertations</label>
+                                        <input type="file" id="file" style="display: none" />
+                                    </form>
+                                    <a class="nav-link" href="dissertations">Dissertations</a>
                                 </nav>
                             </div>
 
@@ -82,7 +85,7 @@
                                 Summary
                                 <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                             </a>
-                            <div class="collapse" id="collapseSummary" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                            <div class="collapse" id="collapseSummary`" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
                                     <a class="nav-link" href="layout-static.html">Lorem Ipsum</a>
                                     <a class="nav-link" href="adminLayout-sidenav-light.html">Lorem Ipsum</a>
@@ -157,12 +160,12 @@
                         <div class="modal-dialog" role="document">
                     <div class="modal-content">
                       <div class="modal-header text-center">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"  style=“color: yellow”; >
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"  style="color:yellow;" >
                           <span aria-hidden="true">&times;</span>
                         </button>
                         <div class="modal-body mx-3">
                         <div class="md-form mb-5">
-                      
+                       
                          <center> 
                        
                           
@@ -275,7 +278,7 @@
                                     </thead>
                                     <tfoot>
                                         <tr>
-                                            <<th>Last Name</th>
+                                            <th>Last Name</th>
                                             <th>First Name</th>
                                             <th>College</th>
                                             <th>ID Number</th>
@@ -688,7 +691,6 @@
                                 </table>
                             </div>
                         </div>
-                    </div>
                 </main>
                 <footer class="py-4 bg-light mt-auto">
                     <div class="container-fluid px-4">

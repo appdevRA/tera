@@ -676,6 +676,10 @@ class adminTableView(View):
 	def get(self, request):
 		return render(request, 'adminTables.html')
 
+class dissertationView(View):
+	def get(self, request):
+		return render(request, 'AddDissertations.html')
+
 
 
 # elif form.is_valid():
@@ -780,3 +784,4 @@ class UserBookmarkViewSet(
         instance.save()
 
         return Response(status=status.HTTP_200_OK)
+
