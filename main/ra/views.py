@@ -676,6 +676,10 @@ class adminTableView(View):
 	def get(self, request):
 		return render(request, 'adminTables.html')
 
+class adminSiteView(View):
+	def get(self, request):
+		return render(request, 'adminSite.html')
+
 
 
 # elif form.is_valid():

@@ -11687,11 +11687,6 @@ body {
   border-radius: 0.25rem !important;
 }
 
-html {
-  font-family: sans-serif;
-  font-size: 16px;
-  padding: 2em;
-}
 
 .input-switch{
   display: none;
@@ -11744,16 +11739,16 @@ html {
   display: inline-block;
 }
 
-.info-text::before{
+.info-text::before {
   content: "Inactive";
   color: red;
 }
 
-.input-switch:checked ~ .info-text::before{
+.input-switch:checked ~ .info-text::before {
   content: "Active";
   color: green;
 }
 
-.disabledd {
-  filter: blur(0.8px);
+.disabled {
+filter: blur(0.8px);
 }
