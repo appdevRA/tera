@@ -25,20 +25,44 @@ import statistics
 
 session= HTMLSession()
 
-def modes(bookmark_list, all_bookmarks):
+def modes(allBookmarks,userID):
     title = ""
-    metadata = pd.DataFrame(bookmark_list)
+    userBookmarks = []
+
+    # for i,a in enumerate(allBookmarks):
+    #     if a['user_id'] == userID:
+    #         print("nisulod",i, a['title'],"  a['user_id'] is: ", a['user_id'], "userID is: ", userID)
+    #         userBookmarks.append(a)
+    #         del allBookmarks[i]
+    i=0
+    while i < len(allBookmarks):
+        didDelete= False
+        if allBookmarks[i]['user_id'] == userID:
+            
+            userBookmarks.append(allBookmarks[i])
+            del allBookmarks[i]
+            didDelete =True
+
+        if not didDelete:
+            i +=1
+
+
+
+    if len(allBookmarks) == 0:
+        return None
+
+    metadata = pd.DataFrame(userBookmarks)
     modes =  metadata.mode(axis=0)
     if len(modes) > 1:
         print("length of modes is: ", len(modes))
         highest = -1
-        tfidf_mode = TfidfVectorizer(stop_words='english')
+        tfidf = TfidfVectorizer(stop_words='english')
         modes['title'] = modes['title'].fillna('')
-        tfidf_matrix_mode = tfidf_mode.fit_transform(modes['title'])
-        cosine_sim_mode = linear_kernel(tfidf_matrix_mode, tfidf_matrix_mode)
-        print(metadata)
+        tfidf_matrix = tfidf.fit_transform(modes['title'])
+        cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
 
-        for i, row in enumerate(cosine_sim_mode):
+
+        for i, row in enumerate(cosine_sim):
             summ=0
             for column in row:
                 if column != 1.0 or column != 1:
@@ -56,16 +80,18 @@ def modes(bookmark_list, all_bookmarks):
             if index == i:
                 title = item
                 break
-
-    
-        return recommend(all_bookmarks, title)
+        # print(modes)
+        # print("titles is: ",title)
+        return recommend(allBookmarks, title)
     else:
-        return recommend(all_bookmarks, modes)
+        # print("mode is: ", modes)
+        return recommend(allBookmarks, modes)
 
 def recommend(bookmark_list, title):
 
     print(title)
-    
+ 
+    bookmark_list.append({"title": title})
 
     metadata = pd.DataFrame(bookmark_list)
     # print(metadata)
@@ -84,7 +110,10 @@ def recommend(bookmark_list, title):
         try:
             idx = indices[title['title']]
         except:
-            idx = indices[title[0]['title']]
+            try:
+                idx = indices[title[0]['title']]
+            except:
+                idx = indices[title[0]]
 
     # print(idx)
     # # Get the pairwsie similarity scores of all movies with that movie
@@ -97,14 +126,14 @@ def recommend(bookmark_list, title):
     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
 
     # Get the scores of the 10 most similar movies
-    sim_scores = sim_scores[1:2]
+    sim_scores = sim_scores[1:10]
 
     # Get the movie indices
     movie_indices = [i[0] for i in sim_scores]
 
     # Return the top 10 most similar movies
 
-    return metadata['title'].iloc[movie_indices]
+    return metadata.iloc[movie_indices]
 
 
 

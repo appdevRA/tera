@@ -14,11 +14,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://kit.fontawesome.com/abb9521de4.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="https://kit.fontawesome.com/abb9521de4.js" crossorigin="anonymous"></script>
      
      
     <style>
@@ -330,7 +332,7 @@ tr:hover {
               </thead>
               {% for item in recommendation %}
               <tr>
-              <td> {{item}} </td>
+              <td> {{item.title}} </td>
 
               <td><i class='fa fa-trash'></i></td>
               <td><i class='fa fa-bookmark' ></i></td>
@@ -920,6 +922,7 @@ function showRows(rowType, array, faction_id){
                       date_add= new Date(array[i].dateAdded)
                   
                   date_acc= new Date(array[i].dateAccessed)
+
                       sitelogo=""
                       if( array[i].isFavorite == false | array[i].isFavorite == 0){
                         favorite ="<td><i id='"+ array[i].id+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id,"+i+")'></i></td>"
@@ -927,7 +930,7 @@ function showRows(rowType, array, faction_id){
                         favorite ="<td><i id='"+ array[i].id+"' class='fas fa-star' style='cursor: pointer; color:red' onclick='favorite_item(this.id,"+i+")'></i></td>"
                       }
 
-                      if(array[i].websiteTitle == "Springeropen.com"){
+                      if(array[i].websiteTitle == "Springeropen"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
                         } else if(array[i].websiteTitle == "Sciencedirect.com"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/science direct.PNG' %}' style='height: 25px;'></td>"

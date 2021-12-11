@@ -45,6 +45,9 @@
                   <div class="input-icons">
                     <i class="fa fa-key icon-login"> </i>
                     <input type="password" placeholder="password" name="password" class="inputfield-login" id="myInput" required>
+                    {% for m in messages%}
+                      <a  style="color: red; text-align: ">{{m}}</a>
+                    {% endfor %}
                     <br><br><br>
                     <div class="form-row" style="margin-left: 30%">
                       <div class="form-group col-md-6">

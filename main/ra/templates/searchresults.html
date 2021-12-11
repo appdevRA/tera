@@ -789,8 +789,8 @@ function search(clicked_id, searchType){
                   pageNumber: 1,
                   isGet: isGet,
                   csrfmiddlewaretoken: "{{csrf_token}}"
-                },
-                success: function(response){
+
+                }, success: function(response){
                   // if(a=0){
                     markers = response.results
                   // }
@@ -803,7 +803,39 @@ function search(clicked_id, searchType){
                   document.getElementById('displayWord').style.display ="inline"
                   
              
+                }, error: function(){
+                    $.ajax({
+                          type:"POST",
+                          url:"",
+
+                          data:{
+                            action: "search",
+                            word: keyword,
+                            site: website,
+                            itemType: type,
+                            pageNumber: 1,
+                            isGet: isGet,
+                            csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                          },
+                          success: function(response){
+                            // if(a=0){
+                              markers = response.results
+                            // }
+                            
+                            // console.log(markers)
+                            showRows(markers)
+                            user_id = response.is_authenticated
+                            isGet = response.isGet
+                            document.getElementById('displayWord').innerHTML = keyword
+                            document.getElementById('displayWord').style.display ="inline"
+                            
+                       
+                          }
+
+                    }); 
                 }
+
+
 
           }); 
     }

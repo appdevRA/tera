@@ -11,7 +11,7 @@ from django.contrib.auth import authenticate, login, logout, update_session_auth
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.core import serializers
 from django.db import connection
-from django.db.models import Q
+from django.db.models import Q, Count
 
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
@@ -61,27 +61,29 @@ class practice3(View):
 class practice(View):
 	
 	def get(self, request):
-		# a_csv_file = open("C:/Users/Valued Client/Desktop/html/register.csv", "r")
-		# dict_reader = csv.DictReader(a_csv_file)
+		userBbookmarks= User_bookmark.objects.filter(user=request.user).values('title')
+		recommendation = []
+		
+		if userBbookmarks.exists():
+			queryAll= list(User_bookmark.objects.values('id','title','user_id')
+												.annotate(folder_count=Count('folders'))
+												.order_by("-folder_count"))#"id","title","user",))
 
-		# for i, a in enumerate(list(dict_reader)):
-		# 	ordered_dict_from_csv = a
-		# 	row = dict(ordered_dict_from_csv)
-		# 	user = User(
-		# 		username = row['username'], 
-		# 		password=make_password(row['password']),
-		# 		first_name= row['first_name'], 
-		# 		last_name=row['last_name'], 
-		# 		department =  Department.objects.get(abbv=row['department'])
-		# 		)
-		# 	try:
-		# 		user.save()
-		# 	except Exception as e:
-		# 		print(str(e).replace("(","").replace(")",""), "at line ", i+2)
-			
-			
-		# for a in dict_from_csv:
-		# 	print(a)
+
+			a = User_bookmark.objects.select_related('user').filter(id=1).values("user__first_name","title")
+			print(a)
+			# print(a)
+			# for a in queryAll:
+			# 	print(a)
+			# a = modes(queryAll, request.user.id).to_dict("records") 
+
+			# for b in a:
+			# 	print(b)
+
+			# a = User_bookmark.objects.annotate(id=1)
+			# print("folders count: ",a.folders.all().count())
+			# print("recommended","\n",a )
+			# recommendation = list(dict.fromkeys(modes(queryAll, request.user.id) ))
 		
 		# a= Department.objects.create(name='College of Computer Studies', abbv='CCS')
 		# User.objects.create(username='18-5126-269', password =make_password('12345'), department=a)
@@ -198,7 +200,10 @@ class TeraLoginUser(View):
 				else:
 					return redirect('ra:'+ request.session.get('previousPage'))
 			else:
-				return render(request,'loginInvalid.html')
+				messages.success(request, "Invalid Username or password")
+				return redirect('ra:tera_login_view')
+				
+				
 		
 		
 					
@@ -273,7 +278,7 @@ class TeraSearchResultsView(View):
 						
 		context = {
 							'keyword': word,
-							'isGet': True,
+							'isGet': 0,
 							'website': website,
 							'itemType': itemType,
 							'is_authenticated': str(request.user.is_authenticated)
@@ -294,6 +299,9 @@ class TeraSearchResultsView(View):
 				print("is get? "+ request.POST['isGet'])
 				# print(type(request.POST['isGet']))
 				# print("search")
+				# if isGet == True:
+				# else:
+					# User_acces.objects.create()
 				word = request.POST['word']
 				request.session['word'] = word
 				
@@ -308,7 +316,7 @@ class TeraSearchResultsView(View):
 
 				results = a	
 				
-				# print(results)
+				print(len(results))
 				context = {
 					'results': results,
 					'is_authenticated': request.user.is_authenticated,
@@ -407,15 +415,17 @@ class TeraDashboardView(View):
 
 
 		if request.user.id != None:
-			query= User_bookmark.objects.filter(user=request.user).values('title')
+			userBbookmarks= User_bookmark.objects.filter(user=request.user).values('title')
 			recommendation = []
-			if query.exists() == True:
-				print('nisulod')
-				queryAll= User_bookmark.objects.all().values()
-				# print(query)
-				recommendation = list(dict.fromkeys(modes(list(query),list(queryAll) )))
+			
+			if userBbookmarks.exists():
+				queryAll= list(User_bookmark.objects.values('id','title','user_id')
+													.annotate(folder_count=Count('folders'))
+													.order_by("-folder_count"))
+			recommendation = modes(queryAll, request.user.id).to_dict("records") 												
+			# 	recommendation = list(dict.fromkeys(modes(list(query),list(queryAll) )))
 
-
+			
 			
 			query_group = User_group.objects.filter((Q(owner= request.user) | Q(member=request.user)), is_removed=0)
 			groups = list(query_group.values())
@@ -431,17 +441,13 @@ class TeraDashboardView(View):
 			
 			# 	print(b['owner_id'])
 			# cursor = connection.cursor()   
-			# cursor.execute("SELECT DISTINCT b.* FROM User_group g, user_group_member gm, Group_bookmark gb, User_bookmark b, Bookmark_folder fb"+
-			# " WHERE (gm.user_group_id = g.id AND (g.owner_id = "+str(request.user.id)+" OR gm.user_id = "+str(request.user.id)+") "+
-			# 			" AND gb.group_id = g.id AND gb.bookmark_id = b.id AND gb.is_removed=0) OR (fb.user_id = "+str(request.user.id)+" AND fb.bookmark_id = b.id AND fb.is_removed=0)"+
-			# " OR b.user_id ="+str(request.user.id)+"")
-		
+			# cursor.execute()
 			# a = dictfetchall(cursor)
 			# a = json.dumps(a, default=str)
 			 
 
 			# print(bookmark)
-			queryset = User_bookmark.objects.filter((Q(user_id=request.user.id) | Q(folders__user=request.user)) &  (Q(isRemoved=1) | Q(isRemoved=0))).values()
+			queryset = User_bookmark.objects.filter((Q(user_id=request.user.id) | Q(folders__user=request.user)) &  (Q(isRemoved=1) | Q(isRemoved=0))).distinct().values()
 			print(len(queryset))
 			folders =	Folder.objects.filter(user_id=request.user, is_removed = 0).values()
 			# groups = User_group.objects.filter(Q(owner= request.user) | Q(member=request.user)).values()
@@ -705,7 +711,7 @@ def TeraAccountSettingsView(request):
 			messages.success(request, 'Your password was successfully updated!' )
 			return redirect('ra:tera_account_settings')
 		else:
-			print(form)
+
 			messages.info(request, str(form.errors))
 	else:
 
