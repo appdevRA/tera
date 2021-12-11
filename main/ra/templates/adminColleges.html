@@ -8,102 +8,12 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>TERA Active User</title>
+        <title>TERA Colleges</title>
+        <link rel="shortcut icon" href="{% static 'images/teralogo.png' %}">
         <link href="{% static 'css/adminStyles.css' %}" rel="stylesheet" /> 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
-        <link rel="stylesheet" href="//code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css">
-          <link rel="stylesheet" href="/resources/demos/style.css">
-          <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
-          <script src="https://code.jquery.com/ui/1.9.1/jquery-ui.js"></script>
-        <script>
-            $( function() {
-            $( "#startDate, #endDate" ).datepicker();
-            } );
-
-            /* $('#startDate, #endDate').datepicker({
-              beforeShow: setDateRange,
-              dateFormat: "mm/dd/yy",
-              firstDay: 1,
-              changeFirstDay: false,
-              onChange: function() {
-                $(this).valid();
-              },
-              onSelect: function() {
-                if (this.id == 'startDate') {
-                  // If selected start date is later than currently selected
-                  // end date, set end date to start date + 1 day
-                  var date = $('#startDate').datepicker('getDate');
-                  if (date) {
-                    date.setDate(date.getDate() + 1);
-                  }
-                  $('#endDate').datepicker('option', 'minDate', date);
-                }
-              }
-            });
-
-            function setDateRange(input) {
-              var min = null,
-                dateMin = min,
-                dateMax = null,
-                dayRange = 30;
-              var opt = $('#select1'),
-                start = $('#startDate'),
-                end = $('#endDate');
-              if (opt.val() == '1') {
-                // Adjust min date for start date
-                if (input.id == 'startDate') {
-                  // Set min date if end date has a value
-                  if ($('#endDate').datepicker('getDate') != null) {
-                    dateMax = $('#endDate').datepicker('getDate');
-                    dateMin = $('#endDate').datepicker('getDate');
-                    dateMin.setDate(dateMin.getDate() - dayRange);
-                    if (dateMin < min) {
-                      dateMin = min;
-                    }
-                  }
-                  // Adjust max date for end date
-                } else if (input.id == 'endDate') {
-                  dateMin = $('#startDate').datepicker('getDate');
-                  // Set date range of 30 days
-                  dateMax = new Date(dateMin.getFullYear(), dateMin.getMonth(), dateMin.getDate() + 30);
-                  // Set max date if start date has a value
-                  if ($('#startDate').datepicker('getDate') != null) {
-                    var rangeMax = new Date(dateMin.getFullYear(), dateMin.getMonth(), dateMin.getDate() + dayRange);
-                    if (rangeMax < dateMax) {
-                      dateMax = rangeMax;
-                    }
-                  }
-                }
-              } else if (opt.val() != '1') {
-                if (input.id == 'startDate') {
-                  if ($('#endDate').datepicker('getDate') != null) {
-                    dateMin = null;
-                  }
-                } else if (input.id == 'endDate') {
-                  dateMin = $('#startDate').datepicker('getDate');
-                  dateMax = null;
-                  if ($('#startDate').datepicker('getDate') != null) {
-                    dateMax = null;
-                  }
-                }
-              }
-              return {
-                minDate: dateMin,
-                maxDate: dateMax
-              };
-            }
-
-            $('#select1').change(function() {
-              $('#startDate, #endDate').val('');
-              $('#startDate, #endDate').removeAttr('disabled');
-            }); */
-
-
-
-        </script>
-        
     </head>
-   <body class="sb-nav-fixed">
+    <body class="sb-nav-fixed">
     
         <nav class="sb-topnav navbar navbar-expand" style="background-color: #808080">
             <!-- Navbar Brand-->
@@ -210,101 +120,232 @@
             <div id="layoutSidenav_content">
                 <main>
                     <div class="container-fluid px-4">
-                        <h1 class="mt-4">Active Users</h1>
+                        <h1 class="mt-4">Colleges</h1>
                         <ol class="breadcrumb mb-4">
                             <li class="breadcrumb-item"><a href="{% url 'ra:admin_index_view' %}">Dashboard</a></li>
-                            <li class="breadcrumb-item active">Active Users</li>
+                            <li class="breadcrumb-item active">Colleges</li>
                         </ol>
                     
-                       <div class="row">
-                            <div class="col-xl-12">
+                        <div class="row">
+                            
+                            <div class="col-lg-12">
                                 <div class="card mb-4">
                                     <div class="card-header">
-                                        <i class="fas fa-chart-area me-1"></i>
-                                        Active Users
+                                        <i class="fas fa-chart-pie me-1"></i>
+                                        Colleges
                                     </div>
-                                    <div class="card-body"><canvas id="myAreaChart" width="100" height="60"></canvas></div>
+                                    <div class="card-body"><canvas id="myPieChart" width="100%" height="50"></canvas></div>
+                                    <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
                                 </div>
                             </div>
+                        </div>
 
-                        <div class="container-fluid px-12">
-                    
+                    <div class="container-fluid px-12">
+                        <h1 class="mt-4">Colleges</h1>
+                     
                         <div class="card mb-12">
                             <div class="card-header">
                                 <i class="fas fa-table me-1"></i>
-                                Active Users 
-                                <center>
-                                    <select id="select1">
-                                        <option selected="selected" disabled="disabled">Select an Option</option>
-                                        <option value="1">30 Day Range</option>
-                                        <option value="2">Any Future Date</option>
-                                        <option value="3">Any Future Date</option>
-                                    </select>
-                                    <input type="text" id="startDate" placeholder="Start Date"  />
-                                    <input type="text" id="endDate" placeholder="End Date"  />
-                                </center>
-                               
+                                Departments 
                             </div>
                             <div class="card-body">
                                 <table id="datatablesSimple">
                                     <thead>
-                                        <tr>
-                                            <th>Last Name</th>
-                                            <th>First Name</th>
-                                            <th>ID Number</th>
-                                            <th>Number of hours</th>
+                                       <tr>
+                                            <th>College</th>
+                                            <th>Number of Active Users</th>
                                         </tr>
                                     </thead>
                                     <tfoot>
-                                        <tr>
-                                            <th>Last Name</th>
-                                            <th>First Name</th>
-                                            <th>ID Number</th>
-                                            <th>Number of hours</th>
+                                       <tr>
+                                            <th>College</th>
+                                            <th>Number of Active Users</th>
                                         </tr>
                                     </tfoot>
                                     <tbody>
                                         <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
-                                         </tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
                                          <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
+                                                   <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
                                         </tr>
                                         <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
-                                       
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
+                                        <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
                                          <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
+                                            <td>CCS</td>
+                                            <td>2000</td>
                                         </tr>
-                                       <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
+                                                   <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
                                         </tr>
-                                       <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
+                                        <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
                                         </tr>
-                                       
+                                         <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
+                                         <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
+                                                   <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
+                                        <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
+                                        <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
+                                         <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
+                                                   <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
+                                        <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
+                                        <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
+                                         <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
+                                                   <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
+                                        <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
+                                        <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
+                                         <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
+                                                   <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
+                                        <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
+                                        <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
+                                         <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
+                                                   <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
+                                        <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
+                                        <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
+                                         <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
+                                                   <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
+                                        <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
+                                        <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
+                                         <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
+                                                   <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
+                                        <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
+                                        <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
+                                         <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
+                                                   <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
+                                        <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
+                                        <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
+                                         <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
+                                                   <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
+                                        <tr>
+                                            <td>CCS</td>
+                                            <td>2000</td>
+                                        </tr>
+
+
                                     </tbody>
                                 </table>
                             </div>
                         </div>
+                    </div>
                     </div>
 
                 </main>
@@ -325,75 +366,8 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
         <script src="{% static 'js/adminScripts.js' %}"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
-        <script src="{% static 'adminAssets/demo/chart-area-demo.js' %}"></script>
+        <script src="{% static 'adminAssets/demo/chart-pie-demo.js' %}"></script>
         <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
         <script src="{% static 'js/datatables-simple-demo.js' %}"></script>
-        <!--
-        <script>
-            $('#startDate, #endDate').datepicker({
-            beforeShow: setDateRange,
-            dateFormat: "mm/dd/yy",
-            firstDay: 1,
-            changeFirstDay: false,
-            onChange: function() { $(this).valid(); },
-            onSelect: function() {
-                if (this.id == 'startDate') {
-                    // If selected start date is later than currently selected
-                    // end date, set end date to start date + 1 day
-                    var date = $('#startDate').datepicker('getDate');
-                    if (date) { date.setDate(date.getDate() + 1); }
-                    $('#endDate').datepicker('option', 'minDate', date);
-                }
-            }
-        });
-
-        function setDateRange(input) {
-            var min = null, dateMin = min, dateMax = null, dayRange = 30;
-            var opt = $('#select1'), start = $('#startDate'), end = $('#endDate');
-            if (opt.val() == '1') {
-                // Adjust min date for start date
-                if (input.id == 'startDate') {
-                    // Set min date if end date has a value
-                    if ($('#endDate').datepicker('getDate') != null) {
-                        dateMax = $('#endDate').datepicker('getDate');
-                        dateMin = $('#endDate').datepicker('getDate');
-                        dateMin.setDate(dateMin.getDate() - dayRange);
-                        if (dateMin < min) { dateMin = min; }
-                    }
-                // Adjust max date for end date
-                } else if (input.id == 'endDate') {
-                    dateMin = $('#startDate').datepicker('getDate');
-                    // Set date range of 30 days
-                    dateMax = new Date(dateMin.getFullYear(), dateMin.getMonth(), dateMin.getDate() + 30);
-                    // Set max date if start date has a value
-                    if ($('#startDate').datepicker('getDate') != null) {
-                        var rangeMax = new Date(dateMin.getFullYear(), dateMin.getMonth(), dateMin.getDate() + dayRange);
-                        if (rangeMax < dateMax) { dateMax = rangeMax; }
-                    }
-                }
-            } else if (opt.val() != '1') {
-                if (input.id == 'startDate') {
-                    if ($('#endDate').datepicker('getDate') != null) {
-                        dateMin = null;
-                    }
-                } else if (input.id == 'endDate') {
-                    dateMin = $('#startDate').datepicker('getDate');
-                    dateMax = null;
-                    if ($('#startDate').datepicker('getDate') != null) { dateMax = null; }
-                }
-            }
-            return {
-                minDate: dateMin,
-                maxDate: dateMax
-            };
-        }
-
-        $('#select1').change(function() {
-            $('#startDate, #endDate').val('');
-            $('#startDate, #endDate').removeAttr('disabled');
-        });
-        </script>
-    -->
     </body>
-
 </html>
