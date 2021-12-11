@@ -45,6 +45,10 @@ class addUser(View):
 		
 		return render(request,'addUser.html')
 
+class adminSiteView(View):
+	def get(self, request):
+		return render(request, 'adminSite.html')
+
 		
 
 class practice3(View):
