@@ -77,6 +77,18 @@ class adminSiteAccessView(View):
 	def get(self, request):
 		return render(request, 'adminSiteAccess.html')
 
+class adminDissertationsView(View):
+	def get(self, request):
+		return render(request, 'adminDissertations.html')
+
+class adminDissertationsAccessView(View):
+	def get(self, request):
+		return render(request, 'dissertationAccess.html')
+
+class adminUserUpdateView(View):
+	def get(self, request):
+		return render(request, 'adminUserUpdate.html')
+
 		
 
 class practice3(View):

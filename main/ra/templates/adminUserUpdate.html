@@ -10,27 +10,65 @@
         <meta name="author" content="" />
         <title>TERA</title>
          <link rel="shortcut icon" href="{% static 'images/teralogo.png' %}">
+        <link rel="shortcut icon" href="{% static 'images/teralogo.png' %}">
         <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" />
-        <link href="{% static 'css/adminSite.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/adminStyles.css' %}" rel="stylesheet" /> 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>      
 
-        <style>
-        .logo{
-          float: left;
-          color: #800000;
-          font-size: 27px;
-          font-weight: 600;
-          line-height: 40px;
-          padding-left: 15px;
-          
-        }
-       .logo-style{
-          height: 2.3em;
-        }
-    </style>
-
+        <!-- For Registration -->
+        <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+        <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
     </head>
+    <style>
+.navbar-laravel
+{
+    box-shadow: 0 2px 4px rgba(0,0,0,.04);
+}
+
+.navbar-brand , .nav-link, .my-form, .login-form
+{
+    font-family: Raleway, sans-serif;
+}
+
+.my-form
+{
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+}
+
+.my-form .row
+{
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.login-form
+{
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+}
+
+.login-form .row
+{
+    margin-left: 0;
+    margin-right: 0;
+}
+.logo{
+    float: left;
+    color: #800000;
+    font-size: 27px;
+    font-weight: 600;
+    line-height: 40px;
+    padding-left: 15px;
+          
+}
+.logo-style{
+    height: 2.3em;
+}
+
+    </style>
     <body class="sb-nav-fixed">
          <nav class="sb-topnav navbar navbar-expand" style="background-color: #808080">
             <!-- Navbar Brand-->
@@ -123,112 +161,91 @@
             <div id="layoutSidenav_content">
                 <main>
                     <div class="container-fluid px-4">
-                        <h1 class="mt-4">Sites</h1>
+                        <h1 class="mt-4">Update User Information</h1>
                         <ol class="breadcrumb mb-4">
                             <li class="breadcrumb-item"><a href="{% url 'ra:admin_index_view' %}">Dashboard</a></li>
-                            <li class="breadcrumb-item active">Sites</li>
+                            <li class="breadcrumb-item active">Update User Information</li>
                         </ol>
                         <div class="card mb-4">
-                            <div class="card-header">
-                                <i class="fas fa-table me-1"></i>
-                                Sites
-                            </div>
                             <div class="card-body">
-                                <table id="datatablesSimple">
-                                    <thead>
-                                        <tr>
-                                            <th>Site Name</th>
-                                            <th>Link</th>
-                                            <th>Manage</th>
-                                        </tr>
-                                    </thead>
-                                    <tfoot>
-                                        <tr>
-                                            <th>Site Name</th>
-                                            <th>Link</th>
-                                            <th>Manage</th>
-                                        </tr>
-                                    </tfoot>
-                                    <tbody>
-                                        <tr>
-                                            <td>Springer Open</td>
-                                            <td>
-                                              <a class="link1" href="https://insightsimaging.springeropen.com/articles/10.1186/s13244-021-01014-5">https://insightsimaging.springeropen.com/articles/10.1186/s13244-021-01014-5</a>
-                                            </td>
-                                            <td>
-                                              <input class="input-switch" type="checkbox" id="toggle" onclick="press" checked/>
-                                              <label class="label-switch" for="toggle"></label>
-                                              <span class="info-text"></span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>UNESCO</td>
-                                            <td>
-                                              <a class="link2" href="https://unesdoc.unesco.org/ark:/48223/pf0000122768">https://unesdoc.unesco.org/ark:/48223/pf0000122768
-                                            </td>
-                                            <td>
-                                              <input class="input-switch" type="checkbox" id="toggle2" checked/>
-                                              <label class="label-switch" for="toggle2"></label>
-                                              <span class="info-text"></span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Open Textbook Library</td>
-                                            <td>
-                                              <a  class="link3" href="https://open.umn.edu/opentextbooks">https://open.umn.edu/opentextbooks
-                                            </td>
-                                            <td>
-                                              <input class="input-switch" type="checkbox" id="toggle3" checked/>
-                                              <label class="label-switch" for="toggle3"></label>
-                                              <span class="info-text"></span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>OER Commons</td>
-                                            <td>
-                                              <a class="link4" href="https://www.oercommons.org/courses/staff-devo">https://www.oercommons.org/courses/staff-devo
-                                            </td>
-                                            <td>
-                                              <input class="input-switch" type="checkbox" id="toggle4" checked/>
-                                              <label class="label-switch" for="toggle4"></label>
-                                              <span class="info-text"></span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Springer Open</td>
-                                            <td>
-                                              <a class="link5" href="https://aops.springeropen.com/articles/10.1186/s43159-020-00038-8">https://aops.springeropen.com/articles/10.1186/s43159-020-00038-8
-                                            </td>
-                                            <td>
-                                              <input class="input-switch" type="checkbox" id="toggle5" checked/>
-                                              <label class="label-switch" for="toggle5"></label>
-                                              <span class="info-text"></span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>UNESCO</td>
-                                            <td>
-                                              <a class="link6" href="https://unesdoc.unesco.org/ark:/48223/pf0000372868">https://unesdoc.unesco.org/ark:/48223/pf0000372868
-                                            </td>
-                                            <td>
-                                              <input class="input-switch" type="checkbox" id="toggle6" checked/>
-                                              <label class="label-switch" for="toggle6"></label>
-                                              <span class="info-text"></span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>OER Commons</td>
-                                            <td>
-                                              <a class="link7" href="https://www.oercommons.org/courses/nottingham-advantage-award-skills-for-employability">https://www.oercommons.org/courses/nottingham-advantage-award-skills-for-employability
-                                            </td>
-                                            <td>
-                                              <input class="input-switch" type="checkbox" id="toggle7" checked/>
-                                              <label class="label-switch" for="toggle7"></label>
-                                              <span class="info-text"></span>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <main class="my-form">
+                                    <div class="cotainer">
+                                        <div class="row justify-content-center">
+                                            <div class="col-md-8">
+                                                    <div class="card">
+                                                        
+                                                        <div class="card-body">
+                                                            <form name="my-form" onsubmit="return validform()" action="success.php" method="">
+                                                                <div class="form-group row">
+                                                                    <label for="first_name" class="col-md-4 col-form-label text-md-right">First Name</label>
+                                                                    <div class="col-md-6">
+                                                                        <input type="text" id="first_name" class="form-control" name="first_name">
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="form-group row">
+                                                                    <label for="last_name" class="col-md-4 col-form-label text-md-right">Last Name</label>
+                                                                    <div class="col-md-6">
+                                                                        <input type="text" id="last_name" class="form-control" name="last_name">
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="form-group row">
+                                                                    <label for="id_number" class="col-md-4 col-form-label text-md-right">ID Number</label>
+                                                                    <div class="col-md-6">
+                                                                        <input type="text" id="id_number" class="form-control" name="id_number">
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="form-group row">
+                                                                    <label for="username" class="col-md-4 col-form-label text-md-right">Username</label>
+                                                                    <div class="col-md-6">
+                                                                        <input type="text" id="username" class="form-control" name="username">
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="form-group row">
+                                                                    <label for="password" class="col-md-4 col-form-label text-md-right">Password</label>
+                                                                    <div class="col-md-6">
+                                                                        <input type="password" id="password" class="form-control" name="password">
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="form-group row">
+                                                                    <label for="college" class="col-md-4 col-form-label text-md-right">College</label>
+                                                                    <div class="col-md-6">
+                                                                        <select id="college" class="form-control" name="college">
+                                                                            <option value="1">Choose option</option>
+                                                                            <option value="2">College of Computer Studies</option>
+                                                                            <option value="3">College of Engineering and Architecture</option>
+                                                                            <option value="4">College of Criminal Justice</option>
+                                                                            <option value="5">College of Nursing and Allied Health Sciences</option>
+                                                                            <option value="6">College of Management, Business and Accountancy</option>
+                                                                            <option value="7">College of Arts, Sciences and Education</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+
+                                                               
+                                                                    <div class="col-md-6 offset-md-4">
+                                                                        <button type="submit" class="btn btn-primary">
+                                                                        Update
+                                                                        </button>
+                                                                        <button type="submit" class="btn btn-secondary"><a href="{% url 'ra:admin_tables_view' %}" style="color: #eee">
+                                                                        Cancel </a>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </main>
+
+              
                             </div>
                         </div>
                     </div>
@@ -246,16 +263,14 @@
                     </div>
                 </footer>
             </div>
-        </div>        
+        </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
         <script src="{% static 'js/adminScripts.js' %}"></script>
         <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
         <script src="{% static 'js/datatables-simple-demo.js' %}"></script>
-        <script src="{% static 'js/adminSiteScripts.js' %}"></script>
-        
-
-        
+        <!-- Footer for Registration -->
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
     </body>
 </html>
-
-

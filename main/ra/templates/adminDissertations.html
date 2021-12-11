@@ -13,7 +13,14 @@
         <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" />
         <link href="{% static 'css/adminSite.css' %}" rel="stylesheet" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>      
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>     
+
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script> 
 
         <style>
         .logo{
@@ -29,10 +36,46 @@
           height: 2.3em;
         }
     </style>
+     <script>
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();
+            var actions = $("table td:last-child").html();
+            // Append table with add row form on add new button click
+            $(".add-new").click(function(){
+                $(this).attr("disabled", "disabled");
+                var index = $("table tbody tr:last-child").index();
+                var row = '<tr>' +
+                    '<td><input type="text" class="form-control" name="lastname" id="lastname"></td>' +
+                    '<td><input type="text" class="form-control" name="firsttname" id="lastname"></td>' +
+                    '<td><input type="text" class="form-control" name="id" id="id"></td>' +
+                    '<td><input type="text" class="form-control" name="college" id="college"></td>' +
+                    '<td><input type="text" class="form-control" name="username" id="password"></td>' +
+                    '<td><input type="text" class="form-control" name="lastlogin" id="lastlogin"></td>' +
+                    '<td>' + manage + '</td>' +
+                '</tr>';
+                $("table").append(row);     
+                $("table tbody tr").eq(index + 1).find(".add, .edit").toggle();
+                $('[data-toggle="tooltip"]').tooltip();
+            });
+            // Edit row on edit button click
+            //$(document).on("click", ".edit", function(){        
+            //    $(this).parents("tr").find("td:not(:last-child)").each(function(){
+            //        $(this).html('<input type="text" class="form-control" value="' + $(this).text() + '">');
+            //    });     
+            //    $(this).parents("tr").find(".add, .edit").toggle();
+            //    $(".add-new").attr("disabled", "disabled");
+            //});
 
+            // Delete row on delete button click
+            $(document).on("click", ".delete", function(){
+                $(this).parents("tr").remove();
+                $(".add-new").removeAttr("disabled");
+            });
+        });
+        </script>
     </head>
     <body class="sb-nav-fixed">
-         <nav class="sb-topnav navbar navbar-expand" style="background-color: #808080">
+        <nav class="sb-topnav navbar navbar-expand" style="background-color: #808080">
             <!-- Navbar Brand-->
             <img class="logo logo-style" src="{% static 'images/teralogo.png' %}">
             <!-- Sidebar Toggle-->
@@ -123,114 +166,114 @@
             <div id="layoutSidenav_content">
                 <main>
                     <div class="container-fluid px-4">
-                        <h1 class="mt-4">Sites</h1>
+                        <h1 class="mt-4">Dissertations</h1>
                         <ol class="breadcrumb mb-4">
                             <li class="breadcrumb-item"><a href="{% url 'ra:admin_index_view' %}">Dashboard</a></li>
-                            <li class="breadcrumb-item active">Sites</li>
+                            <li class="breadcrumb-item active">Dissertations</li>
                         </ol>
+
                         <div class="card mb-4">
                             <div class="card-header">
                                 <i class="fas fa-table me-1"></i>
-                                Sites
+                                Dissertation Access 
                             </div>
                             <div class="card-body">
-                                <table id="datatablesSimple">
+                                <table id="datatablesDissertations">
                                     <thead>
                                         <tr>
-                                            <th>Site Name</th>
-                                            <th>Link</th>
-                                            <th>Manage</th>
+                                            <th>Title</th>
+                                            <th>Authors</th>
+                                            <th>College</th>
+                                            <th>Accumulated Number of Access</th>
+                                            <th>Accumulated Number of Hours</th>
+
                                         </tr>
                                     </thead>
                                     <tfoot>
                                         <tr>
-                                            <th>Site Name</th>
-                                            <th>Link</th>
-                                            <th>Manage</th>
+                                            <th>Title</th>
+                                            <th>Authors</th>
+                                            <th>College</th>
+                                            <th>Accumulated Number of Access</th>
+                                            <th>Accumulated Number of Hours</th>
                                         </tr>
                                     </tfoot>
                                     <tbody>
                                         <tr>
-                                            <td>Springer Open</td>
-                                            <td>
-                                              <a class="link1" href="https://insightsimaging.springeropen.com/articles/10.1186/s13244-021-01014-5">https://insightsimaging.springeropen.com/articles/10.1186/s13244-021-01014-5</a>
-                                            </td>
-                                            <td>
-                                              <input class="input-switch" type="checkbox" id="toggle" onclick="press" checked/>
-                                              <label class="label-switch" for="toggle"></label>
-                                              <span class="info-text"></span>
-                                            </td>
+                                            <td>Technologian Exclusive Research Assistant</td>
+                                            <td>Sumalinog, L., Mondejar YJ., Emorecha, J., Talatagod, R., Albano, JR.</td>
+                                            <td>Computer Studies</td>
+                                            <td>450</td>
+                                            <td>500</td>
+                                        </tr>
+                                       <tr>
+                                            <td>Technologian Exclusive Research Assistant</td>
+                                            <td>Sumalinog, L., Mondejar YJ., Emorecha, J., Talatagod, R., Albano, JR.</td>
+                                            <td>Computer Studies</td>
+                                            <td>450</td>
+                                            <td>500</td>
+                                        </tr>
+                                       <tr>
+                                            <td>Technologian Exclusive Research Assistant</td>
+                                            <td>Sumalinog, L., Mondejar YJ., Emorecha, J., Talatagod, R., Albano, JR.</td>
+                                            <td>Computer Studies</td>
+                                           <td>450</td>
+                                            <td>500</td>
                                         </tr>
                                         <tr>
-                                            <td>UNESCO</td>
-                                            <td>
-                                              <a class="link2" href="https://unesdoc.unesco.org/ark:/48223/pf0000122768">https://unesdoc.unesco.org/ark:/48223/pf0000122768
-                                            </td>
-                                            <td>
-                                              <input class="input-switch" type="checkbox" id="toggle2" checked/>
-                                              <label class="label-switch" for="toggle2"></label>
-                                              <span class="info-text"></span>
-                                            </td>
+                                            <td>Technologian Exclusive Research Assistant</td>
+                                            <td>Sumalinog, L., Mondejar YJ., Emorecha, J., Talatagod, R., Albano, JR.</td>
+                                            <td>Computer Studies</td>
+                                            <td>450</td>
+                                            <td>500</td>
                                         </tr>
                                         <tr>
-                                            <td>Open Textbook Library</td>
-                                            <td>
-                                              <a  class="link3" href="https://open.umn.edu/opentextbooks">https://open.umn.edu/opentextbooks
-                                            </td>
-                                            <td>
-                                              <input class="input-switch" type="checkbox" id="toggle3" checked/>
-                                              <label class="label-switch" for="toggle3"></label>
-                                              <span class="info-text"></span>
-                                            </td>
+                                            <td>Technologian Exclusive Research Assistant</td>
+                                            <td>Sumalinog, L., Mondejar YJ., Emorecha, J., Talatagod, R., Albano, JR.</td>
+                                            <td>Computer Studies</td>
+                                           <td>450</td>
+                                            <td>500</td>
+                                        </tr>
+                                       <tr>
+                                            <td>Technologian Exclusive Research Assistant</td>
+                                            <td>Sumalinog, L., Mondejar YJ., Emorecha, J., Talatagod, R., Albano, JR.</td>
+                                            <td>Computer Studies</td>
+                                           <td>450</td>
+                                            <td>500</td>
+                                        </tr>
+                                       <tr>
+                                            <td>Technologian Exclusive Research Assistant</td>
+                                            <td>Sumalinog, L., Mondejar YJ., Emorecha, J., Talatagod, R., Albano, JR.</td>
+                                            <td>Computer Studies</td>
+                                            <td>450</td>
+                                            <td>500</td>
                                         </tr>
                                         <tr>
-                                            <td>OER Commons</td>
-                                            <td>
-                                              <a class="link4" href="https://www.oercommons.org/courses/staff-devo">https://www.oercommons.org/courses/staff-devo
-                                            </td>
-                                            <td>
-                                              <input class="input-switch" type="checkbox" id="toggle4" checked/>
-                                              <label class="label-switch" for="toggle4"></label>
-                                              <span class="info-text"></span>
-                                            </td>
+                                            <td>Technologian Exclusive Research Assistant</td>
+                                            <td>Sumalinog, L., Mondejar YJ., Emorecha, J., Talatagod, R., Albano, JR.</td>
+                                            <td>Computer Studies</td>
+                                            <td>450</td>
+                                            <td>500</td>
                                         </tr>
                                         <tr>
-                                            <td>Springer Open</td>
-                                            <td>
-                                              <a class="link5" href="https://aops.springeropen.com/articles/10.1186/s43159-020-00038-8">https://aops.springeropen.com/articles/10.1186/s43159-020-00038-8
-                                            </td>
-                                            <td>
-                                              <input class="input-switch" type="checkbox" id="toggle5" checked/>
-                                              <label class="label-switch" for="toggle5"></label>
-                                              <span class="info-text"></span>
-                                            </td>
+                                            <td>Technologian Exclusive Research Assistant</td>
+                                            <td>Sumalinog, L., Mondejar YJ., Emorecha, J., Talatagod, R., Albano, JR.</td>
+                                            <td>Computer Studies</td>
+                                            <td>450</td>
+                                            <td>500</td>
                                         </tr>
                                         <tr>
-                                            <td>UNESCO</td>
-                                            <td>
-                                              <a class="link6" href="https://unesdoc.unesco.org/ark:/48223/pf0000372868">https://unesdoc.unesco.org/ark:/48223/pf0000372868
-                                            </td>
-                                            <td>
-                                              <input class="input-switch" type="checkbox" id="toggle6" checked/>
-                                              <label class="label-switch" for="toggle6"></label>
-                                              <span class="info-text"></span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>OER Commons</td>
-                                            <td>
-                                              <a class="link7" href="https://www.oercommons.org/courses/nottingham-advantage-award-skills-for-employability">https://www.oercommons.org/courses/nottingham-advantage-award-skills-for-employability
-                                            </td>
-                                            <td>
-                                              <input class="input-switch" type="checkbox" id="toggle7" checked/>
-                                              <label class="label-switch" for="toggle7"></label>
-                                              <span class="info-text"></span>
-                                            </td>
+                                            <td>Technologian Exclusive Research Assistant</td>
+                                            <td>Sumalinog, L., Mondejar YJ., Emorecha, J., Talatagod, R., Albano, JR.</td>
+                                            <td>Computer Studies</td>
+                                            <td>450</td>
+                                            <td>500</td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
+                      
                     </div>
                 </main>
                 <footer class="py-4 bg-light mt-auto">
@@ -251,6 +294,7 @@
         <script src="{% static 'js/adminScripts.js' %}"></script>
         <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
         <script src="{% static 'js/datatables-simple-demo.js' %}"></script>
+        <script src="{% static 'js/datatables-dissertations.js' %}"></script>
         <script src="{% static 'js/adminSiteScripts.js' %}"></script>
         
 
