@@ -11,6 +11,97 @@
         <title>TERA Active User</title>
         <link href="{% static 'css/adminStyles.css' %}" rel="stylesheet" /> 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css">
+          <link rel="stylesheet" href="/resources/demos/style.css">
+          <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+          <script src="https://code.jquery.com/ui/1.9.1/jquery-ui.js"></script>
+        <script>
+            $( function() {
+            $( "#startDate, #endDate" ).datepicker();
+            } );
+
+            /* $('#startDate, #endDate').datepicker({
+              beforeShow: setDateRange,
+              dateFormat: "mm/dd/yy",
+              firstDay: 1,
+              changeFirstDay: false,
+              onChange: function() {
+                $(this).valid();
+              },
+              onSelect: function() {
+                if (this.id == 'startDate') {
+                  // If selected start date is later than currently selected
+                  // end date, set end date to start date + 1 day
+                  var date = $('#startDate').datepicker('getDate');
+                  if (date) {
+                    date.setDate(date.getDate() + 1);
+                  }
+                  $('#endDate').datepicker('option', 'minDate', date);
+                }
+              }
+            });
+
+            function setDateRange(input) {
+              var min = null,
+                dateMin = min,
+                dateMax = null,
+                dayRange = 30;
+              var opt = $('#select1'),
+                start = $('#startDate'),
+                end = $('#endDate');
+              if (opt.val() == '1') {
+                // Adjust min date for start date
+                if (input.id == 'startDate') {
+                  // Set min date if end date has a value
+                  if ($('#endDate').datepicker('getDate') != null) {
+                    dateMax = $('#endDate').datepicker('getDate');
+                    dateMin = $('#endDate').datepicker('getDate');
+                    dateMin.setDate(dateMin.getDate() - dayRange);
+                    if (dateMin < min) {
+                      dateMin = min;
+                    }
+                  }
+                  // Adjust max date for end date
+                } else if (input.id == 'endDate') {
+                  dateMin = $('#startDate').datepicker('getDate');
+                  // Set date range of 30 days
+                  dateMax = new Date(dateMin.getFullYear(), dateMin.getMonth(), dateMin.getDate() + 30);
+                  // Set max date if start date has a value
+                  if ($('#startDate').datepicker('getDate') != null) {
+                    var rangeMax = new Date(dateMin.getFullYear(), dateMin.getMonth(), dateMin.getDate() + dayRange);
+                    if (rangeMax < dateMax) {
+                      dateMax = rangeMax;
+                    }
+                  }
+                }
+              } else if (opt.val() != '1') {
+                if (input.id == 'startDate') {
+                  if ($('#endDate').datepicker('getDate') != null) {
+                    dateMin = null;
+                  }
+                } else if (input.id == 'endDate') {
+                  dateMin = $('#startDate').datepicker('getDate');
+                  dateMax = null;
+                  if ($('#startDate').datepicker('getDate') != null) {
+                    dateMax = null;
+                  }
+                }
+              }
+              return {
+                minDate: dateMin,
+                maxDate: dateMax
+              };
+            }
+
+            $('#select1').change(function() {
+              $('#startDate, #endDate').val('');
+              $('#startDate, #endDate').removeAttr('disabled');
+            }); */
+
+
+
+        </script>
+        
     </head>
    <body class="sb-nav-fixed">
     
@@ -137,12 +228,22 @@
                             </div>
 
                         <div class="container-fluid px-12">
-                        <h1 class="mt-4">Active Users</h1>
-
+                    
                         <div class="card mb-12">
                             <div class="card-header">
                                 <i class="fas fa-table me-1"></i>
-                                Active Users
+                                Active Users 
+                                    <center>
+                                    <select id="select1">
+                                        <option selected="selected" disabled="disabled">Graph Label Options</option>
+                                        <option value="1">Days</option>
+                                        <option value="2">Weeks</option>
+                                        <option value="3">Months</option>
+                                        <option value="3">Semester</option>
+                                    </select>
+                                    <input type="text" id="startDate" placeholder="Start Date"  />
+                                    <input type="text" id="endDate" placeholder="End Date"  />
+                                    </center>
                             </div>
                             <div class="card-body">
                                 <table id="datatablesSimple">
@@ -180,217 +281,8 @@
                                             <td>Jarry</td>
                                             <td>123-1234-123</td>
                                             <td>123456</td>
-                                        <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
-                                        </tr>
+                                       
                                          <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
-                                        </tr>
-                                       <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
-                                      <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
-                                        </tr>
-                                       <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
-                                        </tr>
-                                       <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
-                                        </tr>
-                                         <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
-                                        </tr>
-                                       <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
-                                      <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
-                                        </tr>
-                                       <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
-                                        </tr>
-                                       <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
-                                        </tr>
-                                         <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
-                                        </tr>
-                                       <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
-                                      <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
-                                        </tr>
-                                       <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
-                                        </tr>
-                                       <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
-                                        </tr>
-                                         <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
-                                        </tr>
-                                       <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
-                                      <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
-                                        </tr>
-                                       <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
-                                        </tr>
-                                       <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
-                                        </tr>
-                                         <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
-                                        </tr>
-                                       <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
-                                      <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
-                                        </tr>
-                                       <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
-                                        </tr>
-                                       <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
-                                        </tr>
-                                         <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
-                                        </tr>
-                                       <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>123456</td>
-                                      <tr>
                                             <td>Emorecha</td>
                                             <td>Jarry</td>
                                             <td>123-1234-123</td>
@@ -436,5 +328,72 @@
         <script src="{% static 'adminAssets/demo/chart-area-demo.js' %}"></script>
         <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
         <script src="{% static 'js/datatables-simple-demo.js' %}"></script>
+        <!--
+        <script>
+            $('#startDate, #endDate').datepicker({
+            beforeShow: setDateRange,
+            dateFormat: "mm/dd/yy",
+            firstDay: 1,
+            changeFirstDay: false,
+            onChange: function() { $(this).valid(); },
+            onSelect: function() {
+                if (this.id == 'startDate') {
+                    // If selected start date is later than currently selected
+                    // end date, set end date to start date + 1 day
+                    var date = $('#startDate').datepicker('getDate');
+                    if (date) { date.setDate(date.getDate() + 1); }
+                    $('#endDate').datepicker('option', 'minDate', date);
+                }
+            }
+        });
+
+        function setDateRange(input) {
+            var min = null, dateMin = min, dateMax = null, dayRange = 30;
+            var opt = $('#select1'), start = $('#startDate'), end = $('#endDate');
+            if (opt.val() == '1') {
+                // Adjust min date for start date
+                if (input.id == 'startDate') {
+                    // Set min date if end date has a value
+                    if ($('#endDate').datepicker('getDate') != null) {
+                        dateMax = $('#endDate').datepicker('getDate');
+                        dateMin = $('#endDate').datepicker('getDate');
+                        dateMin.setDate(dateMin.getDate() - dayRange);
+                        if (dateMin < min) { dateMin = min; }
+                    }
+                // Adjust max date for end date
+                } else if (input.id == 'endDate') {
+                    dateMin = $('#startDate').datepicker('getDate');
+                    // Set date range of 30 days
+                    dateMax = new Date(dateMin.getFullYear(), dateMin.getMonth(), dateMin.getDate() + 30);
+                    // Set max date if start date has a value
+                    if ($('#startDate').datepicker('getDate') != null) {
+                        var rangeMax = new Date(dateMin.getFullYear(), dateMin.getMonth(), dateMin.getDate() + dayRange);
+                        if (rangeMax < dateMax) { dateMax = rangeMax; }
+                    }
+                }
+            } else if (opt.val() != '1') {
+                if (input.id == 'startDate') {
+                    if ($('#endDate').datepicker('getDate') != null) {
+                        dateMin = null;
+                    }
+                } else if (input.id == 'endDate') {
+                    dateMin = $('#startDate').datepicker('getDate');
+                    dateMax = null;
+                    if ($('#startDate').datepicker('getDate') != null) { dateMax = null; }
+                }
+            }
+            return {
+                minDate: dateMin,
+                maxDate: dateMax
+            };
+        }
+
+        $('#select1').change(function() {
+            $('#startDate, #endDate').val('');
+            $('#startDate, #endDate').removeAttr('disabled');
+        });
+        </script>
+    -->
     </body>
+
 </html>

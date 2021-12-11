@@ -12,6 +12,17 @@
         <link rel="shortcut icon" href="{% static 'images/teralogo.png' %}">
         <link href="{% static 'css/adminStyles.css' %}" rel="stylesheet" /> 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
+
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css">
+        <link rel="stylesheet" href="/resources/demos/style.css">
+        <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+        <script src="https://code.jquery.com/ui/1.9.1/jquery-ui.js"></script>
+        <script>
+            $( function() {
+            $( "#startDate, #endDate" ).datepicker();
+            } );
+        </script>
+
     </head>
     <body class="sb-nav-fixed">
     
@@ -141,12 +152,22 @@
                         </div>
 
                     <div class="container-fluid px-12">
-                        <h1 class="mt-4">Colleges</h1>
-                     
+                        
                         <div class="card mb-12">
                             <div class="card-header">
                                 <i class="fas fa-table me-1"></i>
                                 Departments 
+                                <center>
+                                    <select id="select1">
+                                        <option selected="selected" disabled="disabled">Graph Label Options</option>
+                                        <option value="1">Days</option>
+                                        <option value="2">Weeks</option>
+                                        <option value="3">Months</option>
+                                        <option value="3">Semester</option>
+                                    </select>
+                                    <input type="text" id="startDate" placeholder="Start Date"  />
+                                    <input type="text" id="endDate" placeholder="End Date"  />
+                                </center>
                             </div>
                             <div class="card-body">
                                 <table id="datatablesSimple">
