@@ -696,21 +696,22 @@ class TeraDashboardView(View):
 							
 
 def TeraAccountSettingsView(request):
-    if request.method == 'POST':
-        form = PasswordChangeForm(data=request.POST, user=request.user)
-        
-        if form.is_valid():
-            user = form.save()
-            update_session_auth_hash(request, user)  
-            messages.success(request, 'Your password was successfully updated!' )
-            return redirect('ra:tera_account_settings')
-        else:
-            messages.info(request, 'Incorrect Password.')
-    else:
-        form = PasswordChangeForm(request.user)
-    return render(request, 'accountsettings.html', {
-        'form': form
-    })
+	if request.method == 'POST':
+		form = PasswordChangeForm(data=request.POST, user=request.user)
+	    
+		if form.is_valid():
+			user = form.save()
+			update_session_auth_hash(request, user)  
+			messages.success(request, 'Your password was successfully updated!' )
+			return redirect('ra:tera_account_settings')
+		else:
+			print(form)
+			messages.info(request, str(form.errors))
+	else:
+
+	    form = PasswordChangeForm(request.user)
+	return render(request, 'accountsettings.html', {
+	    'form': form})
 
 
 
