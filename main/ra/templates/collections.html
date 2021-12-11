@@ -577,7 +577,7 @@ function favorite_item(clicked_id,ii){
 function showRows(rowType, array, faction_id){
    document.getElementById("recommendation").style.display = "none"
   // clearRow("detailTable")
-  $("#detailTable").empty();
+  $("#detailArea").empty();
   clearStyle();
   clearRow('itemTable');
   // alert(faction_id)
@@ -1088,13 +1088,13 @@ function clearStyle(){
 function get_detail(clicked_id, isGroup_detail){
     var id = parseInt(clicked_id);
     $("#group_detail_ul").empty();
-    clearRow("detailTable")   
+     
     
 
    if(isGroup_detail == true){
 
       
-    console.log(groups)
+   
         
           for(i=0;i< groups.length;i++){
             if(groups[i].id == clicked_id){
@@ -1127,10 +1127,14 @@ function get_detail(clicked_id, isGroup_detail){
 
    }
     if(tab != 'groups'){
+      clearRow("detailTable")  
       $("#group_detail_ul").empty();
+      // document.getElementById("group_detail_ul").style.display="none"
+      // $("#group_detail_ul").style.display="none"
+
     for(i=0; i< markers.length;i++){
          if(markers[i].id == id){
-             
+         
              var added = new Date( markers[i].dateAdded);
              var accessed = new Date( markers[i].dateAccessed);
               
@@ -1164,7 +1168,7 @@ function get_detail(clicked_id, isGroup_detail){
          }
      } 
    }else {
-     
+     clearRow("detailTable")  
       faction_markers= array
       for(i=0; i< faction_markers.length;i++){
         if(faction_markers[i].id == id){
