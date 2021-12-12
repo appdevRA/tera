@@ -36,7 +36,7 @@ class Folder(models.Model):
 	class Meta:
 		db_table = "Folder"	
 
-class User_bookmark (models.Model):
+class Bookmark_detail (models.Model):
 	websiteTitle = models.CharField(max_length = 1000, null = False)
 	itemType = models.CharField(max_length = 50,null=False)
 	url = models.CharField(max_length = 2000,null=False)
@@ -45,29 +45,20 @@ class User_bookmark (models.Model):
 	author =  models.CharField(max_length = 1000,blank= True)
 	description =  models.CharField(max_length = 1000,blank= True)
 	journalItBelongs = models.CharField(max_length = 1000,blank= True)
-	volume = models.IntegerField(blank= True)
+	volume = models.CharField( max_length = 50, blank= True )
 	numOfCitation = models.CharField(max_length = 1000,blank= True)
 	numOfDownload = models.CharField(max_length = 1000,blank= True)
 	numOfPages = models.CharField(max_length = 1000,blank= True)
 	edition =models.CharField(max_length = 20,blank= True)
 	publisher = models.CharField(max_length = 1000, blank= True)
 	publicationYear = models.CharField(max_length= 20,blank= True)
-	dateAccessed = models.DateTimeField(default = timezone.now)
-	dateAdded = models.DateTimeField(auto_now_add = True )
-	DOI = models.CharField(max_length = 200,blank= True)
+	DOI = models.CharField(max_length = 200,blank= True)	
 	ISSN = models.CharField(max_length = 100,blank= True)
-	isRemoved = models.IntegerField(default = 0)
-	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
-	isFavorite = models.BooleanField(default=False)
-	date_removed = models.DateTimeField(blank = True, null = True)
-	folders = models.ManyToManyField(Folder, blank=True, related_name="bookmarks")
-	keyword= models.CharField(max_length = 200,blank= False, null=False, default="")
 
-	
 	objects = UserBookmarkQuerySet.as_manager()
 
 	class Meta:
-		db_table = "User_bookmark"
+		db_table = "Bookmark_detail"
 
 	def delete(self):
 		self.isRemoved = 1
@@ -76,21 +67,42 @@ class User_bookmark (models.Model):
 
 		return self
 
+class Group(models.Model):
+	name = models.CharField(max_length=50) #add not null and not blank here
+	owner = models.ForeignKey(User, related_name='User', on_delete = models.CASCADE)
+	date_created = models.DateTimeField(auto_now_add= True)
+	is_removed = models.IntegerField(default=0)
+	member = models.ManyToManyField(User)
+	class Meta:
+		db_table = "Group"
+
+class Bookmark(models.Model):
+	user = models.ForeignKey(User, null = True, blank = True, on_delete = models.CASCADE)
+	group = models.ForeignKey(Group, null = True, blank = True, on_delete = models.CASCADE)
+	folder = models.ForeignKey(Folder, null = True, blank = True, on_delete = models.CASCADE)
+	bookmark = models.ForeignKey(Bookmark_detail, null = False, blank = False, on_delete = models.CASCADE)
+	isFavorite = models.BooleanField(default=False)
+	dateAccessed = models.DateTimeField(default = timezone.now)
+	dateAdded = models.DateTimeField(auto_now_add = True )
+	isRemoved = models.IntegerField(default = 0)	
+	date_removed = models.DateTimeField(null = True)
+	keyword= models.CharField(max_length = 200,blank= False, null=False, default="")
+
 
 class Dissertation(models.Model):
 	title = models.CharField(max_length=1000)
 	abstract = models.CharField(max_length=2000)
+	author = models.CharField(max_length=200)
 
 	class Meta:
 		db_table = "Dissertation"
 
-class Dissertation_authors(models.Model):
-	first_name = models.CharField(max_length=50)
-	last_name = models.CharField(max_length=30)
-	dissertation = models.ForeignKey(Dissertation, null = False, blank = False, on_delete = models.CASCADE)
+# class Dissertation_authors(models.Model):
+# 	first_name = models.CharField(max_length=50)
+# 	last_name = models.CharField(max_length=30)
 
-	class Meta:
-		db_table = "Dissertation_authors"
+# 	class Meta:
+# 		db_table = "Dissertation_authors"
 
 
 class User_file(models.Model):
@@ -100,39 +112,20 @@ class User_file(models.Model):
 		db_table = "User_files"
 
 
-class User_group(models.Model):
-	name = models.CharField(max_length=50) #add not null and not blank here
-	description = models.CharField(max_length=200)
-	owner = models.ForeignKey(User, related_name='User', on_delete = models.CASCADE)
-	date_created = models.DateTimeField(auto_now_add= True)
-	is_removed = models.IntegerField(default=0)
-	member = models.ManyToManyField(User)
-	class Meta:
-		db_table = "User_group"
-
-
-
-class Group_bookmark(models.Model):
-	group =models.ForeignKey(User_group, null = False, blank = False, on_delete = models.CASCADE)
-	bookmark = models.ForeignKey(User_bookmark, null = False, blank = False, on_delete = models.CASCADE)
-	added_by = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
-	date_added = models.DateTimeField(default=timezone.now)
-	is_removed = models.IntegerField(default=0)
-	date_removed = models.DateTimeField(blank=True,null = True)
-
-	class Meta:
-		db_table = "Group_bookmark"
 
 
 
 
-	
+# class Group_bookmark(models.Model):
+# 	group =models.ForeignKey(User_group, null = False, blank = False, on_delete = models.CASCADE)
+# 	bookmark = models.ForeignKey(Bookmark_detail, null = False, blank = False, on_delete = models.CASCADE)
+# 	added_by = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
+# 	date_added = models.DateTimeField(default=timezone.now)
+# 	is_removed = models.IntegerField(default=0)
+# 	date_removed = models.DateTimeField(blank=True,null = True)
 
-
-	
-
-
-	
+# 	class Meta:
+# 		db_table = "Group_bookmark"
 
 
 
@@ -163,19 +156,19 @@ class Headers (models.Model):
 		db_table = "Headers"
 
 
-class Practice (models.Model):
-	text =  models.CharField(max_length = 5)
-	time = models.DateTimeField(default=timezone.now)
+# class Practice (models.Model):
+# 	text =  models.CharField(max_length = 5)
+# 	time = models.DateTimeField(default=timezone.now)
 
 
-	class Meta:
-		db_table = "Practice"
+# 	class Meta:
+# 		db_table = "Practice"
 
 
 
-class Proxies (models.Model):
-	proxy = models.CharField(max_length = 100)
-	isUsed = models.BooleanField(default = False)
+# class Proxies (models.Model):
+# 	proxy = models.CharField(max_length = 100)
+# 	isUsed = models.BooleanField(default = False)
 
-	class Meta:
-		db_table = "Proxies"
+# 	class Meta:
+# 		db_table = "Proxies"
