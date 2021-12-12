@@ -383,22 +383,23 @@ tr:hover {
   
    var groups = {{group_list | safe}}
     tab = 'all'
+    // var folders
     var bookmark_folder
     var faction_id
     var faction_markers
     var group_id
 
 $(document).ready(function($) {
- console.log(markers)
+ console.log(groups)
 
-showRows('all')
-// $('#addtoFolderModal').modal('show') 
-// $('#addtoFolderModal').modal('hide') 
+  showRows('all')
+  // $('#addtoFolderModal').modal('show') 
+  // $('#addtoFolderModal').modal('hide') 
 
-  // document.getElementById("folderList_dropdown1").classList.toggle("hide");
-  //      $(".clickable-row").click(function() {
-  //         window.location = $(this).data("href");
-  //     });
+    // document.getElementById("folderList_dropdown1").classList.toggle("hide");
+    //      $(".clickable-row").click(function() {
+    //         window.location = $(this).data("href");
+    //     });
 
 
         var coll = document.getElementsByClassName("collapsible");
@@ -510,20 +511,20 @@ function favorite_item(clicked_id,ii){
   
    
    for(i=0; i< markers.length;i++){
-      if(markers[i].id == clicked_id){
+      if(markers[i].bookmark__id == clicked_id){
 
         if(markers[i].isFavorite == 0){
 
           markers[i].isFavorite = 1;  
           // clearRow('itemArea')
           if(tab=='folders'){
-
             bookmark_folder[ii].isFavorite = true
-            alert(bookmark_folder[ii].isFavorite)
-          showRows(tab,bookmark_folder)
+            showRows(tab,bookmark_folder)
+
           } else if(tab=='groups'){
             bookmark_folder[ii].isFavorite = 1
             showRows(tab,bookmark_folder)
+
           }else{
             showRows(tab)
           } 
@@ -597,29 +598,29 @@ function showRows(rowType, array, faction_id){
                       date_acc= new Date(markers[i].dateAccessed)
 
                       if( markers[i].isFavorite == 0){
-                        favorite ="<td><i id='"+ markers[i].id+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>"
+                        favorite ="<td><i id='"+ markers[i].bookmark__id+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>"
                       }else{
-                        favorite ="<td><i id='"+ markers[i].id+"' class='fas fa-star' style='cursor: pointer; color:red' onclick='favorite_item(this.id)'></i></td>"
+                        favorite ="<td><i id='"+ markers[i].bookmark__id+"' class='fas fa-star' style='cursor: pointer; color:red' onclick='favorite_item(this.id)'></i></td>"
                       }
 
-                      if(markers[i].websiteTitle == "Springeropen"){
+                      if(markers[i].bookmark__websiteTitle == "Springeropen"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
-                        } else if(markers[i].websiteTitle == "Sciencedirect"){
+                        } else if(markers[i].bookmark__websiteTitle == "Sciencedirect"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 25px;'></td>"
                         } 
 
                        $('#itemArea').append(
                         "<tr>"+
                         sitelogo +
-                        "<td>"+ markers[i].itemType +  "</td>"+
-                        "<td><a href='"+ markers[i].url+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i].id +","+i+")'>" + markers[i].title +  "</span></a></td>"+
+                        "<td>"+ markers[i].bookmark__itemType +  "</td>"+
+                        "<td><a href='"+ markers[i].bookmark__url+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i].bookmark__id +","+i+")'>" + markers[i].bookmark__title +  "</span></a></td>"+
 
                         "<td>" + date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5) + "</td>" +
                         "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
                         "<td><i id='"+ markers[i].id +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
 
 
-                         "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ markers[i].id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
+                         "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ markers[i].bookmark__id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
                          "<div id='folderList_dropdown"+i+"' class='dropdown-content' style='min-width: 15%; margin-left: -8% '>"+
                          "<ul id='add_to_folderList_ul"+i+"'>"+
                      
@@ -630,7 +631,7 @@ function showRows(rowType, array, faction_id){
 
 
                           favorite+
-                        "<td><i id='"+ markers[i].id+"' class='fas fa-trash-alt' style='cursor: pointer; font-size: 90%' onclick='delete_item(this.id,"+i+","+1+")'></i></td>" +
+                        "<td><i id='"+ markers[i].bookmark__id+"' class='fas fa-trash-alt' style='cursor: pointer; font-size: 90%' onclick='delete_item(this.id,"+i+","+1+")'></i></td>" +
                        
 
                        "</tr>"
@@ -650,31 +651,28 @@ function showRows(rowType, array, faction_id){
         for(i=0; i< markers.length;i++){
 
             if( markers[i].isRemoved == 1){
-              if(typeof(markers[i].dateAccessed) == 'string')
-                date_acc= new Date(markers[i].dateAccessed+'Z')
-              else
                 date_acc= new Date(markers[i].dateAccessed)
                 date_removed= new Date(markers[i].date_removed)
               // } 
-              if(markers[i].websiteTitle == "Springeropen.com"){
+              if(markers[i].bookmark__websiteTitle == "Springeropen"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
-                        } else if(markers[i].websiteTitle == "Sciencedirect.com"){
+                        } else if(markers[i].bookmark__websiteTitle == "Sciencedirect"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 25px;'></td>"
                         } 
                    
 
               $('#itemArea').append(
-                "<tr class='clickable-row' data-href='" + markers[i].url + "'>" +
+                "<tr class='clickable-row' data-href='" + markers[i].bookmark__url + "'>" +
 
                 sitelogo+
-                "<td>"+ markers[i].itemType +  "</td>"+
-                "<td><a href='"+ markers[i].url+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i].id +","+i+")'>" + markers[i].title +  "</span></a></td>"+
+                "<td>"+ markers[i].bookmark__itemType +  "</td>"+
+                "<td><a href='"+ markers[i].bookmark__url+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i].bookmark__id +","+i+")'>" + markers[i].bookmark__title +  "</span></a></td>"+
 
                 "<td>" +  date_removed.toDateString().slice(3,)+" "+date_removed.toTimeString().slice(0,5)  + "</td>" +
                "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
 
-                "<td><i id='"+ markers[i].id+"' class='fas fa-undo' style='cursor: pointer' onclick='delete_item(this.id,"+i+", "+0+")'></i></td>" +
-                "<td><i id='"+ markers[i].id+"' class='fas fa-trash-alt' style='cursor: pointer' onclick='permanentdelete_item(this.id)'></i></td>" +
+                "<td><i id='"+ markers[i].bookmark__id+"' class='fas fa-undo' style='cursor: pointer' onclick='delete_item(this.id,"+i+", "+0+")'></i></td>" +
+                "<td><i id='"+ markers[i].bookmark__id+"' class='fas fa-trash-alt' style='cursor: pointer' onclick='permanentdelete_item(this.id)'></i></td>" +
 
               
                       
@@ -753,36 +751,34 @@ function showRows(rowType, array, faction_id){
                 if( markers[i].isRemoved == 0 & days <= 7){
                    
 
-                      date_add= new Date(markers[i].dateAdded+'Z')
-                      if(typeof(markers[i].dateAccessed) == 'string')
-                        date_acc= new Date(markers[i].dateAccessed+'Z')
-                      else
+                      date_add= new Date(markers[i].dateAdded)
+
                         date_acc= new Date(markers[i].dateAccessed)
 
                       if( markers[i].isFavorite == 0){
-                        favorite ="<td><i id='"+ markers[i].id+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>"
+                        favorite ="<td><i id='"+ markers[i].bookmark__id+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>"
                       }else{
-                        favorite ="<td><i id='"+ markers[i].id+"' class='fas fa-star' style='cursor: pointer; color:red' onclick='favorite_item(this.id)'></i></td>"
+                        favorite ="<td><i id='"+ markers[i].bookmark__id+"' class='fas fa-star' style='cursor: pointer; color:red' onclick='favorite_item(this.id)'></i></td>"
                       }
 
-                      if(markers[i].websiteTitle == "Springeropen.com"){
+                      if(markers[i].bookmark__websiteTitle == "Springeropen"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
-                        } else if(markers[i].websiteTitle == "Sciencedirect.com"){
+                        } else if(markers[i].bookmark__websiteTitle == "Sciencedirect"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 25px;'></td>"
                         } 
 
                        $('#itemArea').append(
                         "<tr>"+
                         sitelogo +
-                        "<td>"+ markers[i].itemType +  "</td>"+
-                        "<td><a href='"+ markers[i].url+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i].id +","+i+")'>" + markers[i].title +  "</span></a></td>"+
+                        "<td>"+ markers[i].bookmark__itemType +  "</td>"+
+                        "<td><a href='"+ markers[i].bookmark__url+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i].bookmark__id +","+i+")'>" + markers[i].bookmark__title +  "</span></a></td>"+
 
                         "<td>" + date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5) + "</td>" +
                         "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
                         "<td><i id='"+ markers[i].id +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
 
 
-                         "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ markers[i].id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
+                         "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ markers[i].bookmark__id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
                          "<div id='folderList_dropdown"+i+"' class='dropdown-content' style='min-width: 15%; margin-left: -8% '>"+
                          "<ul id='add_to_folderList_ul"+i+"'>"+
                      
@@ -793,7 +789,7 @@ function showRows(rowType, array, faction_id){
 
 
                           favorite+
-                        "<td><i id='"+ markers[i].id+"' class='fas fa-trash-alt' style='cursor: pointer; font-size: 90%' onclick='delete_item(this.id,"+i+","+1+")'></i></td>" +
+                        "<td><i id='"+ markers[i].bookmark__id+"' class='fas fa-trash-alt' style='cursor: pointer; font-size: 90%' onclick='delete_item(this.id,"+i+","+1+")'></i></td>" +
                        
 
                        "</tr>"
@@ -815,36 +811,34 @@ function showRows(rowType, array, faction_id){
                
                 if( markers[i].isRemoved == 0 & days <= 3){
 
-                      date_add= new Date(markers[i].dateAdded+'Z')
-                      if(typeof(markers[i].dateAccessed) == 'string')
-                        date_acc= new Date(markers[i].dateAccessed+'Z')
-                      else
+                        date_add= new Date(markers[i].dateAdded)
+
                         date_acc= new Date(markers[i].dateAccessed)
 
                       if( markers[i].isFavorite == 0){
-                        favorite ="<td><i id='"+ markers[i].id+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>"
+                        favorite ="<td><i id='"+ markers[i].bookmark__id+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id)'></i></td>"
                       }else{
-                        favorite ="<td><i id='"+ markers[i].id+"' class='fas fa-star' style='cursor: pointer; color:red' onclick='favorite_item(this.id)'></i></td>"
+                        favorite ="<td><i id='"+ markers[i].bookmark__id+"' class='fas fa-star' style='cursor: pointer; color:red' onclick='favorite_item(this.id)'></i></td>"
                       }
 
-                      if(markers[i].websiteTitle == "Springeropen.com"){
+                      if(markers[i].bookmark__websiteTitle == "Springeropen"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
-                        } else if(markers[i].websiteTitle == "Sciencedirect.com"){
+                        } else if(markers[i].bookmark__websiteTitle == "Sciencedirect"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 25px;'></td>"
                         } 
 
                        $('#itemArea').append(
                         "<tr>"+
                         sitelogo +
-                        "<td>"+ markers[i].itemType +  "</td>"+
-                        "<td><a href='"+ markers[i].url+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i].id +","+i+")'>" + markers[i].title +  "</span></a></td>"+
+                        "<td>"+ markers[i].bookmark__itemType +  "</td>"+
+                        "<td><a href='"+ markers[i].bookmark__url+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i].bookmark__id +","+i+")'>" + markers[i].bookmark__title +  "</span></a></td>"+
 
                         "<td>" + date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5) + "</td>" +
                         "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
                         "<td><i id='"+ markers[i].id +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
 
 
-                         "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ markers[i].id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
+                         "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ markers[i].bookmark__id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
                          "<div id='folderList_dropdown"+i+"' class='dropdown-content' style='min-width: 15%; margin-left: -8% '>"+
                          "<ul id='add_to_folderList_ul"+i+"'>"+
                      
@@ -855,7 +849,7 @@ function showRows(rowType, array, faction_id){
 
 
                           favorite+
-                        "<td><i id='"+ markers[i].id+"' class='fas fa-trash-alt' style='cursor: pointer; font-size: 90%' onclick='delete_item(this.id,"+i+","+1+")'></i></td>" +
+                        "<td><i id='"+ markers[i].bookmark__id+"' class='fas fa-trash-alt' style='cursor: pointer; font-size: 90%' onclick='delete_item(this.id,"+i+","+1+")'></i></td>" +
                        
 
                        "</tr>"
@@ -864,6 +858,7 @@ function showRows(rowType, array, faction_id){
                 }  
          
           }
+
     } else if(rowType =='favorite'){
           $("#group_detail_ul").empty();
           document.getElementById(rowType).style.backgroundColor= "#c9c9c9";
@@ -876,41 +871,34 @@ function showRows(rowType, array, faction_id){
                       date_acc= new Date(markers[i].dateAccessed)
                    
 
-                    if(markers[i].websiteTitle == "Springeropen.com"){
+                    if(markers[i].bookmark__websiteTitle == "Springeropen"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
-                        } else if(markers[i].websiteTitle == "Sciencedirect.com"){
+                        } else if(markers[i].bookmark__websiteTitle == "Sciencedirect"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/science direct.PNG' %}' style='height: 25px;'></td>"
                         } 
               $('#itemArea').append(
                 "<tr>"+
                 sitelogo +
-                "<td>"+ markers[i].itemType +  "</td>"+
-                "<td><a href='"+ markers[i].url+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i].id +","+i+")'>" + markers[i].title +  "</span></a></td>"+
+                "<td>"+ markers[i].bookmark__itemType +  "</td>"+
+                "<td><a href='"+ markers[i].bookmark__url+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i].id +","+i+")'>" + markers[i].bookmark__title +  "</span></a></td>"+
 
                "<td>" + date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5) + "</td>" +
                         "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
                "<td><i id='"+ markers[i].id+"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
                            
-                          "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ markers[i].id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
+                          "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ markers[i].bookmark__id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
                          "<div id='folderList_dropdown"+i+"' class='dropdown-content' style='min-width: 15%; margin-left: -8% '>"+
                          "<ul id='add_to_folderList_ul"+i+"'>"+
                      
                               
                           "</ul> </div> </td>" +
 
-                          "<td><i id='"+ markers[i].id+"' class='fas fa-minus' style='cursor: pointer;color:red' onclick='favorite_item(this.id)'></i></td>" +
-                        
-                        
-                       
-                
-        
-        
-
-
-
+                          "<td><i id='"+ markers[i].bookmark__id+"' class='fas fa-minus' style='cursor: pointer;color:red' onclick='favorite_item(this.id)'></i></td>" +
                "</tr>"
 
+
                 );  
+
             }
          
         }
@@ -925,28 +913,28 @@ function showRows(rowType, array, faction_id){
 
                       sitelogo=""
                       if( array[i].isFavorite == false | array[i].isFavorite == 0){
-                        favorite ="<td><i id='"+ array[i].id+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id,"+i+")'></i></td>"
+                        favorite ="<td><i id='"+ array[i].bookmark__id+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id,"+i+")'></i></td>"
                       }else{
-                        favorite ="<td><i id='"+ array[i].id+"' class='fas fa-star' style='cursor: pointer; color:red' onclick='favorite_item(this.id,"+i+")'></i></td>"
+                        favorite ="<td><i id='"+ array[i].bookmark__id+"' class='fas fa-star' style='cursor: pointer; color:red' onclick='favorite_item(this.id,"+i+")'></i></td>"
                       }
 
-                      if(array[i].websiteTitle == "Springeropen"){
+                      if(array[i].bookmark__websiteTitle == "Springeropen"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
-                        } else if(array[i].websiteTitle == "Sciencedirect.com"){
+                        } else if(array[i].bookmark__websiteTitle == "Sciencedirect.com"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/science direct.PNG' %}' style='height: 25px;'></td>"
                         } 
                        $('#itemArea').append(
                         "<tr>"+
                         sitelogo +
-                        "<td>"+ array[i].itemType +  "</td>"+
-                       "<td><a href='"+ array[i].url+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ array[i].id +","+i+")'>" + array[i].title +  "</span></a></td>"+
+                        "<td>"+ array[i].bookmark__itemType +  "</td>"+
+                       "<td><a href='"+ array[i].bookmark__url+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ array[i].bookmark__id +","+i+")'>" + array[i].bookmark__title +  "</span></a></td>"+
 
                         "<td>" + date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5) + "</td>" +
                         "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
                         "<td><i id='"+ array[i].id +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
 
 
-                         "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ array[i].id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
+                         "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ array[i].bookmark__id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
                          "<div id='folderList_dropdown"+i+"' class='dropdown-content' style='min-width: 15%; margin-left: -8% '>"+
                          "<ul id='add_to_folderList_ul"+i+"'>"+
                      
@@ -957,7 +945,7 @@ function showRows(rowType, array, faction_id){
 
 
 
-                        "<td><i id='"+ array[i].id+"' class='fas fa-trash-alt' style='cursor: pointer; font-size: 90%' onclick='remove_from_faction("+faction_id+", 0,"+array[i].id+")'></i></td>" +
+                        "<td><i id='"+ array[i].id+"' class='fas fa-trash-alt' style='cursor: pointer; font-size: 90%' onclick='remove_from_faction("+faction_id+", 0,"+array[i].bookmark__id+")'></i></td>" +
                        
 
                        "</tr>"
@@ -978,21 +966,21 @@ function showRows(rowType, array, faction_id){
                         date_acc= new Date(array[i].dateAccessed)
                         sitlogo=""
                       if( array[i].isFavorite == 0){
-                        favorite ="<td><i id='"+ array[i].id+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id,"+i+")'></i></td>"
+                        favorite ="<td><i id='"+ array[i].bookmark__id+"' class='far fa-star' style='cursor: pointer' onclick='favorite_item(this.id,"+i+")'></i></td>"
                       }else{
-                        favorite ="<td><i id='"+ array[i].id+"' class='fas fa-star' style='cursor: pointer; color:red' onclick='favorite_item(this.id,"+i+")'></i></td>"
+                        favorite ="<td><i id='"+ array[i].bookmark__id+"' class='fas fa-star' style='cursor: pointer; color:red' onclick='favorite_item(this.id,"+i+")'></i></td>"
                       }
 
-                      if(array[i].websiteTitle == "Springeropen"){
+                      if(array[i].bookmark__websiteTitle == "Springeropen"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
-                        } else if(array[i].websiteTitle == "Sciencedirect.com"){
+                        } else if(array[i].bookmark__websiteTitle == "Sciencedirect.com"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/science direct.PNG' %}' style='height: 25px;'></td>"
                         } 
                        $('#itemArea').append(
                         "<tr>"+
                         sitelogo +
-                        "<td>"+ array[i].itemType +  "</td>"+
-                       "<td><a href='"+ array[i].url+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ array[i].id +","+i+")'>" + array[i].title +  "</span></a></td>"+
+                        "<td>"+ array[i].bookmark__itemType +  "</td>"+
+                       "<td><a href='"+ array[i].bookmark__url+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ array[i].id +","+i+")'>" + array[i].bookmark__title +  "</span></a></td>"+
 
                         "<td>" + date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5) + "</td>" +
                         "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
@@ -1010,7 +998,7 @@ function showRows(rowType, array, faction_id){
 
 
 
-                        "<td><i id='"+ array[i].id+"' class='fas fa-trash-alt' style='cursor: pointer; font-size: 90%' onclick='remove_from_faction("+faction_id+",0 ,  "+array[i].id+")'></i></td>" +
+                        "<td><i id='' class='fas fa-trash-alt' style='cursor: pointer; font-size: 90%' onclick='remove_from_faction("+faction_id+",0 ,  "+array[i].id+")'></i></td>" +
                        
 
                        "</tr>"
@@ -1020,7 +1008,7 @@ function showRows(rowType, array, faction_id){
         
         
       }
-      get_detail(faction_id, true)
+      // get_detail(faction_id, true)
     }
 
 
@@ -1092,7 +1080,7 @@ function get_detail(clicked_id, isGroup_detail){
    if(isGroup_detail == true){
 
       
-    console.log(groups)
+
         
           for(i=0;i< groups.length;i++){
             if(groups[i].id == clicked_id){
@@ -1289,9 +1277,16 @@ function bookmarkToFolder_dropdown(clicked_id, bookmark_id) {
               
                 $('#add_to_folderList_ul'+clicked_id).append(
                 "<li id='groups"+groups[i].id+"' style='padding-left:20%; cursor:pointer' onclick='submit_add_folder(this.id,"+bookmark_id+")'>"+groups[i].name+"</li>");
+                try{
+                  if(groups[i].id == groups[i+1].id )
+                    i++
+                } catch{
+                  
+                }  
               
             }
             }
+                
           
             
         
@@ -1371,7 +1366,12 @@ function display_dropdown(dropdown_type) {
                             "<div>delete</div>"+
                               
                           "</ul> </div></center>");
-                        
+                        try{
+                          if(groups[i].id == groups[i+1].id )
+                              i++
+                        } catch{
+                          
+                        } 
                   }
           } 
 

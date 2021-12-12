@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Folder, User_bookmark
+from .models import Folder, Bookmark_detail
 
 
 class FolderModelSerializer(serializers.ModelSerializer):
@@ -11,7 +11,7 @@ class FolderModelSerializer(serializers.ModelSerializer):
 
 class UserBookmarkModelSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User_bookmark
+        model = Bookmark_detail
         fields = "__all__"
 
 
