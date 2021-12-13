@@ -617,7 +617,7 @@ function showRows(rowType, array, faction_id){
 
                         "<td>" + date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5) + "</td>" +
                         "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
-                        "<td><i id='"+ markers[i].id +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
+                        "<td><i id='"+ markers[i].bookmark__id +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
 
 
                          "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ markers[i].bookmark__id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
@@ -775,7 +775,7 @@ function showRows(rowType, array, faction_id){
 
                         "<td>" + date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5) + "</td>" +
                         "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
-                        "<td><i id='"+ markers[i].id +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
+                        "<td><i id='"+ markers[i].bookmark__id +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
 
 
                          "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ markers[i].bookmark__id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
@@ -835,7 +835,7 @@ function showRows(rowType, array, faction_id){
 
                         "<td>" + date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5) + "</td>" +
                         "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
-                        "<td><i id='"+ markers[i].id +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
+                        "<td><i id='"+ markers[i].bookmark__id +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
 
 
                          "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ markers[i].bookmark__id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
@@ -884,7 +884,7 @@ function showRows(rowType, array, faction_id){
 
                "<td>" + date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5) + "</td>" +
                         "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
-               "<td><i id='"+ markers[i].id+"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
+               "<td><i id='"+ markers[i].bookmark__id+"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
                            
                           "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ markers[i].bookmark__id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
                          "<div id='folderList_dropdown"+i+"' class='dropdown-content' style='min-width: 15%; margin-left: -8% '>"+
@@ -1160,27 +1160,27 @@ function get_detail(clicked_id, isGroup_detail){
         if(faction_markers[i].id == id){
           
 
-            var added = new Date( markers[i].dateAdded);
-             var accessed = new Date( markers[i].dateAccessed);
+            var added = new Date( faction_markers[i].dateAdded);
+             var accessed = new Date( faction_markers[i].dateAccessed);
               
               
-          $('#detailArea').append("<tr ><td style='text-align: right; vertical-align:top'> Website: </td>"+ "<td> <a href='https://"+markers[i].bookmark__websiteTitle+ "'>"+ markers[i].bookmark__websiteTitle +  "</a></td></tr>" );  
-          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Item type: </td>"+ "<td>"+ markers[i].bookmark__itemType +  "</td></tr>" );  
-          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> URL: </td>"+ "<td><a href='"+markers[i].bookmark__url+"' target='_blank'>"+ markers[i].bookmark__url +  "</td></tr>" );  
-          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Title: </td>"+ "<td>"+ markers[i].bookmark__title +  "</td></tr>" );  
-          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Author: </td>"+ "<td>"+ markers[i].bookmark__author +  "</td></tr>" );  
-          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Abstract: </td>"+ "<td>"+ markers[i].bookmark__description +  "</td></tr>" );  
-          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Collection: </td>"+ "<td>"+ markers[i].bookmark__journalItBelongs +  "</td></tr>" );  
-          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Publication Year: </td>"+ "<td>"+ markers[i].bookmark__publicationYear +  "</td></tr>" );  
+          $('#detailArea').append("<tr ><td style='text-align: right; vertical-align:top'> Website: </td>"+ "<td> <a href='https://"+faction_markers[i].bookmark__websiteTitle+ "'>"+ faction_markers[i].bookmark__websiteTitle +  "</a></td></tr>" );  
+          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Item type: </td>"+ "<td>"+ faction_markers[i].bookmark__itemType +  "</td></tr>" );  
+          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> URL: </td>"+ "<td><a href='"+faction_markers[i].bookmark__url+"' target='_blank'>"+ markers[i].bookmark__url +  "</td></tr>" );  
+          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Title: </td>"+ "<td>"+ faction_markers[i].bookmark__title +  "</td></tr>" );  
+          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Author: </td>"+ "<td>"+ faction_markers[i].bookmark__author +  "</td></tr>" );  
+          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Abstract: </td>"+ "<td>"+ faction_markers[i].bookmark__description +  "</td></tr>" );  
+          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Collection: </td>"+ "<td>"+ faction_markers[i].bookmark__journalItBelongs +  "</td></tr>" );  
+          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Publication Year: </td>"+ "<td>"+ faction_markers[i].bookmark__publicationYear +  "</td></tr>" );  
           $('#detailArea').append(
-           "<tr><td style='text-align: right; vertical-align:top'> Publisher: </td>"+ "<td>"+ markers[i].bookmark__publisher +  "</td></tr>" +
-           "<tr><td style='text-align: right; vertical-align:top'> Volume: </td>"+ "<td>"+ markers[i].bookmark__volume +  "</td></tr>" +
-           "<tr><td style='text-align: right; vertical-align:top'> Edition: </td>"+ "<td>"+ markers[i].bookmark__edition +  "</td></tr>" +
-           "<tr><td style='text-align: right; vertical-align:top'> Citation: </td>"+ "<td>"+ markers[i].bookmark__numOfCitation +  "</td></tr>" +
-           "<tr><td style='text-align: right; vertical-align:top'> Downloads: </td>"+ "<td>"+ markers[i].bookmark__numOfDownload +  "</td></tr>" +
-           "<tr><td style='text-align: right; vertical-align:top'> Pages: </td>"+ "<td>"+ markers[i].bookmark__numOfPages +  "</td></tr>" +
-           "<tr><td style='text-align: right; vertical-align:top'> DOI: </td>"+ "<td>"+ markers[i].bookmark__DOI +  "</td></tr>" +
-           "<tr><td style='text-align: right; vertical-align:top'> ISSN: </td>"+ "<td>"+ markers[i].bookmark__ISSN +  "</td></tr>" +
+           "<tr><td style='text-align: right; vertical-align:top'> Publisher: </td>"+ "<td>"+ faction_markers[i].bookmark__publisher +  "</td></tr>" +
+           "<tr><td style='text-align: right; vertical-align:top'> Volume: </td>"+ "<td>"+ faction_markers[i].bookmark__volume +  "</td></tr>" +
+           "<tr><td style='text-align: right; vertical-align:top'> Edition: </td>"+ "<td>"+ faction_markers[i].bookmark__edition +  "</td></tr>" +
+           "<tr><td style='text-align: right; vertical-align:top'> Citation: </td>"+ "<td>"+ faction_markers[i].bookmark__numOfCitation +  "</td></tr>" +
+           "<tr><td style='text-align: right; vertical-align:top'> Downloads: </td>"+ "<td>"+ faction_markers[i].bookmark__numOfDownload +  "</td></tr>" +
+           "<tr><td style='text-align: right; vertical-align:top'> Pages: </td>"+ "<td>"+ faction_markers[i].bookmark__numOfPages +  "</td></tr>" +
+           "<tr><td style='text-align: right; vertical-align:top'> DOI: </td>"+ "<td>"+ faction_markers[i].bookmark__DOI +  "</td></tr>" +
+           "<tr><td style='text-align: right; vertical-align:top'> ISSN: </td>"+ "<td>"+ faction_markers[i].bookmark__ISSN +  "</td></tr>" +
            
            "<tr><td style='text-align: right; vertical-align:top'> Date added: </td>"+ "<td>"+ added.toDateString().slice(3,)+" "+added.toTimeString().slice(0,5) +  "</td></tr>"+
            "<tr><td style='text-align: right; vertical-align:top'> Date Accessed: </td>"+ "<td>"+ accessed.toDateString().slice(3,)+" "+accessed.toTimeString().slice(0,5) +  "</td></tr>" 

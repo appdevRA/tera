@@ -623,6 +623,7 @@ class TeraDashboardView(View):
 
 			elif action == 'get_folder_bookmarks':
 				fID = request.POST['fID']
+				
 				queryset = Bookmark.objects.select_related("bookmark").filter(
 																		folder__id=fID, user=request.user, isRemoved=0
 																		).values(
@@ -651,9 +652,8 @@ class TeraDashboardView(View):
 				return JsonResponse(context)
 
 			elif action == 'get_group_bookmarks':
-				gID = request.POST['gID']
 				bookmarks = Bookmark.objects.select_related("bookmark").filter(
-																		group__id=gID, isRemoved=0
+																		group__id=request.POST['gID'], isRemoved=0
 																		).values(
 																			"id", "bookmark__id", "isFavorite", "dateAccessed", "dateAdded", 
 																			"isRemoved", "date_removed",
