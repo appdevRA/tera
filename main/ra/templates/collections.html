@@ -931,7 +931,7 @@ function showRows(rowType, array, faction_id){
 
                         "<td>" + date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5) + "</td>" +
                         "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
-                        "<td><i id='"+ array[i].id +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
+                        "<td><i id='"+ array[i].bookmark__id +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
 
 
                          "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ array[i].bookmark__id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
@@ -1119,7 +1119,7 @@ function get_detail(clicked_id, isGroup_detail){
       $("#group_detail_ul").empty();
     for(i=0; i< markers.length;i++){
       console.log(markers[i].id+"| bookmark id: "+ id)
-         if(markers[i].id == id){
+         if(markers[i].bookmark__id == id){
              
              var added = new Date( markers[i].dateAdded);
              var accessed = new Date( markers[i].dateAccessed);

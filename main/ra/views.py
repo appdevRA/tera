@@ -70,10 +70,10 @@ class practice(View):
 		# 										.order_by("-folder_count"))#"id","title","user",))
 
 
-		queryAll = User.objects.select_related('User_bookmark').filter(id=2).values("user_bookmark__title","first_name","user_bookmark__keyword").all() # this retrieves all records
-		# print(a)
-		for a in queryAll:
-			print(a)
+		# queryAll = User.objects.select_related('User_bookmark').filter(id=2).values("user_bookmark__title","first_name","user_bookmark__keyword").all() # this retrieves all records
+		# # print(a)
+		# for a in queryAll:
+		# 	print(a)
 			# a = modes(queryAll, request.user.id).to_dict("records") 
 
 			# for b in a:
@@ -84,13 +84,13 @@ class practice(View):
 			# print("recommended","\n",a )
 			# recommendation = list(dict.fromkeys(modes(queryAll, request.user.id) ))
 		
-		# a= Department.objects.create(name='College of Computer Studies', abbv='CCS')
-		# User.objects.create(username='18-5126-269', password =make_password('12345'), department=a)
+		a= Department.objects.create(name='College of Computer Studies', abbv='CCS')
+		User.objects.create(username='18-5126-269', password =make_password('12345'), first_name="yanni", last_name="mondejar", department=a)
 
 
-		# User.objects.create(username='18-5126-270', password =make_password('12345'), department=a)
+		User.objects.create(username='18-5126-270', password =make_password('12345'), first_name="jarry", last_name="emorecha", department=a)
 
-		# User.objects.create(username='mondejar2', password = make_password('mondejar.12345'), department_id=2)
+		User.objects.create(username='18-5126-271', password = make_password('12345'), first_name="ryan ", last_name="talatagod", department = a)
 		
 
 		# cursor = connection.cursor()   
