@@ -45,6 +45,50 @@ class addUser(View):
 		
 		return render(request,'addUser.html')
 
+class adminSiteView(View):
+	def get(self, request):
+		return render(request, 'adminSite.html')
+
+class adminChartView(View):
+	def get(self, request):
+		return render(request, 'adminCharts.html')
+
+
+
+class adminTableView(View):
+	def get(self, request):
+		return render(request, 'adminTables.html')
+
+
+
+class adminActiveUserView(View):
+	def get(self, request):
+		return render(request, 'adminActiveUser.html')
+
+
+
+class adminCollegesView(View):
+	def get(self, request):
+		return render(request, 'adminColleges.html')
+
+
+
+class adminSiteAccessView(View):
+	def get(self, request):
+		return render(request, 'adminSiteAccess.html')
+
+class adminDissertationsView(View):
+	def get(self, request):
+		return render(request, 'adminDissertations.html')
+
+class adminDissertationsAccessView(View):
+	def get(self, request):
+		return render(request, 'dissertationAccess.html')
+
+class adminUserUpdateView(View):
+	def get(self, request):
+		return render(request, 'adminUserUpdate.html')
+
 		
 
 class practice3(View):
