@@ -112,8 +112,8 @@
                             </a>
                             <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link" href="layout-static.html">Import CSV File</a>
-                                    <a class="nav-link" href="{% url 'ra:admin_registration_view' %}">Register User</a>
+                                    <a class="nav-link" href="{% url 'ra:admin_registration_view' rtype='i' %}">Import CSV File</a>
+                                    <a class="nav-link" href="{% url 'ra:admin_registration_view' rtype='s' %}">Register User</a>
                                     
                                 </nav>
                             </div>
@@ -269,7 +269,7 @@
         <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
         <script src="{% static 'js/datatables-simple-demo.js' %}"></script>
         <!-- Footer for Registration -->
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+        <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script> -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
     </body>

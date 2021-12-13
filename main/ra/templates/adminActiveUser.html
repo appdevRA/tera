@@ -14,8 +14,9 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="//code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css">
           <link rel="stylesheet" href="/resources/demos/style.css">
-          <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
-          <script src="https://code.jquery.com/ui/1.9.1/jquery-ui.js"></script>
+          <!-- <script src="https://code.jquery.com/jquery-3.6.0.js" crossorigin="anonymous"></script> -->
+          <!-- <script src="https://code.jquery.com/ui/1.9.1/jquery-ui.js"></script> -->
+
         <script>
             $( function() {
             $( "#startDate, #endDate" ).datepicker();
@@ -162,8 +163,8 @@
                             </a>
                             <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link" href="layout-static.html">Import CSV File</a>
-                                    <a class="nav-link" href="{% url 'ra:admin_registration_view' %}">Register User</a>
+                                    <a class="nav-link" href="{% url 'ra:admin_registration_view' rtype='i' %}">Import CSV File</a>
+                                    <a class="nav-link" href="{% url 'ra:admin_registration_view' rtype='s' %}">Register User</a>
                                     
                                 </nav>
                             </div>
@@ -242,8 +243,8 @@
                                         <option value="3">Months</option>
                                         <option value="4">Semester</option>
                                     </select>
-                                    <input type="text" id="startDate" placeholder="Start Date"  />
-                                    <input type="text" id="endDate" placeholder="End Date"  />
+                                    <input type="date" id="startDate" placeholder="Start Date"  />
+                                    <input type="date" id="endDate" placeholder="End Date"  />
                                 </center>
                                
                             </div>

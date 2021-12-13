@@ -73,8 +73,8 @@
                             </a>
                             <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link" href="layout-static.html">Import CSV File</a>
-                                    <a class="nav-link" href="{% url 'ra:admin_registration_view' %}">Register User</a>
+                                    <a class="nav-link" href="{% url 'ra:admin_registration_view' rtype='i' %}">Import CSV File</a>
+                                    <a class="nav-link" href="{% url 'ra:admin_registration_view' rtype='s' %}">Register User</a>
                                     
                                 </nav>
                             </div>
@@ -87,7 +87,7 @@
                                     <div class="collapse" id="collapsePages" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordionPages">
                                         <nav class="sb-sidenav-menu-nested nav">
                                             <a class="nav-link" href="{% url 'ra:admin_site_view' %}">Site</a>
-                                    <a class="nav-link" href="{% url 'ra:admin_registration_view' %}">Dissertations</a>
+                                    <a class="nav-link" href="{% url 'ra:admin_dissertations_access_view' %}">Dissertations</a>
                                         </nav>
                                     </div>
 
