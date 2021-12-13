@@ -623,7 +623,7 @@ class TeraDashboardView(View):
 
 			elif action == 'get_folder_bookmarks':
 				fID = request.POST['fID']
-				
+
 				queryset = Bookmark.objects.select_related("bookmark").filter(
 																		folder__id=fID, user=request.user, isRemoved=0
 																		).values(
@@ -787,14 +787,14 @@ class TeraDashboardView(View):
 				gID = request.POST['gID']
 				print(gID)
 				
-				if User_group.objects.filter(id = gID,member__username= User.objects.get(username=username)).exists():
+				if Group.objects.filter(id = gID,member__username= User.objects.get(username=username)).exists():
 					context={
 					"result":"member"
 					}
 					print('member')
 					return JsonResponse(context)
 
-				elif User_group.objects.filter(id = gID,owner__username= username).exists():
+				elif Group.objects.filter(id = gID,owner__username= username).exists():
 					context={
 					"result":"owner"
 					}
@@ -802,7 +802,7 @@ class TeraDashboardView(View):
 					return JsonResponse(context)
 
 				elif User.objects.filter(username=username).exists():
-					User_group.objects.get(id=gID).member.add(User.objects.get(username=username))
+					Group.objects.get(id=gID).member.add(User.objects.get(username=username))
 					print("added")
 					context={
 					"result":"added"
