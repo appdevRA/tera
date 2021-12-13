@@ -315,6 +315,10 @@ tr:hover {
             
                  
         </div>
+        <br>
+        <br>
+        <br>
+        <br>
         <div id="recommendation">
               <h4>Recommended For You</h4>
               <div class="wrapper">
@@ -327,12 +331,11 @@ tr:hover {
 
               <th >Title</th>
 
-              <th></th>
-              <th></th>
+       
               </thead>
               {% for item in recommendation %}
               <tr>
-              <td> {{item.title}} </td>
+              <td id = "recommendation{{item.bookmark__id}}" style="max-width: 30ch;"> {{item.bookmark__title}} </td>
 
               <td><i class='fa fa-trash'></i></td>
               <td><i class='fa fa-bookmark' ></i></td>
@@ -390,7 +393,7 @@ tr:hover {
     var group_id
 
 $(document).ready(function($) {
- console.log(groups)
+ // console.log(groups)
 
   showRows('all')
   // $('#addtoFolderModal').modal('show') 
@@ -1008,7 +1011,7 @@ function showRows(rowType, array, faction_id){
         
         
       }
-      get_detail(faction_id, true)
+      
     }
 
 
@@ -1071,7 +1074,7 @@ function clearStyle(){
     // document.getElementById('recentAddedIcon').style.color= "grey";
     // document.getElementById('recentReadIcon').style.color= "grey";
 }
-function get_detail(clicked_id, isGroup_detail){
+function get_detail(clicked_id, isGroup_detail, members){
     var id = parseInt(clicked_id);
     $("#group_detail_ul").empty();
     clearRow("detailTable")   
@@ -1079,39 +1082,27 @@ function get_detail(clicked_id, isGroup_detail){
 
    if(isGroup_detail == true){
 
-      console.log(groups)
-
-        
           for(i=0;i< groups.length;i++){
             if(groups[i].id == clicked_id){
-                console.log(groups[i])
+
                date = new Date(groups[i].date_created)
              $('#group_detail_ul').append("<br><div><b>Group name:</b> &nbsp; "+groups[i].name+"</div> "+
               // "<br><div><b>Description:</b>&nbsp; "+group[0]['description']+"</div>" +
               "<br><div><b>Owner:</b> &nbsp; "+groups[i].owner__first_name+" "+groups[i].owner__last_name +"</div>" + 
               "<br><div><b>Date created:</b>  &nbsp;"+ date.toDateString().slice(3,)+" "+date.toTimeString().slice(0,5)+"</div>" + 
-              "<br><div style='margin-left:-5%'><i class='fas fa-user-plus' style='font-size:90%; cursor:pointer;' href='#addMemberModal' data-toggle='modal' data-target='#addMemberModal'></i> &nbsp; <b>Member(s)</b>: </div>"+
-              "<div class='member' style='margin-left:25%'> "+ groups[i].member__first_name +" "+ groups[i].member__last_name +" </div>" 
+              "<br><div style='margin-left:-5%'><i class='fas fa-user-plus' style='font-size:90%; cursor:pointer;' href='#addMemberModal' data-toggle='modal' data-target='#addMemberModal'></i> &nbsp; <b>Member(s)</b>: </div>"
+ 
 
             ); 
-             try{
-                if(groups[i].name == groups[i+1].name){
-              
-                $('#group_detail_ul').append(
-                          "<div class='member' style='margin-left:25%'> "+ groups[i+1].member__first_name+" "+ groups[i+1].member__last_name +" </div>"  
-                          );
-                i++
-
-              }
-             } catch{}
-             
-             
-              // console.log(document.getElementById('group_detail').style.display = "block" )
 
             }
           }
            
-            
+            for(i=0;i<members.length;i++){
+                $('#group_detail_ul').append(
+                          "<div class='member' style='margin-left:25%'> "+ members[i].first_name+" "+ members[i].last_name +" </div>"  
+                          );
+              }
             
                 
       
@@ -1119,7 +1110,7 @@ function get_detail(clicked_id, isGroup_detail){
 
 
    }
-    if(tab != 'groups'){
+    else if(tab != 'groups'){
       $("#group_detail_ul").empty();
       for(i=0; i< markers.length;i++){
          if(markers[i].bookmark__id == id){
@@ -1161,7 +1152,7 @@ function get_detail(clicked_id, isGroup_detail){
       faction_markers= array
       for(i=0; i< faction_markers.length;i++){
         if(faction_markers[i].id == id){
-          
+
 
             var added = new Date( faction_markers[i].dateAdded);
              var accessed = new Date( faction_markers[i].dateAccessed);
@@ -1169,7 +1160,7 @@ function get_detail(clicked_id, isGroup_detail){
               
           $('#detailArea').append("<tr ><td style='text-align: right; vertical-align:top'> Website: </td>"+ "<td> <a href='https://"+faction_markers[i].bookmark__websiteTitle+ "'>"+ faction_markers[i].bookmark__websiteTitle +  "</a></td></tr>" );  
           $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Item type: </td>"+ "<td>"+ faction_markers[i].bookmark__itemType +  "</td></tr>" );  
-          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> URL: </td>"+ "<td><a href='"+faction_markers[i].bookmark__url+"' target='_blank'>"+ markers[i].bookmark__url +  "</td></tr>" );  
+          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> URL: </td>"+ "<td><a href='"+faction_markers[i].bookmark__url+"' target='_blank'>"+ faction_markers[i].bookmark__url +  "</td></tr>" );  
           $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Title: </td>"+ "<td>"+ faction_markers[i].bookmark__title +  "</td></tr>" );  
           $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Author: </td>"+ "<td>"+ faction_markers[i].bookmark__author +  "</td></tr>" );  
           $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Abstract: </td>"+ "<td>"+ faction_markers[i].bookmark__description +  "</td></tr>" );  
@@ -1552,10 +1543,10 @@ function display_faction_bookmarks(clicked_id, event){
                           },
                           success: function(response){
                               array = response.bookmarks
-                              
-                              // get_detail(ID, true)
-                              console.log(faction_id)
+                              members = response.member
+                              $("#detailArea").empty();
                               showRows('groups', array, ID)
+                              get_detail(faction_id, true, members)
                               try{
                                   document.getElementById(clicked_id).style.backgroundColor= "#c9c9c9";
                                   document.getElementById(clicked_id).style.color= "#800000";

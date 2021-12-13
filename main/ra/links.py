@@ -26,6 +26,7 @@ import statistics
 session= HTMLSession()
 
 def modes(allBookmarks,userID):
+    empty =[]
     title = ""
     userBookmarks = []
 
@@ -37,7 +38,7 @@ def modes(allBookmarks,userID):
     i=0
     while i < len(allBookmarks):
         didDelete= False
-        if allBookmarks[i]['user_id'] == userID:
+        if allBookmarks[i]['user'] == userID:
             
             userBookmarks.append(allBookmarks[i])
             del allBookmarks[i]
@@ -49,16 +50,16 @@ def modes(allBookmarks,userID):
 
 
     if len(allBookmarks) == 0:
-        return None
+        return empty
 
     metadata = pd.DataFrame(userBookmarks)
     modes =  metadata.mode(axis=0)
     if len(modes) > 1:
-        print("length of modes is: ", len(modes))
+        print(modes)
         highest = -1
         tfidf = TfidfVectorizer(stop_words='english')
-        modes['title'] = modes['title'].fillna('')
-        tfidf_matrix = tfidf.fit_transform(modes['title'])
+        modes['bookmark__title'] = modes['bookmark__title'].fillna('')
+        tfidf_matrix = tfidf.fit_transform(modes['bookmark__title'])
         cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
 
 
@@ -69,49 +70,49 @@ def modes(allBookmarks,userID):
                     summ = summ + column
 
             average = summ/(len(row))
-            print(average)
+            # print(average)
             if average >= highest:
                 highest = average
                 index = i
 
 
 
-        for i, item in enumerate(modes['title']):
+        for i, item in enumerate(modes['bookmark__title']):
             if index == i:
                 title = item
                 break
         # print(modes)
-        # print("titles is: ",title)
+        # print("mode is: ",title)
         return recommend(allBookmarks, title)
     else:
-        # print("mode is: ", modes)
-        return recommend(allBookmarks, modes)
+        # print("title is: ", modes["bookmark__title"])
+        return recommend(allBookmarks, modes["bookmark__title"])
 
 def recommend(bookmark_list, title):
 
-    print(title)
+    # print(title)
  
-    bookmark_list.append({"title": title})
+    bookmark_list.append({"bookmark__title": title})
 
     metadata = pd.DataFrame(bookmark_list)
     # print(metadata)
    
     tfidf = TfidfVectorizer(stop_words='english')
-    metadata['title'] = metadata['title'].fillna('')
-    tfidf_matrix = tfidf.fit_transform(metadata['title'])
+    metadata['bookmark__title'] = metadata['bookmark__title'].fillna('')
+    tfidf_matrix = tfidf.fit_transform(metadata['bookmark__title'])
   
     cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
     
-    indices = pd.Series(metadata.index, index=metadata['title']).drop_duplicates()
+    indices = pd.Series(metadata.index, index=metadata['bookmark__title']).drop_duplicates()
     
     try:
         idx = indices[title]
     except:
         try:
-            idx = indices[title['title']]
+            idx = indices[title['bookmark__title']]
         except:
             try:
-                idx = indices[title[0]['title']]
+                idx = indices[title[0]['bookmark__title']]
             except:
                 idx = indices[title[0]]
 
@@ -126,14 +127,14 @@ def recommend(bookmark_list, title):
     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
 
     # Get the scores of the 10 most similar movies
-    sim_scores = sim_scores[1:10]
+    sim_scores = sim_scores[1:5]
 
     # Get the movie indices
     movie_indices = [i[0] for i in sim_scores]
 
     # Return the top 10 most similar movies
 
-    return metadata.iloc[movie_indices]
+    return metadata.iloc[movie_indices].to_dict("records") 
 
 
 

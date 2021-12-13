@@ -76,6 +76,13 @@ class Group(models.Model):
 	class Meta:
 		db_table = "Group"
 
+	def get_members(self):
+		member_list = self.member.all().values("username", "first_name","last_name")
+
+		return member_list
+
+		
+
 class Bookmark(models.Model):
 	user = models.ForeignKey(User, null = True, blank = True, on_delete = models.CASCADE)
 	group = models.ForeignKey(Group, null = True, blank = True, on_delete = models.CASCADE)
