@@ -83,16 +83,20 @@ def modes(allBookmarks,userID):
                 break
         # print(modes)
         # print("mode is: ",title)
+        allBookmarks.append({"bookmark__id": userID ,"bookmark__title": title})
         return recommend(allBookmarks, title)
     else:
-        # print("title is: ", modes["bookmark__title"])
-        return recommend(allBookmarks, modes["bookmark__title"])
+        # print("title is: ", modes["bookmark__title"].to_string())
+        allBookmarks.append({"bookmark__id": userID ,"bookmark__title": modes["bookmark__title"].to_string()})
+        # print(allBookmarks)
+
+        return recommend(allBookmarks, modes["bookmark__title"].to_string())
 
 def recommend(bookmark_list, title):
 
     # print(title)
  
-    bookmark_list.append({"bookmark__title": title})
+    
 
     metadata = pd.DataFrame(bookmark_list)
     # print(metadata)

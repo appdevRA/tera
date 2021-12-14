@@ -27,6 +27,7 @@ from .links import *
 import requests
 import csv
 import io
+
 class adminIndexView(View):
 	def get(self, request):
 		print('olok')
@@ -109,14 +110,11 @@ class practice(View):
 		
 		
 		if Bookmark.objects.filter(user=request.user).exists():
-			queryAll = Bookmark.objects.select_related("bookmark").filter(folder__isnull=True, group__isnull=True).values("bookmark__id", "bookmark__title", "user") # this retrieves all records
-			
-			# for a in queryAll:
-			# 	print(a)
-			
-			recommendation = modes(list(queryAll), request.user.id)
+				queryAll = Bookmark.objects.select_related("bookmark").filter(folder__isnull=True, group__isnull=True).values("bookmark__id", "bookmark__title", "user") # this retrieves all records
 
+				recommendation = modes(list(queryAll), request.user.id)
 
+				print(recommendation)
 				
 
 			# a = User_bookmark.objects.annotate(id=1)
@@ -489,7 +487,7 @@ class TeraDashboardView(View):
 			# cursor.execute()
 			# a = dictfetchall(cursor)
 			# a = json.dumps(a, default=str)
-
+			recommendation = []
 			if Bookmark.objects.filter(user=request.user).exists():
 				queryAll = Bookmark.objects.select_related("bookmark").filter(folder__isnull=True, group__isnull=True).values("bookmark__id", "bookmark__title", "user") # this retrieves all records
 
