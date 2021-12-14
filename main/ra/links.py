@@ -51,7 +51,7 @@ def modes(allBookmarks,userID):
     metadata = pd.DataFrame(userBookmarks)
     modes =  metadata.mode(axis=0)
     if len(modes) > 1:
-        print("modes", modes)
+        # print("modes", modes)
         highest = -1
         tfidf = TfidfVectorizer(stop_words='english')
         modes['bookmark__title'] = modes['bookmark__title'].fillna('')
@@ -80,25 +80,28 @@ def modes(allBookmarks,userID):
                
                 break
 
-        
+        print("to find recommendation: (multiple  mode)", type(title["bookmark__title"]),title["bookmark__title"])
     else:
-
         title = modes
+        print("to find recommendation: (single mode)", title["bookmark__title"].to_string())
+
 
     a = pd.DataFrame(allBookmarks) 
     b= a.append(metadata)
     c = b.drop_duplicates('bookmark__title', keep='last')
     d = c.iloc[:-len(metadata) , :]
     e= d.append(title)
-    # print(e,"\n\n", title["bookmark__title"])
-    print(a,"\n\n\n",b,"\n\n\n", c,"\n\n\n", d,"\n\n\n", e)
-    # return recommend(e, title)
+    # print(e,"\n\n", title["bookmark__title"].to_dict()[0])
+    # print(a,"\n\n\n",b,"\n\n\n", c,"\n\n\n", d,"\n\n\n", e)
+    # print(e)
+    # print(title)
+    return recommend(e, title)
 
 def recommend(bookmarkFrame, title):
 
 
     metadata = bookmarkFrame
-    # print(metadata)
+    print(metadata)
 
     tfidf = TfidfVectorizer(stop_words='english')
 
@@ -106,21 +109,17 @@ def recommend(bookmarkFrame, title):
   
     cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
     
-    indices = pd.Series(metadata.index, index=metadata['bookmark__title']).drop_duplicates()
-    
-    try:
-        idx = indices[title["bookmark__title"].to_string()]
-    except:
-        try:
-            idx = indices[title['bookmark__title']]
-        except:
-            try:
-                idx = indices[title[0]['bookmark__title']]
-            except:
-                idx = indices[title[0]]
+    indices = pd.Series(metadata.index, index=metadata['bookmark__title'])
 
-    # print(idx)
-    # # Get the pairwsie similarity scores of all movies with that movie
+    try:
+        idx = indices[title["bookmark__title"]]
+    except:
+        title = title["bookmark__title"].to_dict()
+
+        idx = indices[title[0].replace("'","")]
+       
+    print(idx)
+    # Get the pairwsie similarity scores of all movies with that movie
     try:
         sim_scores = list(enumerate(cosine_sim[idx[0]]))
     except:
@@ -130,14 +129,19 @@ def recommend(bookmarkFrame, title):
     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
 
     # Get the scores of the 10 most similar movies
-    sim_scores = sim_scores[1:5]
+    sim_scores = sim_scores[0:5]
 
     # Get the movie indices
     movie_indices = [i[0] for i in sim_scores]
 
-    # Return the top 10 most similar movies
+    meta = metadata.iloc[movie_indices]
+    # z = meta.drop()
+    indexes = meta[ (meta['bookmark__title'] == title["bookmark__title"]) ].index
+    meta.drop(indexes,inplace=True)
 
-    return metadata.iloc[movie_indices].to_dict("records") 
+
+    return meta.to_dict("records")
+    # return metadata.iloc[movie_indices].to_dict("records") 
 
 
 
