@@ -22,8 +22,6 @@ urlpatterns = [
 			path('admin/activeuser', views.adminActiveUserView.as_view(), name="admin_activeuser_view"),
 			path('admin/siteaccess', views.adminSiteAccessView.as_view(), name="admin_siteaccess_view"),
 			path('practice', views.practice.as_view(), name="practice"),
-			path('practice2/search?=<sinput>&site=<site>&type=<type>', views.practice2.as_view(), name="practice2"),
-			path('practice3', views.practice3.as_view(), name="practice34"),
 			path('', views.addUser.as_view(), name="addUser_view"),
 			
 			

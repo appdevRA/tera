@@ -30,11 +30,7 @@ def modes(allBookmarks,userID):
     title = ""
     userBookmarks = []
 
-    # for i,a in enumerate(allBookmarks):
-    #     if a['user_id'] == userID:
-    #         print("nisulod",i, a['title'],"  a['user_id'] is: ", a['user_id'], "userID is: ", userID)
-    #         userBookmarks.append(a)
-    #         del allBookmarks[i]
+
     i=0
     while i < len(allBookmarks):
         didDelete= False
@@ -55,7 +51,7 @@ def modes(allBookmarks,userID):
     metadata = pd.DataFrame(userBookmarks)
     modes =  metadata.mode(axis=0)
     if len(modes) > 1:
-        print(modes)
+        print("modes", modes)
         highest = -1
         tfidf = TfidfVectorizer(stop_words='english')
         modes['bookmark__title'] = modes['bookmark__title'].fillna('')
@@ -73,36 +69,39 @@ def modes(allBookmarks,userID):
             # print(average)
             if average >= highest:
                 highest = average
-                index = i
+                indexOfHighest_cosinesim = i
 
 
 
-        for i, item in enumerate(modes['bookmark__title']):
-            if index == i:
-                title = item
+        # for i, item in enumerate(modes['bookmark__title']):
+        for i in range(len(modes)):
+            if i == indexOfHighest_cosinesim:
+                title = modes.iloc[i]
+               
                 break
-        # print(modes)
-        # print("mode is: ",title)
-        allBookmarks.append({"bookmark__id": userID ,"bookmark__title": title})
-        return recommend(allBookmarks, title)
+
+        
     else:
-        # print("title is: ", modes["bookmark__title"].to_string())
-        allBookmarks.append({"bookmark__id": userID ,"bookmark__title": modes["bookmark__title"].to_string()})
-        # print(allBookmarks)
 
-        return recommend(allBookmarks, modes["bookmark__title"].to_string())
+        title = modes
 
-def recommend(bookmark_list, title):
+    a = pd.DataFrame(allBookmarks) 
+    b= a.append(metadata)
+    c = b.drop_duplicates('bookmark__title', keep='last')
+    d = c.iloc[:-len(metadata) , :]
+    e= d.append(title)
+    # print(e,"\n\n", title["bookmark__title"])
+    print(a,"\n\n\n",b,"\n\n\n", c,"\n\n\n", d,"\n\n\n", e)
+    # return recommend(e, title)
 
-    # print(title)
- 
-    
+def recommend(bookmarkFrame, title):
 
-    metadata = pd.DataFrame(bookmark_list)
+
+    metadata = bookmarkFrame
     # print(metadata)
-   
+
     tfidf = TfidfVectorizer(stop_words='english')
-    metadata['bookmark__title'] = metadata['bookmark__title'].fillna('')
+
     tfidf_matrix = tfidf.fit_transform(metadata['bookmark__title'])
   
     cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
@@ -110,7 +109,7 @@ def recommend(bookmark_list, title):
     indices = pd.Series(metadata.index, index=metadata['bookmark__title']).drop_duplicates()
     
     try:
-        idx = indices[title]
+        idx = indices[title["bookmark__title"].to_string()]
     except:
         try:
             idx = indices[title['bookmark__title']]

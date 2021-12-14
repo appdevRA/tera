@@ -16,7 +16,7 @@ from django.db.models import Q, Count
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-
+from django.core import serializers as s
 from . import serializers
 from .links import *
 from .models import *
@@ -30,15 +30,17 @@ import io
 
 class adminIndexView(View):
 	def get(self, request):
-		print('olok')
 		
-		return render(request,'adminIndex.html')
+		user= User.objects.select_related("department").values("username", "first_name", "last_name", "last_login", "department__name")
+		print(user)
 
-class practice2(View):
-	def get(self, request, sinput, site,type):
-		print('olok')
+		context ={
+			"users": user		
+		}
 		
-		return HttpResponse(sinput +" "+site+" "+type)
+		return render(request,'adminIndex.html',context)
+
+
 
 class addUser(View):
 	def get(self, request):
@@ -56,9 +58,6 @@ class adminChartView(View):
 
 
 
-class adminTableView(View):
-	def get(self, request):
-		return render(request, 'adminTables.html')
 
 
 
@@ -90,18 +89,117 @@ class adminUserUpdateView(View):
 	def get(self, request):
 		return render(request, 'adminUserUpdate.html')
 
+	def post(self, request):
+		print("post")
+
+		if 'back_to_tables' in request.POST:
+			return redirect("ra:admin_tables_view"  )
+
+class adminTableView(View):
+
+	def get(self, request):
+		user= User.objects.select_related("department").values("username", 
+																"first_name", 
+																"last_name", 
+																"last_login", 
+																"department__name",
+																"department__abbv",
+																"last_login"
+																)
+		context ={
+			"users": list(user)		
+		}
+		return render(request, 'adminTables.html', context)
+
+
+	def post(self, request):
+		
+		if 'update' in request.POST:
+			form =UpdateUserForm(request.POST)
+			
+			if form.is_valid():
+				username = request.POST['username']
+				firstname = request.POST['first_name']	
+				lastname = request.POST['last_name']	
+				college = request.POST['college']
+
+				User.objects.filter(username=username).update(username= username, first_name = firstname, last_name = lastname, department= Department.objects.get(abbv=college))
+				return redirect("ra:admin_tables_view")
+			else:
+				return HttpResponse("Some fields are empty")
+
+
+class adminRegistrationView(View):
+	def get(self, request, rtype):
+
+		return render(request, 'adminRegistration.html',{"type": rtype})#, context)
+	def post(self, request, rtype):
 		
 
-class practice3(View):
-	
-	def get(self, request):
-		return HttpResponse(self.a)
-	def post(self, request):
-		if request.method == 'POST' and request.is_ajax():
-			print('practice 3 post')
+		if 'btnRegister' in request.POST: 
+			form = CreateUserForm(request.POST)
+			if form.is_valid():
+				username=request.POST['username']
+				password=request.POST['password']
+				first_name=request.POST['first_name']
+				last_name=request.POST['last_name']
+				department=request.POST['department']
+				user = User(username=username,
+							password = password,
+							first_name = first_name,
+							last_name= last_name,
+							department = Department.objects.get(abbv=department)
+							)
+				user.save()
+				messages.success(request, "User added")
+				print("success", rtype)
+				return redirect('ra:admin_registration_view',  rtype=rtype)
+			else:
+				print("error")
+				return render(request, 'adminRegistration.html', {"form":form,"type": rtype})
 
-			
-			return HttpResponse(request.GET.get('search'))
+		if request.is_ajax():
+			print("nisulod asa ajax")
+			if request.POST['action'] == "register_csv":
+				users = json.loads(request.POST.get('users'))
+				didExcept = 0
+				errorRows=[]
+				for row in users:
+					user = User(
+						username = row['username'], 
+						password=make_password(row['password']),
+						first_name= row['first_name'], 
+						last_name=row['last_name'], 
+						department =  Department.objects.get(abbv=row['department'])
+						)
+					try:
+						user.save()
+					except Exception as e:
+						didExcept +=1
+						errorRows.append(row)
+
+				context ={
+					"didExcept": didExcept,
+					"errorRows": errorRows,
+					"usersCount": len(users)
+				}
+				return JsonResponse(context)
+		# elif 'readCSV' in request.POST:
+
+		try:
+			myfile = request.FILES['file']
+			file = myfile.read().decode('utf-8')
+			dict_reader = csv.DictReader(io.StringIO(file))
+			users =  list(dict_reader)
+
+			return render(request, 'adminRegistration.html', {"users":users, "type": rtype})
+		except:
+			messages.success(request, "please select a file first")
+			return redirect('ra:admin_registration_view', rtype=rtype)
+
+		
+
+
 
 class practice(View):
 	
@@ -489,10 +587,16 @@ class TeraDashboardView(View):
 			# a = json.dumps(a, default=str)
 			recommendation = []
 			if Bookmark.objects.filter(user=request.user).exists():
-				queryAll = Bookmark.objects.select_related("bookmark").filter(folder__isnull=True, group__isnull=True).values("bookmark__id", "bookmark__title", "user") # this retrieves all records
+				queryAll = Bookmark.objects.select_related("bookmark").filter(folder__isnull=True, 
+																				group__isnull=True
+																				).values("bookmark__id",
+																				"bookmark__itemType",
+																				"bookmark__websiteTitle", 
+																				"bookmark__title",
+																				 "user") # this retrieves all records
 
 				recommendation = modes(list(queryAll), request.user.id)
-
+				# modes(list(queryAll), request.user.id)
 			queryset = Bookmark.objects.select_related("bookmark").filter(
 																		( Q(user=request.user) ) & 
 																		( Q(isRemoved=1) | Q(isRemoved=0) ), 
@@ -520,7 +624,7 @@ class TeraDashboardView(View):
 																			 						"owner__first_name",
 																			 						"owner__last_name"
 																			 						)
-			print("len of bookmark: ", len(queryset))																 
+			# print("len of bookmark: ", len(queryset))																 
 			a = json.dumps(list(queryset), default=str)
 			folder_list = json.dumps(list(folders), default=str)
 			group_list = json.dumps(list(groups), default=str)
@@ -849,6 +953,27 @@ class TeraDashboardView(View):
 					}
 					return JsonResponse(context)
 
+			elif action == "add_recommended":
+				bookmarkID = request.POST['bID']
+				a = Bookmark.objects.create(user= request.user, bookmark= Bookmark_detail.objects.get(id= bookmarkID.replace("bookmarkID","")))
+				addedBookmark = Bookmark.objects.select_related("bookmark").filter(
+																		id=a.id
+																		).values(
+																			"id", "bookmark__id", "isFavorite", "dateAccessed", "dateAdded", 
+																			"isRemoved", "date_removed",
+																			"bookmark__websiteTitle", "bookmark__itemType",
+																			"bookmark__url", "bookmark__title", "bookmark__subtitle",
+																			"bookmark__subtitle", "bookmark__author", "bookmark__description",
+																			"bookmark__journalItBelongs", "bookmark__volume",
+																			"bookmark__numOfCitation", "bookmark__numOfPages",
+																			"bookmark__publisher", "bookmark__publicationYear",
+																			"bookmark__DOI", "bookmark__ISSN", "bookmark__edition", "bookmark__numOfDownload"
+																				)
+				
+				return JsonResponse({"addedBookmark":list(addedBookmark)})
+
+
+
 
 
 							
@@ -873,87 +998,7 @@ def TeraAccountSettingsView(request):
 
 
 
-class adminChartView(View):
-	def get(self, request):
-		return render(request, 'adminCharts.html')
 
-
-class adminTableView(View):
-	def get(self, request):
-		return render(request, 'adminTables.html')
-
-class adminRegistrationView(View):
-	def get(self, request, rtype):
-		# form = CreateUserForm(request.POST or None)
-		# context={
-		# 	"form": form
-		# }
-		
-
-		return render(request, 'adminRegistration.html',{"type": rtype})#, context)
-	def post(self, request, rtype):
-		
-
-		if 'btnRegister' in request.POST: 
-			form = CreateUserForm(request.POST)
-			if form.is_valid():
-				username=request.POST['username']
-				password=request.POST['password']
-				first_name=request.POST['first_name']
-				last_name=request.POST['last_name']
-				department=request.POST['department']
-				user = User(username=username,
-							password = password,
-							first_name = first_name,
-							last_name= last_name,
-							department = Department.objects.get(abbv=department)
-							)
-				user.save()
-				messages.success(request, "User added")
-				print("success", rtype)
-				return redirect('ra:admin_registration_view',  rtype=rtype)
-			else:
-				print("error")
-				return render(request, 'adminRegistration.html', {"form":form,"type": rtype})
-
-		if request.is_ajax():
-			print("nisulod asa ajax")
-			if request.POST['action'] == "register_csv":
-				users = json.loads(request.POST.get('users'))
-				didExcept = 0
-				errorRows=[]
-				for row in users:
-					user = User(
-						username = row['username'], 
-						password=make_password(row['password']),
-						first_name= row['first_name'], 
-						last_name=row['last_name'], 
-						department =  Department.objects.get(abbv=row['department'])
-						)
-					try:
-						user.save()
-					except Exception as e:
-						didExcept +=1
-						errorRows.append(row)
-
-				context ={
-					"didExcept": didExcept,
-					"errorRows": errorRows,
-					"usersCount": len(users)
-				}
-				return JsonResponse(context)
-		# elif 'readCSV' in request.POST:
-
-		try:
-			myfile = request.FILES['file']
-			file = myfile.read().decode('utf-8')
-			dict_reader = csv.DictReader(io.StringIO(file))
-			users =  list(dict_reader)
-
-			return render(request, 'adminRegistration.html', {"users":users, "type": rtype})
-		except:
-			messages.success(request, "please select a file first")
-			return redirect('ra:admin_registration_view', rtype=rtype)
 
 
 

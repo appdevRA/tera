@@ -23,3 +23,9 @@ class CreateUserForm(forms.ModelForm):
 		# fields = ('first_name','last_name','username','password',)
 		fields = [ 'first_name','last_name','username','password']
 		
+
+class UpdateUserForm(forms.ModelForm):
+	class Meta:
+		model = User
+		# fields = ('first_name','last_name','username','password',)
+		fields = [ 'first_name','last_name']

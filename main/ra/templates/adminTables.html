@@ -165,6 +165,7 @@
                     </div>
                 </nav>
             </div>
+
             <div id="layoutSidenav_content">
                 <main>
                     <div class="container-fluid px-4">
@@ -179,110 +180,132 @@
                                 <i class="fas fa-table me-1"></i>
                                 Users
                             </div>
+
                             <div class="card-body">
+                            <form  action = "" method="POST" autocomplete="off" enctype="multipart/form-data"> 
+                            {% csrf_token %}  
                                 <table id="datatablesSimple">
+
                                     <thead>
+
                                         <tr>
+                                            <th>ID Number</th>
+                                            <th>Username</th>
                                             <th>Last Name</th>
                                             <th>First Name</th>
-                                            <th>ID Number</th>
                                             <th>College</th>
-                                            <th>Username</th>
-                                            <th>Password</th>
                                             <th>Last Login</th>
                                             <th colspan="2">Manage</th>
                                         </tr>
                                     </thead>
-                                    <tfoot>
-                                        <tr>
-                                            <th>Last Name</th>
-                                            <th>First Name</th>
-                                            <th>ID Number</th>
-                                            <th>College</th>
-                                            <th>Username</th>
-                                            <th>Password</th>
-                                            <th>Last Login</th>
-                                            <th colspan="2">Manage</th>
-                                        </tr>
-                                    </tfoot>
+                                
                                     <tbody>
-                                        <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123456</td>
-                                            <td>College of Computer Studies</td>
-                                            <td>123456</td>
-                                            <td>43210</td>
-                                            <td>2011/04/25</td>
+                           
+
+                                        {% for user in users %}
+                                         <tr>
+                                            <td> {{user.username}} </td>
+                                            <td> {{user.username}} </td>
+                                            <td> {{user.last_name}} </td>
+                                            <td> {{user.first_name}} </td>
+                                            <td> {{user.department__name}} </td>
+                                            <td> {{user.last_login}} </td>
+
                                             <td>
-                                                <a class="edit" title="Edit" data-toggle="tooltip" href="{% url 'ra:admin_update_view' %}"><i class="far fa-edit" style="color: #ffd700"></i></a>
-                                            </td>
-                                            <td>
-                                                <a class="delete" title="Delete" data-toggle="tooltip"><i class="fa fa-trash" style="color: #800000"></i></a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Mondejar</td>
-                                            <td>Yanni Jan</td>
-                                            <td>123456</td>
-                                            <td>College of Computer Studies</td>
-                                            <td>123456</td>
-                                            <td>53421</td>
-                                            <td>2011/04/25</td>
-                                           <td>
-                                                <a class="edit" title="Edit" data-toggle="tooltip" href="{% url 'ra:admin_update_view' %}"><i class="far fa-edit" style="color: #ffd700"></i></a>
+
+                                               
+                                                <a type="button" class="btn btn-tertiary" href="#" data-toggle="modal" data-target="                                                     #editModal-{{user.username}}" >
+                                                    <i class="far fa-edit" style="color: #ffd700"></i>
+                                                </a>
                                             </td>
                                             <td>
                                                 <a class="delete" title="Delete" data-toggle="tooltip"><i class="fa fa-trash" style="color: #800000"></i></a>
                                             </td>
                                         </tr>
-                                        <tr>
-                                            <td>Sumalinog</td>
-                                            <td>Lucelle</td>
-                                            <td>123456</td>
-                                            <td>College of Computer Studies</td>
-                                            <td>123456</td>
-                                            <td>53421</td>
-                                            <td>2011/04/25</td>
-                                            <td>
-                                                <a class="edit" title="Edit" data-toggle="tooltip"><i class="far fa-edit" style="color: #ffd700"></i></a>
-                                            </td>
-                                            <td>
-                                                <a class="delete" title="Delete" data-toggle="tooltip"><i class="fa fa-trash" style="color: #800000"></i></a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Talatagod</td>
-                                            <td>Ryan</td>
-                                            <td>123456</td>
-                                            <td>College of Computer Studies</td>
-                                            <td>123456</td>
-                                            <td>53421</td>
-                                            <td>2011/04/25</td>
-                                            <td>
-                                                <a class="edit" title="Edit" data-toggle="tooltip"><i class="far fa-edit" style="color: #ffd700"></i></a>
-                                            </td>
-                                            <td>
-                                                <a class="delete" title="Delete" data-toggle="tooltip"><i class="fa fa-trash" style="color: #800000"></i></a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Albano</td>
-                                            <td>John Robbie</td>
-                                            <td>123456</td>
-                                            <td>College of Computer Studies</td>
-                                            <td>123456</td>
-                                            <td>53421</td>
-                                            <td>2011/04/25</td>
-                                            <td>
-                                                <a class="edit" title="Edit" data-toggle="tooltip"><i class="far fa-edit" style="color: #ffd700"></i></a>
-                                            </td>
-                                            <td>
-                                                <a class="delete" title="Delete" data-toggle="tooltip"><i class="fa fa-trash" style="color: #800000"></i></a>
-                                            </td>
-                                        </tr>
+
+            <!-- edit modal             -->
+                <div class="modal fade" id="editModal-{{user.username}}" tabindex="-1" role="dialog" aria-labelledby="newModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                      <div class="modal-content" style="background-color: white">
+                        <div class="modal-header" style="background-color:#800000">
+                          <h5 class="modal-title" style="color: white">User information</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+
+                        <div class="card-body">
+                            <form name="my-form" method="POST">
+                                {% csrf_token %}
+                                <div class="form-group row">
+                                    <label for="first_name" class="col-md-4 col-form-label text-md-right">First Name</label>
+                                    <div class="col-md-6">
+                                        <input type="text" id="first_name" class="form-control" name="first_name" value="{{user.first_name}}">
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label for="last_name" class="col-md-4 col-form-label text-md-right">Last Name</label>
+                                    <div class="col-md-6">
+                                        <input type="text" id="last_name" class="form-control" name="last_name" value="{{user.last_name}}">
+                                    </div>
+                                </div>
+
+
+
+                                <div class="form-group row">
+                                    <label for="username" class="col-md-4 col-form-label text-md-right">Username</label>
+                                    <div class="col-md-6">
+                                        <input type="text" id="username" class="form-control" name="username" value="{{user.username}}">
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label for="password" class="col-md-4 col-form-label text-md-right">Password</label>
+                                    <div class="col-md-6">
+                                        <input type="password" id="password" class="form-control" name="password" placeholder="leave blank to retain current password ">
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label for="college" class="col-md-4 col-form-label text-md-right">College</label>
+                                    <div class="col-md-6">
+                                        <select id="college" class="form-control" name="college">
+                                            <option value="CCS">College of Computer Studies</option>
+                                            <option value="CEA">College of Engineering and Architecture</option>
+                                            <option value="CCJ">College of Criminal Justice</option>
+                                            <option value="CNAHS">College of Nursing and Allied Health Sciences</option>
+                                            <option value="CMBA">College of Management, Business and Accountancy</option>
+                                            <option value="CASE">College of Arts, Sciences and Education</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                               
+                                    <div class="col-md-6 offset-md-4">
+                                       
+                                        <button type="submit" name="update" class="btn btn-primary">
+                                            Update
+                                        </button>
+                                        
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal" style="margin-left:1px; margin-top: 4px;"> CANCEL</button>
+                                        
+
+                                    </div>
+                            </form>
+                        </div>
+                       </div>
+                    </div>
+                    </div>
+                    
+                                        {% endfor %}
+                                     
                                     </tbody>
+                                    
                                 </table>
+                                </form>
+             
+                            <!-- </form> -->
                             </div>
                         </div>
 

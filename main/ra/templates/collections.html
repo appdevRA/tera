@@ -17,10 +17,11 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <script src="https://kit.fontawesome.com/abb9521de4.js" crossorigin="anonymous"></script>
+        <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script> -->
      
      
     <style>
@@ -329,16 +330,35 @@ tr:hover {
               <table id="itemTable" class="table">
               <thead>
 
+              <th >Site</th>
               <th >Title</th>
+              <th ></th>
+              <th ></th>
+              <th ></th>
+              <th ></th>
+               <th ></th>
+              <th ></th>
+              <th ></th>
 
-       
+
               </thead>
               {% for item in recommendation %}
               <tr>
-              <td id = "recommendation{{item.bookmark__id}}" style="max-width: 30ch;"> {{item.bookmark__title}} </td>
+              {% if item.websiteTitle == Springeropen %}
+              <td><img class='logo-style' src="{% static 'images/springerLogo.PNG' %}" style='height: 15px;'></td>"
+              {% endif %} 
+              <td>{{item.bookmark__itemType}}</td>
+              <td id = "recommendation{{item.bookmark__id}}" style="max-width: 40ch; white-space: nowrap;overflow: hidden;text-overflow: ellipsis;"> {{item.bookmark__title}} </td>
 
-              <td><i class='fa fa-trash'></i></td>
-              <td><i class='fa fa-bookmark' ></i></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td id="bookmarkID{{item.bookmark__id}}" onclick="(addRecommended(this.id))" style="cursor: pointer;"><i class='fa fa-bookmark' ></i></td>
+              <td style="cursor: pointer;"><i class='fas fa-trash'></i></td>
+
               </tr>
               {% endfor %}
               </table>
@@ -393,7 +413,8 @@ tr:hover {
     var group_id
 
 $(document).ready(function($) {
- // console.log(groups)
+ // console.log(typeof(markers))
+ // alert(typeof(markers))
 
   showRows('all')
   // $('#addtoFolderModal').modal('show') 
@@ -438,6 +459,24 @@ $(document).ready(function($) {
 
 });
 
+function addRecommended(clicked_id){
+   $.ajax({
+                      type:"POST",
+                      url:"",
+
+                      data:{
+                        action: 'add_recommended',
+                        bID: clicked_id,
+                        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+
+                      },
+                      success: function(response){
+                        markers.push(response.addedBookmark[0])
+                        // console.log("add recommend "+" "+ markers.length)
+                        showRows("all")
+                      }
+        }); 
+}
 
 function permanentdelete_item(clicked_id){
   
@@ -577,12 +616,13 @@ function favorite_item(clicked_id,ii){
 
 function showRows(rowType, array, faction_id){
    document.getElementById("recommendation").style.display = "none"
-  // clearRow("detailTable")
-  $("#detailArea").empty();
-  clearStyle();
-  clearRow('itemTable');
-  // alert(faction_id)
-  tab = rowType;
+    // clearRow("detailTable")
+    console.log(markers)
+      $("#detailArea").empty();
+      clearStyle();
+      clearRow('itemTable');
+    // alert(faction_id)
+      tab = rowType;
  
     if(rowType == 'all'){
       $("#group_detail_ul").empty();
@@ -634,7 +674,7 @@ function showRows(rowType, array, faction_id){
 
 
                           favorite+
-                        "<td><i id='"+ markers[i].bookmark__id+"' class='fas fa-trash-alt' style='cursor: pointer; font-size: 90%' onclick='delete_item(this.id,"+i+","+1+")'></i></td>" +
+                        "<td><i id='"+ markers[i].bookmark__id+"' class='fas fa-trash' style='color:#a71f1f;cursor: pointer; font-size: 90%' onclick='delete_item(this.id,"+i+","+1+")'></i></td>" +
                        
 
                        "</tr>"
