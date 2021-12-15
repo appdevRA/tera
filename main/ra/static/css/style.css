@@ -36,6 +36,13 @@ body{
     cursor: pointer;
 }
 
+.sub-item{
+    padding: 15px;
+    display: block;
+    margin:15;
+}
+
+
 .site-filter{
     padding: 5px;
     display: block;
@@ -60,6 +67,9 @@ body{
 
 section.home{
     background-color: #f3f3f3;
+    right:0;
+    padding: 10px;
+    z-index: -1;
 }
 
 ::-webkit-scrollbar {
@@ -111,7 +121,7 @@ section.home{
     position: absolute;
     right:0;
     padding: 10px;
-    z-index: -1;
+    z-index: 0;
 }
 .left-side-bar{
     background-color: #f3f3f3;
@@ -124,6 +134,7 @@ section.home{
 
 .right-side-bar:hover{
     overflow-y: scroll;
+    
 }
 .right-side-bar li{
     display: block;

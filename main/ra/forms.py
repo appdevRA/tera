@@ -1,15 +1,15 @@
 from django import forms
 from .models import *
 from django.contrib.auth.forms import UserCreationForm 
-from django.contrib.auth.models import User
+
 
 
 		#fields = '__all__'
 
 class CreateFolderForm(forms.ModelForm):
 	class Meta:
-		model = Folders
-		fields = ('foldername',)
+		model = Folder
+		fields = ('name',)
 
 class LoginUser(UserCreationForm):
 	class Meta:
@@ -17,5 +17,15 @@ class LoginUser(UserCreationForm):
 		fields = [ 'username', 'password' ]
 
 
-
+class CreateUserForm(forms.ModelForm):
+	class Meta:
+		model = User
+		# fields = ('first_name','last_name','username','password',)
+		fields = [ 'first_name','last_name','username','password']
 		
+
+class UpdateUserForm(forms.ModelForm):
+	class Meta:
+		model = User
+		# fields = ('first_name','last_name','username','password',)
+		fields = [ 'first_name','last_name']

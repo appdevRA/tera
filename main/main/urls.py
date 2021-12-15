@@ -13,13 +13,22 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib import admin
+from django.urls import include, path
+from ra import views
+from rest_framework.routers import DefaultRouter
+
+ROUTER = DefaultRouter()
+
+ROUTER.register("folders", views.FolderViewSet)
+ROUTER.register("user-bookmarks", views.UserBookmarkViewSet)
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('tera', include('ra.urls', namespace = 'ra')),
+    path("admin/", admin.site.urls),
+    path("tera/", include("ra.urls", namespace="ra")),
+    path("api/", include(ROUTER.urls)),
 ]
 
 
