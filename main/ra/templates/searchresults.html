@@ -169,6 +169,9 @@
             <h4>Site Filter</h4>
           <div class="left-side-bar" style="margin-left: 10%">
             <ul>
+              <input type="radio" id="CIT" name="fav_language" value="Springeropen"  onclick="search(this.id, 'site')">
+              <label for="CIT">CIT-U materials</label><br>
+
               <input type="radio" id="Springeropen" name="fav_language" value="Springeropen"  onclick="search(this.id, 'site')">
               <label for="Springeropen">Springeropen</label><br>
 
@@ -203,10 +206,10 @@
                         <div >
                               <br><br> <br>    
                             
-                            <input id="input" type="text" placeholder="" name="search" class="input" value="{{ keyword }}" style="width: 20%; margin-left: 0; border-color: #f3f3f3; background-color: #f3f3f3">
+                            <input id="input" type="text" placeholder="" name="search" class="input" value="{{ keyword }}" style="width: 20%; margin-left: -1%; border-color: #f3f3f3; background-color: #f3f3f3">
                             <button id="searchButton" class="btn"  style="position: static;  border: 0; margin-top: -6%; margin-left:  45% ;background: none" name="" id="btnSearchbar"  onclick="search('','search')"> 
-                              <i class="fa fa-search" aria-hidden="true" style="color: #800000; font-size: 150%"></i></button>
-                              <br><hr style="width: 50%;  height: 1px; background-color: #6b6b6c; margin-top: -2%;" >
+                              <i class="fa fa-search" aria-hidden="true" style="color: #800000; font-size: 150%; margin-left: 30%"></i></button>
+                              <br><hr style="width: 50%;  height: 1px; background-color: #6b6b6c; margin-top: -1.8%; margin-left: 1%" >
                            
 
 
@@ -358,7 +361,6 @@
   $(document).ready(function($) {
      // showRows()
      search(website,'site')
-
   
         var input = document.getElementById("input");
       input.addEventListener("keyup", function(event) {
@@ -623,7 +625,9 @@ function clearRow(tableName){
 
 
 function search(clicked_id, searchType){
-    keyword = document.getElementById('input').value
+    if (isGet == "false"){
+      keyword = document.getElementById('input').value
+    }
     clearRow("itemTable")
 
     if(searchType == 'search'){ 
@@ -640,6 +644,7 @@ function search(clicked_id, searchType){
                   itemType: type,
                   pageNumber: 1,
                   isGet: isGet,
+                  isSite: false,
                   csrfmiddlewaretoken: "{{csrf_token}}"
                 },
                 success: function(response){
@@ -648,6 +653,7 @@ function search(clicked_id, searchType){
                   links = response.links
                   showRows(markers, links)
                   user_id = response.is_authenticated
+                  isGet = response.isGet
                   
                   document.getElementById('displayWord').innerHTML = keyword
                   document.getElementById('displayWord').style.display ="inline"
@@ -673,6 +679,7 @@ function search(clicked_id, searchType){
                   itemType: type,
                   pageNumber: 1,
                   isGet: isGet,
+                  isSite: false,
                   csrfmiddlewaretoken: "{{csrf_token}}"
                 },
                 success: function(response){
@@ -681,8 +688,7 @@ function search(clicked_id, searchType){
             
                   showRows(markers)
                   user_id = response.is_authenticated
-
-                  
+                  isGet = response.isGet
                   document.getElementById('displayWord').innerHTML = keyword
                   document.getElementById('displayWord').style.display ="inline"
                   
@@ -691,10 +697,29 @@ function search(clicked_id, searchType){
           }); 
         
     } else if( searchType == 'site'){
-     document.getElementById(clicked_id).click()
+     document.getElementById(clicked_id).checked = true
       website = clicked_id
       document.getElementById('displayWord').style.display ="none"
-     if(clicked_id == 'Springeropen'){
+
+      if(clicked_id == 'CIT'){
+        
+        if(type != 'Dissertations' ){
+          type = 'dissertation'
+        }
+        document.getElementById('article').style.display="none"
+        document.getElementById('article|').style.display="none"
+        document.getElementById('Programme_and_meeting_document').style.display="none"
+        document.getElementById('Programme_and_meeting_document|').style.display="none"
+        document.getElementById('journal').style.display="none"
+        document.getElementById('journal|').style.display="none"
+        document.getElementById('book').style.display="none"
+        document.getElementById('book|').style.display="none"
+        document.getElementById('Text_book').style.display="none"
+        document.getElementById('Text_book|').style.display="none"
+        document.getElementById('dissertation').style.display="inline"
+        navhr(type)
+      }
+     else if(clicked_id == 'Springeropen'){
           
           if(type != 'article' & type != 'book'){
 
@@ -708,7 +733,8 @@ function search(clicked_id, searchType){
         document.getElementById('article').style.display="inline"
         document.getElementById('article|').style.display="inline"
         document.getElementById('book').style.display="inline"
-        document.getElementById('book|').style.display="inline"
+        document.getElementById('book|').style.display="none"
+        document.getElementById('dissertation').style.display="none"
         navhr(type)
       }else if(clicked_id == 'UNESCO_Digital_Library'){
         if(type != 'article' & type != 'book' & type != 'Programme_and_meeting_document'){
@@ -719,11 +745,12 @@ function search(clicked_id, searchType){
          document.getElementById('Text_book').style.display="none"
         document.getElementById('Text_book|').style.display="none"
         document.getElementById('Programme_and_meeting_document').style.display="inline"
-        
         document.getElementById('article').style.display="inline"
         document.getElementById('article|').style.display="inline"
         document.getElementById('book').style.display="inline"
         document.getElementById('book|').style.display="inline"
+
+        document.getElementById('dissertation').style.display="none"
         navhr(type)
       }else if(clicked_id == 'Open_Textbook_Library'){
         
@@ -739,7 +766,8 @@ function search(clicked_id, searchType){
         document.getElementById('book').style.display="none"
         document.getElementById('book|').style.display="none"
         document.getElementById('Text_book').style.display="inline"
-        document.getElementById('Text_book|').style.display="inline"
+        document.getElementById('dissertation').style.display="none"
+
         navhr(type)
       } else if(clicked_id == 'OER_Commons'){
         
@@ -755,7 +783,10 @@ function search(clicked_id, searchType){
         document.getElementById('book').style.display="none"
         document.getElementById('book|').style.display="none"
         document.getElementById('Text_book').style.display="inline"
-        document.getElementById('Text_book|').style.display="inline"
+        document.getElementById('Text_book|').style.display="none"
+
+        document.getElementById('dissertation').style.display="none"
+
         navhr(type)
       }
       // } else if(clicked_id == 'Tandfonline.com'){
@@ -785,21 +816,21 @@ function search(clicked_id, searchType){
                   itemType: type,
                   pageNumber: 1,
                   isGet: isGet,
+                  isSite: true,
                   csrfmiddlewaretoken: "{{csrf_token}}"
 
                 }, success: function(response){
                   // if(a=0){
                     markers = response.results
                   // }
-                  
-                  // console.log(markers)
-                  showRows(markers)
+                  if(markers!= null)
+                    showRows(markers)
                   user_id = response.is_authenticated
                   isGet = response.isGet
                   document.getElementById('displayWord').innerHTML = keyword
                   document.getElementById('displayWord').style.display ="inline"
                   
-             
+                
                 }, error: function(){
                     $.ajax({
                           type:"POST",
@@ -812,6 +843,7 @@ function search(clicked_id, searchType){
                             itemType: type,
                             pageNumber: 1,
                             isGet: isGet,
+                            isSite: true,
                             csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
                           },
                           success: function(response){
@@ -827,6 +859,8 @@ function search(clicked_id, searchType){
                             document.getElementById('displayWord').style.display ="inline"
                             
                        
+                          },  error: function(){
+                            alert("Please reload page")
                           }
 
                     }); 

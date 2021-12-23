@@ -12,7 +12,7 @@ class Department (models.Model):
 		db_table = "Department"
 
 class User (AbstractUser):
-
+	student_id = models.CharField(max_length=50, null = False, blank= False, unique=True, default='')
 	department= models.ForeignKey(Department, null = False, blank = False, on_delete = models.CASCADE)
 
 	REQUIRED_FIELDS = ['first_name', 'last_name','department','password']
@@ -139,22 +139,24 @@ class User_file(models.Model):
 class Site (models.Model):
 	name = models.CharField(max_length= 100)
 	url= models.CharField(max_length= 300)
-	added_by = models.ForeignKey(Admin, null = False, blank = False, on_delete = models.DO_NOTHING)
-	date_added = models.DateTimeField(auto_now_add=True)
+	is_active = models.BooleanField(default=False)
 
 	class Meta:
 		db_table = "Site"	
 
 
-class User_access (models.Model):
+class UserSite_access(models.Model):
 	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
-	department = models.ForeignKey(Department, null = False, blank = False, on_delete = models.CASCADE)
+	
 	site = models.ForeignKey(Site, null = False, blank = False, on_delete = models.CASCADE)
 	date_of_access = models.DateTimeField(auto_now_add=True)
 
 	class Meta:
-		db_table = "User_access"	
+		db_table = "UserSite_access"	
 
+class User_login(models.Model):
+	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
+	date = models.DateTimeField(default=timezone.now)
 
 class Headers (models.Model):
 	text = models.CharField(max_length = 5000)

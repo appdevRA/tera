@@ -12,7 +12,7 @@ from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.core import serializers
 from django.db import connection
 from django.db.models import Q, Count
-
+from datetime import datetime
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -98,16 +98,18 @@ class adminUserUpdateView(View):
 class adminTableView(View):
 
 	def get(self, request):
-		user= User.objects.select_related("department").values("username", 
-																"first_name", 
-																"last_name", 
-																"last_login", 
-																"department__name",
-																"department__abbv",
-																"last_login"
+
+		user= User.objects.select_related("department").values("student_id","username", "first_name", "last_name", 
+																"last_login", "department__name",
+																"department__abbv", "last_login"
 																)
+
+		activeUser =  User_login.objects.select_related("user").values('user__department__name').annotate(active=Count('id', filter=Q(date__contains=timezone.now().date())))
+		userSite =  UserSite_access.objects.values('site__name').annotate(accessCount=Count('site')).distinct()
+		print(userSite)
 		context ={
-			"users": list(user)		
+			"users": list(user),
+			"activeUser": list(activeUser)		
 		}
 		return render(request, 'adminTables.html', context)
 
@@ -122,11 +124,83 @@ class adminTableView(View):
 				firstname = request.POST['first_name']	
 				lastname = request.POST['last_name']	
 				college = request.POST['college']
+				password = request.POST['password']
 
-				User.objects.filter(username=username).update(username= username, first_name = firstname, last_name = lastname, department= Department.objects.get(abbv=college))
-				return redirect("ra:admin_tables_view")
+				
+
 			else:
-				return HttpResponse("Some fields are empty")
+				messages.success(request, form.errors)
+				return redirect("ra:admin_tables_view")
+				context = {
+					"form": form
+				}
+				return render(request, 'adminTables.html', context)
+
+		elif request.is_ajax():
+			
+			action = request.POST["action"]
+			if action == "delete_user":
+				User.objects.get(username= request.POST["userID"]).delete()
+				return HttpResponse("")
+
+			elif action =="update_user":
+				oldStudent_id = request.POST["oldStudent_id"]
+				newStudent_id = request.POST["newStudent_id"]
+				firstname = request.POST["first_name"]
+				lastname = request.POST["last_name"]
+				oldUsername = request.POST["oldUsername"]
+				newUsername = request.POST["newUsername"]
+				department = request.POST["department"]
+				password = request.POST["password"]
+ 
+				
+				if newUsername == "" or firstname == "" or lastname == "":
+					return JsonResponse({"isError": 1,"errorMessage": "please fill out required fields"})
+				
+				NewUsername_exist =  User.objects.filter(username = newUsername).exists()
+				NewStudentid_exist = User.objects.filter(student_id = newStudent_id).exists()
+				
+				if oldUsername != newUsername and oldStudent_id != newStudent_id:
+
+					if NewUsername_exist and NewStudentid_exist:
+						return JsonResponse({"isError": 1,"errorMessage": "username and id number already exist"})
+
+				elif oldUsername != newUsername:
+					if NewUsername_exist:
+						return JsonResponse({"isError": 1,"errorMessage": "username already exist"})
+
+				elif oldStudent_id != newStudent_id:
+					if NewStudentid_exist:
+						return JsonResponse({"isError": 1,"errorMessage": "ID nummber already exist"})
+
+
+				User.objects.filter(student_id=oldStudent_id).update(username= newUsername, 
+																	student_id= newStudent_id,
+																	first_name = firstname, 
+																	last_name = lastname, 
+																	department= Department.objects.get(abbv=department))
+
+
+				user= User.objects.select_related("department").filter(student_id=newStudent_id).values("student_id","username", "first_name", "last_name", 
+															"last_login", "department__name",
+															"department__abbv", "last_login"
+															)
+
+				context = {
+					"isError": 0,
+					"user": list(user)
+
+				}
+				print("success")
+				return JsonResponse(context)
+				
+
+			# elif not user.exists() and  User.objects.filter(username=username).exists():
+			# 	return JsonResponse({"isError": 1,"errorMessage": "username already exist"})
+
+			# elif not user.exists() and  User.objects.filter(student_id=newStudent_id).exists():
+			# 	return JsonResponse({"isError": 1,"errorMessage": "id number already exist"})
+						
 
 
 class adminRegistrationView(View):
@@ -204,15 +278,9 @@ class adminRegistrationView(View):
 class practice(View):
 	
 	def get(self, request):
-		# userBbookmarks= Bookmark.objects.filter(user=request.user).values('title')
 		
 		
-		if Bookmark.objects.filter(user=request.user).exists():
-				queryAll = Bookmark.objects.select_related("bookmark").filter(folder__isnull=True, group__isnull=True).values("bookmark__id", "bookmark__title", "user") # this retrieves all records
 
-				recommendation = modes(list(queryAll), request.user.id)
-
-				print(recommendation)
 				
 
 			# a = User_bookmark.objects.annotate(id=1)
@@ -229,27 +297,7 @@ class practice(View):
 		# User.objects.create(username='18-5126-271', password = make_password('12345'), first_name="ryan ", last_name="talatagod", department = a)
 		
 
-		# cursor = connection.cursor()   
-		#datetime.now().month = #get month of current time
-		# cursor.execute("SELECT b.isRemoved, COUNT(b.user_id) FROM auth_user u, bookmarks b WHERE u.id=b.user_id AND b.dateAdded LIKE '2021-11%' GROUP BY isRemoved") #| get rows of for a specific date|
-		# cursor.execute("SELECT user_id, COUNT(user_id) AS `value_occurrence` FROM Bookmarks GROUP BY user_id ORDER BY `value_occurrence` DESC LIMIT 1") # |get the most frequent user ID (top1 ky limit 1 man)|
-		# cursor.execute("Select b.* from Bookmarks b, bookmark_folders bf Where bf.user_id = "+str(request.user.id)+" AND bf.folder_id = "+ str(1)+" AND bf.bookmark_id = b.id"  ) #|for retrievving bookmarks inside a folder|
-		# row = cursor.fetchall()
 		
-		# queryset = User.objects.filter(id = Bookmarks.objects.filter(dateAdded__contains='2021-11-17').values('user_id'))   #| get rows of for a specific date|
-		# row = cursor.fetchall()
-		# print()
-
-		# cursor.execute("SELECT id, COUNT(id) FROM Bookmarks GROUP BY dateAdded LIKE '2021-11%'") # |get the most frequent user ID (top1 ky limit 1 man)|
-		# row = cursor.fetchall()
-		# print(row)
-		# queryset = User_bookmark.objects.all()
-		# a = list(queryset)
-		# context = {
-		#     "bookmark_set": queryset,
-		#     # "bookmark_list" : a 
-		# }
-		# return HttpResponse()
 
 
 		# OTL('war', 1232, 'Text book', 1)
@@ -329,7 +377,9 @@ class TeraLoginUser(View):
 			user = authenticate(request, username=username, password=password)
 			if user is not None:
 				login(request, user)
-
+				if not User_login.objects.filter(user = request.user,date__contains=timezone.now().date()).exists():
+					User_login.objects.create(user = request.user)
+					
 				if request.session.get('previousPage') == None:
 					return redirect("ra:index_view")
 				else:
@@ -356,7 +406,7 @@ class TeraIndexView(View):
 		#	proxy.save()
 		
 		
-
+		print(timezone.now().date())
 		request.session['previousPage'] = 'index_view'
 		
 		context ={
@@ -377,10 +427,8 @@ class TeraIndexView(View):
 
 		elif 'btnLogout' in request.POST:
 			proxy = request.session.get('proxy')
-
 			logout(request)
 
-			request.session['proxy'] = proxy
 			return redirect("ra:index_view")
 
 		elif 'btnSearch' in request.POST:
@@ -394,6 +442,7 @@ class TeraSearchResultsView(View):
 	
 
 	def get(self,request):
+
 		request.session['previousPage'] ='search_result_view'
 		# header = ast.literal_eval(Headers.objects.get(id=2).text)	# converting from string to dictionary
 		# header = request.session.get('header')
@@ -404,18 +453,18 @@ class TeraSearchResultsView(View):
 		if request.session.get('website') != None:
 			website = request.session.get('website')
 		else:
-			website = "Springeropen"
+			website = "CIT"
 
 		if request.session.get('itemType') != None:
 			itemType = request.session.get('itemType')
 		else:
-			itemType = "article"
+			itemType = "Dissertations"
 						
 		context = {
 							'keyword': word,
-							'isGet': 0,
 							'website': website,
 							'itemType': itemType,
+							"isGet": "true",
 							'is_authenticated': str(request.user.is_authenticated)
 		}
 		
@@ -431,32 +480,39 @@ class TeraSearchResultsView(View):
 
 			if action == "search":
 				
-				print("is get? "+ request.POST['isGet'])
-				# print(type(request.POST['isGet']))
-				# print("search")
-				# if isGet == True:
-				# else:
-					# User_acces.objects.create()
+
 				word = request.POST['word']
 				request.session['word'] = word
-				
-
+				isGet = request.POST['isGet']
 				website = request.POST['site']
+				isSite = request.POST['isSite']
+
 				itemType = request.POST['itemType']
 				request.session['website'] =website
 				request.session['itemType'] = itemType
 
+				if website == "CIT":
 
-				a = scrape(word,itemType , website,' ', request.POST['pageNumber'])
-
-				results = a	
+					results = Dissertation.objects.filter(title= word).values()
+					context = {
+						'results': list(results),
+						'is_authenticated': request.user.is_authenticated,
+						'isGet': "false"
+					}
 				
-				print(len(results))
-				context = {
-					'results': results,
-					'is_authenticated': request.user.is_authenticated,
-					"isGet": False
-				}
+				else:
+					
+					if isSite == "true" and isGet == "false":
+						UserSite_access.objects.create(user=request.user, site = Site.objects.get(name=website.replace("_"," ")))
+					
+					results = scrape(word, itemType, website,' ', request.POST['pageNumber'])
+
+				
+					context = {
+						'results': results,
+						'is_authenticated': request.user.is_authenticated,
+						'isGet': "false"
+					}
 				return JsonResponse(context)
 					
 			elif action == "add":
@@ -517,13 +573,14 @@ class TeraSearchResultsView(View):
 		elif 'buttonLogin' in request.POST:
 			request.session['previousPage'] = request.POST['previousPage']
 			print(request.session.get('previousPage'))
+
 			return redirect('ra:tera_login_view')
 
 		elif 'btnLogout' in request.POST:
 			word = request.session.get('word')
 			proxy = request.session.get('proxy')
 			pp = request.session.get('previousPage')
-
+			
 			logout(request)
 			request.session['previousPage'] = pp
 			request.session['word'] = word
@@ -652,7 +709,7 @@ class TeraDashboardView(View):
 			word = request.session.get('word')
 			prevPage = request.session.get('previousPage')
 			proxy = request.session.get('proxy')
-
+			
 			logout(request)
 
 			request.session['word'] = word

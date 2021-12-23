@@ -101,7 +101,7 @@ def recommend(bookmarkFrame, title):
 
 
     metadata = bookmarkFrame
-    print(metadata)
+    # print(metadata)
 
     tfidf = TfidfVectorizer(stop_words='english')
 
@@ -118,7 +118,7 @@ def recommend(bookmarkFrame, title):
 
         idx = indices[title[0].replace("'","")]
        
-    print(idx)
+    # print(idx)
     # Get the pairwsie similarity scores of all movies with that movie
     try:
         sim_scores = list(enumerate(cosine_sim[idx[0]]))
@@ -227,6 +227,7 @@ def UNESCO(word, refType, pageNumber):
     response = requests.post('https://unesdoc.unesco.org/in/rest/api/search', headers=headers, data=data)
     b = response.json()
 
+    
     for c in b['resultSet']:
         z=[]
         array = []
@@ -422,7 +423,7 @@ def OTL(word, refType, pageNumber): # pagination starts with index 1 diri
         for row in rowsss:
             z=[]
             title = row.h2.text #title
-            link = row.h2.a['href']
+            link = "https://open.umn.edu"+row.h2.a['href']
             author = row.p.text.replace('\n','  ') # 
             publisher = row.p.find_next().text.replace('\n','  ')
             description = row.p.find_next().find_next().text.replace('\n','  ')
