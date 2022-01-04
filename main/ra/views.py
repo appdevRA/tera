@@ -27,6 +27,7 @@ from .links import *
 import requests
 import csv
 import io
+from django.db.models.functions import TruncMonth
 
 class adminIndexView(View):
 	def get(self, request):
@@ -50,7 +51,19 @@ class addUser(View):
 
 class adminSiteView(View):
 	def get(self, request):
-		return render(request, 'adminSite.html')
+		sites = Site.objects.all().values()
+		return render(request, 'adminSite.html', {"sites": list(sites)})
+
+	def post(self, request):
+		if request.is_ajax():
+			action = request.POST["action"]
+
+			if action == "activate":
+				Site.objects.filter(id = request.POST["siteID"]).update(is_active = True)
+			elif action == "deactivate":
+				Site.objects.filter(id = request.POST["siteID"]).update(is_active = False)
+
+			return HttpResponse("")
 
 class adminChartView(View):
 	def get(self, request):
@@ -63,7 +76,26 @@ class adminChartView(View):
 
 class adminActiveUserView(View):
 	def get(self, request):
-		return render(request, 'adminActiveUser.html')
+		if datetime.today().month <10:
+			todaysMonth = str(datetime.today().year) +"-0" + str(datetime.today().month)
+		else:
+			todaysMonth = str(datetime.today().year) +"-" + str(datetime.today().month)
+
+		todaysMonth = "2022"
+		queryset= User_login.objects.filter(date__contains=todaysMonth).extra({'day':"Month(date)"}).values('day').annotate(count=Count('id')).order_by("day")
+		maxCount = queryset.latest("count")["count"]
+
+
+		# for item in queryset:
+		# 	item["day"] = item["day"].strftime("%b %d, %Y") 
+
+		context ={
+			"data": list(queryset),
+			"maxCount": maxCount
+		}
+		return render(request, 'adminActiveUser.html', context)
+	def post(self, request):
+		return HttpResponse("asd")
 
 
 
@@ -104,16 +136,17 @@ class adminTableView(View):
 																"department__abbv", "last_login"
 																)
 
-		activeUser =  User_login.objects.select_related("user").values('user__department__name').annotate(active=Count('id', filter=Q(date__contains=timezone.now().date())))
-		userSite =  UserSite_access.objects.values('site__name').annotate(accessCount=Count('site')).distinct()
-		print(userSite)
+		activeUser_perCollege =  Department.objects.select_related("user").values('name').annotate(activeCount=Count('id', filter=Q(user__last_login__contains=timezone.now().date())))
+		userSite =  Site.objects.values('name', 'url').annotate(accessCount=Count('usersite_access__id')).distinct()
+		dissertations = Dissertation.objects.values("title","author").all()
+		print(dissertations)
 		context ={
 			"users": list(user),
-			"activeUser": list(activeUser)		
+			"activeUser_perCollege": list(activeUser_perCollege),
+			"siteAccess": list(userSite),
+			"dissertations": list(dissertations)		
 		}
 		return render(request, 'adminTables.html', context)
-
-
 	def post(self, request):
 		
 		if 'update' in request.POST:
@@ -139,8 +172,9 @@ class adminTableView(View):
 		elif request.is_ajax():
 			
 			action = request.POST["action"]
-			if action == "delete_user":
-				User.objects.get(username= request.POST["userID"]).delete()
+
+			if request.POST['action'] == "delete_user":
+				User.objects.filter(student_id = request.POST['student_id']).delete()
 				return HttpResponse("")
 
 			elif action =="update_user":
@@ -213,12 +247,15 @@ class adminRegistrationView(View):
 		if 'btnRegister' in request.POST: 
 			form = CreateUserForm(request.POST)
 			if form.is_valid():
+				student_id=request.POST['student_id']
 				username=request.POST['username']
 				password=request.POST['password']
 				first_name=request.POST['first_name']
 				last_name=request.POST['last_name']
 				department=request.POST['department']
-				user = User(username=username,
+				user = User(
+							student_id= student_id,
+							username=username,
 							password = password,
 							first_name = first_name,
 							last_name= last_name,
@@ -233,7 +270,7 @@ class adminRegistrationView(View):
 				return render(request, 'adminRegistration.html', {"form":form,"type": rtype})
 
 		if request.is_ajax():
-			print("nisulod asa ajax")
+
 			if request.POST['action'] == "register_csv":
 				users = json.loads(request.POST.get('users'))
 				didExcept = 0
@@ -244,23 +281,28 @@ class adminRegistrationView(View):
 						password=make_password(row['password']),
 						first_name= row['first_name'], 
 						last_name=row['last_name'], 
-						department =  Department.objects.get(abbv=row['department'])
+						department =  Department.objects.get(abbv=row['department']),
+						student_id = row['id_number']
 						)
 					try:
 						user.save()
 					except Exception as e:
 						didExcept +=1
 						errorRows.append(row)
-
+						print(e)
 				context ={
 					"didExcept": didExcept,
 					"errorRows": errorRows,
 					"usersCount": len(users)
 				}
 				return JsonResponse(context)
+
+			
+
+
 		# elif 'readCSV' in request.POST:
 
-		try:
+		try: #read csv form
 			myfile = request.FILES['file']
 			file = myfile.read().decode('utf-8')
 			dict_reader = csv.DictReader(io.StringIO(file))
@@ -280,33 +322,38 @@ class practice(View):
 	def get(self, request):
 		
 		
+		
 
-				
-
+		
 			# a = User_bookmark.objects.annotate(id=1)
 			# print("folders count: ",a.folders.all().count())
 			# print("recommended","\n",a )
 			# recommendation = list(dict.fromkeys(modes(queryAll, request.user.id) ))
 		
 		# a= Department.objects.create(name='College of Computer Studies', abbv='CCS')
-		# User.objects.create(username='18-5126-269', password =make_password('12345'), first_name="yanni", last_name="mondejar", department=a)
+
+		# User.objects.create(student_id = '18-5126-269',username='18-5126-269', password =make_password('12345'), first_name="yanni", last_name="mondejar", department=a)
 
 
-		# User.objects.create(username='18-5126-270', password =make_password('12345'), first_name="jarry", last_name="emorecha", department=a)
+		# User.objects.create(student_id = '18-5126-270',username='18-5126-270', password =make_password('12345'), first_name="jarry", last_name="emorecha", department=a)
 
-		# User.objects.create(username='18-5126-271', password = make_password('12345'), first_name="ryan ", last_name="talatagod", department = a)
+		# User.objects.create(student_id = '18-5126-271',username='18-5126-271', password = make_password('12345'), first_name="ryan ", last_name="talatagod", department = a)
 		
 
+		# Department.objects.create(name='College of Computer Studies', abbv='CCS')
+		# Department.objects.create(name='College of Engineering and Architecture', abbv='CEA')
+		# Department.objects.create(name='College of Nursing and Allied Health Sciences', abbv='CNAHS')
+		# Department.objects.create(name='College of Management, Business Accountancy', abbv='CMBA')
+		# Department.objects.create(name='College of Arts, Sciences and Education', abbv='CASE')
+
+		# Site.objects.create(name ="Springeropen", url="https://Springeropen.com")
+		# Site.objects.create(name ="UNESCO Digital Library", url="https://unesdoc.unesco.org/")
+		# Site.objects.create(name ="Open Textbook Library", url="https://open.umn.edu/opentextbooks/")
+		# Site.objects.create(name ="OER_Commons", url="https://www.oercommons.org/")
+
 		
 
 
-		# OTL('war', 1232, 'Text book', 1)
-		# a = OER('animals', 'proxy', 'Text book', 2)
-		# for b in a:
-		# 	print(b['title'])
-		# a= OER('peace', 'Text book', 1)
-
-		
 		return render(request,'practice.html')#,context)
 
 	def post(self, request):
@@ -405,10 +452,11 @@ class TeraIndexView(View):
 		#	proxy =Proxies(proxy = proxy)
 		#	proxy.save()
 		
-		
-		print(timezone.now().date())
+		if request.user.is_authenticated and User.objects.filter(id = request.user.id, last_login__contains=timezone.now().date()).exists():
+			User_login.objects.create(user= request.user)
 		request.session['previousPage'] = 'index_view'
-		
+		# if request.user != None:
+		# 	User.objects.filter(id = request.user.id).update(last_login = timezone.now())
 		context ={
 			"user":request.user.is_authenticated
 		}
@@ -448,24 +496,27 @@ class TeraSearchResultsView(View):
 		# header = request.session.get('header')
 		word = request.session.get('word')
 
+
 		
 
 		if request.session.get('website') != None:
-			website = request.session.get('website')
+			active_site = request.session.get('website')
 		else:
-			website = "CIT"
+			active_site = "CIT"
 
 		if request.session.get('itemType') != None:
 			itemType = request.session.get('itemType')
 		else:
 			itemType = "Dissertations"
-						
+		
+		sites = Site.objects.filter(is_active=True).values("name")
 		context = {
 							'keyword': word,
-							'website': website,
+							'active_site': active_site,
 							'itemType': itemType,
 							"isGet": "true",
-							'is_authenticated': str(request.user.is_authenticated)
+							'is_authenticated': str(request.user.is_authenticated),
+							'sites': list(sites)
 		}
 		
 		return render(request,'searchresults.html', context)
@@ -501,10 +552,10 @@ class TeraSearchResultsView(View):
 					}
 				
 				else:
-					
 					if isSite == "true" and isGet == "false":
-						UserSite_access.objects.create(user=request.user, site = Site.objects.get(name=website.replace("_"," ")))
-					
+						if request.user.is_authenticated and not UserSite_access.objects.filter(user=request.user, site = Site.objects.get(name=website.replace("_"," ")), date_of_access__contains =timezone.now().date()).exists():
+							UserSite_access.objects.create(user=request.user, site = Site.objects.get(name=website.replace("_"," ")))
+						
 					results = scrape(word, itemType, website,' ', request.POST['pageNumber'])
 
 				

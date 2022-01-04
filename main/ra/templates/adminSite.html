@@ -146,88 +146,35 @@
                                         <tr>
                                             <th>Site Name</th>
                                             <th>Link</th>
-                                            <th>Manage</th>
+                                            <th>Status</th>
                                         </tr>
                                     </tfoot>
                                     <tbody>
+                                        {% for site in sites %}
                                         <tr>
-                                            <td>Springer Open</td>
+                                            <td>{{site.name}}</td>
                                             <td>
-                                              <a class="link1" href="https://insightsimaging.springeropen.com/articles/10.1186/s13244-021-01014-5">https://insightsimaging.springeropen.com/articles/10.1186/s13244-021-01014-5</a>
+                                              <a class="link1" href="{{site.url}}">{{ site.url}}</a>
                                             </td>
                                             <td>
-                                              <input class="input-switch" type="checkbox" id="toggle" onclick="press" checked/>
-                                              <label class="label-switch" for="toggle"></label>
-                                              <span class="info-text"></span>
+                                            {% if site.is_active == True %}
+                                            <input class="input-switch" type="checkbox" id="{{site.id}}" onclick="press" checked/>
+                                            <label class="label-switch" for="{{site.id}}"></label>
+                                            <span class="info-text"></span>
+                                            {% endif %}
+
+                                            {% if site.is_active == False %}
+                                            <input class="input-switch" type="checkbox" id="{{site.id}}" onclick="press" />
+                                            <label class="label-switch" for="{{site.id}}"></label>
+                                            <span class="info-text"></span>
+                                            {% endif %}
+
                                             </td>
                                         </tr>
-                                        <tr>
-                                            <td>UNESCO</td>
-                                            <td>
-                                              <a class="link2" href="https://unesdoc.unesco.org/ark:/48223/pf0000122768">https://unesdoc.unesco.org/ark:/48223/pf0000122768
-                                            </td>
-                                            <td>
-                                              <input class="input-switch" type="checkbox" id="toggle2" checked/>
-                                              <label class="label-switch" for="toggle2"></label>
-                                              <span class="info-text"></span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Open Textbook Library</td>
-                                            <td>
-                                              <a  class="link3" href="https://open.umn.edu/opentextbooks">https://open.umn.edu/opentextbooks
-                                            </td>
-                                            <td>
-                                              <input class="input-switch" type="checkbox" id="toggle3" checked/>
-                                              <label class="label-switch" for="toggle3"></label>
-                                              <span class="info-text"></span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>OER Commons</td>
-                                            <td>
-                                              <a class="link4" href="https://www.oercommons.org/courses/staff-devo">https://www.oercommons.org/courses/staff-devo
-                                            </td>
-                                            <td>
-                                              <input class="input-switch" type="checkbox" id="toggle4" checked/>
-                                              <label class="label-switch" for="toggle4"></label>
-                                              <span class="info-text"></span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Springer Open</td>
-                                            <td>
-                                              <a class="link5" href="https://aops.springeropen.com/articles/10.1186/s43159-020-00038-8">https://aops.springeropen.com/articles/10.1186/s43159-020-00038-8
-                                            </td>
-                                            <td>
-                                              <input class="input-switch" type="checkbox" id="toggle5" checked/>
-                                              <label class="label-switch" for="toggle5"></label>
-                                              <span class="info-text"></span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>UNESCO</td>
-                                            <td>
-                                              <a class="link6" href="https://unesdoc.unesco.org/ark:/48223/pf0000372868">https://unesdoc.unesco.org/ark:/48223/pf0000372868
-                                            </td>
-                                            <td>
-                                              <input class="input-switch" type="checkbox" id="toggle6" checked/>
-                                              <label class="label-switch" for="toggle6"></label>
-                                              <span class="info-text"></span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>OER Commons</td>
-                                            <td>
-                                              <a class="link7" href="https://www.oercommons.org/courses/nottingham-advantage-award-skills-for-employability">https://www.oercommons.org/courses/nottingham-advantage-award-skills-for-employability
-                                            </td>
-                                            <td>
-                                              <input class="input-switch" type="checkbox" id="toggle7" checked/>
-                                              <label class="label-switch" for="toggle7"></label>
-                                              <span class="info-text"></span>
-                                            </td>
-                                        </tr>
+                                        {% endfor %}
+                                           
                                     </tbody>
+                                        }
                                 </table>
                             </div>
                         </div>
@@ -258,4 +205,36 @@
     </body>
 </html>
 
+<script type="text/javascript">
+
+
+        $(document).on("click", ".deleteUser", function(){
+
+
+        });
+
+         $(document).on("change", ".input-switch", function(){
+            action =""
+            if ($(this).is(':checked')) {
+                action = "activate"
+            }
+            else {
+                action = "deactivate"
+
+            }
+            $.ajax({
+                  type:"POST",
+                  url:"",
+
+                  data:{
+                    action: action,
+                    siteID: $(this).attr("id"),
+                    csrfmiddlewaretoken:"{{csrf_token}}"
+                    // csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+
+                  },
+              
+            });
+        });
+</script>
 

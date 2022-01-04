@@ -137,7 +137,7 @@
                             <li class="breadcrumb-item active">Tables</li>
                         </ol>
 
-                        <div class="card mb-4">
+                        <div class="card mb-4"> #users
                             <div class="card-header">
                                 <i class="fas fa-table me-1"></i>
                                 Users
@@ -183,7 +183,10 @@
                                                 </a>
                                             </td>
                                             <td>
-                                                <a id ="{{user.username}}" class="deleteUser" title="Delete" data-toggle="tooltip"><i class="fa fa-trash" style="color: #800000; cursor: pointer"></i></a>
+                                                <a id ="{{user.student_id}}" class="deleteUser" >
+                                                     <!-- data-toggle="modal" data-target="#deleteUserModal"> -->
+                                                    <i class="fa fa-trash" style="color: #800000; cursor: pointer"></i>
+                                                </a>
                                             </td>
                                         </tr>
 
@@ -220,32 +223,14 @@
                                         </tr>
                                     </tfoot>
                                     <tbody>
-                                        <tr>
-                                            <td>College of Computer Studies</td>
-                                            <td>122200</td>
 
-                                        </tr>
-                                        <tr>
-                                            <td>College of Arts, Sciences, and Education</td>
-                                            <td>124123</td>
-                                        </tr>
-                                        <tr>
-                                            <td>College of Management, Business, and Accountancy</td>
-                                            <td>3453453</td>
-                                        </tr>
-                                        <tr>
-                                            <td>College of Criminal Justice</td>
-                                            <td>122200</td>
+                                        {% for college in activeUser_perCollege %}
+                                            <tr>
+                                                <td>{{college.name}}</td>
+                                                <td>{{college.activeCount}}</td>
 
-                                        </tr>
-                                        <tr>
-                                            <td>College of Nursing and Allied Health Sciences</td>
-                                            <td>124123</td>
-                                        </tr>
-                                        <tr>
-                                            <td>College of Engineering and Architecture</td>
-                                            <td>3453453</td>
-                                        </tr>
+                                            </tr>
+                                        {% endfor %}
                                         
                                     </tbody>
                                 </table>
@@ -264,7 +249,6 @@
                                             <th>Site Name</th>
                                             <th>Link</th>
                                             <th>Accumulated Number of Access</th>
-                                            <th>Accumulated Number of Hours</th>
                                         </tr>
                                     </thead>
                                     <tfoot>
@@ -272,28 +256,17 @@
                                             <th>Site Name</th>
                                             <th>Link</th>
                                             <th>Accumulated Number of Access</th>
-                                            <th>Accumulated Number of Hours</th>
                                         </tr>
                                     </tfoot>
                                     <tbody>
-                                        <tr>
-                                            <td>Springer Open</td>
-                                            <td>https://insightsimaging.springeropen.com/articles/10.1186/s13244-021-01014-5</td>
-                                            <td>450</td>
-                                            <td>500</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Springer Open</td>
-                                            <td>https://insightsimaging.springeropen.com/articles/10.1186/s13244-021-01014-5</td>
-                                            <td>450</td>
-                                            <td>500</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Springer Open</td>
-                                            <td>https://insightsimaging.springeropen.com/articles/10.1186/s13244-021-01014-5</td>
-                                            <td>450</td>
-                                            <td>500</td>
-                                        </tr>
+                                        {% for site in siteAccess %}
+                                            <tr>
+                                                <td>{{site.name}}</td>
+                                                <td><a href="{{site.url}}">{{site.url}}</a></td>
+                                                <td>{{site.accessCount}}</td>
+
+                                            </tr>
+                                        {% endfor %}
                                       
                                             
                                         </tr>
@@ -329,12 +302,20 @@
                                         </tr>
                                     </tfoot>
                                     <tbody>
+                                        {% for d in dissertations %}
                                         <tr>
-                                            <td>Technologian Exclusive Research Assistant</td>
-                                            <td>Sumalinog, L., Mondejar YJ., Emorecha, J., Talatagod, R., Albano, JR.</td>
-                                            <td>Computer Studies</td>
+                                            <td>{{d.title}}</td>
+                                            <td>{{d.author}}</td>
+                                            <td>{{d.department__name}}</td>
                                             <td>
-                                              <input class="input-switch" type="checkbox" id="toggle" onclick="press" checked/>
+                                            {% if d.isActive == True %}
+                                                <input class="input-switch" type="checkbox" id="status" onclick="press" checked/>
+                                            {% endif %}
+
+                                            {% if d.isActive == False %}
+                                              <input class="input-switch" type="checkbox" id="status" onclick="press" />
+                                            {% endif %}
+                                            
                                               <label class="label-switch" for="toggle"></label>
                                               <span class="info-text"></span>
                                             </td>
@@ -345,45 +326,22 @@
                                                 <a class="delete" title="Delete" data-toggle="tooltip"><i class="fa fa-trash" style="color: #800000"></i></a>
                                             </td>
                                         </tr>
-                                       <tr>
-                                            <td>Technologian Exclusive Research Assistant</td>
-                                            <td>Sumalinog, L., Mondejar YJ., Emorecha, J., Talatagod, R., Albano, JR.</td>
-                                            <td>Computer Studies</td>
-                                            <td>
-                                              <input class="input-switch" type="checkbox" id="toggle2" onclick="press" checked/>
-                                              <label class="label-switch" for="toggle2"></label>
-                                              <span class="info-text"></span>
-                                            </td>
-                                             <td>
-                                                <a class="edit" title="Edit" data-toggle="tooltip"><i class="far fa-edit" style="color: #ffd700"></i></a>
-                                            </td>
-                                            <td>
-                                                <a class="delete" title="Delete" data-toggle="tooltip"><i class="fa fa-trash" style="color: #800000"></i></a>
-                                            </td>
-                                        </tr>
-                                       <tr>
-                                            <td>Technologian Exclusive Research Assistant</td>
-                                            <td>Sumalinog, L., Mondejar YJ., Emorecha, J., Talatagod, R., Albano, JR.</td>
-                                            <td>Computer Studies</td>
-                                            <td>
-                                              <input class="input-switch" type="checkbox" id="toggle3" onclick="press" checked/>
-                                              <label class="label-switch" for="toggle3"></label>
-                                              <span class="info-text"></span>
-                                            </td>
-                                             <td>
-                                                <a class="edit" title="Edit" data-toggle="tooltip"><i class="far fa-edit" style="color: #ffd700"></i></a>
-                                            </td>
-                                            <td>
-                                                <a class="delete" title="Delete" data-toggle="tooltip"><i class="fa fa-trash" style="color: #800000"></i></a>
-                                            </td>
-                                        </tr>
+                                        {% endfor %}
+
                                         <tr>
-                                            <td>Technologian Exclusive Research Assistant</td>
-                                            <td>Sumalinog, L., Mondejar YJ., Emorecha, J., Talatagod, R., Albano, JR.</td>
-                                            <td>Computer Studies</td>
+                                            <td>{{d.title}}</td>
+                                            <td>{{d.author}}</td>
+                                            <td>{{d.department__name}}</td>
                                             <td>
-                                              <input class="input-switch" type="checkbox" id="toggle4" onclick="press" checked/>
-                                              <label class="label-switch" for="toggle4"></label>
+                                            {% if d.isActive == True %}
+                                              <input class="input-switch" type="checkbox" id="status" onclick="press" checked/>
+                                            {% endif %}
+
+                                            {% if d.isActive == False %}
+                                              <input class="input-switch" type="checkbox" id="status" onclick="press" />
+                                            {% endif %}
+
+                                              <label class="label-switch" for="status"></label>
                                               <span class="info-text"></span>
                                             </td>
                                              <td>
@@ -393,102 +351,7 @@
                                                 <a class="delete" title="Delete" data-toggle="tooltip"><i class="fa fa-trash" style="color: #800000"></i></a>
                                             </td>
                                         </tr>
-                                        <tr>
-                                            <td>Technologian Exclusive Research Assistant</td>
-                                            <td>Sumalinog, L., Mondejar YJ., Emorecha, J., Talatagod, R., Albano, JR.</td>
-                                            <td>Computer Studies</td>
-                                            <td>
-                                              <input class="input-switch" type="checkbox" id="toggle5" onclick="press" checked/>
-                                              <label class="label-switch" for="toggle5"></label>
-                                              <span class="info-text"></span>
-                                            </td>
-                                             <td>
-                                                <a class="edit" title="Edit" data-toggle="tooltip"><i class="far fa-edit" style="color: #ffd700"></i></a>
-                                            </td>
-                                            <td>
-                                                <a class="delete" title="Delete" data-toggle="tooltip"><i class="fa fa-trash" style="color: #800000"></i></a>
-                                            </td>
-                                        </tr>
-                                       <tr>
-                                            <td>Technologian Exclusive Research Assistant</td>
-                                            <td>Sumalinog, L., Mondejar YJ., Emorecha, J., Talatagod, R., Albano, JR.</td>
-                                            <td>Computer Studies</td>
-                                            <td>
-                                              <input class="input-switch" type="checkbox" id="toggle6" onclick="press" checked/>
-                                              <label class="label-switch" for="toggle6"></label>
-                                              <span class="info-text"></span>
-                                            </td>
-                                             <td>
-                                                <a class="edit" title="Edit" data-toggle="tooltip"><i class="far fa-edit" style="color: #ffd700"></i></a>
-                                            </td>
-                                            <td>
-                                                <a class="delete" title="Delete" data-toggle="tooltip"><i class="fa fa-trash" style="color: #800000"></i></a>
-                                            </td>
-                                        </tr>
-                                       <tr>
-                                            <td>Technologian Exclusive Research Assistant</td>
-                                            <td>Sumalinog, L., Mondejar YJ., Emorecha, J., Talatagod, R., Albano, JR.</td>
-                                            <td>Computer Studies</td>
-                                            <td>
-                                              <input class="input-switch" type="checkbox" id="toggle7" onclick="press" checked/>
-                                              <label class="label-switch" for="toggle7"></label>
-                                              <span class="info-text"></span>
-                                            </td>
-                                            <td>
-                                                <a class="edit" title="Edit" data-toggle="tooltip"><i class="far fa-edit" style="color: #ffd700"></i></a>
-                                            </td>
-                                            <td>
-                                                <a class="delete" title="Delete" data-toggle="tooltip"><i class="fa fa-trash" style="color: #800000"></i></a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Technologian Exclusive Research Assistant</td>
-                                            <td>Sumalinog, L., Mondejar YJ., Emorecha, J., Talatagod, R., Albano, JR.</td>
-                                            <td>Computer Studies</td>
-                                            <td>
-                                              <input class="input-switch" type="checkbox" id="toggle8" onclick="press" checked/>
-                                              <label class="label-switch" for="toggle8"></label>
-                                              <span class="info-text"></span>
-                                            </td>
-                                            <td>
-                                                <a class="edit" title="Edit" data-toggle="tooltip"><i class="far fa-edit" style="color: #ffd700"></i></a>
-                                            </td>
-                                            <td>
-                                                <a class="delete" title="Delete" data-toggle="tooltip"><i class="fa fa-trash" style="color: #800000"></i></a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Technologian Exclusive Research Assistant</td>
-                                            <td>Sumalinog, L., Mondejar YJ., Emorecha, J., Talatagod, R., Albano, JR.</td>
-                                            <td>Computer Studies</td>
-                                            <td>
-                                              <input class="input-switch" type="checkbox" id="toggle9" onclick="press" checked/>
-                                              <label class="label-switch" for="toggle9"></label>
-                                              <span class="info-text"></span>
-                                            </td>
-                                             <td>
-                                                <a class="edit" title="Edit" data-toggle="tooltip"><i class="far fa-edit" style="color: #ffd700"></i></a>
-                                            </td>
-                                            <td>
-                                                <a class="delete" title="Delete" data-toggle="tooltip"><i class="fa fa-trash" style="color: #800000"></i></a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Technologian Exclusive Research Assistant</td>
-                                            <td>Sumalinog, L., Mondejar YJ., Emorecha, J., Talatagod, R., Albano, JR.</td>
-                                            <td>Computer Studies</td>
-                                            <td>
-                                              <input class="input-switch" type="checkbox" id="toggle10" onclick="press" checked/>
-                                              <label class="label-switch" for="toggle10"></label>
-                                              <span class="info-text"></span>
-                                            </td>
-                                             <td>
-                                                <a class="edit" title="Edit" data-toggle="tooltip"><i class="far fa-edit" style="color: #ffd700"></i></a>
-                                            </td>
-                                            <td>
-                                                <a class="delete" title="Delete" data-toggle="tooltip"><i class="fa fa-trash" style="color: #800000"></i></a>
-                                            </td>
-                                        </tr>
+                                       
                                     </tbody>
                                 </table>
                             </div>
@@ -596,43 +459,7 @@
                     </div>
 
 
-            <!-- do you really want delete modal -->
-                <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="newModalLabel" aria-hidden="true">  
-                            <div class="modal-dialog modal-lg" role="document">
-                              <div class="modal-content" style="background-color: white">
-                                <div class="modal-header" style="background-color:#800000">
-                                  <h5 class="modal-title" style="color: white">User information</h5>
-                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                  </button>
-                                </div>
-
-                                <div class="card-body">
-                                    <form name="my-form" method="POST">
-                    
-                                        <div class="form-group row">
-                                            <label for="first_name" class="col-md-4 col-form-label text-md-right">First Name</label>
-                                            <div class="col-md-6">
-                                                <input type="text" id="" class="form-control" name="first_name" value="{{user.first_name}}">
-                                            </div>
-                                        </div>
-
-                                        
-                                            <div class="col-md-6 offset-md-4">
-                                               
-                                                <button type="submit" name="update" class="btn btn-primary">
-                                                    Update
-                                                </button>
-                                                
-                                                <button type="button" class="btn btn-secondary" data-dismiss="modal" style="margin-left:1px; margin-top: 4px;"> CANCEL</button>
-                                                
-
-                                            </div>
-                                    </form>
-                                </div>
-                               </div>
-                            </div>
-                            </div> <!-- do you really want to delete modal  -->
+           
 
        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
             <script src="{% static 'js/adminScripts.js' %}"></script>
@@ -651,26 +478,29 @@
     var selectedRow
 
 $(document).ready(function(){
+
          
+
         $(document).on("click", ".deleteUser", function(){
-            $(this).parents("tr").remove();
-               // alert("olok")
-            $.ajax({
+            selectedRow = $(this).parents("tr")
+            didConfirm = confirm("Do you really want to delete this user?")
+            if(didConfirm){
+                selectedRow.remove()
+
+                $.ajax({
                   type:"POST",
                   url:"",
 
                   data:{
                     action: 'delete_user',
-                    oldStudent_id: $(this).attr("id"),
+                    student_id: $(this).attr("id"),
                     csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
 
                   },
-                  success: function(response){
-                   
-                    // console.log("add recommend "+" "+ markers.length)
-                    
-                  }
-            }); 
+              
+                }); 
+            }
+            
         });
 
 
@@ -725,23 +555,23 @@ $(document).ready(function(){
                   },
                   success: function(response){
                     
-                    if(response.isError == 1){
-                        document.getElementById("errorMessage").textContent = response.errorMessage
-                        document.getElementById("errorMessage").style.display="inline"
-                    }
-                        
-                    else{
-                        document.getElementById("dismissModal").click()
-                        user = response.user[0]
-                        
+                        if(response.isError == 1){
+                            document.getElementById("errorMessage").textContent = response.errorMessage
+                            document.getElementById("errorMessage").style.display="inline"
+                        }
+                            
+                        else{
+                            document.getElementById("dismissModal").click()
+                            user = response.user[0]
+                            
 
-                        selectedRow.siblings('.usernameInfo').text(user.username);
-                        selectedRow.siblings('.last_nameInfo').text(user.last_name);
-                        selectedRow.siblings('.first_nameInfo').text(user.first_name);
-                        selectedRow.siblings('.userIDInfo').text(user.student_id)
-                        selectedRow.siblings('.department__abbvInfo').text(user.department__abbv);
-                        
-                    }                    
+                            selectedRow.siblings('.usernameInfo').text(user.username);
+                            selectedRow.siblings('.last_nameInfo').text(user.last_name);
+                            selectedRow.siblings('.first_nameInfo').text(user.first_name);
+                            selectedRow.siblings('.userIDInfo').text(user.student_id)
+                            selectedRow.siblings('.department__abbvInfo').text(user.department__abbv);
+                            
+                        }                    
                     
                   }
             }); 

@@ -22,7 +22,7 @@ class User (AbstractUser):
 
 class Admin (models.Model):
 	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
-	department_id= models.ForeignKey(Department, null = False, blank = False, on_delete = models.CASCADE)
+	department= models.ForeignKey(Department, null = False, blank = False, on_delete = models.CASCADE)
 	class Meta:
 		db_table = "Admin"
 
@@ -100,7 +100,8 @@ class Dissertation(models.Model):
 	title = models.CharField(max_length=1000)
 	abstract = models.CharField(max_length=2000)
 	author = models.CharField(max_length=200)
-
+	is_active = models.BooleanField(default = False)
+	department = models.ForeignKey(Department, null = True, blank = False, on_delete = models.CASCADE) #edit null to False
 	class Meta:
 		db_table = "Dissertation"
 
@@ -110,14 +111,6 @@ class Dissertation(models.Model):
 
 # 	class Meta:
 # 		db_table = "Dissertation_authors"
-
-
-class User_file(models.Model):
-	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
-	file = models.FileField(upload_to ='media', null = False)
-	class Meta:
-		db_table = "User_files"
-
 
 
 
@@ -146,8 +139,7 @@ class Site (models.Model):
 
 
 class UserSite_access(models.Model):
-	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
-	
+	user = models.ForeignKey(User, null = True, blank = True, on_delete = models.CASCADE)
 	site = models.ForeignKey(Site, null = False, blank = False, on_delete = models.CASCADE)
 	date_of_access = models.DateTimeField(auto_now_add=True)
 
@@ -157,6 +149,9 @@ class UserSite_access(models.Model):
 class User_login(models.Model):
 	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
 	date = models.DateTimeField(default=timezone.now)
+
+	class Meta:
+		db_table = "User_login"	
 
 class Headers (models.Model):
 	text = models.CharField(max_length = 5000)

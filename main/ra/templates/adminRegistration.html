@@ -185,7 +185,7 @@
                                         
                                  </form>
 
-                                 <div class="card-body">
+                    <div class="card-body">
                                     {% for m in messages %} 
                                         <center ><a style="color: red">{{m}}</a></center>
                                         {% endfor %}
@@ -194,6 +194,7 @@
                                 <table id="datatablesSimple" >
                                     <thead>
                                         <tr>
+                                            <th>ID number</th>
                                             <th>Username</th>
                                             <th>Password</th>
                                             <th>First Name</th>
@@ -213,6 +214,7 @@
                                     <tbody id="importUser_table">
                                         {% for user in users %}
                                         <tr>
+                                            <td>{{user.id_number}}</td>
                                             <td>{{user.username}}</td>
                                             <td>{{user.password}}</td>
                                             <td>{{user.first_name}}</td>
@@ -250,6 +252,14 @@
                                         
                 <form id = "form1"   method="post" autocomplete="off" enctype="multipart/form-data">
                                                                 {% csrf_token %}
+                    <div class="form-group row">
+
+                        <label for="student_id" class="col-md-4 col-form-label text-md-right">ID number</label>
+                        <div class="col-md-6">
+                            <input type="text" class="form-control form-control-user" id="student_id" name="student_id">
+                        </div>
+
+                    </div>
                     <div class="form-group row">
 
                         <label for="username" class="col-md-4 col-form-label text-md-right">Username</label>
@@ -384,9 +394,9 @@
                         csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
                       },
                        success: function(response){
-                              if(response.didExcept == 1){
+                              if(response.didExcept >= 1){
                                     rows = response.errorRows
-                                alert("Some rows did have a problem")
+                                alert(rows.length+" rows did have a problem")
                                 $("#importUser_table").empty();
 
                                 for(i=0;i<rows.length;i++){
@@ -397,6 +407,7 @@
                                     '<td>'+ rows[i].first_name +'</td>'+
                                     '<td>'+ rows[i].last_name +'</td>'+
                                     '<td>'+ rows[i].department +'</td>'+
+                                    '<td>'+ rows[i].id_number +'</td>'+
                                     '</tr>'
                                     )
                                 }
