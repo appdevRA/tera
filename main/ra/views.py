@@ -29,17 +29,7 @@ import csv
 import io
 from django.db.models.functions import TruncMonth
 
-class adminIndexView(View):
-	def get(self, request):
-		
-		user= User.objects.select_related("department").values("username", "first_name", "last_name", "last_login", "department__name")
-		print(user)
 
-		context ={
-			"users": user		
-		}
-		
-		return render(request,'adminIndex.html',context)
 
 
 
@@ -70,7 +60,44 @@ class adminChartView(View):
 		return render(request, 'adminCharts.html')
 
 
+class adminIndexView(View):
+	def get(self, request):
+		
+		
 
+		if datetime.today().month <10:
+			todaysMonth = str(datetime.today().year) +"-0" + str(datetime.today().month)
+		else:
+			todaysMonth = str(datetime.today().year) +"-" + str(datetime.today().month)
+
+
+		user= User.objects.select_related("department").values("username", "first_name", "last_name", "last_login", "department__name")
+
+		activeUser= User_login.objects.filter(date__contains=todaysMonth).extra({'day': to_char("Date(date)", 'YYYY-MM-DD') }).values('day').annotate(count=Count('id')).order_by("day")
+		activeUserMax = activeUser.latest("count")["count"]
+		print(activeUser)
+		siteAccess= UserSite_access.objects.filter(date_of_access__contains=todaysMonth).extra({'day':"date(date_of_access)"}).values('day').annotate(count=Count('id')).order_by("day")
+		siteAccessMax = siteAccess.latest("count")["count"]
+		
+		colleges= User_login.objects.filter(date__contains=todaysMonth).values('user__department__abbv').annotate(count=Count('id')).order_by("user__department__abbv")
+
+		for item in activeUser:
+				item["day"] = item["day"].strftime("%Y-%m-%d")
+
+		for item in siteAccess:
+				item["day"] = item["day"].strftime("%Y-%m-%d")
+
+		context ={
+			"users": list(user), 
+			"activeUser": list(activeUser),
+			"activeUserMax": activeUserMax,
+			"siteAccess": list(siteAccess),
+			"siteAccessMax": siteAccessMax,
+			"colleges": list(colleges)	
+
+		}
+		
+		return render(request,'adminIndex.html',context)
 
 
 
@@ -81,13 +108,14 @@ class adminActiveUserView(View):
 		else:
 			todaysMonth = str(datetime.today().year) +"-" + str(datetime.today().month)
 
-		todaysMonth = "2022"
-		queryset= User_login.objects.filter(date__contains=todaysMonth).extra({'day':"Month(date)"}).values('day').annotate(count=Count('id')).order_by("day")
+		queryset= User_login.objects.filter(date__contains=todaysMonth).extra({'day':"Date(date)"}).values('day').annotate(count=Count('id')).order_by("day")
 		maxCount = queryset.latest("count")["count"]
 
 
-		# for item in queryset:
-		# 	item["day"] = item["day"].strftime("%b %d, %Y") 
+
+		for item in queryset:
+			item["day"] = item["day"].strftime("%Y-%m-%d")  
+		print(list(queryset), maxCount)
 
 		context ={
 			"data": list(queryset),
@@ -95,19 +123,115 @@ class adminActiveUserView(View):
 		}
 		return render(request, 'adminActiveUser.html', context)
 	def post(self, request):
-		return HttpResponse("asd")
+
+		if request.is_ajax():
+			startDate = request.POST["startDate"]
+			endDate = request.POST["endDate"]
+			
+			
+			try:
+				queryset= User_login.objects.filter(date__range=[startDate, endDate]).extra({'day':"Date(date)"}).values('day').annotate(count=Count('id')).order_by("day")
+				maxCount = queryset.latest("count")["count"]
+
+				for item in queryset:
+					item["day"] = item["day"].strftime("%Y-%m-%d")  
+				print(list(queryset), maxCount)
+			except:
+				queryset = []
+				maxCount = 0
+
+			context ={
+				"data": list(queryset),
+				"maxCount": maxCount
+			}
+			return JsonResponse(context)
 
 
 
 class adminCollegesView(View):
 	def get(self, request):
-		return render(request, 'adminColleges.html')
+		if datetime.today().month <10:
+			todaysMonth = str(datetime.today().year) +"-0" + str(datetime.today().month)
+		else:
+			todaysMonth = str(datetime.today().year) +"-" + str(datetime.today().month)
+
+		queryset= User_login.objects.filter(date__contains=todaysMonth).values('user__department__abbv').annotate(count=Count('id')).order_by("user__department__abbv")
+
+		context ={
+			"data": list(queryset)
+		}
+		return render(request, 'adminColleges.html', context)
+
+	def post(self, request):
+		if request.is_ajax():
+			startDate = request.POST["startDate"]
+			endDate = request.POST["endDate"]
+
+			queryset= User_login.objects.filter(
+												date__range=[startDate, endDate]
+												).values('user__department__abbv').annotate(
+																							count=Count('id')
+
+																							).order_by("user__department__abbv")
 
 
+
+			print(queryset)
+			context ={
+				"data": list(queryset)
+			}
+			return JsonResponse(context)
 
 class adminSiteAccessView(View):
 	def get(self, request):
-		return render(request, 'adminSiteAccess.html')
+		if datetime.today().month <10:
+			todaysMonth = str(datetime.today().year) +"-0" + str(datetime.today().month)
+		else:
+			todaysMonth = str(datetime.today().year) +"-" + str(datetime.today().month)
+
+		queryset= UserSite_access.objects.filter(date_of_access__contains=todaysMonth).extra({'day':"date(date_of_access)"}).values('day').annotate(count=Count('id')).order_by("day")
+		maxCount = queryset.latest("count")["count"]
+
+
+		for item in queryset:
+			item["day"] = item["day"].strftime("%Y-%m-%d") 
+		print(list(queryset), maxCount)
+		context ={
+			"data": list(queryset),
+			"maxCount": maxCount
+		}
+		return render(request, 'adminSiteAccess.html', context)
+
+	def post(self, request):
+		if request.is_ajax():
+			startDate = request.POST["startDate"]
+			endDate = request.POST["endDate"]
+
+
+			try:
+				queryset= UserSite_access.objects.filter(
+														date_of_access__range=[startDate, endDate]
+														).extra(
+														{'day':"Date(date_of_access)"}
+														).values('day').annotate(
+																				count=Count('id')
+																				).order_by("day")
+				maxCount = queryset.latest("count")["count"]
+
+				for item in queryset:
+					item["day"] = item["day"].strftime("%Y-%m-%d")  
+				
+			except:
+				queryset = []
+				maxCount = 0
+
+			print(list(queryset), maxCount)
+			context ={
+				"data": list(queryset),
+				"maxCount": maxCount
+			}
+			return JsonResponse(context)
+
 
 class adminDissertationsView(View):
 	def get(self, request):
@@ -325,10 +449,10 @@ class practice(View):
 		
 
 		
-			# a = User_bookmark.objects.annotate(id=1)
-			# print("folders count: ",a.folders.all().count())
-			# print("recommended","\n",a )
-			# recommendation = list(dict.fromkeys(modes(queryAll, request.user.id) ))
+		# a = User_bookmark.objects.annotate(id=1)
+		# print("folders count: ",a.folders.all().count())
+		# print("recommended","\n",a )
+		# recommendation = list(dict.fromkeys(modes(queryAll, request.user.id) ))
 		
 		# a= Department.objects.create(name='College of Computer Studies', abbv='CCS')
 
@@ -452,7 +576,7 @@ class TeraIndexView(View):
 		#	proxy =Proxies(proxy = proxy)
 		#	proxy.save()
 		
-		if request.user.is_authenticated and User.objects.filter(id = request.user.id, last_login__contains=timezone.now().date()).exists():
+		if request.user.is_authenticated and not User.objects.filter(id = request.user.id, last_login__contains=timezone.now().date()).exists():
 			User_login.objects.create(user= request.user)
 		request.session['previousPage'] = 'index_view'
 		# if request.user != None:
@@ -496,7 +620,8 @@ class TeraSearchResultsView(View):
 		# header = request.session.get('header')
 		word = request.session.get('word')
 
-
+		if request.user.is_authenticated and not User.objects.filter(id = request.user.id, last_login__contains=timezone.now().date()).exists():
+			User_login.objects.create(user= request.user)
 		
 
 		if request.session.get('website') != None:
@@ -651,8 +776,8 @@ class TeraDashboardView(View):
 		# Department.objects.create(abbv='CCS', name="College of Computer Studies")
 		# Group.objects.get(id=1).member.add(User.objects.get(username='mondejars'))
 		#.distinct()
-		
-		
+		if request.user.is_authenticated and not User.objects.filter(id = request.user.id, last_login__contains=timezone.now().date()).exists():
+			User_login.objects.create(user= request.user)
 		# Folder.objects.all().delete()
 		# User_bookmark.objects.all().delete()
 		request.session['previousPage'] = "tera_dashboard_view"
@@ -817,7 +942,7 @@ class TeraDashboardView(View):
 					if Bookmark.objects.filter(group__id= factionID,bookmark__id=bdID, isRemoved=0).exists():
 						return HttpResponse('')
 					else:
-						Bookmark.objects.create(user=request.user, 
+						Bookmark.objects.create(
 												group=Group.objects.get(id=factionID), 
 												bookmark = Bookmark_detail.objects.get(id=bdID) 
 												)
@@ -902,7 +1027,7 @@ class TeraDashboardView(View):
 			elif action == 'get_group_bookmarks':
 				groupID= request.POST['gID']
 				a= []
-				if Bookmark.objects.filter( group__id=groupID, user=request.user, isRemoved=0).exists():
+				if Bookmark.objects.filter(Q(group__owner= request.user) | Q(group__member=request.user), isRemoved=0).exists():
 					bookmarks = Bookmark.objects.select_related("bookmark").filter(
 																			group__id=request.POST['gID'], isRemoved=0
 																			).values(

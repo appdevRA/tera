@@ -85,6 +85,7 @@ class Group(models.Model):
 
 class Bookmark(models.Model):
 	user = models.ForeignKey(User, null = True, blank = True, on_delete = models.CASCADE)
+	owner = models.ForeignKey(User,null = True, blank = True, related_name='owner', on_delete = models.CASCADE)
 	group = models.ForeignKey(Group, null = True, blank = True, on_delete = models.CASCADE)
 	folder = models.ForeignKey(Folder, null = True, blank = True, on_delete = models.CASCADE)
 	bookmark = models.ForeignKey(Bookmark_detail, null = False, blank = False, on_delete = models.CASCADE)
@@ -149,7 +150,7 @@ class UserSite_access(models.Model):
 class User_login(models.Model):
 	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
 	date = models.DateTimeField(default=timezone.now)
-
+	department = models.ForeignKey(Department, null = True, blank = False, on_delete = models.CASCADE) #change null to True
 	class Meta:
 		db_table = "User_login"	
 

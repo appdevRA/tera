@@ -16,9 +16,11 @@
 
         <!-- For Registration -->
         <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-        <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+        <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"> -->
+        <!-- <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script> -->
+        <!-- <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css">
 
         <style>
         .logo{
@@ -370,70 +372,68 @@
         <script src="{% static 'js/datatables-simple-demo.js' %}"></script>
         <!-- Footer for Registration -->
         <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script> -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script> -->
+        <!-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script> -->
+        <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
 
     <script type="text/javascript">
         csvFILE = {{users|safe}}
         
         $(document).ready(function($) {
-        
-        document.getElementById("registerCSV").onclick = function(e) {
-            if(csvFILE.length == 1)
-                alert("Please read CSV file")
-            else{
-                
-                $.ajax({
-                      
-                      type:"POST",
-                      url:"",
-                      data:{
-                        action: "register_csv",
-                        users: JSON.stringify(csvFILE),
-                        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
-                      },
-                       success: function(response){
-                              if(response.didExcept >= 1){
-                                    rows = response.errorRows
-                                alert(rows.length+" rows did have a problem")
-                                $("#importUser_table").empty();
+        try{
+            document.getElementById("registerCSV").onclick = function(e) {
+                if(csvFILE.length == 1)
+                    alert("Please read CSV file")
+                else{
+                    
+                    $.ajax({
+                          
+                          type:"POST",
+                          url:"",
+                          data:{
+                            action: "register_csv",
+                            users: JSON.stringify(csvFILE),
+                            csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                          },
+                           success: function(response){
+                                if(response.didExcept >= 1){
+                                        rows = response.errorRows
+                                    alert(rows.length+" rows did have a problem")
+                                    $("#importUser_table").empty();
 
-                                for(i=0;i<rows.length;i++){
-                                     $("#importUser_table").append(
-                                    '<tr>' +
-                                    '<td>'+ rows[i].username +'</td>' +
-                                    '<td>'+ rows[i].password +'</td>' +
-                                    '<td>'+ rows[i].first_name +'</td>'+
-                                    '<td>'+ rows[i].last_name +'</td>'+
-                                    '<td>'+ rows[i].department +'</td>'+
-                                    '<td>'+ rows[i].id_number +'</td>'+
-                                    '</tr>'
-                                    )
+                                    for(i=0;i<rows.length;i++){
+                                         $("#importUser_table").append(
+                                        '<tr>' +
+                                        '<td>'+ rows[i].username +'</td>' +
+                                        '<td>'+ rows[i].password +'</td>' +
+                                        '<td>'+ rows[i].first_name +'</td>'+
+                                        '<td>'+ rows[i].last_name +'</td>'+
+                                        '<td>'+ rows[i].department +'</td>'+
+                                        '<td>'+ rows[i].id_number +'</td>'+
+                                        '</tr>'
+                                        )
+                                    }
+                                    
+                                } else{
+                                    $("#importUser_table").empty();
+                                    alert(response.usersCount + " users successfully registered")
                                 }
-                                
-                              } else{
-                                $("#importUser_table").empty();
-                                alert(response.usersCount + " users successfully registered")
-                              }
-                  
-             
+                            }
+                    });  
                 }
-
-                });  
             }
 
 
-             
-        }
-        document.getElementById("readCSV").onclick = function(e) {
+
+            document.getElementById("readCSV").onclick = function(e) {
             if(document.getElementById("file").value.length == 0)
                 alert("Please select CSV file")
             else
                 document.getElementById("readCSVForm").submit()
-                
-           
-        }
+            }
+        } catch{}
+        
+        
         
         });
 

@@ -629,7 +629,7 @@ def details(link, proxy, refType ):
         # if len(description) > 1000:
         #     a = soup.find('h3', text='Conclusion')
         #     print(a.next)
-        
+        print(ref)
         details={
             'websiteTitle': ref[0],
             'itemType': ref[1],

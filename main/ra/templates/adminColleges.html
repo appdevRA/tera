@@ -12,7 +12,7 @@
         <link rel="shortcut icon" href="{% static 'images/logo.png' %}">
         <link href="{% static 'css/adminStyles.css' %}" rel="stylesheet" /> 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
-
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
         <link rel="stylesheet" href="//code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css">
         <!-- <link rel="stylesheet" href="/resources/demos/style.css"> -->
         <!-- <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
@@ -146,7 +146,7 @@
                                         <i class="fas fa-chart-pie me-1"></i>
                                         Colleges
                                     </div>
-                                    <div class="card-body"><canvas id="myPieChart" width="100%" height="50"></canvas></div>
+                                    <div class="card-body"><canvas id="myPieChart" width="100%" height="30"></canvas></div>
                                     <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
                                 </div>
                             </div>
@@ -159,15 +159,18 @@
                                 <i class="fas fa-table me-1"></i>
                                 Departments 
                                 <center>
-                                    <select id="select1">
-                                        <option selected="selected" disabled="disabled">Graph Label Options</option>
-                                        <option value="1">Days</option>
-                                        <option value="2">Weeks</option>
-                                        <option value="3">Months</option>
-                                        <option value="3">Semester</option>
+                                    <select id="filter">
+                                        <option selected="selected" value="date">Days</option>
+                                        <option value="month">Months</option>
                                     </select>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <label for="startDate"> Start date</label> 
                                     <input type="date" id="startDate" placeholder="Start Date"  />
-                                    <input type="date" id="endDate" placeholder="End Date"  value="olok" />
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <label for="endDate"> End date</label> 
+                                    <input type="date" id="endDate" placeholder="End Date"  />
+                                    &nbsp;&nbsp;&nbsp;
+                                    <button id = "submit" class="btn-primary">submit</button>
                                 </center>
                             </div>
                             <div class="card-body">
@@ -201,38 +204,7 @@
                                             <td>120</td>
                                             <td>Springer Open</td>
                                         </tr>
-                                        <tr>
-                                            <td>College of Computer Studies</td>
-                                            <td>200</td>
-                                            <td>110</td>
-                                            <td>85</td>
-                                            <td>120</td>
-                                            <td>Springer Open</td>
-                                        </tr>
-                                        <tr>
-                                            <td>College of Computer Studies</td>
-                                            <td>200</td>
-                                            <td>110</td>
-                                            <td>85</td>
-                                            <td>120</td>
-                                            <td>Springer Open</td>
-                                        </tr>
-                                        <tr>
-                                            <td>College of Computer Studies</td>
-                                            <td>200</td>
-                                            <td>110</td>
-                                            <td>85</td>
-                                            <td>120</td>
-                                            <td>Springer Open</td>
-                                        </tr>
-                                        <tr>
-                                            <td>College of Computer Studies</td>
-                                            <td>200</td>
-                                            <td>110</td>
-                                            <td>85</td>
-                                            <td>120</td>
-                                            <td>Springer Open</td>
-                                        </tr>
+                                       
                                         
 
                                     </tbody>
@@ -260,8 +232,166 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
         <script src="{% static 'js/adminScripts.js' %}"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
-        <script src="{% static 'adminAssets/demo/chart-pie-demo.js' %}"></script>
+        <!-- <script src="{% static 'adminAssets/demo/chart-pie-demo.js' %}"></script> -->
         <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
         <script src="{% static 'js/datatables-simple-demo.js' %}"></script>
     </body>
 </html>
+
+<script type="text/javascript">
+var data = {{ data |safe }}
+ filter = "date"
+ months= ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+ chartLabels = ["CASE", "CCS", "CCJ", "CEA","CMBA", "CNAHS"] 
+ yData = []
+ maxCount = "{{maxCount}}"
+
+  $(document).ready(function(){
+
+        date = new Date()
+        start = new Date(date.getFullYear(), date.getMonth(), 1)
+        end = new Date(date.getFullYear(), date.getMonth() + 1, 0)
+
+
+        document.getElementById("startDate").value =  getDateValue(start)
+        document.getElementById("endDate").value = getDateValue(end)
+        
+        document.getElementById("endDate").setAttribute("min", getDateValue(start))
+        maxDate = new Date()
+        maxDate.setDate(start.getDate() + 31)
+        document.getElementById("endDate").setAttribute("max", getDateValue(maxDate))
+        setData(start, end)
+  });
+
+  document.getElementById("filter").onchange = function() {
+    document.getElementById("startDate").type = document.getElementById("filter").value
+    document.getElementById("endDate").type = document.getElementById("filter").value
+    filter = document.getElementById("filter").value
+
+  }
+
+
+  document.getElementById("startDate").onchange = function() {
+    minDate = new Date(this.value)
+    minDate.setDate(minDate.getDate()+1)
+    document.getElementById("endDate").setAttribute("min", getDateValue(minDate));
+
+    
+    if(filter == "date"){
+        maxDate = new Date(this.value)
+        maxDate.setDate(new Date(this.value).getDate() + 30)
+        document.getElementById("endDate").setAttribute("max", getDateValue(maxDate));
+    }
+        
+
+    
+  }
+
+
+  
+
+  document.getElementById("submit").onclick = function(e) {
+
+    startDate = new Date(document.getElementById("startDate").value)
+    endDate = new Date(document.getElementById("endDate").value)
+
+    if(startDate == "Invalid Date" & endDate == "Invalid Date")
+      alert("Please select start date and end Date")
+    else if(startDate == "Invalid Date" )
+      alert("Please select start date")
+    else if(endDate == "Invalid Date")
+      alert("Please select end date")
+    else if(startDate.getTime() > endDate.getTime())
+      alert("End date must be ahead of start date")
+    else{
+    end = new Date
+    end.setDate(endDate.getDate()+1)
+    
+    $.ajax({
+          type:"POST",
+          url:"",
+
+          data:{
+            action: 'get_data',
+            startDate: getDateValue(startDate),
+            endDate: getDateValue(end),
+            csrfmiddlewaretoken: "{{csrf_token}}"
+
+          },
+          success: function(response){
+            data = response.data
+            setData(startDate, endDate)
+          }
+    });
+
+    }
+  }
+
+
+function getDateValue(d){
+    // d = new Date(new Date(date).getFullYear(), new Date(date).getMonth() + 1, 0)
+    if(filter == "date"){
+        if(d.getMonth()+1 < 10 & d.getDate() < 10)
+            return(d.getFullYear()+"-0"+ (d.getMonth()+1)+"-0"+ d.getDate())
+        else if(d.getMonth()+1 < 10)
+            return(d.getFullYear()+"-0"+ (d.getMonth()+1)+"-"+ d.getDate())
+        else if(d.getDate() < 10)
+            return(d.getFullYear()+"-"+ (d.getMonth()+1)+"-0"+ d.getDate())
+        else
+            return(d.getFullYear()+"-"+ (d.getMonth()+1)+"-"+ d.getDate())
+
+    }else{
+            if(d.getMonth()+1 < 10 )
+            return(d.getFullYear()+"-0"+ (d.getMonth()+1))
+        else if(d.getMonth()+1 < 10)
+            return(d.getFullYear()+"-0"+ (d.getMonth()+1))
+        else if(d.getDate() < 10)
+            return(d.getFullYear()+"-"+ (d.getMonth()+1))
+        else
+            return(d.getFullYear()+"-"+ (d.getMonth()+1))
+    }
+}
+
+
+
+
+
+  
+function setData(startDate, endDate){
+    startss = startDate
+    ends = endDate
+    yData.splice(0,yData.length)
+    
+    
+    for( i=0;i < 6;i++){
+        for(ii=0; ii< data.length; ii++){
+
+            if(data[ii].user__department__abbv == chartLabels[i]){
+                yData.push(data[ii].count)    
+                break
+            } 
+            if(ii == data.length-1)
+                yData.push(0)
+        }
+    }
+
+    chart.data.datasets[0].data = yData
+    chart.update() 
+}
+
+Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+Chart.defaults.global.defaultFontColor = '#292b2c';
+
+// Pie Chart Example
+var ctx = document.getElementById("myPieChart");
+var chart = new Chart(ctx, {
+  type: 'pie',
+  data: {
+    labels: chartLabels,
+    datasets: [{
+      data: yData,
+      backgroundColor: ['#007bff', '#dc3545', '#ffc107', '#28a745', "#663399", "#C87533"],
+    }],
+  },
+});
+</script>
