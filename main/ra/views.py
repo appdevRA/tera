@@ -27,9 +27,8 @@ from .links import *
 import requests
 import csv
 import io
-from django.db.models.functions import TruncMonth
-
-
+from django.db.models import DateTimeField, ExpressionWrapper, F
+from django.db.models import F, Func, Value, CharField
 
 
 
@@ -73,19 +72,32 @@ class adminIndexView(View):
 
 		user= User.objects.select_related("department").values("username", "first_name", "last_name", "last_login", "department__name")
 
-		activeUser= User_login.objects.filter(date__contains=todaysMonth).extra({'day': to_char("Date(date)", 'YYYY-MM-DD') }).values('day').annotate(count=Count('id')).order_by("day")
+		activeUser= User_login.objects.filter(date__contains=todaysMonth).annotate(day=ExpressionWrapper(
+            																							Func(F('date'), 
+            																								Value('%Y-%m-%d'), 
+            																								function='DATE_FORMAT'
+            																								), 
+            																							output_field=CharField()
+        																								)
+																					).values('day').annotate(count=Count('id')).order_by("day")
 		activeUserMax = activeUser.latest("count")["count"]
-		print(activeUser)
-		siteAccess= UserSite_access.objects.filter(date_of_access__contains=todaysMonth).extra({'day':"date(date_of_access)"}).values('day').annotate(count=Count('id')).order_by("day")
+		
+
+		siteAccess= UserSite_access.objects.filter(date_of_access__contains=todaysMonth).annotate(day=ExpressionWrapper(
+            																							Func(F('date_of_access'), 
+            																								Value('%Y-%m-%d'), 
+            																								function='DATE_FORMAT'
+            																								), 
+            																							output_field=CharField()
+        																								)
+																								).values('day').annotate(count=Count('id')).order_by("day")
 		siteAccessMax = siteAccess.latest("count")["count"]
+		
 		
 		colleges= User_login.objects.filter(date__contains=todaysMonth).values('user__department__abbv').annotate(count=Count('id')).order_by("user__department__abbv")
 
-		for item in activeUser:
-				item["day"] = item["day"].strftime("%Y-%m-%d")
-
-		for item in siteAccess:
-				item["day"] = item["day"].strftime("%Y-%m-%d")
+		# for item in user:
+		# 		item["last_login"] = item["day"].strftime("%Y-%m-%d")
 
 		context ={
 			"users": list(user), 
@@ -96,10 +108,8 @@ class adminIndexView(View):
 			"colleges": list(colleges)	
 
 		}
-		
+
 		return render(request,'adminIndex.html',context)
-
-
 
 class adminActiveUserView(View):
 	def get(self, request):
@@ -902,6 +912,7 @@ class TeraDashboardView(View):
 
 			
 			if action == 'addFav':
+				print("olok")
 				Bookmark.objects.filter(bookmark_id=request.POST['bID'], user= request.user, group = None).update(isFavorite=1)
 				return HttpResponse('')
 			elif action == 'remFav':

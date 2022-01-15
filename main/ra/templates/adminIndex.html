@@ -268,36 +268,28 @@
     </body>
 </html>
 <script type="text/javascript">
-// var users = {{ users |safe }}
-// var activeUser = {{ activeUser |safe }}
-// var activeUserMax = "{{activeUserMax}}"
-// var siteAccess = {{ siteAccess |safe }}
-// var siteAccessMax = "{{siteAccessMax}}"
-// var colleges = {{ colleges |safe }}
+var activeUser = {{ activeUser |safe }}
+var activeUserMax = "{{activeUserMax}}"
+var siteAccess = {{ siteAccess |safe }}
+var siteAccessMax = "{{siteAccessMax}}"
+var colleges = {{ colleges |safe }}
 
 
  filter = "date"
  months= ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
  chartLabels = [] 
  yData = []
- maxCount = "{{maxCount}}"
 
   $(document).ready(function(){
-        // console.log(users+"\n"+ activeUser +"\n"+ activeUserMax +"\n"+ siteAccess +"\n"+ siteAccessMax +"\n"+ colleges )
+        console.log(siteAccess)
         date = new Date()
         start = new Date(date.getFullYear(), date.getMonth(), 1)
         end = new Date(date.getFullYear(), date.getMonth() + 1, 0)
 
 
-        // document.getElementById("startDate").value =  getDateValue(start)
-        // document.getElementById("endDate").value = getDateValue(end)
-        
-        // document.getElementById("endDate").setAttribute("min", getDateValue(start))
-        // maxDate = new Date()
-        // maxDate.setDate(start.getDate() + 31)
-        // document.getElementById("endDate").setAttribute("max", getDateValue(maxDate))
-        setLabel(start, end, ActiveUserchart)
-        
+        setLabel(start, end, siteAccesschart)
+        setLabel(start, end, ActiveUserchart,activeUser)
+
   });
   
 
@@ -326,28 +318,6 @@ function getDateValue(d){
 }
 
 
-function getData(startDate, endDate){
-    end = new Date
-    end.setDate(endDate.getDate()+1)
-        $.ajax({
-              type:"POST",
-              url:"",
-
-              data:{
-                action: 'get_data',
-                startDate: getDateValue(startDate),
-                endDate: getDateValue(end),
-                csrfmiddlewaretoken: "{{csrf_token}}"
-
-              },
-              success: function(response){
-                data = response.data
-                setLabel(startDate, endDate)
-
-              }
-        }); 
-
-}
 
 
 function setLabel(startDate, endDate, chart, data){
@@ -362,7 +332,6 @@ function setLabel(startDate, endDate, chart, data){
             chartLabels.push(months[startss.getMonth()] +" "+ startss.getDate())
 
             try{
-            console.log(data[i].day, getDateValue(startss))
 
                 if(data[i].day == getDateValue(startss)){
                     
@@ -377,26 +346,8 @@ function setLabel(startDate, endDate, chart, data){
             startss.setDate(startss.getDate()+1)
 
         }
-
-       
-    } else if(filter == "month"){
-        while( startss <= ends){
-            chartLabels.push(months[startss.getMonth()] +" "+ startss.getFullYear())
-            startss.setMonth(startss.getMonth()+1)
-
-            try{
-                if(data[i].day == getDateValue(startss)){
-                    yData.push(data[i].count)
-                    i++
-                } else
-                    yData.push(0)
-
-            } catch{
-                yData.push(0)
-            }
-        }
-           
     }
+
     chart.data.datasets[0].data = yData
     chart.data.labels = chartLabels
     chart.update();
@@ -413,20 +364,13 @@ function setLabel(startDate, endDate, chart, data){
 Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
   Chart.defaults.global.defaultFontColor = '#292b2c';
 
-    for(i=0;i<12;i++){
-        try{
-            if(data[i].day == i+1)
-                yData.push(data[i].count)
-        } catch{
-            yData.push(0)
-        }
-    }
-
-    var ActiveUserchart = new Chart(myAreaChart, {
+var myAreaChartctx = document.getElementById("myAreaChart");
+  
+    var ActiveUserchart = new Chart(myAreaChartctx, {
 
       type: 'line',
       data: {
-        labels: ,
+        labels: chartLabels,
         datasets: [{
           label: "Active Users",
           lineTension: 0.3,
@@ -439,7 +383,7 @@ Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSyste
           pointHoverBackgroundColor: "rgba(243, 246, 85)",
           pointHitRadius: 50,
           pointBorderWidth: 2,
-          data: ,
+          data: yData,
         }],
       },
       options: {
@@ -471,4 +415,48 @@ Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSyste
         }
       }
     });
+
+
+
+var myBarChartctx = document.getElementById("myBarChart");
+var siteAccesschart = new Chart(myBarChartctx, {
+  type: 'bar',
+  data: {
+    
+    datasets: [{
+      label: "Access",
+      backgroundColor: "rgba(191, 63, 63)",
+      borderColor: "rgba(243, 246, 85)",
+      data: [1,2,3],
+    }],
+  },
+  options: {
+    scales: {
+      xAxes: [{
+        time: {
+          unit: 'sites'
+        },
+        gridLines: {
+          display: false
+        },
+        ticks: {
+          maxTicksLimit: 11
+        }
+      }],
+      yAxes: [{
+        ticks: {
+          min: 0,
+          max: "{{siteAccessMax}}"*2,
+          maxTicksLimit: 8
+        },
+        gridLines: {
+          display: true
+        }
+      }],
+    },
+    legend: {
+      display: false
+    }
+  }
+});
 </script>
