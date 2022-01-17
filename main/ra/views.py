@@ -80,9 +80,10 @@ class adminIndexView(View):
             																							output_field=CharField()
         																								)
 																					).values('day').annotate(count=Count('id')).order_by("day")
-		activeUserMax = activeUser.latest("count")["count"]
-		
-
+		try:
+			activeUserMax = activeUser.latest("count")["count"]
+		except:
+			activeUserMax = 0
 		siteAccess= UserSite_access.objects.filter(date_of_access__contains=todaysMonth).annotate(day=ExpressionWrapper(
             																							Func(F('date_of_access'), 
             																								Value('%Y-%m-%d'), 
@@ -91,9 +92,11 @@ class adminIndexView(View):
             																							output_field=CharField()
         																								)
 																								).values('day').annotate(count=Count('id')).order_by("day")
-		siteAccessMax = siteAccess.latest("count")["count"]
-		
-		
+		try:
+			siteAccessMax = siteAccess.latest("count")["count"]
+		except:
+			siteAccessMax = 0
+			
 		colleges= User_login.objects.filter(date__contains=todaysMonth).values('user__department__abbv').annotate(count=Count('id')).order_by("user__department__abbv")
 
 		# for item in user:
@@ -118,14 +121,24 @@ class adminActiveUserView(View):
 		else:
 			todaysMonth = str(datetime.today().year) +"-" + str(datetime.today().month)
 
-		queryset= User_login.objects.filter(date__contains=todaysMonth).extra({'day':"Date(date)"}).values('day').annotate(count=Count('id')).order_by("day")
+		queryset= User_login.objects.filter(date__contains=todaysMonth).annotate(day=ExpressionWrapper(
+            																							Func(F('date'), 
+            																								Value('%Y-%m-%d'), 
+            																								function='DATE_FORMAT'
+            																								), 
+            																							output_field=CharField()
+        																								)
+																					).values('day').annotate(count=Count('id')).order_by("day")
 		maxCount = queryset.latest("count")["count"]
 
 
+		a= User.objects.all().annotate(mostVisitedSite=  Count('id', filter=Q(usersite_access__user=request.user)),
+										visitCount=Count('id', filter=Q(usersite_access__user=request.user))
+										).values("first_name", "visitCount").order_by("-visitCount")
+		print(a)
+		# for item in queryset:
+		# 	item["day"] = item["day"].strftime("%Y-%m-%d")  
 
-		for item in queryset:
-			item["day"] = item["day"].strftime("%Y-%m-%d")  
-		print(list(queryset), maxCount)
 
 		context ={
 			"data": list(queryset),
@@ -273,7 +286,7 @@ class adminTableView(View):
 		activeUser_perCollege =  Department.objects.select_related("user").values('name').annotate(activeCount=Count('id', filter=Q(user__last_login__contains=timezone.now().date())))
 		userSite =  Site.objects.values('name', 'url').annotate(accessCount=Count('usersite_access__id')).distinct()
 		dissertations = Dissertation.objects.values("title","author").all()
-		print(dissertations)
+		print(activeUser_perCollege)
 		context ={
 			"users": list(user),
 			"activeUser_perCollege": list(activeUser_perCollege),
@@ -586,8 +599,11 @@ class TeraIndexView(View):
 		#	proxy =Proxies(proxy = proxy)
 		#	proxy.save()
 		
-		if request.user.is_authenticated and not User.objects.filter(id = request.user.id, last_login__contains=timezone.now().date()).exists():
+		if request.user.is_authenticated and not User_login.objects.filter(user = request.user, date__contains=timezone.now().date()).exists():
 			User_login.objects.create(user= request.user)
+
+		if request.user.is_authenticated and not User.objects.filter(id = request.user.id, last_login__contains=timezone.now().date()).exists():
+			User.objects.filter(id= request.user.id).update(last_login = timezone.now())
 		request.session['previousPage'] = 'index_view'
 		# if request.user != None:
 		# 	User.objects.filter(id = request.user.id).update(last_login = timezone.now())
@@ -630,9 +646,10 @@ class TeraSearchResultsView(View):
 		# header = request.session.get('header')
 		word = request.session.get('word')
 
-		if request.user.is_authenticated and not User.objects.filter(id = request.user.id, last_login__contains=timezone.now().date()).exists():
+		if request.user.is_authenticated and not User_login.objects.filter(user = request.user, date__contains=timezone.now().date()).exists():
 			User_login.objects.create(user= request.user)
-		
+		if request.user.is_authenticated and not User.objects.filter(id = request.user.id, last_login__contains=timezone.now().date()).exists():
+			User.objects.filter(id= request.user.id).update(last_login = timezone.now())
 
 		if request.session.get('website') != None:
 			active_site = request.session.get('website')
@@ -786,8 +803,10 @@ class TeraDashboardView(View):
 		# Department.objects.create(abbv='CCS', name="College of Computer Studies")
 		# Group.objects.get(id=1).member.add(User.objects.get(username='mondejars'))
 		#.distinct()
-		if request.user.is_authenticated and not User.objects.filter(id = request.user.id, last_login__contains=timezone.now().date()).exists():
+		if request.user.is_authenticated and not User_login.objects.filter(user = request.user, date__contains=timezone.now().date()).exists():
 			User_login.objects.create(user= request.user)
+		if request.user.is_authenticated and not User.objects.filter(id = request.user.id, last_login__contains=timezone.now().date()).exists():
+			User.objects.filter(id= request.user.id).update(last_login = timezone.now())
 		# Folder.objects.all().delete()
 		# User_bookmark.objects.all().delete()
 		request.session['previousPage'] = "tera_dashboard_view"
@@ -1038,7 +1057,7 @@ class TeraDashboardView(View):
 			elif action == 'get_group_bookmarks':
 				groupID= request.POST['gID']
 				a= []
-				if Bookmark.objects.filter(Q(group__owner= request.user) | Q(group__member=request.user), isRemoved=0).exists():
+				if Bookmark.objects.filter( Q(group__owner= request.user) |Q(group__member=request.user), isRemoved=0).exists():
 					bookmarks = Bookmark.objects.select_related("bookmark").filter(
 																			group__id=request.POST['gID'], isRemoved=0
 																			).values(

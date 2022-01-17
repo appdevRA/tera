@@ -108,10 +108,7 @@
                                     </div>
 
                             <div class="sb-sidenav-menu-heading">Addons</div>
-                            <a class="nav-link" href="{% url 'ra:admin_charts_view' %}">
-                                <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
-                                Charts
-                            </a>
+                           
                             <a class="nav-link" href="{% url 'ra:admin_tables_view' %}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                                 Tables
@@ -273,29 +270,29 @@ var activeUserMax = "{{activeUserMax}}"
 var siteAccess = {{ siteAccess |safe }}
 var siteAccessMax = "{{siteAccessMax}}"
 var colleges = {{ colleges |safe }}
-
+date = new Date()
+start = new Date(date.getFullYear(), date.getMonth(), 1)
+end = new Date(date.getFullYear(), date.getMonth() + 1, 0)
 
  filter = "date"
  months= ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
- chartLabels = [] 
- yData = []
+ 
 
   $(document).ready(function(){
-        console.log(siteAccess)
-        date = new Date()
-        start = new Date(date.getFullYear(), date.getMonth(), 1)
-        end = new Date(date.getFullYear(), date.getMonth() + 1, 0)
+        // console.log(start, end)
 
+    setLabel(start, end, ActiveUserchart,activeUser)
+        // console.log(start, end)
 
-        setLabel(start, end, siteAccesschart)
-        setLabel(start, end, ActiveUserchart,activeUser)
+    setLabel(start, end, siteAccesschart, siteAccess)
+    setLabel(start, end, collegeschart, colleges)
 
   });
   
 
 function getDateValue(d){
     // d = new Date(new Date(date).getFullYear(), new Date(date).getMonth() + 1, 0)
-    if(filter == "date"){
+ 
         if(d.getMonth()+1 < 10 & d.getDate() < 10)
             return(d.getFullYear()+"-0"+ (d.getMonth()+1)+"-0"+ d.getDate())
         else if(d.getMonth()+1 < 10)
@@ -305,35 +302,24 @@ function getDateValue(d){
         else
             return(d.getFullYear()+"-"+ (d.getMonth()+1)+"-"+ d.getDate())
 
-    }else{
-            if(d.getMonth()+1 < 10 )
-            return(d.getFullYear()+"-0"+ (d.getMonth()+1))
-        else if(d.getMonth()+1 < 10)
-            return(d.getFullYear()+"-0"+ (d.getMonth()+1))
-        else if(d.getDate() < 10)
-            return(d.getFullYear()+"-"+ (d.getMonth()+1))
-        else
-            return(d.getFullYear()+"-"+ (d.getMonth()+1))
-    }
+    
 }
 
 
 
 
-function setLabel(startDate, endDate, chart, data){
-    startss = startDate
-    ends = endDate
-    chartLabels.splice(0,chartLabels.length)
-    yData.splice(0,yData.length)
-
-    if(filter == "date"){
-        i=0
-        while( startss <= ends){
-            chartLabels.push(months[startss.getMonth()] +" "+ startss.getDate())
-
+function setLabel(startDate, endDate, mychart, data){
+    
+    i=0
+    
+    if(mychart.config.type != "pie"){
+        chartLabels = []
+        yData = []
+        while( startDate <= endDate){
+            chartLabels.push(months[startDate.getMonth()] +" "+ startDate.getDate())
             try{
 
-                if(data[i].day == getDateValue(startss)){
+                if(data[i].day == getDateValue(startDate)){
                     
                     yData.push(data[i].count)
                     i++
@@ -343,14 +329,32 @@ function setLabel(startDate, endDate, chart, data){
             } catch{
                 yData.push(0)
             }
-            startss.setDate(startss.getDate()+1)
+            startDate.setDate(startDate.getDate()+1)
 
         }
+
+        mychart.data.labels = chartLabels
+        mychart.data.datasets[0].data = yData
+
+    }else{
+        chartLabels = ["CASE", "CCS", "CCJ", "CEA","CMBA", "CNAHS"]
+        yData = []
+        for( i=0;i < 6;i++){
+            for(ii=0; ii< data.length; ii++){
+                if(data[ii].user__department__abbv == chartLabels[i]){
+                    yData.push(data[ii].count)    
+                    break
+                } 
+                if(ii == data.length-1)
+                    yData.push(0)
+            }
+        }
+        mychart.data.datasets[0].data = yData
     }
 
-    chart.data.datasets[0].data = yData
-    chart.data.labels = chartLabels
-    chart.update();
+        
+    mychart.update();
+    start = new Date(date.getFullYear(), date.getMonth(), 1)
     
 
     
@@ -362,15 +366,15 @@ function setLabel(startDate, endDate, chart, data){
 
   
 Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
-  Chart.defaults.global.defaultFontColor = '#292b2c';
+Chart.defaults.global.defaultFontColor = '#292b2c';
 
 var myAreaChartctx = document.getElementById("myAreaChart");
-  
+
     var ActiveUserchart = new Chart(myAreaChartctx, {
 
       type: 'line',
       data: {
-        labels: chartLabels,
+        labels: [],
         datasets: [{
           label: "Active Users",
           lineTension: 0.3,
@@ -383,7 +387,7 @@ var myAreaChartctx = document.getElementById("myAreaChart");
           pointHoverBackgroundColor: "rgba(243, 246, 85)",
           pointHitRadius: 50,
           pointBorderWidth: 2,
-          data: yData,
+          data: [],
         }],
       },
       options: {
@@ -424,10 +428,10 @@ var siteAccesschart = new Chart(myBarChartctx, {
   data: {
     
     datasets: [{
-      label: "Access",
+      label: [],
       backgroundColor: "rgba(191, 63, 63)",
       borderColor: "rgba(243, 246, 85)",
-      data: [1,2,3],
+      data: [],
     }],
   },
   options: {
@@ -458,5 +462,20 @@ var siteAccesschart = new Chart(myBarChartctx, {
       display: false
     }
   }
+});
+
+
+
+var myPieChart = document.getElementById("myPieChart");
+var collegeschart = new Chart(myPieChart, {
+  type: 'pie',
+  data: {
+    labels: ["CASE", "CCS", "CCJ", "CEA","CMBA", "CNAHS"],
+    
+    datasets: [{
+      data: [1,2,3],
+      backgroundColor: ['#007bff', '#dc3545', '#ffc107', '#28a745', "#663399", "#C87533"],
+    }],
+  },
 });
 </script>
