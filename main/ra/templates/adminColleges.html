@@ -180,30 +180,20 @@
                                             <th>College</th>
                                             <th>Number of Registered Users</th>
                                             <th>Number of Active Users</th>
-                                            <th>Accumulated Hours of App Usage</th>
-                                            <th>Accumulated Number of Site Visits</th>
-                                            <th>Most Visited Site</th>
-                                        </tr>
+                                            <th>Accumulated Number of User Access to Sites</th>
+                                            </tr>
                                     </thead>
-                                    <tfoot>
-                                       <tr>
-                                           <th>College</th>
-                                            <th>Number of Registered Users</th>
-                                            <th>Number of Active Users</th>
-                                            <th>Accumulated Hours of App Usage</th>
-                                            <th>Accumulated Number of Site Visits</th>
-                                            <th>Most Visited Site</th>
-                                        </tr>
-                                    </tfoot>
+                                    
                                     <tbody>
+                                       {% for row in tableData %}
                                         <tr>
-                                            <td>College of Computer Studies</td>
-                                            <td>200</td>
-                                            <td>110</td>
-                                            <td>85</td>
-                                            <td>120</td>
-                                            <td>Springer Open</td>
-                                        </tr>
+                                            <td>{{row.abbv}}</td>
+                                            <td>{{row.registeredUser}}</td>
+                                            <td>{{row.activeUser}}</td>
+                                            <td>{{row.siteVisit}}</td>
+                                            
+                                         </tr>
+                                        {% endfor %}
                                        
                                         
 
@@ -233,8 +223,11 @@
         <script src="{% static 'js/adminScripts.js' %}"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
         <!-- <script src="{% static 'adminAssets/demo/chart-pie-demo.js' %}"></script> -->
-        <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
-        <script src="{% static 'js/datatables-simple-demo.js' %}"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
+        <script src="{% static 'js/datatables-simple-demo.js' %}"></script> -->
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
+        <!-- <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script> -->
+        <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
     </body>
 </html>
 
@@ -261,6 +254,8 @@ var data = {{ data |safe }}
         maxDate.setDate(start.getDate() + 31)
         document.getElementById("endDate").setAttribute("max", getDateValue(maxDate))
         setData(start, end)
+        $("#datatablesSimple").DataTable()
+
   });
 
   document.getElementById("filter").onchange = function() {
@@ -319,8 +314,33 @@ var data = {{ data |safe }}
 
           },
           success: function(response){
-            data = response.data
             setData(startDate, endDate)
+            tableData = response.tableData
+            data = response.data
+            
+            $('#datatablesSimple').DataTable().destroy();
+            $('#datatablesSimple tbody').empty();
+            var table = $('#datatablesSimple').DataTable({ 
+                language : {
+                    "zeroRecords": " "             
+                }
+            }
+            );
+       
+       
+            for(i=0; i < tableData.length;i++){
+                if(tableData[i].is_active)
+                    status = "Online"
+                else
+                    status = "offline"
+                table.row.add( [
+
+                    tableData[i].abbv, tableData[i].registeredUser,tableData[i].activeUser, tableData[i].siteVisit
+                ] ).draw( false );
+         
+            }
+
+            chart.update()
           }
     });
 

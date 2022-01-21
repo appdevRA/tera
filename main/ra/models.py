@@ -12,7 +12,6 @@ class Department (models.Model):
 		db_table = "Department"
 
 class User (AbstractUser):
-	student_id = models.CharField(max_length=50, null = False, blank= False, unique=True, default='')
 	department= models.ForeignKey(Department, null = False, blank = False, on_delete = models.CASCADE)
 
 	REQUIRED_FIELDS = ['first_name', 'last_name','department','password']
@@ -101,8 +100,11 @@ class Dissertation(models.Model):
 	title = models.CharField(max_length=1000)
 	abstract = models.CharField(max_length=2000)
 	author = models.CharField(max_length=200)
+	date_published = models.DateTimeField(auto_now_add = True )
+	num_of_access = models.IntegerField(default = 0)
 	is_active = models.BooleanField(default = False)
 	department = models.ForeignKey(Department, null = True, blank = False, on_delete = models.CASCADE) #edit null to False
+	file = models.FileField(upload_to ='dissertation/', blank = False, null = False, default = 'setting.MEDIA_ROOT/teralogo.png')
 	class Meta:
 		db_table = "Dissertation"
 

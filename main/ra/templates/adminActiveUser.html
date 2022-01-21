@@ -14,9 +14,10 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
         <link rel="stylesheet" href="//code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css">
-          <!-- <script src="https://code.jquery.com/jquery-3.6.0.js" crossorigin="anonymous"></script> -->
-          <!-- <script src="https://code.jquery.com/ui/1.9.1/jquery-ui.js"></script> -->
-
+          <!-- <script src="https://code.jquery.com/jquery-3.6.0.js" crossorigin="anonymous"></script>
+          <script src="https://code.jquery.com/ui/1.9.1/jquery-ui.js"></script> -->
+        <!-- <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css"> -->
+          
         
          <style>
         .logo{
@@ -167,24 +168,24 @@
                                 <table id="datatablesSimple">
                                     <thead>
                                         <tr>
+                                            <th>Username</th>
                                             <th>Last Name</th>
                                             <th>First Name</th>
-                                            <th>ID Number</th>
                                             <th>College</th>
-                                            <th>Most Visited Site</th>
-                                            <th>Accumulated Number of Site Visit</th>
+                                            <th>Accumulated Number of Sites Visit</th>
                                         </tr>
                                     </thead>
                                    
-                                    <tbody>
+                                    <tbody id="tableBody">
+                                        {% for row in tableData %}
                                         <tr>
-                                            <td>Emorecha</td>
-                                            <td>Jarry</td>
-                                            <td>123-1234-123</td>
-                                            <td>College of Computer Studies</td>
-                                            <td>Springer Open</td>
-                                            <td>120</td>
+                                            <td>{{row.username}}</td>
+                                            <td>{{row.last_name}}</td>
+                                            <td>{{row.first_name}}</td>
+                                            <td>{{row.department__name}}</td>
+                                            <td>{{row.visitCount}}</td>
                                          </tr>
+                                        {% endfor %}
                                         
                                         
                                        
@@ -213,8 +214,14 @@
         <script src="{% static 'js/adminScripts.js' %}"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
         <!-- <script src="{% static 'adminAssets/demo/chart-area-demo.js' %}"></script> -->
-        <script src="{% static 'js/datatables-simple-demo.js' %}"></script>
+        <!-- <script src="{% static 'js/datatables-simple-demo.js' %}"></script> -->
         <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
+        <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+        <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+
+
+
         
 </body>
 
@@ -228,7 +235,8 @@ var data = {{ data |safe }}
  yData = []
  maxCount = "{{maxCount}}"
 
-  $(document).ready(function(){
+
+$(document).ready(function(){
 
         date = new Date()
         start = new Date(date.getFullYear(), date.getMonth(), 1)
@@ -243,6 +251,7 @@ var data = {{ data |safe }}
         maxDate.setDate(start.getDate() + 31)
         document.getElementById("endDate").setAttribute("max", getDateValue(maxDate))
         setLabel(start, end)
+        $("#datatablesSimple").DataTable()
         
   });
 
@@ -266,14 +275,14 @@ var data = {{ data |safe }}
         document.getElementById("endDate").setAttribute("max", getDateValue(maxDate));
     }
         
-
+    
     
   }
 
 
   
 
-  document.getElementById("submit").onclick = function(e) {
+document.getElementById("submit").onclick = function(e) {
 
     startDate = new Date(document.getElementById("startDate").value)
     endDate = new Date(document.getElementById("endDate").value)
@@ -331,7 +340,6 @@ function setLabel(startDate, endDate){
             chartLabels.push(months[startss.getMonth()] +" "+ startss.getDate())
 
             try{
-            console.log(data[i].day, getDateValue(startss))
 
                 if(data[i].day == getDateValue(startss)){
                     
@@ -389,9 +397,30 @@ function getData(startDate, endDate){
 
               },
               success: function(response){
+                tableData = response.tableData
+                console.log(tableData)
                 data = response.data
                 setLabel(startDate, endDate)
+                
+                $('#datatablesSimple').DataTable().destroy();
+                $('#datatablesSimple tbody').empty();
+                var table = $('#datatablesSimple').DataTable(
+                    { language : {
+                                            "zeroRecords": " "             
+                                        }}
+                );
+           
+           
+                for(i=0; i < tableData.length;i++){
+                    
+                    table.row.add( [
+                        tableData[i].username, tableData[i].last_name, tableData[i].first_name,tableData[i].department__name,tableData[i].visitCount
+                    ] ).draw( false );
+             
+                }
 
+                chart.options.scales.yAxes[0].ticks.max = response.maxCount*2
+                chart.update()
               }
         }); 
 
@@ -440,7 +469,7 @@ Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSyste
           pointBorderWidth: 2,
           data: yData,
         }],
-      },
+      }, 
       options: {
         scales: {
           xAxes: [{
@@ -458,7 +487,7 @@ Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSyste
             ticks: {
               min: 0,
               max: maxCount*2,
-              maxTicksLimit: 5
+              maxTicksLimit: 10
             },
             gridLines: {
               color: "rgba(0, 0, 0, .125)",

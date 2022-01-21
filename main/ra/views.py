@@ -11,7 +11,7 @@ from django.contrib.auth import authenticate, login, logout, update_session_auth
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.core import serializers
 from django.db import connection
-from django.db.models import Q, Count
+from django.db.models import Q, Count, Max
 from datetime import datetime
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
@@ -84,6 +84,7 @@ class adminIndexView(View):
 			activeUserMax = activeUser.latest("count")["count"]
 		except:
 			activeUserMax = 0
+
 		siteAccess= UserSite_access.objects.filter(date_of_access__contains=todaysMonth).annotate(day=ExpressionWrapper(
             																							Func(F('date_of_access'), 
             																								Value('%Y-%m-%d'), 
@@ -129,18 +130,18 @@ class adminActiveUserView(View):
             																							output_field=CharField()
         																								)
 																					).values('day').annotate(count=Count('id')).order_by("day")
-		maxCount = queryset.latest("count")["count"]
+		try:
+			maxCount = queryset.latest("count")["count"]
+		except:
+			maxCount = 0
 
-
-		a= User.objects.all().annotate(mostVisitedSite=  Count('id', filter=Q(usersite_access__user=request.user)),
-										visitCount=Count('id', filter=Q(usersite_access__user=request.user))
-										).values("first_name", "visitCount").order_by("-visitCount")
-		print(a)
-		# for item in queryset:
-		# 	item["day"] = item["day"].strftime("%Y-%m-%d")  
-
+		tableData= User.objects.filter(usersite_access__date_of_access__contains=todaysMonth).annotate(
+										visitCount=Count('id')
+										).values("username","last_name", "department__name", "first_name", "visitCount").order_by("-visitCount")
+	
 
 		context ={
+			"tableData": list(tableData),
 			"data": list(queryset),
 			"maxCount": maxCount
 		}
@@ -152,18 +153,27 @@ class adminActiveUserView(View):
 			endDate = request.POST["endDate"]
 			
 			
-			try:
-				queryset= User_login.objects.filter(date__range=[startDate, endDate]).extra({'day':"Date(date)"}).values('day').annotate(count=Count('id')).order_by("day")
+			
+			queryset= User_login.objects.filter(date__range=[startDate, endDate]).annotate(day=ExpressionWrapper(
+        																							Func(F('date'), 
+        																								Value('%Y-%m-%d'), 
+        																								function='DATE_FORMAT'
+        																								), 
+        																							output_field=CharField()
+    																								)
+																				).values('day').annotate(count=Count('id')).order_by("day")
+ 
+			try:	
 				maxCount = queryset.latest("count")["count"]
-
-				for item in queryset:
-					item["day"] = item["day"].strftime("%Y-%m-%d")  
-				print(list(queryset), maxCount)
 			except:
-				queryset = []
 				maxCount = 0
 
+			tableData= User.objects.filter(usersite_access__date_of_access__range=[startDate, endDate]).annotate(
+										visitCount=Count('id')
+										).values("last_name", "student_id", "department__name", "first_name", "visitCount").order_by("-visitCount")
+
 			context ={
+				"tableData": list(tableData),
 				"data": list(queryset),
 				"maxCount": maxCount
 			}
@@ -179,8 +189,23 @@ class adminCollegesView(View):
 			todaysMonth = str(datetime.today().year) +"-" + str(datetime.today().month)
 
 		queryset= User_login.objects.filter(date__contains=todaysMonth).values('user__department__abbv').annotate(count=Count('id')).order_by("user__department__abbv")
+		
+		tableData = list(Department.objects.values("abbv").annotate(registeredUser = Count("user")).annotate(activeUser= Count("user", filter= ~Q(user__last_login=None))))
+		siteVisit = UserSite_access.objects.filter(date_of_access__contains=todaysMonth).values("user__department__abbv").annotate(count = Count("id"))
+		print(list(siteVisit))
+
+		for a in tableData:
+			for innerloopIndex,b in enumerate(list(siteVisit)):
+				if a["abbv"] == b["user__department__abbv"]:
+					a["siteVisit"] = b["count"]
+					break
+
+				if innerloopIndex == len(list(siteVisit)) - 1:
+					a["siteVisit"] = 0
 
 		context ={
+			"siteVisits": siteVisit,
+			"tableData": list(tableData),
 			"data": list(queryset)
 		}
 		return render(request, 'adminColleges.html', context)
@@ -190,17 +215,25 @@ class adminCollegesView(View):
 			startDate = request.POST["startDate"]
 			endDate = request.POST["endDate"]
 
-			queryset= User_login.objects.filter(
-												date__range=[startDate, endDate]
-												).values('user__department__abbv').annotate(
-																							count=Count('id')
+			queryset= User_login.objects.filter(date__range=[startDate, endDate]).values('user__department__abbv').annotate(count=Count('id')).order_by("user__department__abbv")
+		
+			tableData = list(Department.objects.values("abbv").annotate(registeredUser = Count("user")).annotate(activeUser= Count("user", filter= ~Q(user__last_login=None))))
+			siteVisit = UserSite_access.objects.filter(date_of_access__range=[startDate, endDate]).values("user__department__abbv").annotate(count = Count("id"))
+			print(list(siteVisit))
 
-																							).order_by("user__department__abbv")
+			i=0
+			for a in tableData:
+				for innerloopIndex,b in enumerate(list(siteVisit)):
+					if a["abbv"] == b["user__department__abbv"]:
+						a["siteVisit"] = b["count"]
+						break
 
+					if innerloopIndex == len(list(siteVisit)) - 1:
+						a["siteVisit"] = 0
 
-
-			print(queryset)
 			context ={
+				"siteVisits": list(siteVisit),
+				"tableData": list(tableData),
 				"data": list(queryset)
 			}
 			return JsonResponse(context)
@@ -212,14 +245,30 @@ class adminSiteAccessView(View):
 		else:
 			todaysMonth = str(datetime.today().year) +"-" + str(datetime.today().month)
 
-		queryset= UserSite_access.objects.filter(date_of_access__contains=todaysMonth).extra({'day':"date(date_of_access)"}).values('day').annotate(count=Count('id')).order_by("day")
-		maxCount = queryset.latest("count")["count"]
+		queryset= UserSite_access.objects.filter(
+												date_of_access__contains=todaysMonth
+												).annotate(day=ExpressionWrapper(
+																				Func(F('date_of_access'), 
+																					Value('%Y-%m-%d'), 
+																					function='DATE_FORMAT'
+																					), 
+																				output_field=CharField()
+																				)
+															).values('day').annotate(count=Count('id')).order_by("day")
+		
+		try:
+			maxCount = queryset.latest("count")["count"]
+		except:
+			maxCount = 0
 
+		tableData= Site.objects.all().annotate(
+										visitCount=Count('id', filter=Q(usersite_access__date_of_access__contains=todaysMonth))
+										).values().order_by("-visitCount")
 
-		for item in queryset:
-			item["day"] = item["day"].strftime("%Y-%m-%d") 
-		print(list(queryset), maxCount)
+		
+		print(tableData)
 		context ={
+			"tableData": list(tableData),
 			"data": list(queryset),
 			"maxCount": maxCount
 		}
@@ -231,25 +280,33 @@ class adminSiteAccessView(View):
 			endDate = request.POST["endDate"]
 
 
-			try:
-				queryset= UserSite_access.objects.filter(
-														date_of_access__range=[startDate, endDate]
-														).extra(
-														{'day':"Date(date_of_access)"}
-														).values('day').annotate(
-																				count=Count('id')
-																				).order_by("day")
-				maxCount = queryset.latest("count")["count"]
-
-				for item in queryset:
-					item["day"] = item["day"].strftime("%Y-%m-%d")  
+			queryset= UserSite_access.objects.filter(
+													date_of_access__range=[startDate, endDate]
+													).annotate(day=ExpressionWrapper(
+																					Func(F('date_of_access'), 
+																						Value('%Y-%m-%d'), 
+																						function='DATE_FORMAT'
+																						), 
+																					output_field=CharField()
+																					)
+																).values('day').annotate(
+																						count=Count('id')
+																						).order_by("day")
 				
+			try:
+				maxCount = queryset.latest("count")["count"]
 			except:
 				queryset = []
 				maxCount = 0
 
-			print(list(queryset), maxCount)
+			tableData= Site.objects.all().annotate(
+										visitCount=Count('id', filter=Q(usersite_access__date_of_access__range=[startDate, endDate]))
+										).values().order_by("-visitCount")
+
+			
+			print(tableData)
 			context ={
+				"tableData": list(tableData),
 				"data": list(queryset),
 				"maxCount": maxCount
 			}
@@ -262,8 +319,47 @@ class adminDissertationsView(View):
 
 class adminDissertationsAccessView(View):
 	def get(self, request):
-		return render(request, 'dissertationAccess.html')
+		queryset = Dissertation.objects.select_related("department").annotate(department_name= F('department__abbv'))
 
+		# a = Dissertation.objects.get(id=3)
+		# json = s.serialize('python', [a], ensure_ascii=False)
+
+		# print(type(json), json)
+
+
+		context ={
+			"dissertations": queryset
+		}
+		return render(request, 'dissertationAccess.html', context)
+
+	def post(self, request):
+
+		if request.is_ajax():
+			if request.POST.get("action") == "add":
+
+				title = request.POST.get("title") 
+				
+				authors = request.POST.get("authors") 
+				abstract = request.POST.get("abstract") 
+				department = request.POST.get("college") 
+				file = request.FILES.get('file')
+
+				print(title, authors)
+
+				createdObject = Dissertation.objects.create(title = title, author = authors, abstract = abstract, file = file, department = Department.objects.get(abbv = department), is_active = True)
+				
+				json = s.serialize('python', [createdObject], ensure_ascii=False)
+
+				print(type(json))
+				context = {
+					"createdObject": json
+				}
+				return JsonResponse(context)
+
+			if request.POST.get("action") == "delete":
+				ID = request.POST.get("id")
+				Dissertation.objects.filter(id=ID).delete()
+				return HttpResponse("")
 class adminUserUpdateView(View):
 	def get(self, request):
 		return render(request, 'adminUserUpdate.html')
@@ -278,15 +374,16 @@ class adminTableView(View):
 
 	def get(self, request):
 
-		user= User.objects.select_related("department").values("student_id","username", "first_name", "last_name", 
+		user= User.objects.select_related("department").values("username", "first_name", "last_name", 
 																"last_login", "department__name",
 																"department__abbv", "last_login"
 																)
 
+
 		activeUser_perCollege =  Department.objects.select_related("user").values('name').annotate(activeCount=Count('id', filter=Q(user__last_login__contains=timezone.now().date())))
 		userSite =  Site.objects.values('name', 'url').annotate(accessCount=Count('usersite_access__id')).distinct()
 		dissertations = Dissertation.objects.values("title","author").all()
-		print(activeUser_perCollege)
+
 		context ={
 			"users": list(user),
 			"activeUser_perCollege": list(activeUser_perCollege),
@@ -321,61 +418,72 @@ class adminTableView(View):
 			action = request.POST["action"]
 
 			if request.POST['action'] == "delete_user":
-				User.objects.filter(student_id = request.POST['student_id']).delete()
+				User.objects.filter(username = request.POST['username']).delete()
 				return HttpResponse("")
 
 			elif action =="update_user":
-				oldStudent_id = request.POST["oldStudent_id"]
-				newStudent_id = request.POST["newStudent_id"]
+				
 				firstname = request.POST["first_name"]
 				lastname = request.POST["last_name"]
 				oldUsername = request.POST["oldUsername"]
 				newUsername = request.POST["newUsername"]
 				department = request.POST["department"]
 				password = request.POST["password"]
- 
+ 				
+				
 				
 				if newUsername == "" or firstname == "" or lastname == "":
 					return JsonResponse({"isError": 1,"errorMessage": "please fill out required fields"})
 				
-				NewUsername_exist =  User.objects.filter(username = newUsername).exists()
-				NewStudentid_exist = User.objects.filter(student_id = newStudent_id).exists()
-				
-				if oldUsername != newUsername and oldStudent_id != newStudent_id:
-
-					if NewUsername_exist and NewStudentid_exist:
-						return JsonResponse({"isError": 1,"errorMessage": "username and id number already exist"})
-
+			
 				elif oldUsername != newUsername:
+					NewUsername_exist =  User.objects.filter(username = newUsername).exists()
 					if NewUsername_exist:
 						return JsonResponse({"isError": 1,"errorMessage": "username already exist"})
-
-				elif oldStudent_id != newStudent_id:
-					if NewStudentid_exist:
-						return JsonResponse({"isError": 1,"errorMessage": "ID nummber already exist"})
-
-
-				User.objects.filter(student_id=oldStudent_id).update(username= newUsername, 
-																	student_id= newStudent_id,
-																	first_name = firstname, 
-																	last_name = lastname, 
-																	department= Department.objects.get(abbv=department))
+					else:
+						User.objects.filter(username=oldUsername).update(username= newUsername, 
+																		first_name = firstname, 
+																		last_name = lastname, 
+																		department= Department.objects.get(abbv=department))
 
 
-				user= User.objects.select_related("department").filter(student_id=newStudent_id).values("student_id","username", "first_name", "last_name", 
-															"last_login", "department__name",
-															"department__abbv", "last_login"
-															)
+						user= User.objects.select_related("department").filter(username=newUsername).values(
+																												"username", "first_name", "last_name", 
+																												"last_login", "department__name",
+																												"department__abbv", "last_login"
+																											)
+						context = {
+						"isError": 0,
+						"user": list(user)
 
-				context = {
-					"isError": 0,
-					"user": list(user)
+						}
+						print("success")
+						return JsonResponse(context)
+				else:
+					User.objects.filter(username=newUsername).update( 
+																		first_name = firstname, 
+																		last_name = lastname, 
+																		department= Department.objects.get(abbv=department)
+																	)
 
-				}
-				print("success")
-				return JsonResponse(context)
+
+					user= User.objects.select_related("department").filter(username=newUsername).values(
+																											"username", "first_name", "last_name", 
+																											"last_login", "department__name",
+																											"department__abbv", "last_login"
+																										)
+
 				
 
+
+					context = {
+						"isError": 0,
+						"user": list(user)
+
+					}
+					print("success")
+					return JsonResponse(context)
+				
 			# elif not user.exists() and  User.objects.filter(username=username).exists():
 			# 	return JsonResponse({"isError": 1,"errorMessage": "username already exist"})
 
@@ -394,19 +502,18 @@ class adminRegistrationView(View):
 		if 'btnRegister' in request.POST: 
 			form = CreateUserForm(request.POST)
 			if form.is_valid():
-				student_id=request.POST['student_id']
 				username=request.POST['username']
 				password=request.POST['password']
 				first_name=request.POST['first_name']
 				last_name=request.POST['last_name']
 				department=request.POST['department']
 				user = User(
-							student_id= student_id,
 							username=username,
 							password = password,
 							first_name = first_name,
 							last_name= last_name,
-							department = Department.objects.get(abbv=department)
+							department = Department.objects.get(abbv=department),
+							last_login = None
 							)
 				user.save()
 				messages.success(request, "User added")
@@ -429,7 +536,7 @@ class adminRegistrationView(View):
 						first_name= row['first_name'], 
 						last_name=row['last_name'], 
 						department =  Department.objects.get(abbv=row['department']),
-						student_id = row['id_number']
+						last_login = None
 						)
 					try:
 						user.save()
@@ -451,6 +558,7 @@ class adminRegistrationView(View):
 
 		try: #read csv form
 			myfile = request.FILES['file']
+			print(myfile, type(myfile))
 			file = myfile.read().decode('utf-8')
 			dict_reader = csv.DictReader(io.StringIO(file))
 			users =  list(dict_reader)

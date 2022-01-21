@@ -134,14 +134,14 @@
                             <li class="breadcrumb-item"><a href="{% url 'ra:admin_index_view' %}">Dashboard</a></li>
                             <li class="breadcrumb-item active">Tables</li>
                         </ol>
-
+    <!-- active user -->
                         <div class="card mb-4"> #users
                             <div class="card-header">
                                 <i class="fas fa-table me-1"></i>
                                 Users
                             </div>
 
-                            <div class="card-body">
+                            <div class="card-body"> 
                             <form  action = "" method="POST" autocomplete="off" enctype="multipart/form-data"> 
                             {% csrf_token %}  
                                 <table id="datatablesSimple">
@@ -149,7 +149,6 @@
                                     <thead>
 
                                         <tr>
-                                            <th>ID Number</th>
                                             <th>Username</th>
                                             <th>Last Name</th>
                                             <th>First Name</th>
@@ -164,7 +163,6 @@
 
                                         {% for user in users %}
                                          <tr>
-                                            <td class="userIDInfo"> {{user.student_id}} </td>
                                             <td class="usernameInfo"> {{user.username}} </td>
                                             <td class="last_nameInfo"> {{user.last_name}} </td>
                                             <td class="first_nameInfo"> {{user.first_name}} </td>
@@ -181,7 +179,7 @@
                                                 </a>
                                             </td>
                                             <td>
-                                                <a id ="{{user.student_id}}" class="deleteUser" >
+                                                <a id ="{{user.username}}" class="deleteUser" >
                                                      <!-- data-toggle="modal" data-target="#deleteUserModal"> -->
                                                     <i class="fa fa-trash" style="color: #800000; cursor: pointer"></i>
                                                 </a>
@@ -200,8 +198,8 @@
                             <!-- </form> -->
                             </div>
                         </div>
-
-                        <div class="card mb-4"> <!-- colleges -->
+    <!-- colleges -->
+                        <div class="card mb-4"> 
                             <div class="card-header">
                                 <i class="fas fa-table me-1"></i>
                                 Colleges
@@ -211,15 +209,10 @@
                                     <thead>
                                         <tr>
                                             <th>College</th>
-                                            <th>Number of Active Users</th>
+                                            <th>Number of Active Users Today</th>
                                         </tr>
                                     </thead>
-                                    <tfoot>
-                                        <tr>
-                                            <th>College</th>
-                                            <th>Number of Active Users</th>
-                                        </tr>
-                                    </tfoot>
+                                    
                                     <tbody>
 
                                         {% for college in activeUser_perCollege %}
@@ -301,7 +294,7 @@
                                     </tfoot>
                                     <tbody>
                                         {% for d in dissertations %}
-                                        <tr>
+                                        <tr id ="{{d.author}}">
                                             <td>{{d.title}}</td>
                                             <td>{{d.author}}</td>
                                             <td>{{d.department__name}}</td>
@@ -384,13 +377,7 @@
 
                         <div id="editModal_body" class="card-body">
                                 {% csrf_token %}
-                                <div class="form-group row">
-                                    <label for="student_id" class="col-md-4 col-form-label text-md-right"><a style="color: red">* &nbsp;</a>ID number</label>
-                                    <div class="col-md-6 ">
-                                        <input type="text" id="oldStudent_id" class="form-control" name="student_id" value="" style="display: none">
-                                        <input type="text" id="newStudent_id" class="form-control" name="newStudent_id" value="">
-                                    </div>
-                                </div>
+                                
 
                                 <div class="form-group row">
                                     <label for="username" class="col-md-4 col-form-label text-md-right"><a style="color: red">* &nbsp;</a>Username</label>
@@ -484,14 +471,14 @@ $(document).ready(function(){
             didConfirm = confirm("Do you really want to delete this user?")
             if(didConfirm){
                 selectedRow.remove()
-
+                console.log($(this).attr("id"))
                 $.ajax({
                   type:"POST",
                   url:"",
 
                   data:{
                     action: 'delete_user',
-                    student_id: $(this).attr("id"),
+                    username: $(this).attr("id"),
                     csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
 
                   },
@@ -507,7 +494,6 @@ $(document).ready(function(){
             username = selectedRow.siblings('.usernameInfo').text().replace(" ", "").replace(" ", "")
             last_name = selectedRow.siblings('.last_nameInfo').text().replace(" ", "").replace(" ", "")
             first_name = selectedRow.siblings('.first_nameInfo').text()
-            oldStudent_id = selectedRow.siblings('.userIDInfo').text().replace(" ", "").replace(" ", "")
             department = selectedRow.siblings('.department__abbvInfo').text().replace(" ", "").replace(" ", "")
             oldUsername = username
             // if(a.length == 5)
@@ -515,7 +501,6 @@ $(document).ready(function(){
             // else
             //     department = a
             // .siblings('#first_name').val(first_name) 
-            document.getElementById("newStudent_id").value = $.trim(oldStudent_id)
             document.getElementById("first_name").value = $.trim(first_name)
             document.getElementById("last_name").value = $.trim(last_name)
            
@@ -527,7 +512,6 @@ $(document).ready(function(){
 
 
         $(document).on("click", "#update", function(){
-            newStudent_id = document.getElementById("newStudent_id").value 
             first_name = document.getElementById("first_name").value 
             last_name = document.getElementById("last_name").value 
             username = document.getElementById("username").value 
@@ -540,8 +524,7 @@ $(document).ready(function(){
 
                   data:{
                     action: 'update_user',
-                    newStudent_id: newStudent_id,
-                    oldStudent_id: oldStudent_id, 
+
                     first_name: first_name,
                     last_name: last_name,
                     oldUsername: oldUsername,
@@ -566,7 +549,6 @@ $(document).ready(function(){
                             selectedRow.siblings('.usernameInfo').text(user.username);
                             selectedRow.siblings('.last_nameInfo').text(user.last_name);
                             selectedRow.siblings('.first_nameInfo').text(user.first_name);
-                            selectedRow.siblings('.userIDInfo').text(user.student_id)
                             selectedRow.siblings('.department__abbvInfo').text(user.department__abbv);
                             
                         }                    

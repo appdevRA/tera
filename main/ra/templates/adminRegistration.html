@@ -193,7 +193,6 @@
                                 <table id="datatablesSimple" >
                                     <thead>
                                         <tr>
-                                            <th>ID number</th>
                                             <th>Username</th>
                                             <th>Password</th>
                                             <th>First Name</th>
@@ -213,7 +212,6 @@
                                     <tbody id="importUser_table">
                                         {% for user in users %}
                                         <tr>
-                                            <td>{{user.id_number}}</td>
                                             <td>{{user.username}}</td>
                                             <td>{{user.password}}</td>
                                             <td>{{user.first_name}}</td>
@@ -240,9 +238,7 @@
                                         <center>{{m}}</center>
                                         {% endfor %}
 
-                                        {% for error in form.errors %} 
-                                        <center ><a style="color: red">{{error}} already exist</a></center>
-                                        {% endfor %}
+                                        
                                         <div class="row justify-content-center" >
                                             <div class="col-md-8" >
                                                     <div class="card">
@@ -251,21 +247,23 @@
                                         
                 <form id = "form1"   method="post" autocomplete="off" enctype="multipart/form-data">
                                                                 {% csrf_token %}
-                    <div class="form-group row">
-
-                        <label for="student_id" class="col-md-4 col-form-label text-md-right">ID number</label>
-                        <div class="col-md-6">
-                            <input type="text" class="form-control form-control-user" id="student_id" name="student_id">
-                        </div>
-
-                    </div>
+                   
                     <div class="form-group row">
 
                         <label for="username" class="col-md-4 col-form-label text-md-right">Username</label>
                         <div class="col-md-6">
                             <input type="text" class="form-control form-control-user" id="username" name="username">
-                        </div>
+                        {% for field in form %} 
+                        {% for error in field.errors %}
 
+                            {% if field.name == "username" %}
+                            <center ><a style="color: red">  {{error}} </a></center>
+                            {% endif %}
+
+                        {% endfor %}
+                        {% endfor %}
+                        </div>
+                         
                     </div>
 
                     <div class="form-group row">
@@ -273,6 +271,17 @@
                         <label for="password" class="col-md-4 col-form-label text-md-right">Password</label>
                         <div class="col-md-6">
                             <input type="password" class="form-control form-control-user" id="password" name="password">
+                        
+                        {% for field in form %} 
+                        {% for error in field.errors %}
+                         
+                            {% if field.name == "password" %}
+                            <center ><a style="color: red">  {{error}} </a></center>
+                            {% endif %}
+
+                        {% endfor %}
+                        {% endfor %}
+
                         </div>
 
                     </div>
@@ -305,7 +314,7 @@
                                 <option value="CEA">College of Engineering and Architecture</option>
                                 <option value="CCJ">College of Criminal Justice</option>
                                 <option value="CNAHS">College of Nursing and Allied Health Sciences</option>
-                                <option value="CABA">College of Management, Business and Accountancy</option>
+                                <option value="CMBA">College of Management, Business and Accountancy</option>
                                 <option value="CASE">College of Arts, Sciences and Education</option>
                             </select>
                         </div>
@@ -406,7 +415,6 @@
                                         '<td>'+ rows[i].first_name +'</td>'+
                                         '<td>'+ rows[i].last_name +'</td>'+
                                         '<td>'+ rows[i].department +'</td>'+
-                                        '<td>'+ rows[i].id_number +'</td>'+
                                         '</tr>'
                                         )
                                     }

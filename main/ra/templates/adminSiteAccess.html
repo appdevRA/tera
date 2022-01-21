@@ -163,25 +163,26 @@
                                         <tr>
                                             <th>Site Name</th>
                                             <th>Web Address</th>
-                                            <th>Number of total user access</th>
+                                            <th>Total number of User Access</th>
                                             <th>Status</th>
                                         </tr>
                                     </thead>
-                                    <tfoot>
-                                        <tr>
-                                            <th>Site Name</th>
-                                            <th>Web Address</th>
-                                            <th>Number of total user access</th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </tfoot>
+                                    
                                     <tbody>
+                                        {% for site in tableData %}
                                         <tr>
-                                            <td>SpringerOpen</td>
-                                            <td>https://www.springeropen.com/</td>
-                                            <td>2000</td>
+                                            <td>{{site.name}}</td>
+                                            <td>{{site.url}}</td>
+                                            <td>{{site.visitCount}}</td>
+
+                                            {% if site.is_active == True %}
                                             <td>Online</td>
-                                        </tr>
+                                            {% endif %}
+                                            {% if site.is_active == False %}
+                                            <td>Offline</td>
+                                            {% endif %}
+                                         </tr>
+                                        {% endfor %}
                                         
                                     </tbody>
                                 </table>
@@ -208,8 +209,11 @@
         <script src="{% static 'js/adminScripts.js' %}"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
         <!-- <script src="{% static 'adminAssets/demo/chart-bar-demo.js' %}"></script> -->
-        <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
-        <script src="{% static 'js/datatables-simple-demo.js' %}"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script> -->
+        <!-- <script src="{% static 'js/datatables-simple-demo.js' %}"></script> -->
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
+        <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+        <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
     </body>
 </html>
 
@@ -237,27 +241,28 @@ var data = {{ data |safe }}
         maxDate.setDate(start.getDate() + 31)
         document.getElementById("endDate").setAttribute("max", getDateValue(maxDate))
         setLabel(start, end)
+        $("#datatablesSimple").DataTable()
         
   });
 
   document.getElementById("filter").onchange = function() {
-    document.getElementById("startDate").type = document.getElementById("filter").value
-    document.getElementById("endDate").type = document.getElementById("filter").value
-    filter = document.getElementById("filter").value
+        document.getElementById("startDate").type = document.getElementById("filter").value
+        document.getElementById("endDate").type = document.getElementById("filter").value
+        filter = document.getElementById("filter").value
 
   }
 
 
   document.getElementById("startDate").onchange = function() {
-    minDate = new Date(this.value)
-    minDate.setDate(minDate.getDate()+1)
-    document.getElementById("endDate").setAttribute("min", getDateValue(minDate));
+        minDate = new Date(this.value)
+        minDate.setDate(minDate.getDate()+1)
+        document.getElementById("endDate").setAttribute("min", getDateValue(minDate));
 
-    
-    if(filter == "date"){
-        maxDate = new Date(this.value)
-        maxDate.setDate(new Date(this.value).getDate() + 30)
-        document.getElementById("endDate").setAttribute("max", getDateValue(maxDate));
+        
+        if(filter == "date"){
+            maxDate = new Date(this.value)
+            maxDate.setDate(new Date(this.value).getDate() + 30)
+            document.getElementById("endDate").setAttribute("max", getDateValue(maxDate));
     }
         
 
@@ -266,8 +271,7 @@ var data = {{ data |safe }}
 
 
   
-
-  document.getElementById("submit").onclick = function(e) {
+document.getElementById("submit").onclick = function(e) {
 
     startDate = new Date(document.getElementById("startDate").value)
     endDate = new Date(document.getElementById("endDate").value)
@@ -382,9 +386,34 @@ function setLabel(startDate, endDate){
 
               },
               success: function(response){
+                tableData = response.tableData
+                console.log(tableData)
                 data = response.data
-                console.log(data)
                 setLabel(startDate, endDate)
+                
+                $('#datatablesSimple').DataTable().destroy();
+                $('#datatablesSimple tbody').empty();
+                var table = $('#datatablesSimple').DataTable(
+                    { language : {
+                                            "zeroRecords": " "             
+                                        }}
+                );
+           
+           
+                for(i=0; i < tableData.length;i++){
+                    if(tableData[i].is_active)
+                        status = "Online"
+                    else
+                        status = "offline"
+                    table.row.add( [
+
+                        tableData[i].name, tableData[i].url,tableData[i].visitCount, status
+                    ] ).draw( false );
+             
+                }
+
+                chart.options.scales.yAxes[0].ticks.max = response.maxCount*2
+                chart.update()
 
               }
         }); 
