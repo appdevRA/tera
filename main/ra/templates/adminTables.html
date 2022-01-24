@@ -111,11 +111,9 @@
                                     <a class="nav-link" href="{% url 'ra:admin_activeuser_view' %}">Active Users</a>
                                     <a class="nav-link" href="{% url 'ra:admin_siteaccess_view' %}">Site Access</a>
                                     <a class="nav-link" href="{% url 'ra:admin_colleges_view' %}">College Access</a>
-                                    <a class="nav-link" href="{% url 'ra:admin_dissertations_view' %}">Dissertation Access</a>
                                 </nav>
                                     </div>
 
-                            <div class="sb-sidenav-menu-heading">Addons</div>
                             
                             <a class="nav-link" href="{% url 'ra:admin_tables_view' %}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
@@ -135,7 +133,7 @@
                             <li class="breadcrumb-item active">Tables</li>
                         </ol>
     <!-- active user -->
-                        <div class="card mb-4"> #users
+                        <div class="card mb-4"> 
                             <div class="card-header">
                                 <i class="fas fa-table me-1"></i>
                                 Users
@@ -288,8 +286,8 @@
                                             <th>Title</th>
                                             <th>Authors</th>
                                             <th>College</th>
-                                            <th>Status</th>
-                                            <th colspan="2">Manage</th>
+                                            <th>Visibility</th>
+                                            <th > Total number of user access</th>
                                         </tr>
                                     </tfoot>
                                     <tbody>
@@ -298,50 +296,14 @@
                                             <td>{{d.title}}</td>
                                             <td>{{d.author}}</td>
                                             <td>{{d.department__name}}</td>
-                                            <td>
-                                            {% if d.isActive == True %}
-                                                <input class="input-switch" type="checkbox" id="status" onclick="press" checked/>
-                                            {% endif %}
+                                            <td> {{d.is_active}}</td>
+                                            <td> {{d.num_of_access}}</td>
 
-                                            {% if d.isActive == False %}
-                                              <input class="input-switch" type="checkbox" id="status" onclick="press" />
-                                            {% endif %}
-                                            
-                                              <label class="label-switch" for="toggle"></label>
-                                              <span class="info-text"></span>
-                                            </td>
-                                             <td>
-                                                <a class="edit" title="Edit" data-toggle="tooltip"><i class="far fa-edit" style="color: #ffd700"></i></a>
-                                            </td>
-                                            <td>
-                                                <a class="delete" title="Delete" data-toggle="tooltip"><i class="fa fa-trash" style="color: #800000"></i></a>
-                                            </td>
+                                             
                                         </tr>
                                         {% endfor %}
 
-                                        <tr>
-                                            <td>{{d.title}}</td>
-                                            <td>{{d.author}}</td>
-                                            <td>{{d.department__name}}</td>
-                                            <td>
-                                            {% if d.isActive == True %}
-                                              <input class="input-switch" type="checkbox" id="status" onclick="press" checked/>
-                                            {% endif %}
-
-                                            {% if d.isActive == False %}
-                                              <input class="input-switch" type="checkbox" id="status" onclick="press" />
-                                            {% endif %}
-
-                                              <label class="label-switch" for="status"></label>
-                                              <span class="info-text"></span>
-                                            </td>
-                                             <td>
-                                                <a class="edit" title="Edit" data-toggle="tooltip"><i class="far fa-edit" style="color: #ffd700"></i></a>
-                                            </td>
-                                            <td>
-                                                <a class="delete" title="Delete" data-toggle="tooltip"><i class="fa fa-trash" style="color: #800000"></i></a>
-                                            </td>
-                                        </tr>
+                                      
                                        
                                     </tbody>
                                 </table>

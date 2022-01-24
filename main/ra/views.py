@@ -4,7 +4,6 @@ from django.http import HttpResponse, JsonResponse
 from django.views.generic import View
 from django.utils import timezone
 from .forms import *
-
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
@@ -29,7 +28,8 @@ import csv
 import io
 from django.db.models import DateTimeField, ExpressionWrapper, F
 from django.db.models import F, Func, Value, CharField
-
+import sys
+    
 
 
 class addUser(View):
@@ -315,18 +315,21 @@ class adminSiteAccessView(View):
 
 class adminDissertationsView(View):
 	def get(self, request):
+
 		return render(request, 'adminDissertations.html')
 
 class adminDissertationsAccessView(View):
 	def get(self, request):
-		queryset = Dissertation.objects.select_related("department").annotate(department_name= F('department__abbv'))
+		# Dissertation.objects.exclude(id =3).delete()
+		queryset = Dissertation.objects.select_related("department").annotate(department_name= F('department__abbv')).order_by("num_of_access")
 
 		# a = Dissertation.objects.get(id=3)
 		# json = s.serialize('python', [a], ensure_ascii=False)
 
 		# print(type(json), json)
-
-
+		
+				# json = s.serialize('python', [queryset], ensure_ascii=False)
+				
 		context ={
 			"dissertations": queryset
 		}
@@ -344,22 +347,102 @@ class adminDissertationsAccessView(View):
 				department = request.POST.get("college") 
 				file = request.FILES.get('file')
 
-				print(title, authors)
+
+				if Dissertation.objects.filter(title= title).exists():
+					return JsonResponse({"didError": 1, "message": "Title already exist"})
+
+
+				print(authors, abstract, file)
+				if file == None or len(authors) == 0 or len(abstract) == 0:
+					return JsonResponse({"didError": 1, "message": "Some Fields are missing"})
+
 
 				createdObject = Dissertation.objects.create(title = title, author = authors, abstract = abstract, file = file, department = Department.objects.get(abbv = department), is_active = True)
 				
-				json = s.serialize('python', [createdObject], ensure_ascii=False)
-
-				print(type(json))
+				queryset = list(Dissertation.objects.filter(id = createdObject.id).select_related("department").annotate(department_name= F('department__abbv')).values())
+				# json = s.serialize('python', [queryset], ensure_ascii=False)
+				queryset[0]['file'] = "http://"+ request.get_host()+"/images/"+queryset[0]['file']
 				context = {
-					"createdObject": json
+					"didError": 0,
+					"createdObject": queryset
 				}
 				return JsonResponse(context)
 
-			if request.POST.get("action") == "delete":
+
+
+			elif request.POST.get("action") == "delete":
 				ID = request.POST.get("id")
 				Dissertation.objects.filter(id=ID).delete()
 				return HttpResponse("")
+
+
+
+
+			elif request.POST.get("action") == "get_row":
+				ID = request.POST.get("id") 
+				queryset = list(Dissertation.objects.filter(id = ID).select_related("department").values("title", "author", "abstract").annotate(department_name= F('department__abbv')))
+				context = {
+					"didError": 0,
+					"object": queryset
+				}
+				return JsonResponse(context)
+
+
+
+
+			elif request.POST.get("action") == "submit_edit":
+				ID = request.POST.get("id") 
+				oldTitle = request.POST.get("oldTitle") 
+				title = request.POST.get("title") 
+				
+				authors = request.POST.get("authors") 
+				abstract = request.POST.get("abstract") 
+				department = request.POST.get("college") 
+				file = request.FILES.get('file')
+				print("|"+oldTitle+"|"+title+"|")
+				
+				if oldTitle != title and Dissertation.objects.filter(title= title).exists():
+					return JsonResponse({"didError": 1, "message": "Title already exist"})
+
+				if len(authors) == 0 or len(abstract) == 0:
+					return JsonResponse({"didError": 1, "message": "Some Fields are missing"})
+
+				if file == None:
+					Dissertation.objects.filter(id = ID).update(title = title, author = authors, abstract = abstract, department = Department.objects.get(abbv = department))
+				else:
+					a = Dissertation.objects.get(id = ID)
+					a. title = title
+					a. author = authors
+					a.abstract = abstract
+					a.department = Department.objects.get(abbv = department)
+					a.file = file
+					a.save()
+				queryset = list(Dissertation.objects.filter(id = ID).select_related("department").annotate(department_name= F('department__abbv')).values())
+		
+				queryset[0]['file'] = "http://"+ request.get_host()+"/images/"+queryset[0]['file']
+				context = {
+					"didError": 0,
+					"createdObject": queryset
+				}
+				return JsonResponse(context)
+
+
+			elif request.POST.get("action") == "activate":
+				ID = request.POST.get("id").replace("switch","")
+				print(ID)
+				Dissertation.objects.filter(id = ID).update(is_active = True)
+				return HttpResponse("")
+
+
+
+			elif request.POST.get("action") == "deactivate":
+				ID = request.POST.get("id").replace("switch","")
+				print(ID)
+				Dissertation.objects.filter(id = ID).update(is_active = False)
+				return HttpResponse("")
+
+
+
 class adminUserUpdateView(View):
 	def get(self, request):
 		return render(request, 'adminUserUpdate.html')
@@ -382,8 +465,7 @@ class adminTableView(View):
 
 		activeUser_perCollege =  Department.objects.select_related("user").values('name').annotate(activeCount=Count('id', filter=Q(user__last_login__contains=timezone.now().date())))
 		userSite =  Site.objects.values('name', 'url').annotate(accessCount=Count('usersite_access__id')).distinct()
-		dissertations = Dissertation.objects.values("title","author").all()
-
+		dissertations = Dissertation.objects.select_related("department").annotate(department_name = F('department__abbv'))
 		context ={
 			"users": list(user),
 			"activeUser_perCollege": list(activeUser_perCollege),
@@ -575,11 +657,40 @@ class adminRegistrationView(View):
 class practice(View):
 	
 	def get(self, request):
-		
-		
-		
+		# word = "weather"
+		# response = requests.get('https://link.springer.com/search/page/'+ str(1) +'?facet-content-type=%22Book%22&query='+word, headers = headers(), timeout=2) #books
+		# soup = BeautifulSoup(response.content, 'html.parser')
 
-		
+		# titles = soup.find_all('a', class_="title")
+
+
+		# for i, title in enumerate(titles):
+		# 	z= []
+
+		# 	subtitle = title.findNext("p", class_="subtitle")
+		# 	p_tag__meta = title.parent.findNext("p", class_="meta")
+		# 	# print(i,p_tag__meta.span.a , p_tag__meta.findNext("span", class_="year"))
+		# 	try:
+		# 		author = p_tag__meta.span.a.text +"  " +p_tag__meta.findNext("span", class_="year").text
+		# 	except:
+		# 		author = p_tag__meta.span.span.text +"  " +p_tag__meta.findNext("span", class_="year").text
+
+		# 	print(author)
+
+		# 	z.append(title.text)
+		# 	if subtitle.text != "" and not subtitle.text.isspace() and len(subtitle.text) > 5:
+		# 	    z.append(subtitle.text)
+
+
+		# 	if author != "" or not author.isspace() or len(author) > 5:
+		# 	    z.append(author)
+
+		# 	z.append(title["href"])
+		# 	print(z)
+
+		# 	print(subtitle.text.isspace(), len(subtitle) > 5, subtitle.text != "", subtitle.text)
+
+
 		# a = User_bookmark.objects.annotate(id=1)
 		# print("folders count: ",a.folders.all().count())
 		# print("recommended","\n",a )
@@ -587,19 +698,20 @@ class practice(View):
 		
 		# a= Department.objects.create(name='College of Computer Studies', abbv='CCS')
 
-		# User.objects.create(student_id = '18-5126-269',username='18-5126-269', password =make_password('12345'), first_name="yanni", last_name="mondejar", department=a)
+		# User.objects.create(username='18-5126-269', password =make_password('12345'), first_name="yanni", last_name="mondejar", department=a)
 
 
-		# User.objects.create(student_id = '18-5126-270',username='18-5126-270', password =make_password('12345'), first_name="jarry", last_name="emorecha", department=a)
+		# User.objects.create(username='18-5126-270', password =make_password('12345'), first_name="jarry", last_name="emorecha", department=a)
 
-		# User.objects.create(student_id = '18-5126-271',username='18-5126-271', password = make_password('12345'), first_name="ryan ", last_name="talatagod", department = a)
+		# User.objects.create(username='18-5126-271', password = make_password('12345'), first_name="ryan ", last_name="talatagod", department = a)
 		
 
-		# Department.objects.create(name='College of Computer Studies', abbv='CCS')
 		# Department.objects.create(name='College of Engineering and Architecture', abbv='CEA')
 		# Department.objects.create(name='College of Nursing and Allied Health Sciences', abbv='CNAHS')
 		# Department.objects.create(name='College of Management, Business Accountancy', abbv='CMBA')
 		# Department.objects.create(name='College of Arts, Sciences and Education', abbv='CASE')
+		# Department.objects.create(name='College of Criminal Justice', abbv='CCJ')
+
 
 		# Site.objects.create(name ="Springeropen", url="https://Springeropen.com")
 		# Site.objects.create(name ="UNESCO Digital Library", url="https://unesdoc.unesco.org/")
@@ -830,55 +942,77 @@ class TeraSearchResultsView(View):
 				print('bookmark button clicked')
 				keyword = request.POST['word']
 				bookmark = request.POST['bookmark']
-				siteRef = request.POST['website'] +" " +request.POST['reftype']
+				website = request.POST['website']
+				reftype = request.POST['reftype']
 				string = bookmark.split('||')
 				title = string[0].replace('\n','').replace('  ','')
-				print(string)
 				url = string[1]
 
-				# print(title, url, siteRef)
-				detail = details(url, request.session.get('proxy'),siteRef)
+				if Bookmark.objects.filter(user = request.user, bookmark__title = title, bookmark__itemType = reftype, bookmark__websiteTitle = website).exists():
+					Bookmark.objects.create(user = request.user,bookmark=Bookmark_detail.objects.get(title = title, itemType = reftype, websiteTitle = website),keyword=keyword)
+					return HttpResponse("")
 
-				websiteTitle = detail['websiteTitle']
-				itemType = detail['itemType']
-				author = detail['author']
-				description = detail['description']
-				journalItBelongs = detail['journalItBelongs']
-				volume = detail['volume']
-				doi = detail['doi']
-				publicationYear = detail['publishYear']
-				subtitle = detail['subtitle']
-				citation = detail['citation']
-				downloads = detail['downloads']
-				publisher = detail['publisher']
-				edition = detail['edition']
-				pages = detail['pages']
-				# author description publication volume doi
+				else:
+					try:
+						detail = details(url, request.session.get('proxy'),website, reftype)
+
+						websiteTitle = detail['websiteTitle']
+						itemType = detail['itemType']
+						author = detail['author']
+						description = detail['description']
+						journalItBelongs = detail['journalItBelongs']
+						volume = detail['volume']
+						doi = detail['doi']
+						publicationYear = detail['publishYear']
+						subtitle = detail['subtitle']
+						citation = detail['citation']
+						downloads = detail['downloads']
+						publisher = detail['publisher']
+						edition = detail['edition']
+						pages = detail['pages']
+						# author description publication volume doi
+						
+						
+
+						# print(websiteTitle + '\n'+itemType + '\n'+title + '\n' +link + '\n' +author+ '\n' +description+ '\n' +publication+ '\n' +volume+ '\n' +doi)
+						if request.POST['reftype'] == "article":
+							detail = Bookmark_detail.objects.create(
+								title = title,websiteTitle= websiteTitle,itemType= itemType,
+								author = author, description= description, url = url, journalItBelongs= journalItBelongs, 
+								volume = volume, DOI = doi
+								)
+							Bookmark.objects.create(user = request.user,bookmark=detail,keyword=keyword)
+
+							
+
+							
+						elif itemType == "book":
+							detail = Bookmark_detail.objects.create(title = title,websiteTitle= websiteTitle,
+								subtitle = subtitle, itemType= itemType,author = author,numOfCitation = citation,
+								numOfDownload= downloads,publisher=publisher, description= description, url = url, 
+								edition = edition,numOfPages = pages, DOI = doi)
+
+							Bookmark.objects.create(user = request.user,bookmark=detail,keyword=keyword)
+
+						
+						return HttpResponse('')
+
+					except Exception as e:
+						print(e)
+						exc_type, exc_obj, exc_tb = sys.exc_info()
+						fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+
+						Site_exception.objects.create(link = url, filename = fname, line_number = str(exc_tb.tb_lineno), search_keyword = keyword)
+						return JsonResponse({"didError": 1})
 				
 				
-				# print(websiteTitle + '\n'+itemType + '\n'+title + '\n' +link + '\n' +author+ '\n' +description+ '\n' +publication+ '\n' +volume+ '\n' +doi)
-				if request.POST['reftype'] == "article":
-					detail = Bookmark_detail.objects.create(
-						title = title,websiteTitle= websiteTitle,itemType= itemType,
-						author = author, description= description, url = url, journalItBelongs= journalItBelongs, 
-						volume = volume, DOI = doi
-						)
-					Bookmark.objects.create(user = request.user,bookmark=detail,keyword=keyword)
-					
-					
-				elif itemType == "book":
-					detail = Bookmark_detail.objects.create(title = title,websiteTitle= websiteTitle,
-						subtitle = subtitle, itemType= itemType,author = author,numOfCitation = citation,
-						numOfDownload= downloads,publisher=publisher, description= description, url = url, 
-						edition = edition,numOfPages = pages, DOI = doi)
-
-					Bookmark.objects.create(user = request.user,bookmark=detail,keyword=keyword)
-				return HttpResponse('')
 			else:
+				bookmark = request.POST['bookmark']
 				string = bookmark.split('||')
 
-				title = string[1].replace('\n','').replace('  ','')
-				User_bookmark.objects.filter(title=title).update(isRemoved=1)
+				title = string[0].replace('\n','').replace('  ','')
+				detail = Bookmark_detail.objects.get(title=title)
+				Bookmark.objects.filter(user = request.user, bookmark=detail).delete()
 				return HttpResponse('')
 
 		elif 'buttonLogin' in request.POST:
@@ -957,7 +1091,7 @@ class TeraDashboardView(View):
 			# a = json.dumps(a, default=str)
 			recommendation = []
 			if Bookmark.objects.filter(user=request.user).exists():
-				queryAll = Bookmark.objects.select_related("bookmark").filter(folder__isnull=True, 
+				queryAll = Bookmark.objects.select_related("bookmark_detail").filter(~Q(user__isnull=False),
 																				group__isnull=True
 																				).values("bookmark__id",
 																				"bookmark__itemType",
@@ -967,10 +1101,11 @@ class TeraDashboardView(View):
 
 				recommendation = modes(list(queryAll), request.user.id)
 				# modes(list(queryAll), request.user.id)
-			queryset = Bookmark.objects.select_related("bookmark").filter(
+
+			queryset = Bookmark.objects.select_related("bookmark_detail").filter(
 																		( Q(user=request.user) ) & 
 																		( Q(isRemoved=1) | Q(isRemoved=0) ), 
-																		folder= None, group = None
+																		group__isnull=True
 																		).values(
 																			"id", "bookmark__id", "isFavorite", "dateAccessed", "dateAdded", 
 																			"isRemoved", "date_removed",

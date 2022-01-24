@@ -12,5 +12,4 @@ admin.site.register(models.Group)
 admin.site.register(models.Folder)
 admin.site.register(models.Site)
 admin.site.register(models.UserSite_access)
-admin.site.register(models.Headers)
 

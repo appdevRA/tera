@@ -145,11 +145,9 @@
                                     <a class="nav-link" href="{% url 'ra:admin_activeuser_view' %}">Active Users</a>
                                     <a class="nav-link" href="{% url 'ra:admin_siteaccess_view' %}">Site Access</a>
                                     <a class="nav-link" href="{% url 'ra:admin_colleges_view' %}">College Access</a>
-                                    <a class="nav-link" href="{% url 'ra:admin_dissertations_view' %}">Dissertation Access</a>
                                 </nav>
                                     </div>
 
-                            <div class="sb-sidenav-menu-heading">Addons</div>
                             
                             <a class="nav-link" href="{% url 'ra:admin_tables_view' %}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
@@ -164,8 +162,14 @@
                     <div class="container-fluid px-4" >
                         <h1 class="mt-4">Registration</h1>
                         <ol class="breadcrumb mb-4">
-                            <li class="breadcrumb-item"><a href="{% url 'ra:admin_index_view' %}">Dashboard</a></li>
-                            <li class="breadcrumb-item active">Registration</li>
+                            <li class="breadcrumb-item"> Manage User</li>
+                            <li class="breadcrumb-item"> Registration</li>
+                            {% if type == 'i' %}
+                            <li class="breadcrumb-item active">Import CSV File</li>
+                            {% endif %}
+                            {% if type == 's' %}
+                            <li class="breadcrumb-item active">Register User</li>
+                            {% endif %}
                         </ol>
                         <div class="card mb-4" >
                             <div class="card-body" >

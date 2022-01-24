@@ -103,11 +103,9 @@
                                     <a class="nav-link" href="{% url 'ra:admin_activeuser_view' %}">Active Users</a>
                                     <a class="nav-link" href="{% url 'ra:admin_siteaccess_view' %}">Site Access</a>
                                     <a class="nav-link" href="{% url 'ra:admin_colleges_view' %}">College Access</a>
-                                    <a class="nav-link" href="{% url 'ra:admin_dissertations_view' %}">Dissertation Access</a>
                                 </nav>
                                     </div>
 
-                            <div class="sb-sidenav-menu-heading">Addons</div>
                            
                             <a class="nav-link" href="{% url 'ra:admin_tables_view' %}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
@@ -127,6 +125,18 @@
 
                         
                         <div class="row">
+
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card bg-warning text-white mb-4">
+                                    <div class="card-body">User Registration</div>
+                                    <div class="card-footer d-flex align-items-center justify-content-between">
+                                        <a class="small text-white stretched-link" href="{% url 'ra:admin_registration_view' rtype='i' %}">View Details</a>
+                                        <div class="small text-white"><i class="fas fa-angle-right"><a href="{% url 'ra:admin_registration_view' rtype='i' %}"></a></i></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            
                             <div class="col-xl-3 col-md-6">
                                 <div class="card bg-primary text-white mb-4">
                                     <div class="card-body">Top User</div>
@@ -136,15 +146,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-xl-3 col-md-6">
-                                <div class="card bg-warning text-white mb-4">
-                                    <div class="card-body">Most Accessed Dissertation</div>
-                                    <div class="card-footer d-flex align-items-center justify-content-between">
-                                        <a class="small text-white stretched-link" href="{% url 'ra:admin_dissertations_view' %}">View Details</a>
-                                        <div class="small text-white"><i class="fas fa-angle-right"><a href="{% url 'ra:admin_dissertations_view' %}"></a></i></div>
-                                    </div>
-                                </div>
-                            </div>
+                            
                             <div class="col-xl-3 col-md-6">
                                 <div class="card bg-success text-white mb-4">
                                     <div class="card-body">Most Accessed Site</div>
