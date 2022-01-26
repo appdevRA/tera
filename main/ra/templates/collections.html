@@ -481,25 +481,25 @@ function addRecommended(clicked_id){
 function permanentdelete_item(clicked_id){
   
    
-   for(i=0; i< markers.length;i++){
-      if(markers[i].id == clicked_id ){
-        markers[i].isRemoved = 3;
-        $.ajax({
-                      type:"POST",
-                      url:"",
+   // for(i=0; i< markers.length;i++){
+   //    if(markers[i].id == clicked_id ){
+   //      markers[i].isRemoved = 3;
+   //      $.ajax({
+   //                    type:"POST",
+   //                    url:"",
 
-                      data:{
-                        action: 'deleteItem',
-                        bID: clicked_id,
-                        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
-                      }
-        }); 
-        break;
+   //                    data:{
+   //                      action: 'deleteItem',
+   //                      bID: clicked_id,
+   //                      csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+   //                    }
+   //      }); 
+   //      break;
 
-      } 
-   }
+   //    } 
+   // }
    
-   showRows(tab)
+   // showRows(tab)
   
     
 }
@@ -549,14 +549,7 @@ function delete_item(clicked_id, i, action_type){
 
 
 
-function favorite_item(clicked_id,ii){
-  
-   
-   
-  
-  
-    
-}
+
 
 
 function get_bookmarks(tab_name){
@@ -585,10 +578,11 @@ function get_bookmarks(tab_name){
                         }, success: function(response){
 
                            markers = response.bookmarks
+                           console.log(markers)
                             if(tab_name.includes("folder") | tab_name.includes("groups"))
                               showRows(tab, markers, tab_name)
                             else
-                              showRows(tab, markers, tab_name)
+                              showRows(tab, markers)
 
                         }, error: function(response){
                           alert("Something went, bookmarks in this tab cannot be retrieved")
@@ -632,9 +626,9 @@ function showRows(rowType, markers, faction_id){
                       date_acc= new Date(markers[i].dateAccessed)
 
                       if( markers[i].isFavorite == 0){
-                        favorite ="<td class='favorite'><i id='"+i+"|" +markers[i].bookmark__id+"' class='far fa-star' style='cursor: pointer' ></i></td>"
+                        favorite ="<td class='favorite'><i id='"+i+"|" +markers[i].id+"' class='far fa-star' style='cursor: pointer' ></i></td>"
                       }else{
-                        favorite ="<td class='favorite'><i id='"+i+"|" + markers[i].bookmark__id+"' class='fas fa-star' style='cursor: pointer; color:red' ></i></td>"
+                        favorite ="<td class='favorite'><i id='"+i+"|" + markers[i].id+"' class='fas fa-star' style='cursor: pointer; color:red' ></i></td>"
                       }
 
                       if(markers[i].bookmark__websiteTitle == "Springeropen"){
@@ -647,11 +641,11 @@ function showRows(rowType, markers, faction_id){
                         "<tr>"+
                         sitelogo +
                         "<td>"+ markers[i].bookmark__itemType +  "</td>"+
-                        "<td><a href='"+ markers[i].bookmark__url+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i].bookmark__id +","+i+")'>" + markers[i].bookmark__title +  "</span></a></td>"+
+                        "<td><a href='"+ markers[i].bookmark__url+ "' target='_blank'><span id="+ markers[i].id +" class='open_link' style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link()'>" + markers[i].bookmark__title +  "</span></a></td>"+
 
                         "<td>" + date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5) + "</td>" +
-                        "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
-                        "<td><i id='"+ markers[i].bookmark__id +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
+                        "<td class='dateAccessed'>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
+                        "<td id="+ markers[i].bookmark__id +" class='get_detail'><i id='"+ markers[i].id +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' ></i></td>" +
 
 
                          "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ markers[i].id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
@@ -665,7 +659,7 @@ function showRows(rowType, markers, faction_id){
 
 
                           favorite+
-                        "<td id='"+markers[i].bookmark__id+"' class='trash'> <i class='fas fa-trash' style='color:#a71f1f;cursor: pointer; font-size: 90%'></i></td>" +
+                        "<td id='"+markers[i].id+"' class='trash'> <i class='fas fa-trash' style='color:#a71f1f;cursor: pointer; font-size: 90%'></i></td>" +
                        
 
                        "</tr>"
@@ -696,11 +690,11 @@ function showRows(rowType, markers, faction_id){
                    
 
               $('#itemArea').append(
-                "<tr class='clickable-row' data-href='" + markers[i].bookmark__url + "'>" +
+                "<tr class='clickable-row' data-href='" + + "'>" +
 
                 sitelogo+
                 "<td>"+ markers[i].bookmark__itemType +  "</td>"+
-                "<td><a href='"+ markers[i].bookmark__url+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i].bookmark__id +","+i+")'>" + markers[i].bookmark__title +  "</span></a></td>"+
+                "<td><a  target='_blank'><span id="+ markers[i].id +" class='open_link' style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' "+ markers[i].bookmark__title +  "</span></a></td>"+
 
                 "<td>" +  date_removed.toDateString().slice(3,)+" "+date_removed.toTimeString().slice(0,5)  + "</td>" +
                "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
@@ -790,9 +784,9 @@ function showRows(rowType, markers, faction_id){
                         date_acc= new Date(markers[i].dateAccessed)
 
                       if( markers[i].isFavorite == 0){
-                        favorite ="<td class='favorite'><i id='"+i+"|" +markers[i].bookmark__id+"' class='far fa-star' style='cursor: pointer' ></i></td>"
+                        favorite ="<td class='favorite'><i id='"+i+"|" +markers[i].id+"' class='far fa-star' style='cursor: pointer' ></i></td>"
                       }else{
-                        favorite ="<td class='favorite'><i id='"+i+"|" +markers[i].bookmark__id+"' class='fas fa-star' style='cursor: pointer; color:red' ></i></td>"
+                        favorite ="<td class='favorite'><i id='"+i+"|" +markers[i].id+"' class='fas fa-star' style='cursor: pointer; color:red' ></i></td>"
                       }
 
                       if(markers[i].bookmark__websiteTitle == "Springeropen"){
@@ -805,11 +799,11 @@ function showRows(rowType, markers, faction_id){
                         "<tr>"+
                         sitelogo +
                         "<td>"+ markers[i].bookmark__itemType +  "</td>"+
-                        "<td><a href='"+ markers[i].bookmark__url+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i].bookmark__id +","+i+")'>" + markers[i].bookmark__title +  "</span></a></td>"+
+                        "<td><a href='"+ markers[i].bookmark__url+ "' target='_blank'><span id="+ markers[i].id +" class='open_link' style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' >" + markers[i].bookmark__title +  "</span></a></td>"+
 
                         "<td>" + date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5) + "</td>" +
                         "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
-                        "<td><i id='"+ markers[i].bookmark__id +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
+                        "<td id="+ markers[i].bookmark__id +" class='get_detail'><i id='"+ markers[i].id +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' ></i></td>" +
 
 
                          "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ markers[i].id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
@@ -823,7 +817,7 @@ function showRows(rowType, markers, faction_id){
 
 
                           favorite+
-                        "<td><i id='"+ markers[i].bookmark__id+"' class='fas fa-trash' style='color:#a71f1f;cursor: pointer; font-size: 90%'  onclick='delete_item(this.id,"+i+","+1+")'></i></td>" +
+                        "<td><i id='"+ markers[i].id+"' class='fas fa-trash' style='color:#a71f1f;cursor: pointer; font-size: 90%'  ></i></td>" +
                        
 
                        "</tr>"
@@ -850,9 +844,9 @@ function showRows(rowType, markers, faction_id){
                         date_acc= new Date(markers[i].dateAccessed)
 
                       if( markers[i].isFavorite == 0){
-                        favorite ="<td class='favorite'><i id='"+i+"|" +markers[i].bookmark__id+"' class='far fa-star' style='cursor: pointer' ></i></td>"
+                        favorite ="<td class='favorite'><i id='"+i+"|" +markers[i].id+"' class='far fa-star' style='cursor: pointer' ></i></td>"
                       }else{
-                        favorite ="<td class='favorite'><i id='"+i+"|" +markers[i].bookmark__id+"' class='fas fa-star' style='cursor: pointer; color:red' ></i></td>"
+                        favorite ="<td class='favorite'><i id='"+i+"|" +markers[i].id+"' class='fas fa-star' style='cursor: pointer; color:red' ></i></td>"
                       }
 
                       if(markers[i].bookmark__websiteTitle == "Springeropen"){
@@ -865,11 +859,11 @@ function showRows(rowType, markers, faction_id){
                         "<tr>"+
                         sitelogo +
                         "<td>"+ markers[i].bookmark__itemType +  "</td>"+
-                        "<td><a href='"+ markers[i].bookmark__url+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i].bookmark__id +","+i+")'>" + markers[i].bookmark__title +  "</span></a></td>"+
+                        "<td><a href='"+ markers[i].bookmark__url+ "' target='_blank'><span id="+ markers[i].id +" class='open_link' style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' >" + markers[i].bookmark__title +  "</span></a></td>"+
 
                         "<td>" + date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5) + "</td>" +
                         "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
-                        "<td><i id='"+ markers[i].bookmark__id +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
+                        "<td id="+ markers[i].bookmark__id +" class='get_detail'><i id='"+ markers[i].id +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' ></i></td>" +
 
 
                          "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ markers[i].id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
@@ -883,7 +877,7 @@ function showRows(rowType, markers, faction_id){
 
 
                           favorite+
-                        "<td><i id='"+ markers[i].bookmark__id+"' class='fas fa-trash' style='color:#a71f1f;cursor: pointer; font-size: 90%'  onclick='delete_item(this.id,"+i+","+1+")'></i></td>" +
+                        "<td><i id='"+ markers[i].id+"' class='fas fa-trash' style='color:#a71f1f;cursor: pointer; font-size: 90%'  ></i></td>" +
                        
 
                        "</tr>"
@@ -914,11 +908,11 @@ function showRows(rowType, markers, faction_id){
                 "<tr>"+
                 sitelogo +
                 "<td>"+ markers[i].bookmark__itemType +  "</td>"+
-                "<td><a href='"+ markers[i].bookmark__url+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i].id +","+i+")'>" + markers[i].bookmark__title +  "</span></a></td>"+
+                "<td><a href='"+ markers[i].bookmark__url+ "' target='_blank'><span id="+ markers[i].id +" class='open_link' style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' >" + markers[i].bookmark__title +  "</span></a></td>"+
 
                "<td>" + date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5) + "</td>" +
                         "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
-               "<td><i id='"+ markers[i].bookmark__id+"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
+              "<td id="+ markers[i].bookmark__id +" class='get_detail'><i id='"+ markers[i].id +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' ></i></td>" +
                            
                           "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ markers[i].id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
                          "<div id='folderList_dropdown"+i+"' class='dropdown-content' style='min-width: 15%; margin-left: -8% '>"+
@@ -927,7 +921,7 @@ function showRows(rowType, markers, faction_id){
                               
                           "</ul> </div> </td>" +
 
-                          "<td id='"+markers[i].bookmark__id+"' class='trash'><i id='"+ markers[i].bookmark__id+"' class='fas fa-trash' style='color:#a71f1f;cursor: pointer; font-size: 90%'  ></i></td>" +
+                          "<td id='"+markers[i].id+"' class='trash'><i id='"+ markers[i].id+"' class='fas fa-trash' style='color:#a71f1f;cursor: pointer; font-size: 90%'  ></i></td>" +
                "</tr>"
 
 
@@ -963,11 +957,11 @@ function showRows(rowType, markers, faction_id){
                         "<tr>"+
                         sitelogo +
                         "<td>"+ markers[i].bookmark__itemType +  "</td>"+
-                       "<td><a href='"+ markers[i].bookmark__url+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i].bookmark__id +","+i+")'>" + markers[i].bookmark__title +  "</span></a></td>"+
+                       "<td><a href='"+ markers[i].bookmark__url+ "' target='_blank'><span id="+ markers[i].id +"|"+faction_id+" class='open_link' style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' >" + markers[i].bookmark__title +  "</span></a></td>"+
 
                         "<td>" + date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5) + "</td>" +
-                        "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
-                        "<td><i id='"+ markers[i].bookmark__id +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
+                        "<td class='dateAccessed'>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
+                        "<td id="+ markers[i].bookmark__id +" class='get_detail'><i id='"+ markers[i].id +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' ></i></td>" +
 
 
                          "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ markers[i].id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
@@ -1017,11 +1011,11 @@ function showRows(rowType, markers, faction_id){
                         "<tr>"+
                         sitelogo +
                         "<td>"+ markers[i].bookmark__itemType +  "</td>"+
-                       "<td><a href='"+ markers[i].bookmark__url+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i].id +","+i+")'>" + markers[i].bookmark__title +  "</span></a></td>"+
+                       "<td><a href='"+ markers[i].bookmark__url+ "' target='_blank'><span id="+ markers[i].id +"|"+faction_id+" class='open_link' style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i].bookmark__title +  "</span></a></td>"+
 
                         "<td>" + date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5) + "</td>" +
-                        "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
-                        "<td><i id='"+ markers[i].id +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' onclick='get_detail(this.id)'></i></td>" +
+                        "<td class='dateAccessed'>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
+                        "<td id="+ markers[i].bookmark__id +" class='get_detail'><i id='"+ markers[i].id +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' ></i></td>" +
 
 
                          // "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ array[i].id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
@@ -1035,7 +1029,7 @@ function showRows(rowType, markers, faction_id){
 
 
 
-                        "<td id='"+faction_id+"|"+markers[i].bookmark__id+"' class='trash'> <i id='' class='fas fa-trash' style='color:#a71f1f;cursor: pointer; font-size: 90%'></i></td>" +
+                        "<td id='"+faction_id+"|"+markers[i].id+"' class='trash'> <i id='' class='fas fa-trash' style='color:#a71f1f;cursor: pointer; font-size: 90%'></i></td>" +
                        
 
                        "</tr>"
@@ -1119,7 +1113,7 @@ $(document).on("click", ".trash", function(){
           action = "trashItem"
 
             if(tab == "folders" | tab == "groups"){
-                faction_id = id.split("|")[0].replace("folder","")
+                faction_id = id.split("|")[0].replace("folder","").replace("groups","")
                 bookmark_id = id.split("|")[1]
             }else if(tab == "favorite"){
                 action = "remFav"
@@ -1128,7 +1122,6 @@ $(document).on("click", ".trash", function(){
               bookmark_id = id
               faction_id = ""
             }
-            console.log(faction_id,tab)
 
                 $.ajax({
                       type:"POST",
@@ -1163,19 +1156,20 @@ $(document).on("click", ".favorite", function(){
       rowID = $(this).children().attr("id")
       i = rowID.split("|")[0] //row index
       clicked_id = rowID.split("|")[1] //bookmark id
+      group_id = ""
       // for(i=0; i< markers.length;i++){
       // if(markers[i].bookmark__id == clicked_id){
         if(markers[i].isFavorite == 0){
-          markers[i].isFavorite = 1;  
+          markers[i].isFavorite = true;  
           // clearRow('itemArea')
           if(tab=='folders'){
             markers[i].isFavorite = true
             showRows(tab,markers, rowID.split("|")[2])
 
           }else if(tab=='groups'){
-            markers[i].isFavorite = 1
+            markers[i].isFavorite = true
             showRows(tab,markers, rowID.split("|")[2])
-
+            group_id = rowID.split("|")[2].replace("groups","")
           }else{
             showRows(tab, markers)
           } 
@@ -1185,7 +1179,9 @@ $(document).on("click", ".favorite", function(){
 
                           data:{
                             action: 'addFav',
+                            tab: tab,
                             b_id: clicked_id,
+                            group_id: group_id,
                             csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
                           }
               }); 
@@ -1197,8 +1193,9 @@ $(document).on("click", ".favorite", function(){
             showRows(tab,markers, rowID.split("|")[2])
             
           } else if(tab=='groups'){
-            markers[i].isFavorite = 0
+            markers[i].isFavorite = false
             showRows(tab,markers, rowID.split("|")[2])
+            group_id = rowID.split("|")[2].replace("groups","")
           }else{
             showRows(tab, markers)
           } 
@@ -1207,8 +1204,10 @@ $(document).on("click", ".favorite", function(){
                       url:"",
 
                       data:{
+                        tab: tab,
                         action: 'remFav',
                         b_id: clicked_id,
+                        group_id: group_id,
                         csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
                       }
         }); 
@@ -1219,34 +1218,84 @@ $(document).on("click", ".favorite", function(){
     
         });
 
-function open_link(clicked_id, i){
+
+$(document).on("click", ".open_link", function(){
+  date = new Date()
+  $(this).parents("td").siblings(".dateAccessed").html(date.toDateString().slice(3,)+" "+date.toTimeString().slice(0,5))
+  
+  if( tab != "folders" & tab != "groups"){
+    bookmark_id = $(this).attr("id")
+    faction_id = ""
+  } else{
+    bookmark_id = $(this).attr("id").split("|")[0]
+    faction_id = $(this).attr("id").split("|")[1].replace("folder","").replace("groups","")
+  }
+ 
+
+        $.ajax({
+            type:"POST",
+            url:"",
+
+            data:{
+              action: 'open_link',
+              tab: tab,
+              bID: bookmark_id,
+              faction_id: faction_id,
+              csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+            }
+        }); 
+
+})
+
+$(document).on("click", ".get_detail", function(){
+      detailID = $(this).attr("id")
 
 
-  markers[i].dateAccessed = new Date()
+        $.ajax({
+            type:"POST",
+            url:"",
+
+            data:{
+              action: 'get_detail',
+              detailID: detailID,
+              csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+            },  success: function(response){
+                 $("#detailArea").empty();
+
+                detail = response.detail
+                console.log(detail)
+                  var added = new Date( detail[0].dateAdded);
+                  var accessed = new Date( detail[0].dateAccessed);
+                    $('#detailArea').append("<tr ><td style='text-align: right; vertical-align:top'> Website: </td>"+ "<td> <a href='https://"+detail[0].websiteTitle+ "'>"+ detail[0].websiteTitle +  "</a></td></tr>" );  
+                    $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Item type: </td>"+ "<td>"+ detail[0].itemType +  "</td></tr>" );  
+                    $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> URL: </td>"+ "<td><a href='"+detail[0].url+"' target='_blank'>"+ detail[0].bookmark__url +  "</td></tr>" );  
+                    $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Title: </td>"+ "<td>"+ detail[0].title +  "</td></tr>" );  
+                    $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Author: </td>"+ "<td>"+ detail[0].author +  "</td></tr>" );  
+                    $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Abstract: </td>"+ "<td>"+ detail[0].description +  "</td></tr>" );  
+                    $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Collection: </td>"+ "<td>"+ detail[0].journalItBelongs +  "</td></tr>" );  
+                    $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Publication Year: </td>"+ "<td>"+ detail[0].publicationYear +  "</td></tr>" );  
+                    $('#detailArea').append(
+                     "<tr><td style='text-align: right; vertical-align:top'> Publisher: </td>"+ "<td>"+ detail[0].publisher +  "</td></tr>" +
+                     "<tr><td style='text-align: right; vertical-align:top'> Volume: </td>"+ "<td>"+ detail[0].volume +  "</td></tr>" +
+                     "<tr><td style='text-align: right; vertical-align:top'> Edition: </td>"+ "<td>"+ detail[0].edition +  "</td></tr>" +
+                     "<tr><td style='text-align: right; vertical-align:top'> Citation: </td>"+ "<td>"+ detail[0].numOfCitation +  "</td></tr>" +
+                     "<tr><td style='text-align: right; vertical-align:top'> Downloads: </td>"+ "<td>"+ detail[0].numOfDownload +  "</td></tr>" +
+                     "<tr><td style='text-align: right; vertical-align:top'> Pages: </td>"+ "<td>"+ detail[0].numOfPages +  "</td></tr>" +
+                     "<tr><td style='text-align: right; vertical-align:top'> DOI: </td>"+ "<td>"+ detail[0].DOI +  "</td></tr>" +
+                     "<tr><td style='text-align: right; vertical-align:top'> ISSN: </td>"+ "<td>"+ detail[0].ISSN +  "</td></tr>" +
+                     
+                     "<tr><td style='text-align: right; vertical-align:top'> Date added: </td>"+ "<td>"+ added.toDateString().slice(3,)+" "+added.toTimeString().slice(0,5) +  "</td></tr>"+
+                     "<tr><td style='text-align: right; vertical-align:top'> Date Accessed: </td>"+ "<td>"+ accessed.toDateString().slice(3,)+" "+accessed.toTimeString().slice(0,5) +  "</td></tr>" 
+             
+             
+             
+                     );  
+                }
+        }); 
   
 
-  $.ajax({
-                      type:"POST",
-                      url:"",
+})
 
-                      data:{
-                        action: 'open_link',
-                        bID: clicked_id,
-                        
-                        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
-                      }
-        }); 
-}
-// function clearRow(tableName){
-//   var table = document.getElementById(tableName);
-//     //or use :  var table = document.all.tableid;
-
-//     for(var i = table.rows.length - 1; i > 0; i--)
-//     {
-//         table.deleteRow(i);
-//     }
-
-// }
 
 function clearStyle(){
   var table = document.getElementsByClassName("menu-item");
@@ -1279,7 +1328,8 @@ function clearStyle(){
 function get_detail(clicked_id, isGroup_detail, members){
     var id = parseInt(clicked_id);
     $("#group_detail_ul").empty();
-    clearRow("detailTable")   
+    
+
     
 
    if(isGroup_detail == true){
@@ -1321,30 +1371,7 @@ function get_detail(clicked_id, isGroup_detail, members){
              var accessed = new Date( markers[i].dateAccessed);
               
               
-          $('#detailArea').append("<tr ><td style='text-align: right; vertical-align:top'> Website: </td>"+ "<td> <a href='https://"+markers[i].bookmark__websiteTitle+ "'>"+ markers[i].bookmark__websiteTitle +  "</a></td></tr>" );  
-          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Item type: </td>"+ "<td>"+ markers[i].bookmark__itemType +  "</td></tr>" );  
-          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> URL: </td>"+ "<td><a href='"+markers[i].bookmark__url+"' target='_blank'>"+ markers[i].bookmark__url +  "</td></tr>" );  
-          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Title: </td>"+ "<td>"+ markers[i].bookmark__title +  "</td></tr>" );  
-          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Author: </td>"+ "<td>"+ markers[i].bookmark__author +  "</td></tr>" );  
-          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Abstract: </td>"+ "<td>"+ markers[i].bookmark__description +  "</td></tr>" );  
-          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Collection: </td>"+ "<td>"+ markers[i].bookmark__journalItBelongs +  "</td></tr>" );  
-          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Publication Year: </td>"+ "<td>"+ markers[i].bookmark__publicationYear +  "</td></tr>" );  
-          $('#detailArea').append(
-           "<tr><td style='text-align: right; vertical-align:top'> Publisher: </td>"+ "<td>"+ markers[i].bookmark__publisher +  "</td></tr>" +
-           "<tr><td style='text-align: right; vertical-align:top'> Volume: </td>"+ "<td>"+ markers[i].bookmark__volume +  "</td></tr>" +
-           "<tr><td style='text-align: right; vertical-align:top'> Edition: </td>"+ "<td>"+ markers[i].bookmark__edition +  "</td></tr>" +
-           "<tr><td style='text-align: right; vertical-align:top'> Citation: </td>"+ "<td>"+ markers[i].bookmark__numOfCitation +  "</td></tr>" +
-           "<tr><td style='text-align: right; vertical-align:top'> Downloads: </td>"+ "<td>"+ markers[i].bookmark__numOfDownload +  "</td></tr>" +
-           "<tr><td style='text-align: right; vertical-align:top'> Pages: </td>"+ "<td>"+ markers[i].bookmark__numOfPages +  "</td></tr>" +
-           "<tr><td style='text-align: right; vertical-align:top'> DOI: </td>"+ "<td>"+ markers[i].bookmark__DOI +  "</td></tr>" +
-           "<tr><td style='text-align: right; vertical-align:top'> ISSN: </td>"+ "<td>"+ markers[i].bookmark__ISSN +  "</td></tr>" +
-           
-           "<tr><td style='text-align: right; vertical-align:top'> Date added: </td>"+ "<td>"+ added.toDateString().slice(3,)+" "+added.toTimeString().slice(0,5) +  "</td></tr>"+
-           "<tr><td style='text-align: right; vertical-align:top'> Date Accessed: </td>"+ "<td>"+ accessed.toDateString().slice(3,)+" "+accessed.toTimeString().slice(0,5) +  "</td></tr>" 
-   
-   
-   
-           );  
+          
    
           break;
          }
@@ -1453,7 +1480,7 @@ function sort(n){
 
 // function addfolder
 
-function bookmarkToFolder_dropdown(clicked_id, bookmark_id) {
+function bookmarkToFolder_dropdown(clicked_id, detail_id) {
   $("#add_to_folderList_ul"+clicked_id).empty();
 
 
@@ -1463,7 +1490,7 @@ function bookmarkToFolder_dropdown(clicked_id, bookmark_id) {
             for(i=0;i< folders.length;i++){
               
                 $('#add_to_folderList_ul'+clicked_id).append(
-                "<li id='folder"+folders[i].id+"' style='padding-left:20%; cursor:pointer' onclick='submit_add_folder(this.id,"+bookmark_id+")'>"+folders[i].name+"</li>");
+                "<li id='folder"+folders[i].id+"' style='padding-left:20%; cursor:pointer' onclick='submit_add_folder(this.id,"+detail_id+")'>"+folders[i].name+"</li>");
               
               
             }
@@ -1477,7 +1504,7 @@ function bookmarkToFolder_dropdown(clicked_id, bookmark_id) {
               
               
                 $('#add_to_folderList_ul'+clicked_id).append(
-                "<li id='groups"+groups[i].id+"' style='padding-left:20%; cursor:pointer' onclick='submit_add_folder(this.id,"+bookmark_id+")'>"+groups[i].name+"</li>");
+                "<li id='groups"+groups[i].id+"' style='padding-left:20%; cursor:pointer' onclick='submit_add_folder(this.id,"+detail_id+")'>"+groups[i].name+"</li>");
                 try{
                   if(groups[i].id == groups[i+1].id )
                     i++
