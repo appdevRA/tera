@@ -156,16 +156,16 @@ class User_login(models.Model):
 		db_table = "User_login"	
 
 
-class Site_exception(models.Model):
-	description = models.CharField(max_length= 100)
-	filename = models.CharField(max_length= 100)
-	line_number = models.CharField(max_length= 100)
-	site = models.CharField(max_length= 100)
-	date = models.DateTimeField(auto_now_add=True)
-	search_keyword = models.CharField(max_length= 400) 
-	link = models.CharField(max_length = 2000)
-	class Meta:
-		db_table = "Site_exception"	
+# class Site_exception(models.Model):
+# 	description = models.CharField(max_length= 100)
+# 	filename = models.CharField(max_length= 100)
+# 	line_number = models.CharField(max_length= 100)
+# 	site = models.CharField(max_length= 100)
+# 	date = models.DateTimeField(auto_now_add=True)
+# 	search_keyword = models.CharField(max_length= 400) 
+# 	link = models.CharField(max_length = 2000)
+# 	class Meta:
+# 		db_table = "Site_exception"	
 
 
 # class Practice (models.Model):

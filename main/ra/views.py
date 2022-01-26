@@ -29,7 +29,7 @@ import io
 from django.db.models import DateTimeField, ExpressionWrapper, F
 from django.db.models import F, Func, Value, CharField
 import sys
-    
+from datetime import timedelta
 
 
 class addUser(View):
@@ -948,12 +948,14 @@ class TeraSearchResultsView(View):
 				title = string[0].replace('\n','').replace('  ','')
 				url = string[1]
 
-				if Bookmark.objects.filter(user = request.user, bookmark__title = title, bookmark__itemType = reftype, bookmark__websiteTitle = website).exists():
-					Bookmark.objects.create(user = request.user,bookmark=Bookmark_detail.objects.get(title = title, itemType = reftype, websiteTitle = website),keyword=keyword)
-					return HttpResponse("")
+				if not Bookmark.objects.filter(user = request.user, bookmark__url = url).exists():
+					if Bookmark_detail.objects.filter(url = url).exists():
+						Bookmark.objects.create(user = request.user,bookmark=Bookmark_detail.objects.get(url = url),keyword=keyword)
+						
+						return HttpResponse("")
 
-				else:
-					try:
+					else:
+						
 						detail = details(url, request.session.get('proxy'),website, reftype)
 
 						websiteTitle = detail['websiteTitle']
@@ -995,15 +997,10 @@ class TeraSearchResultsView(View):
 							Bookmark.objects.create(user = request.user,bookmark=detail,keyword=keyword)
 
 						
-						return HttpResponse('')
-
-					except Exception as e:
-						print(e)
-						exc_type, exc_obj, exc_tb = sys.exc_info()
-						fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-
-						Site_exception.objects.create(link = url, filename = fname, line_number = str(exc_tb.tb_lineno), search_keyword = keyword)
-						return JsonResponse({"didError": 1})
+						return HttpResponse("")
+				else:
+					return HttpResponse("")
+					
 				
 				
 			else:
@@ -1116,7 +1113,7 @@ class TeraDashboardView(View):
 																			"bookmark__numOfCitation", "bookmark__numOfPages",
 																			"bookmark__publisher", "bookmark__publicationYear",
 																			"bookmark__DOI", "bookmark__ISSN", "bookmark__edition", "bookmark__numOfDownload"
-																				).distinct()
+																				).order_by("dateAdded")
 											
 
 
@@ -1175,36 +1172,190 @@ class TeraDashboardView(View):
 			
 			if action == 'addFav':
 				print("olok")
-				Bookmark.objects.filter(bookmark_id=request.POST['bID'], user= request.user, group = None).update(isFavorite=1)
+				Bookmark.objects.filter(id=request.POST['b_id'], user= request.user, group = None).update(isFavorite=1)
 				return HttpResponse('')
 			elif action == 'remFav':
-				Bookmark.objects.filter(bookmark_id=request.POST['bID'], user= request.user, group = None).update(isFavorite=0)
+				Bookmark.objects.filter(id=request.POST['b_id'], user= request.user, group = None).update(isFavorite=0)
 				return HttpResponse('')
+
+
 			elif action == 'trashItem':
-				Bookmark.objects.filter(bookmark_id=request.POST['bID'], user= request.user, group = None).update(isRemoved=1, date_removed= timezone.now())
-				# print('len of trash item', Bookmark.objects.filter(bookmark_id=request.POST['bID'], user= request.user).count())
-				return HttpResponse('')
+				tab = request.POST['tab']
+				bookmark_id = request.POST['b_id']
+				print(tab)
+				if tab != "folders" and tab != "groups":
+					print("nisulod")
+					Bookmark.objects.filter(id=bookmark_id, user= request.user, group = None).update(isRemoved=1, date_removed= timezone.now())
+					return HttpResponse('')
+
+				elif tab == "folders":
+					faction_id = request.POST['faction_id']
+					bookmark_id = request.POST['b_id']
+					instance = Bookmark.objects.get(
+											id=bookmark_id,
+											user= request.user
+											 )
+					instance.folders.remove(Folder.objects.get(id = faction_id))
+					return HttpResponse("")
+
+
 			elif action == 'unTrashItem':
-				Bookmark.objects.filter(bookmark_id=request.POST['bID'], user= request.user, group = None).update(isRemoved=0,date_removed= None)
+				Bookmark.objects.filter(id=request.POST['bID'], user= request.user, group = None).update(isRemoved=0,date_removed= None)
 				return HttpResponse('')
+
+
 			elif action == 'deleteItem':
-				Bookmark.objects.filter(bookmark_id=request.POST['bID'], user= request.user, group = None).update(isRemoved=2, date_removed= timezone.now())
+				Bookmark.objects.filter(id=request.POST['bID'], user= request.user, group = None).update(isRemoved=2, date_removed= timezone.now())
 				return HttpResponse('')
+
+
+			elif action == 'get_bookmarks':
+				tab = request.POST['tab']
+
+				if tab == "all":
+					queryset = Bookmark.objects.select_related("bookmark_detail").filter(
+																		user=request.user,
+																		isRemoved=False, 
+																		group__isnull=True
+																		).values(
+																			"id", "bookmark__id", "isFavorite", "dateAccessed", "dateAdded", 
+																			"isRemoved", "date_removed",
+																			"bookmark__websiteTitle", "bookmark__itemType",
+																			"bookmark__url", "bookmark__title"
+																				).order_by("dateAdded")
+					print("post")
+					return JsonResponse({"bookmarks": list(queryset)})
+				elif tab == "recentlyAdded":
+					time = timezone.now().date() - timedelta(days=7)
+					queryset = Bookmark.objects.select_related("bookmark_detail").filter(
+																		user=request.user,
+																		isRemoved=False, 
+																		group__isnull=True,
+																		dateAdded__gte=time
+																		).values(
+																			"id", "bookmark__id", "isFavorite", "dateAccessed", "dateAdded", 
+																			"isRemoved", "date_removed",
+																			"bookmark__websiteTitle", "bookmark__itemType",
+																			"bookmark__url", "bookmark__title"
+																				).order_by("dateAdded")
+					print("post")
+					return JsonResponse({"bookmarks": list(queryset)})
+
+				elif tab == "recentlyRead":
+					time = timezone.now().date() - timedelta(days=3)
+					queryset = Bookmark.objects.select_related("bookmark_detail").filter(
+																		user=request.user,
+																		isRemoved=False, 
+																		group__isnull=True,
+																		dateAccessed__gte=time
+																		).values(
+																			"id", "bookmark__id", "isFavorite", "dateAccessed", "dateAdded", 
+																			"isRemoved", "date_removed",
+																			"bookmark__websiteTitle", "bookmark__itemType",
+																			"bookmark__url", "bookmark__title"
+																				).order_by("dateAdded")
+					print("post")
+					return JsonResponse({"bookmarks": list(queryset)})
+
+				elif tab == "favorite":
+					time = timezone.now().date() - timedelta(days=3)
+					queryset = Bookmark.objects.select_related("bookmark_detail").filter(
+																		user=request.user,
+																		isRemoved=False, 
+																		group__isnull=True,
+																		isFavorite=True
+																		).values(
+																			"id", "bookmark__id", "isFavorite", "dateAccessed", "dateAdded", 
+																			"isRemoved", "date_removed",
+																			"bookmark__websiteTitle", "bookmark__itemType",
+																			"bookmark__url", "bookmark__title"
+																				).order_by("dateAdded")
+					print("post")
+					return JsonResponse({"bookmarks": list(queryset)})
+
+				elif tab == "trash":
+					time = timezone.now().date() - timedelta(days=3)
+					queryset = Bookmark.objects.select_related("bookmark_detail").filter(
+																		user=request.user,
+																		isRemoved=True, 
+																		group__isnull=True,
+																		).values(
+																			"id", "bookmark__id", "isFavorite", "dateAccessed", "dateAdded", 
+																			"isRemoved", "date_removed",
+																			"bookmark__websiteTitle", "bookmark__itemType",
+																			"bookmark__url", "bookmark__title"
+																				).order_by("dateAdded")
+					print("post")
+					return JsonResponse({"bookmarks": list(queryset)})
+
+				elif tab =="folders":
+					# return HttpResponse("")
+					fID = request.POST['faction_id']
+					a= []
+					if Bookmark.objects.filter( folders__id=fID, user=request.user, isRemoved=0).exists():
+						queryset = Bookmark.objects.select_related("bookmark").filter(
+																				folders__id=fID, user=request.user, isRemoved=0
+																				).values(
+																					"id", "bookmark__id", "isFavorite", "dateAccessed", "dateAdded", 
+																					"isRemoved", "date_removed",
+																					"bookmark__websiteTitle", "bookmark__itemType",
+																					"bookmark__url", "bookmark__title", "bookmark__subtitle",
+																					"bookmark__subtitle", "bookmark__author", "bookmark__description",
+																					"bookmark__journalItBelongs", "bookmark__volume",
+																					"bookmark__numOfCitation", "bookmark__numOfPages",
+																					"bookmark__publisher", "bookmark__publicationYear",
+																					"bookmark__DOI", "bookmark__ISSN", "bookmark__edition",
+																					 "bookmark__numOfDownload"
+																						)
+						a = list(queryset)
+					context = {
+				    "bookmarks": a
+					}
+					
+					return JsonResponse(context)
+
+
+				elif tab =="groups":
+					return HttpResponse("")
+					fID = request.POST['faction_id']
+					a= []
+					if Bookmark.objects.filter( folders__id=fID, user=request.user, isRemoved=0).exists():
+						queryset = Bookmark.objects.select_related("bookmark").filter(
+																				folders__id=fID, user=request.user, isRemoved=0
+																				).values(
+																					"id", "bookmark__id", "isFavorite", "dateAccessed", "dateAdded", 
+																					"isRemoved", "date_removed",
+																					"bookmark__websiteTitle", "bookmark__itemType",
+																					"bookmark__url", "bookmark__title", "bookmark__subtitle",
+																					"bookmark__subtitle", "bookmark__author", "bookmark__description",
+																					"bookmark__journalItBelongs", "bookmark__volume",
+																					"bookmark__numOfCitation", "bookmark__numOfPages",
+																					"bookmark__publisher", "bookmark__publicationYear",
+																					"bookmark__DOI", "bookmark__ISSN", "bookmark__edition",
+																					 "bookmark__numOfDownload"
+																						)
+						a = list(queryset)
+					print(a)
+					context = {
+				    "bookmarks": a
+					}
+					
+					return JsonResponse(context)
 
 			elif action == 'add_bookmark_to_faction':
 				factionID = request.POST['faction_id']
-				bdID = request.POST['bID']
+				bookmarkID = request.POST['b_id']
 				faction = request.POST['faction']
 				
 				if faction =="folder":
 					print('yes folder')
-					if Bookmark.objects.filter(folder__id= factionID,bookmark__id=bdID, isRemoved=0).exists():
-						return HttpResponse('')
-					else:
-						Bookmark.objects.create(user=request.user, 
-													folder=Folder.objects.get(id=factionID), 
-													bookmark = Bookmark_detail.objects.get(id=bdID)
-													)
+					
+					instance = Bookmark.objects.get(id = bookmarkID)
+					instance.folders.add(Folder.objects.get(id= factionID))
+						# Bookmark.objects.create(user=request.user, 
+						# 							folder=Folder.objects.get(id=factionID), 
+						# 							bookmark = Bookmark_detail.objects.get(id=bookmarkID)
+						# 							)
 					# User_bookmark.objects
 					# Bookmark_folder.objects.create(user=request.user, folder=Folder.objects.get(id=ID), bookmark = User_bookmark.objects.get(id=bID) )
 					print("bookmark folder added")
@@ -1212,12 +1363,12 @@ class TeraDashboardView(View):
 
 				elif faction =="groups":
 					# bookmark = User_bookmark.objects.get(id=bID)
-					if Bookmark.objects.filter(group__id= factionID,bookmark__id=bdID, isRemoved=0).exists():
+					if Bookmark.objects.filter(group__id= factionID,bookmark__id=bookmarkID, isRemoved=0).exists():
 						return HttpResponse('')
 					else:
 						Bookmark.objects.create(
 												group=Group.objects.get(id=factionID), 
-												bookmark = Bookmark_detail.objects.get(id=bdID) 
+												bookmark = Bookmark_detail.objects.get(id=bookmarkID) 
 												)
 						# print("bookmark added to group")
 						return HttpResponse('')
@@ -1228,15 +1379,15 @@ class TeraDashboardView(View):
 
 			elif action == 'add_folder':
 				name = request.POST['name']
-				did_exist = Folder.objects.filter(user_id = request.user, name = name, is_removed=0).exists()
+				folder_exist = Folder.objects.filter(user = request.user, name = name, is_removed=0).exists()
 				
-				if did_exist == False:
-					Folder.objects.create(user=request.user, name = name)
-					folders = Folder.objects.filter(user=request.user).values()
+				if folder_exist == False:
+					folder = Folder.objects.create(user=request.user, name = name)
+					folders = Folder.objects.filter(id=folder.id).values()
 					a = list(folders)	
-				
+					print(a)
 					context = {
-				    "folder_list": a,
+				    "createdFolder": a,
 				    "did_exist": False
 					}
 				else:
@@ -1268,9 +1419,9 @@ class TeraDashboardView(View):
 			elif action == 'get_folder_bookmarks':
 				fID = request.POST['fID']
 				a= []
-				if Bookmark.objects.filter( folder__id=fID, user=request.user, isRemoved=0).exists():
+				if Bookmark.objects.filter( folders__id=fID, user=request.user, isRemoved=0).exists():
 					queryset = Bookmark.objects.select_related("bookmark").filter(
-																			folder__id=fID, user=request.user, isRemoved=0
+																			folders__id=fID, user=request.user, isRemoved=0
 																			).values(
 																				"id", "bookmark__id", "isFavorite", "dateAccessed", "dateAdded", 
 																				"isRemoved", "date_removed",
@@ -1284,12 +1435,6 @@ class TeraDashboardView(View):
 																				 "bookmark__numOfDownload"
 																					)
 					a = list(queryset)
-
-
-				# cursor = connection.cursor()   
-				# cursor.execute("SELECT bf.id AS bf_ID, b.* FROM User_bookmark b, Bookmark_folder bf WHERE bf.folder_id = "+ str(fID)+" AND bf.bookmark_id = b.id AND bf.user_id = "+ str(request.user.id)+" AND bf.is_removed = 0 AND b.isRemoved = 0") #| get rows of for a specific date|
-				# a = dictfetchall(cursor)
-				# print(a)
 				
 				context = {
 			    "bookmarks": a
@@ -1330,42 +1475,35 @@ class TeraDashboardView(View):
 				return JsonResponse(context)
 
 			elif action == 'remove_from_faction':
-				faction_id = request.POST['faction_id']
-				bookmark_id = request.POST['b_id']
-
-				if request.POST['faction_type'] == 'folders':
-	
-					Bookmark.objects.filter(bookmark_id=bookmark_id,
-											 user= request.user, 
-											 folder__id=faction_id
-											 ).update(isRemoved=1,
-											 			date_removed= timezone.now()
-											 			)
+				
+											 # ).update(isRemoved=1,
+											 # 			date_removed= timezone.now()
+											 # 			)
 					
-					queryset = Bookmark.objects.select_related("bookmark").filter(
-																		folder__id=faction_id, user=request.user, isRemoved=0
-																		).values(
-																			"id", "bookmark__id", "isFavorite", "dateAccessed", "dateAdded", 
-																			"isRemoved", "date_removed",
-																			"bookmark__websiteTitle", "bookmark__itemType",
-																			"bookmark__url", "bookmark__title", "bookmark__subtitle",
-																			"bookmark__subtitle", "bookmark__author", "bookmark__description",
-																			"bookmark__journalItBelongs", "bookmark__volume",
-																			"bookmark__numOfCitation", "bookmark__numOfPages",
-																			"bookmark__publisher", "bookmark__publicationYear",
-																			"bookmark__DOI", "bookmark__ISSN", "bookmark__edition",
-																			 "bookmark__numOfDownload"
-																				)
+					# queryset = Bookmark.objects.select_related("bookmark").filter(
+					# 													folder__id=faction_id, user=request.user, isRemoved=0
+					# 													).values(
+					# 														"id", "bookmark__id", "isFavorite", "dateAccessed", "dateAdded", 
+					# 														"isRemoved", "date_removed",
+					# 														"bookmark__websiteTitle", "bookmark__itemType",
+					# 														"bookmark__url", "bookmark__title", "bookmark__subtitle",
+					# 														"bookmark__subtitle", "bookmark__author", "bookmark__description",
+					# 														"bookmark__journalItBelongs", "bookmark__volume",
+					# 														"bookmark__numOfCitation", "bookmark__numOfPages",
+					# 														"bookmark__publisher", "bookmark__publicationYear",
+					# 														"bookmark__DOI", "bookmark__ISSN", "bookmark__edition",
+					# 														 "bookmark__numOfDownload"
+					# 															)
 
-					a = list(queryset)
-					print(len(a))
-					context = {
-				    "bookmarks": a
-					}
+					# a = list(queryset)
+					# print(len(a))
+					# context = {
+				 #    "bookmarks": a
+					# }
 					
-					return JsonResponse(context)
+					# return JsonResponse(context)
 
-				if request.POST['faction_type'] == 'groups':
+				if request.POST['tab'] == 'groups':
 					print("bbokmark id: ", bookmark_id)
 					print("folder id: ", faction_id)
 					Bookmark.objects.filter(group__id=faction_id,
@@ -1373,28 +1511,8 @@ class TeraDashboardView(View):
 											 ).update(isRemoved=1,
 											 			date_removed= timezone.now()
 											 			)
-					queryset = Bookmark.objects.select_related("bookmark").filter(
-																		group__id=faction_id, isRemoved=0
-																		).values(
-																			"id", "bookmark__id", "isFavorite", "dateAccessed", "dateAdded", 
-																			"isRemoved", "date_removed",
-																			"bookmark__websiteTitle", "bookmark__itemType",
-																			"bookmark__url", "bookmark__title", "bookmark__subtitle",
-																			"bookmark__subtitle", "bookmark__author", "bookmark__description",
-																			"bookmark__journalItBelongs", "bookmark__volume",
-																			"bookmark__numOfCitation", "bookmark__numOfPages",
-																			"bookmark__publisher", "bookmark__publicationYear",
-																			"bookmark__DOI", "bookmark__ISSN", "bookmark__edition",
-																			 "bookmark__numOfDownload"
-																				)
-
-					a = list(queryset)
-					print(len(a))
-					context = {
-				    "bookmarks": a
-					}
+					return HttpResponse("")
 					
-					return JsonResponse(context)
 
 				# if request.POST['faction_type'] == 'trash':
 				# 	# print(type(request.POST['action_type']))

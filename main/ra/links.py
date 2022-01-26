@@ -562,7 +562,7 @@ def springer(word,refType, pageNumber): # INDEX 1 STARTING SA PAGINATION DIRI
                     z.append(div.p.text) # store description of link to list
                     div2 = article.find('div',class_='c-meta')
                     z.append(div2.text) # store date&type to list
-                    z.append(a.a['href'])
+                    z.append("https:"+a.a['href'])
                    # extract link and store to list
                     
                     springers.append(z)
@@ -629,8 +629,8 @@ def details(link, proxy,website, refType ):
 
         
         details={
-            'websiteTitle': ref[0],
-            'itemType': ref[1],
+            'websiteTitle': website,
+            'itemType': refType,
             'author': soup.find('div', class_='c-article-header').find('ul', class_='c-article-author-list js-etal-collapsed').text,
             'description': description,
             'journalItBelongs': soup.find('i', attrs={'data-test':'journal-title'}).text,

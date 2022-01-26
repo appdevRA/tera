@@ -709,6 +709,17 @@ function search(clicked_id, searchType){
                   document.getElementById('displayWord').style.display ="inline"
                   
              
+                }, error: function(response){
+                  markers = response.results
+                  
+            
+                  showRows(markers)
+                  user_id = response.is_authenticated
+                  isGet = response.isGet
+                  document.getElementById('displayWord').innerHTML = keyword
+                  document.getElementById('displayWord').style.display ="inline"
+                  
+             
                 }
           }); 
         
@@ -847,7 +858,7 @@ function search(clicked_id, searchType){
                   document.getElementById('displayWord').style.display ="inline"
                   
                 
-                }, error: function(){
+                }, error: function(response){
                     $.ajax({
                           type:"POST",
                           url:"",
@@ -907,6 +918,9 @@ function reply_click(clicked_id){
                         bookmark: clicked_id,
                         word: keyword,
                         csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                      }, error: function(response){
+                          alert("Something went, item cannot be bookmarked")
+                   
                       }
         });      
       } else{
@@ -919,6 +933,17 @@ function reply_click(clicked_id){
                         action: "remove",
                         bookmark: clicked_id,
                         csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                      }, error: function(response){
+                        markers = response.results
+                        
+                  
+                        showRows(markers)
+                        user_id = response.is_authenticated
+                        isGet = response.isGet
+                        document.getElementById('displayWord').innerHTML = keyword
+                        document.getElementById('displayWord').style.display ="inline"
+                        
+                   
                       }
         });      
       }
