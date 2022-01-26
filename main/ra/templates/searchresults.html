@@ -169,18 +169,41 @@
             <h4>Site Filter</h4>
           <div class="left-side-bar" style="margin-left: 10%">
             <ul>
-              <input type="radio" id="Springeropen" name="fav_language" value="Springeropen"  onclick="search(this.id, 'site')">
-              <label for="Springeropen">Springeropen</label><br>
+               <input type="radio" id="CIT" name="fav_language" value="CiT"  onclick="search(this.id, 'site')">
+               <label for="CIT">CIT-U materials</label><br>
+              {% for site in sites %}
 
-              <input type="radio" id="UNESCO_Digital_Library" name="fav_language" value="UNESCO" onclick="search(this.id, 'site')" style="margin-left: -4%">
-              <label for="UNESCO_Digital_Library">UNESCO</label><br>
+              {% if site.name == "Springeropen" %}
+                  <input type="radio" id="Springeropen" name="fav_language" value="Springeropen"  onclick="search(this.id, 'site')">
+                  <label for="Springeropen">Springeropen</label><br>
+              {% endif %}
 
-              <input type="radio" id="Open_Textbook_Library" name="fav_language" value="Open Textbook Library" onclick="search(this.id, 'site')" style="margin-left: -4%">
-              <label for="Open_Textbook_Library">Open Textbook Library</label><br>
+              {% if site.name == "UNESCO Digital Library"  %}
+                  <input type="radio" id="UNESCO_Digital_Library" name="fav_language" value="UNESCO" onclick="search(this.id, 'site')" style="margin-left: %">
+                  <label for="UNESCO_Digital_Library">UNESCO</label><br>
+              {% endif %}
+
+              {% if site.name == "Open Textbook Library" %}
+                  <input type="radio" id="Open_Textbook_Library" name="fav_language" value="Open Textbook Library" onclick="search(this.id, 'site')" style="margin-left: ">
+                  <label for="Open_Textbook_Library">Open Textbook Library</label><br>
+              {% endif %}
+
+              {% if site.name == "OER Commons" %}
+                  <input type="radio" id="OER_Commons" name="fav_language" value="OER Commons" onclick="search(this.id, 'site')">
+                  <label for="OER_Commons">OER Commons</label><br>
+              {% endif %}
+
+              {% endfor%}
+             
+
+              
+
+              
+
+              
 
 
-              <input type="radio" id="OER_Commons" name="fav_language" value="OER Commons" onclick="search(this.id, 'site')">
-              <label for="OER_Commons">OER Commons</label><br>
+              
 
              <!-- <label id="Springeropen" class="site-filter container" > <span class="checkmark"></span></label>
              <label id="UNESCO_Digital_Library" class="site-filter container" onclick="search(this.id, 'site')">UNESCO Digital Library<input id="UNESCO_Digital_Library_radio" type="radio" name="radio" value="Tandfonline.com"><span class="checkmark"></span></label>
@@ -203,10 +226,10 @@
                         <div >
                               <br><br> <br>    
                             
-                            <input id="input" type="text" placeholder="" name="search" class="input" value="{{ keyword }}" style="width: 20%; margin-left: 0; border-color: #f3f3f3; background-color: #f3f3f3">
+                            <input id="input" type="text" placeholder="" name="search" class="input" value="{{ keyword }}" style="width: 20%; margin-left: -1%; border-color: #f3f3f3; background-color: #f3f3f3">
                             <button id="searchButton" class="btn"  style="position: static;  border: 0; margin-top: -6%; margin-left:  45% ;background: none" name="" id="btnSearchbar"  onclick="search('','search')"> 
-                              <i class="fa fa-search" aria-hidden="true" style="color: #800000; font-size: 150%"></i></button>
-                              <br><hr style="width: 50%;  height: 1px; background-color: #6b6b6c; margin-top: -2%;" >
+                              <i class="fa fa-search" aria-hidden="true" style="color: #800000; font-size: 150%; margin-left: 30%"></i></button>
+                              <br><hr style="width: 50%;  height: 1px; background-color: #6b6b6c; margin-top: -1.8%; margin-left: 1%" >
                            
 
 
@@ -350,7 +373,7 @@
 <script type="text/javascript">
   
  user_id = "{{is_authenticated}}"
- website = "{{website}}"
+ website = "{{active_site}}"
  type = "{{itemType}}"
  isGet = "{{isGet}}"
  keyword = "{{keyword}}"
@@ -359,8 +382,7 @@
      // showRows()
      search(website,'site')
 
-  
-        var input = document.getElementById("input");
+      var input = document.getElementById("input");
       input.addEventListener("keyup", function(event) {
         if (event.keyCode === 13) {
          event.preventDefault();
@@ -375,14 +397,14 @@
 function showRows(markers, links){
   console.log(markers.length)
   for(i=0; i< markers.length;i++){
+                    console.log("length: " ,markers[i].length)
     
     
           if(markers[i].length == 2){
-              
                         if(user_id == 'True' | user_id == true){
                           $('#itemArea').append(
                                 "<tr> " +
-                           "<td><a href='"+ links[i]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;font-size: 115%'><strong>" +
+                           "<td><a href='"+ markers[i][markers[i].length-1]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;font-size: 115%'><strong>" +
                                 markers[i][0] + "</strong></span></a><br>" +
 
                                 " <em>"+ markers[i][1]+"</em><br><br></td>" +
@@ -408,7 +430,6 @@ function showRows(markers, links){
                                 markers[i][0] + "</strong></span></a><br>" +
 
                                 " <area>"+ markers[i][1]+"</area><br>" +
-                                 " <a>"+ markers[i][2]+"</a><br><br><br><br></td>" +
 
                                   "<td><a class='btnBookmark' cursor: pointer > <i id='"+markers[i][0]+"||"+markers[i][markers[i].length-1]+"' class='fa fa-bookmark' style='color: red;' onClick='reply_click(this.id)'></i></a> </td>"+ "</tr>" );  
                         } else{
@@ -417,8 +438,7 @@ function showRows(markers, links){
                            "<td><a href='"+ markers[i][markers[i].length-1]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;font-size: 120%'><strong>" +
                                 markers[i][0] + "</strong></span></a><br>" +
 
-                                " <em>"+ markers[i][1]+"</em><br>" +
-                                 " <em>"+ markers[i][2]+"</em><br><br></td>" +
+                                " <em>"+ markers[i][1]+"</em><br><br><br><br>" +
 
                                   "<td><a class='btnBookmark' >  <i href='#modalLogoutForm' data-toggle='modal' data-target='#modalLogoutForm'style='color: red; cursor: pointer' class='fa fa-bookmark'></i></a> </td></tr>" );  
                         }
@@ -433,8 +453,7 @@ function showRows(markers, links){
                                 markers[i][0] + "</b></span></a><br> " +
 
                                 " <area style=' font-size: 120%;  max-width: 60ch;'>"+ markers[i][1]+"</area><br>" +
-                                 " <em>"+ markers[i][2]+"</em><br>" +
-                                 " <area>"+ markers[i][3]+"</area><br><br><br><br></td>" +
+                                 " <em>"+ markers[i][2]+"</em><br><br>" +
 
                                    "<td><a class='btnBookmark' > <i id='"+markers[i][0]+"||"+markers[i][markers[i].length-1]+"' class='fa fa-bookmark' style='color: red; cursor: pointer' onClick='reply_click(this.id)'></i></a> </td>"+ "</tr>" );  
                         } else{
@@ -444,8 +463,7 @@ function showRows(markers, links){
                                 markers[i][0] + "</strong></span></a><br>" +
 
                                " <area style=' font-size: 120%;  max-width: 60ch;'>"+ markers[i][1]+"</area><br>" +
-                                 " <em>"+ markers[i][2]+"</em><br>" +
-                                 " <em>"+ markers[i][3]+"</em><br><br><br></td>" +
+                                 " <em>"+ markers[i][2]+"</em><br><br>" +
 
                                   "<td><a class='btnBookmark' >  <i href='#modalLogoutForm' data-toggle='modal' data-target='#modalLogoutForm'style='color: red;cursor: pointer'class='fa fa-bookmark'></i></a> </td>"+ "</tr> <br><br>" );  
                         }
@@ -623,7 +641,9 @@ function clearRow(tableName){
 
 
 function search(clicked_id, searchType){
-    keyword = document.getElementById('input').value
+    if (isGet == "false"){
+      keyword = document.getElementById('input').value
+    }
     clearRow("itemTable")
 
     if(searchType == 'search'){ 
@@ -640,14 +660,16 @@ function search(clicked_id, searchType){
                   itemType: type,
                   pageNumber: 1,
                   isGet: isGet,
+                  isSite: false,
                   csrfmiddlewaretoken: "{{csrf_token}}"
                 },
                 success: function(response){
                   markers = response.results
                   
                   links = response.links
-                  showRows(markers, links)
+                  showRows(markers)
                   user_id = response.is_authenticated
+                  isGet = response.isGet
                   
                   document.getElementById('displayWord').innerHTML = keyword
                   document.getElementById('displayWord').style.display ="inline"
@@ -673,6 +695,7 @@ function search(clicked_id, searchType){
                   itemType: type,
                   pageNumber: 1,
                   isGet: isGet,
+                  isSite: false,
                   csrfmiddlewaretoken: "{{csrf_token}}"
                 },
                 success: function(response){
@@ -681,8 +704,18 @@ function search(clicked_id, searchType){
             
                   showRows(markers)
                   user_id = response.is_authenticated
-
+                  isGet = response.isGet
+                  document.getElementById('displayWord').innerHTML = keyword
+                  document.getElementById('displayWord').style.display ="inline"
                   
+             
+                }, error: function(response){
+                  markers = response.results
+                  
+            
+                  showRows(markers)
+                  user_id = response.is_authenticated
+                  isGet = response.isGet
                   document.getElementById('displayWord').innerHTML = keyword
                   document.getElementById('displayWord').style.display ="inline"
                   
@@ -691,10 +724,29 @@ function search(clicked_id, searchType){
           }); 
         
     } else if( searchType == 'site'){
-     document.getElementById(clicked_id).click()
+     document.getElementById(clicked_id).checked = true
       website = clicked_id
       document.getElementById('displayWord').style.display ="none"
-     if(clicked_id == 'Springeropen'){
+
+      if(clicked_id == 'CIT'){
+        
+        if(type != 'Dissertations' ){
+          type = 'dissertation'
+        }
+        document.getElementById('article').style.display="none"
+        document.getElementById('article|').style.display="none"
+        document.getElementById('Programme_and_meeting_document').style.display="none"
+        document.getElementById('Programme_and_meeting_document|').style.display="none"
+        document.getElementById('journal').style.display="none"
+        document.getElementById('journal|').style.display="none"
+        document.getElementById('book').style.display="none"
+        document.getElementById('book|').style.display="none"
+        document.getElementById('Text_book').style.display="none"
+        document.getElementById('Text_book|').style.display="none"
+        document.getElementById('dissertation').style.display="inline"
+        navhr(type)
+      }
+     else if(clicked_id == 'Springeropen'){
           
           if(type != 'article' & type != 'book'){
 
@@ -708,7 +760,8 @@ function search(clicked_id, searchType){
         document.getElementById('article').style.display="inline"
         document.getElementById('article|').style.display="inline"
         document.getElementById('book').style.display="inline"
-        document.getElementById('book|').style.display="inline"
+        document.getElementById('book|').style.display="none"
+        document.getElementById('dissertation').style.display="none"
         navhr(type)
       }else if(clicked_id == 'UNESCO_Digital_Library'){
         if(type != 'article' & type != 'book' & type != 'Programme_and_meeting_document'){
@@ -719,11 +772,12 @@ function search(clicked_id, searchType){
          document.getElementById('Text_book').style.display="none"
         document.getElementById('Text_book|').style.display="none"
         document.getElementById('Programme_and_meeting_document').style.display="inline"
-        
         document.getElementById('article').style.display="inline"
         document.getElementById('article|').style.display="inline"
         document.getElementById('book').style.display="inline"
         document.getElementById('book|').style.display="inline"
+
+        document.getElementById('dissertation').style.display="none"
         navhr(type)
       }else if(clicked_id == 'Open_Textbook_Library'){
         
@@ -739,7 +793,8 @@ function search(clicked_id, searchType){
         document.getElementById('book').style.display="none"
         document.getElementById('book|').style.display="none"
         document.getElementById('Text_book').style.display="inline"
-        document.getElementById('Text_book|').style.display="inline"
+        document.getElementById('dissertation').style.display="none"
+
         navhr(type)
       } else if(clicked_id == 'OER_Commons'){
         
@@ -755,7 +810,10 @@ function search(clicked_id, searchType){
         document.getElementById('book').style.display="none"
         document.getElementById('book|').style.display="none"
         document.getElementById('Text_book').style.display="inline"
-        document.getElementById('Text_book|').style.display="inline"
+        document.getElementById('Text_book|').style.display="none"
+
+        document.getElementById('dissertation').style.display="none"
+
         navhr(type)
       }
       // } else if(clicked_id == 'Tandfonline.com'){
@@ -785,22 +843,22 @@ function search(clicked_id, searchType){
                   itemType: type,
                   pageNumber: 1,
                   isGet: isGet,
+                  isSite: true,
                   csrfmiddlewaretoken: "{{csrf_token}}"
 
                 }, success: function(response){
                   // if(a=0){
                     markers = response.results
                   // }
-                  
-                  // console.log(markers)
-                  showRows(markers)
+                  if(markers!= null)
+                    showRows(markers)
                   user_id = response.is_authenticated
                   isGet = response.isGet
                   document.getElementById('displayWord').innerHTML = keyword
                   document.getElementById('displayWord').style.display ="inline"
                   
-             
-                }, error: function(){
+                
+                }, error: function(response){
                     $.ajax({
                           type:"POST",
                           url:"",
@@ -812,6 +870,7 @@ function search(clicked_id, searchType){
                             itemType: type,
                             pageNumber: 1,
                             isGet: isGet,
+                            isSite: true,
                             csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
                           },
                           success: function(response){
@@ -827,6 +886,8 @@ function search(clicked_id, searchType){
                             document.getElementById('displayWord').style.display ="inline"
                             
                        
+                          },  error: function(){
+                            alert("Please reload page")
                           }
 
                     }); 
@@ -857,6 +918,9 @@ function reply_click(clicked_id){
                         bookmark: clicked_id,
                         word: keyword,
                         csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                      }, error: function(response){
+                          alert("Something went, item cannot be bookmarked")
+                   
                       }
         });      
       } else{
@@ -869,6 +933,17 @@ function reply_click(clicked_id){
                         action: "remove",
                         bookmark: clicked_id,
                         csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                      }, error: function(response){
+                        markers = response.results
+                        
+                  
+                        showRows(markers)
+                        user_id = response.is_authenticated
+                        isGet = response.isGet
+                        document.getElementById('displayWord').innerHTML = keyword
+                        document.getElementById('displayWord').style.display ="inline"
+                        
+                   
                       }
         });      
       }

@@ -13,15 +13,13 @@
         <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" />
         <link href="{% static 'css/adminSite.css' %}" rel="stylesheet" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>     
-
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
         <!-- <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script> -->
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
 
 
         <style>
@@ -39,43 +37,7 @@
         }
         </style>
 
-        <script>
-        $(document).ready(function(){
-            $('[data-toggle="tooltip"]').tooltip();
-            var actions = $("table td:last-child").html();
-            // Append table with add row form on add new button click
-            $(".add-new").click(function(){
-                $(this).attr("disabled", "disabled");
-                var index = $("table tbody tr:last-child").index();
-                var row = '<tr>' +
-                    '<td><input type="text" class="form-control" name="lastname" id="lastname"></td>' +
-                    '<td><input type="text" class="form-control" name="firsttname" id="lastname"></td>' +
-                    '<td><input type="text" class="form-control" name="id" id="id"></td>' +
-                    '<td><input type="text" class="form-control" name="college" id="college"></td>' +
-                    '<td><input type="text" class="form-control" name="username" id="password"></td>' +
-                    '<td><input type="text" class="form-control" name="lastlogin" id="lastlogin"></td>' +
-                    '<td>' + manage + '</td>' +
-                '</tr>';
-                $("table").append(row);     
-                $("table tbody tr").eq(index + 1).find(".add, .edit").toggle();
-                $('[data-toggle="tooltip"]').tooltip();
-            });
-            // Edit row on edit button click
-            //$(document).on("click", ".edit", function(){        
-            //    $(this).parents("tr").find("td:not(:last-child)").each(function(){
-            //        $(this).html('<input type="text" class="form-control" value="' + $(this).text() + '">');
-            //    });     
-            //    $(this).parents("tr").find(".add, .edit").toggle();
-            //    $(".add-new").attr("disabled", "disabled");
-            //});
-
-            // Delete row on delete button click
-            $(document).on("click", ".delete", function(){
-                $(this).parents("tr").remove();
-                $(".add-new").removeAttr("disabled");
-            });
-        });
-        </script>
+        
     </head>
     <body class="sb-nav-fixed">
          <nav class="sb-topnav navbar navbar-expand" style="background-color: #808080">
@@ -152,11 +114,7 @@
                                 </nav>
                                     </div>
 
-                            <div class="sb-sidenav-menu-heading">Addons</div>
-                            <a class="nav-link" href="{% url 'ra:admin_charts_view' %}">
-                                <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
-                                Charts
-                            </a>
+                            
                             <a class="nav-link" href="{% url 'ra:admin_tables_view' %}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                                 Tables
@@ -174,14 +132,14 @@
                             <li class="breadcrumb-item"><a href="{% url 'ra:admin_index_view' %}">Dashboard</a></li>
                             <li class="breadcrumb-item active">Tables</li>
                         </ol>
-
-                        <div class="card mb-4">
+    <!-- active user -->
+                        <div class="card mb-4"> 
                             <div class="card-header">
                                 <i class="fas fa-table me-1"></i>
                                 Users
                             </div>
 
-                            <div class="card-body">
+                            <div class="card-body"> 
                             <form  action = "" method="POST" autocomplete="off" enctype="multipart/form-data"> 
                             {% csrf_token %}  
                                 <table id="datatablesSimple">
@@ -189,7 +147,6 @@
                                     <thead>
 
                                         <tr>
-                                            <th>ID Number</th>
                                             <th>Username</th>
                                             <th>Last Name</th>
                                             <th>First Name</th>
@@ -204,99 +161,30 @@
 
                                         {% for user in users %}
                                          <tr>
-                                            <td> {{user.username}} </td>
-                                            <td> {{user.username}} </td>
-                                            <td> {{user.last_name}} </td>
-                                            <td> {{user.first_name}} </td>
-                                            <td> {{user.department__name}} </td>
-                                            <td> {{user.last_login}} </td>
+                                            <td class="usernameInfo"> {{user.username}} </td>
+                                            <td class="last_nameInfo"> {{user.last_name}} </td>
+                                            <td class="first_nameInfo"> {{user.first_name}} </td>
+                                            <td class="department__abbvInfo"> {{user.department__abbv}} </td>
+                                            <td class="last_loginInfo">{{user.last_login}} </td>
 
+    
                                             <td>
 
                                                
-                                                <a type="button" class="btn btn-tertiary" href="#" data-toggle="modal" data-target="                                                     #editModal-{{user.username}}" >
-                                                    <i class="far fa-edit" style="color: #ffd700"></i>
+                                                <a type="button" class="editUser"                 
+                                                    href="#" data-toggle="modal" data-target="#editModal" >
+                                                    <i class="far fa-edit"  style="color: #ffd700"></i>
                                                 </a>
                                             </td>
                                             <td>
-                                                <a class="delete" title="Delete" data-toggle="tooltip"><i class="fa fa-trash" style="color: #800000"></i></a>
+                                                <a id ="{{user.username}}" class="deleteUser" >
+                                                     <!-- data-toggle="modal" data-target="#deleteUserModal"> -->
+                                                    <i class="fa fa-trash" style="color: #800000; cursor: pointer"></i>
+                                                </a>
                                             </td>
                                         </tr>
 
-            <!-- edit modal             -->
-                <div class="modal fade" id="editModal-{{user.username}}" tabindex="-1" role="dialog" aria-labelledby="newModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-lg" role="document">
-                      <div class="modal-content" style="background-color: white">
-                        <div class="modal-header" style="background-color:#800000">
-                          <h5 class="modal-title" style="color: white">User information</h5>
-                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                          </button>
-                        </div>
-
-                        <div class="card-body">
-                            <form name="my-form" method="POST">
-                                {% csrf_token %}
-                                <div class="form-group row">
-                                    <label for="first_name" class="col-md-4 col-form-label text-md-right">First Name</label>
-                                    <div class="col-md-6">
-                                        <input type="text" id="first_name" class="form-control" name="first_name" value="{{user.first_name}}">
-                                    </div>
-                                </div>
-
-                                <div class="form-group row">
-                                    <label for="last_name" class="col-md-4 col-form-label text-md-right">Last Name</label>
-                                    <div class="col-md-6">
-                                        <input type="text" id="last_name" class="form-control" name="last_name" value="{{user.last_name}}">
-                                    </div>
-                                </div>
-
-
-
-                                <div class="form-group row">
-                                    <label for="username" class="col-md-4 col-form-label text-md-right">Username</label>
-                                    <div class="col-md-6">
-                                        <input type="text" id="username" class="form-control" name="username" value="{{user.username}}">
-                                    </div>
-                                </div>
-
-                                <div class="form-group row">
-                                    <label for="password" class="col-md-4 col-form-label text-md-right">Password</label>
-                                    <div class="col-md-6">
-                                        <input type="password" id="password" class="form-control" name="password" placeholder="leave blank to retain current password ">
-                                    </div>
-                                </div>
-
-                                <div class="form-group row">
-                                    <label for="college" class="col-md-4 col-form-label text-md-right">College</label>
-                                    <div class="col-md-6">
-                                        <select id="college" class="form-control" name="college">
-                                            <option value="CCS">College of Computer Studies</option>
-                                            <option value="CEA">College of Engineering and Architecture</option>
-                                            <option value="CCJ">College of Criminal Justice</option>
-                                            <option value="CNAHS">College of Nursing and Allied Health Sciences</option>
-                                            <option value="CMBA">College of Management, Business and Accountancy</option>
-                                            <option value="CASE">College of Arts, Sciences and Education</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                               
-                                    <div class="col-md-6 offset-md-4">
-                                       
-                                        <button type="submit" name="update" class="btn btn-primary">
-                                            Update
-                                        </button>
-                                        
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal" style="margin-left:1px; margin-top: 4px;"> CANCEL</button>
-                                        
-
-                                    </div>
-                            </form>
-                        </div>
-                       </div>
-                    </div>
-                    </div>
+            
                     
                                         {% endfor %}
                                      
@@ -308,8 +196,8 @@
                             <!-- </form> -->
                             </div>
                         </div>
-
-                        <div class="card mb-4">
+    <!-- colleges -->
+                        <div class="card mb-4"> 
                             <div class="card-header">
                                 <i class="fas fa-table me-1"></i>
                                 Colleges
@@ -319,49 +207,26 @@
                                     <thead>
                                         <tr>
                                             <th>College</th>
-                                            <th>Number of Active Users</th>
+                                            <th>Number of Active Users Today</th>
                                         </tr>
                                     </thead>
-                                    <tfoot>
-                                        <tr>
-                                            <th>College</th>
-                                            <th>Number of Active Users</th>
-                                        </tr>
-                                    </tfoot>
+                                    
                                     <tbody>
-                                        <tr>
-                                            <td>College of Computer Studies</td>
-                                            <td>122200</td>
 
-                                        </tr>
-                                        <tr>
-                                            <td>College of Arts, Sciences, and Education</td>
-                                            <td>124123</td>
-                                        </tr>
-                                        <tr>
-                                            <td>College of Management, Business, and Accountancy</td>
-                                            <td>3453453</td>
-                                        </tr>
-                                        <tr>
-                                            <td>College of Criminal Justice</td>
-                                            <td>122200</td>
+                                        {% for college in activeUser_perCollege %}
+                                            <tr>
+                                                <td>{{college.name}}</td>
+                                                <td>{{college.activeCount}}</td>
 
-                                        </tr>
-                                        <tr>
-                                            <td>College of Nursing and Allied Health Sciences</td>
-                                            <td>124123</td>
-                                        </tr>
-                                        <tr>
-                                            <td>College of Engineering and Architecture</td>
-                                            <td>3453453</td>
-                                        </tr>
+                                            </tr>
+                                        {% endfor %}
                                         
                                     </tbody>
                                 </table>
                             </div>
                         </div>
 
-                        <div class="card mb-4">
+                        <div class="card mb-4"> <!-- Sites -->
                             <div class="card-header">
                                 <i class="fas fa-table me-1"></i>
                                 Sites
@@ -373,7 +238,6 @@
                                             <th>Site Name</th>
                                             <th>Link</th>
                                             <th>Accumulated Number of Access</th>
-                                            <th>Accumulated Number of Hours</th>
                                         </tr>
                                     </thead>
                                     <tfoot>
@@ -381,28 +245,17 @@
                                             <th>Site Name</th>
                                             <th>Link</th>
                                             <th>Accumulated Number of Access</th>
-                                            <th>Accumulated Number of Hours</th>
                                         </tr>
                                     </tfoot>
                                     <tbody>
-                                        <tr>
-                                            <td>Springer Open</td>
-                                            <td>https://insightsimaging.springeropen.com/articles/10.1186/s13244-021-01014-5</td>
-                                            <td>450</td>
-                                            <td>500</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Springer Open</td>
-                                            <td>https://insightsimaging.springeropen.com/articles/10.1186/s13244-021-01014-5</td>
-                                            <td>450</td>
-                                            <td>500</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Springer Open</td>
-                                            <td>https://insightsimaging.springeropen.com/articles/10.1186/s13244-021-01014-5</td>
-                                            <td>450</td>
-                                            <td>500</td>
-                                        </tr>
+                                        {% for site in siteAccess %}
+                                            <tr>
+                                                <td>{{site.name}}</td>
+                                                <td><a href="{{site.url}}">{{site.url}}</a></td>
+                                                <td>{{site.accessCount}}</td>
+
+                                            </tr>
+                                        {% endfor %}
                                       
                                             
                                         </tr>
@@ -412,7 +265,7 @@
                         </div>
                    
                         
-                        <div class="card mb-4">
+                        <div class="card mb-4"> <!-- dissertations -->
                             <div class="card-header">
                                 <i class="fas fa-table me-1"></i>
                                 Dissertations
@@ -433,171 +286,25 @@
                                             <th>Title</th>
                                             <th>Authors</th>
                                             <th>College</th>
-                                            <th>Status</th>
-                                            <th colspan="2">Manage</th>
+                                            <th>Visibility</th>
+                                            <th > Total number of user access</th>
                                         </tr>
                                     </tfoot>
                                     <tbody>
-                                        <tr>
-                                            <td>Technologian Exclusive Research Assistant</td>
-                                            <td>Sumalinog, L., Mondejar YJ., Emorecha, J., Talatagod, R., Albano, JR.</td>
-                                            <td>Computer Studies</td>
-                                            <td>
-                                              <input class="input-switch" type="checkbox" id="toggle" onclick="press" checked/>
-                                              <label class="label-switch" for="toggle"></label>
-                                              <span class="info-text"></span>
-                                            </td>
-                                             <td>
-                                                <a class="edit" title="Edit" data-toggle="tooltip"><i class="far fa-edit" style="color: #ffd700"></i></a>
-                                            </td>
-                                            <td>
-                                                <a class="delete" title="Delete" data-toggle="tooltip"><i class="fa fa-trash" style="color: #800000"></i></a>
-                                            </td>
+                                        {% for d in dissertations %}
+                                        <tr id ="{{d.author}}">
+                                            <td>{{d.title}}</td>
+                                            <td>{{d.author}}</td>
+                                            <td>{{d.department__name}}</td>
+                                            <td> {{d.is_active}}</td>
+                                            <td> {{d.num_of_access}}</td>
+
+                                             
                                         </tr>
-                                       <tr>
-                                            <td>Technologian Exclusive Research Assistant</td>
-                                            <td>Sumalinog, L., Mondejar YJ., Emorecha, J., Talatagod, R., Albano, JR.</td>
-                                            <td>Computer Studies</td>
-                                            <td>
-                                              <input class="input-switch" type="checkbox" id="toggle2" onclick="press" checked/>
-                                              <label class="label-switch" for="toggle2"></label>
-                                              <span class="info-text"></span>
-                                            </td>
-                                             <td>
-                                                <a class="edit" title="Edit" data-toggle="tooltip"><i class="far fa-edit" style="color: #ffd700"></i></a>
-                                            </td>
-                                            <td>
-                                                <a class="delete" title="Delete" data-toggle="tooltip"><i class="fa fa-trash" style="color: #800000"></i></a>
-                                            </td>
-                                        </tr>
-                                       <tr>
-                                            <td>Technologian Exclusive Research Assistant</td>
-                                            <td>Sumalinog, L., Mondejar YJ., Emorecha, J., Talatagod, R., Albano, JR.</td>
-                                            <td>Computer Studies</td>
-                                            <td>
-                                              <input class="input-switch" type="checkbox" id="toggle3" onclick="press" checked/>
-                                              <label class="label-switch" for="toggle3"></label>
-                                              <span class="info-text"></span>
-                                            </td>
-                                             <td>
-                                                <a class="edit" title="Edit" data-toggle="tooltip"><i class="far fa-edit" style="color: #ffd700"></i></a>
-                                            </td>
-                                            <td>
-                                                <a class="delete" title="Delete" data-toggle="tooltip"><i class="fa fa-trash" style="color: #800000"></i></a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Technologian Exclusive Research Assistant</td>
-                                            <td>Sumalinog, L., Mondejar YJ., Emorecha, J., Talatagod, R., Albano, JR.</td>
-                                            <td>Computer Studies</td>
-                                            <td>
-                                              <input class="input-switch" type="checkbox" id="toggle4" onclick="press" checked/>
-                                              <label class="label-switch" for="toggle4"></label>
-                                              <span class="info-text"></span>
-                                            </td>
-                                             <td>
-                                                <a class="edit" title="Edit" data-toggle="tooltip"><i class="far fa-edit" style="color: #ffd700"></i></a>
-                                            </td>
-                                            <td>
-                                                <a class="delete" title="Delete" data-toggle="tooltip"><i class="fa fa-trash" style="color: #800000"></i></a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Technologian Exclusive Research Assistant</td>
-                                            <td>Sumalinog, L., Mondejar YJ., Emorecha, J., Talatagod, R., Albano, JR.</td>
-                                            <td>Computer Studies</td>
-                                            <td>
-                                              <input class="input-switch" type="checkbox" id="toggle5" onclick="press" checked/>
-                                              <label class="label-switch" for="toggle5"></label>
-                                              <span class="info-text"></span>
-                                            </td>
-                                             <td>
-                                                <a class="edit" title="Edit" data-toggle="tooltip"><i class="far fa-edit" style="color: #ffd700"></i></a>
-                                            </td>
-                                            <td>
-                                                <a class="delete" title="Delete" data-toggle="tooltip"><i class="fa fa-trash" style="color: #800000"></i></a>
-                                            </td>
-                                        </tr>
-                                       <tr>
-                                            <td>Technologian Exclusive Research Assistant</td>
-                                            <td>Sumalinog, L., Mondejar YJ., Emorecha, J., Talatagod, R., Albano, JR.</td>
-                                            <td>Computer Studies</td>
-                                            <td>
-                                              <input class="input-switch" type="checkbox" id="toggle6" onclick="press" checked/>
-                                              <label class="label-switch" for="toggle6"></label>
-                                              <span class="info-text"></span>
-                                            </td>
-                                             <td>
-                                                <a class="edit" title="Edit" data-toggle="tooltip"><i class="far fa-edit" style="color: #ffd700"></i></a>
-                                            </td>
-                                            <td>
-                                                <a class="delete" title="Delete" data-toggle="tooltip"><i class="fa fa-trash" style="color: #800000"></i></a>
-                                            </td>
-                                        </tr>
-                                       <tr>
-                                            <td>Technologian Exclusive Research Assistant</td>
-                                            <td>Sumalinog, L., Mondejar YJ., Emorecha, J., Talatagod, R., Albano, JR.</td>
-                                            <td>Computer Studies</td>
-                                            <td>
-                                              <input class="input-switch" type="checkbox" id="toggle7" onclick="press" checked/>
-                                              <label class="label-switch" for="toggle7"></label>
-                                              <span class="info-text"></span>
-                                            </td>
-                                            <td>
-                                                <a class="edit" title="Edit" data-toggle="tooltip"><i class="far fa-edit" style="color: #ffd700"></i></a>
-                                            </td>
-                                            <td>
-                                                <a class="delete" title="Delete" data-toggle="tooltip"><i class="fa fa-trash" style="color: #800000"></i></a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Technologian Exclusive Research Assistant</td>
-                                            <td>Sumalinog, L., Mondejar YJ., Emorecha, J., Talatagod, R., Albano, JR.</td>
-                                            <td>Computer Studies</td>
-                                            <td>
-                                              <input class="input-switch" type="checkbox" id="toggle8" onclick="press" checked/>
-                                              <label class="label-switch" for="toggle8"></label>
-                                              <span class="info-text"></span>
-                                            </td>
-                                            <td>
-                                                <a class="edit" title="Edit" data-toggle="tooltip"><i class="far fa-edit" style="color: #ffd700"></i></a>
-                                            </td>
-                                            <td>
-                                                <a class="delete" title="Delete" data-toggle="tooltip"><i class="fa fa-trash" style="color: #800000"></i></a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Technologian Exclusive Research Assistant</td>
-                                            <td>Sumalinog, L., Mondejar YJ., Emorecha, J., Talatagod, R., Albano, JR.</td>
-                                            <td>Computer Studies</td>
-                                            <td>
-                                              <input class="input-switch" type="checkbox" id="toggle9" onclick="press" checked/>
-                                              <label class="label-switch" for="toggle9"></label>
-                                              <span class="info-text"></span>
-                                            </td>
-                                             <td>
-                                                <a class="edit" title="Edit" data-toggle="tooltip"><i class="far fa-edit" style="color: #ffd700"></i></a>
-                                            </td>
-                                            <td>
-                                                <a class="delete" title="Delete" data-toggle="tooltip"><i class="fa fa-trash" style="color: #800000"></i></a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Technologian Exclusive Research Assistant</td>
-                                            <td>Sumalinog, L., Mondejar YJ., Emorecha, J., Talatagod, R., Albano, JR.</td>
-                                            <td>Computer Studies</td>
-                                            <td>
-                                              <input class="input-switch" type="checkbox" id="toggle10" onclick="press" checked/>
-                                              <label class="label-switch" for="toggle10"></label>
-                                              <span class="info-text"></span>
-                                            </td>
-                                             <td>
-                                                <a class="edit" title="Edit" data-toggle="tooltip"><i class="far fa-edit" style="color: #ffd700"></i></a>
-                                            </td>
-                                            <td>
-                                                <a class="delete" title="Delete" data-toggle="tooltip"><i class="fa fa-trash" style="color: #800000"></i></a>
-                                            </td>
-                                        </tr>
+                                        {% endfor %}
+
+                                      
+                                       
                                     </tbody>
                                 </table>
                             </div>
@@ -618,13 +325,243 @@
                 </footer>
             </div>
         </div>
+
+        <!-- edit modal             -->
+                <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="newModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                      <div class="modal-content" style="background-color: white">
+                        <div class="modal-header" style="background-color:#800000">
+                          <h5 class="modal-title" style="color: white">User information</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+
+                        <div id="editModal_body" class="card-body">
+                                {% csrf_token %}
+                                
+
+                                <div class="form-group row">
+                                    <label for="username" class="col-md-4 col-form-label text-md-right"><a style="color: red">* &nbsp;</a>Username</label>
+                                    <div class="col-md-6">
+                                        <input type="text" id="username" class="form-control" name="username">
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label for="first_name" class="col-md-4 col-form-label text-md-right"><a style="color: red">* &nbsp;</a>First Name</label>
+                                    <div class="col-md-6 ">
+                                        <input type="text" id="first_name" class="form-control" name="first_name" >
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label for="last_name" class="col-md-4 col-form-label text-md-right"><a style="color: red">* &nbsp;</a>Last Name</label>
+                                    <div class="col-md-6">
+                                        <input type="text" id="last_name" class="form-control" name="last_name">
+                                    </div>
+                                </div>
+
+
+
+                                
+
+                                <div class="form-group row">
+                                    <label for="password" class="col-md-4 col-form-label text-md-right">Password</label>
+                                    <div class="col-md-6">
+                                        <input type="password" id="password" class="form-control" name="password" placeholder="leave blank to retain current password ">
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label for="college" class="col-md-4 col-form-label text-md-right"><a style="color: red">* &nbsp;</a>College</label>
+                                    <div class="col-md-6">
+                                        <select id="college" class="form-control"  name="college"  >
+                                            <option value="CCS" >College of Computer Studies</option>
+                                            <option value="CEA">College of Engineering and Architecture</option>
+                                            <option value="CCJ">College of Criminal Justice</option>
+                                            <option value="CNAHS">College of Nursing and Allied Health Sciences</option>
+                                            <option value="CMBA">College of Management, Business and Accountancy</option>
+                                            <option value="CASE">College of Arts, Sciences and Education</option>
+                                        </select>
+                                    </div>
+                                </div>
+                      
+                                 <center><a id="errorMessage" style="color: red; display: none "> </a><br><br></center>
+                      
+                                    <div class="col-md-6 offset-md-4">
+                                       
+                                        <button type="" id="update" class="btn btn-primary">
+                                            Update
+                                        </button>
+                                        
+                                        <button id="dismissModal" type="button" class="btn btn-secondary" data-dismiss="modal" style="margin-left:1px; margin-top: 4px;"> CANCEL</button>
+                                        
+
+                                    </div>
+
+                        </div>
+                       </div>
+                    </div>
+                    </div>
+
+
+           
+
        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-        <script src="{% static 'js/adminScripts.js' %}"></script>
-        <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
-        <script src="{% static 'js/datatables-simple-demo.js' %}"></script>
-        <script src="{% static 'js/datatables-simple-colleges.js' %}"></script>
-        <script src="{% static 'js/datatables-dissertations.js' %}"></script>
-        <script src="{% static 'js/datatables-sites.js' %}"></script>
-        <script src="{% static 'js/adminSiteScripts.js' %}"></script>
+            <script src="{% static 'js/adminScripts.js' %}"></script>
+            <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
+            <script src="{% static 'js/datatables-simple-demo.js' %}"></script>
+            <script src="{% static 'js/datatables-simple-colleges.js' %}"></script>
+            <script src="{% static 'js/datatables-dissertations.js' %}"></script>
+            <script src="{% static 'js/datatables-sites.js' %}"></script>
+            <script src="{% static 'js/adminSiteScripts.js' %}"></script> <!-- scripts -->
     </body>
 </html>
+
+<script type="text/javascript">
+    var oldStudent_id
+    var oldUsername
+    var selectedRow
+
+$(document).ready(function(){
+});
+         
+
+        $(document).on("click", ".deleteUser", function(){
+            selectedRow = $(this).parents("tr")
+            didConfirm = confirm("Do you really want to delete this user?")
+            if(didConfirm){
+                selectedRow.remove()
+                console.log($(this).attr("id"))
+                $.ajax({
+                  type:"POST",
+                  url:"",
+
+                  data:{
+                    action: 'delete_user',
+                    username: $(this).attr("id"),
+                    csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+
+                  },
+              
+                }); 
+            }
+            
+        });
+
+
+        $(document).on("click", ".editUser", function(){
+            selectedRow = $(this).parent()
+            username = selectedRow.siblings('.usernameInfo').text().replace(" ", "").replace(" ", "")
+            last_name = selectedRow.siblings('.last_nameInfo').text().replace(" ", "").replace(" ", "")
+            first_name = selectedRow.siblings('.first_nameInfo').text()
+            department = selectedRow.siblings('.department__abbvInfo').text().replace(" ", "").replace(" ", "")
+            oldUsername = username
+            // if(a.length == 5)
+            //     department = a.slice(1, -1)
+            // else
+            //     department = a
+            // .siblings('#first_name').val(first_name) 
+            document.getElementById("first_name").value = $.trim(first_name)
+            document.getElementById("last_name").value = $.trim(last_name)
+           
+            document.getElementById("username").value = $.trim(oldUsername)
+            $('#college').val(department)
+            // console.log($("#editModal_body").siblings('#first_name'))
+            // alert(username)
+        });
+
+
+        $(document).on("click", "#update", function(){
+            first_name = document.getElementById("first_name").value 
+            last_name = document.getElementById("last_name").value 
+            username = document.getElementById("username").value 
+            department = document.getElementById("college").value 
+            password = document.getElementById("password").value 
+
+            $.ajax({
+                  type:"POST",
+                  url:"",
+
+                  data:{
+                    action: 'update_user',
+
+                    first_name: first_name,
+                    last_name: last_name,
+                    oldUsername: oldUsername,
+                    newUsername: username,
+                    department: department,
+                    password: password,
+                    csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+
+                  },
+                  success: function(response){
+                    
+                        if(response.isError == 1){
+                            document.getElementById("errorMessage").textContent = response.errorMessage
+                            document.getElementById("errorMessage").style.display="inline"
+                        }
+                            
+                        else{
+                            document.getElementById("dismissModal").click()
+                            user = response.user[0]
+                            
+
+                            selectedRow.siblings('.usernameInfo').text(user.username);
+                            selectedRow.siblings('.last_nameInfo').text(user.last_name);
+                            selectedRow.siblings('.first_nameInfo').text(user.first_name);
+                            selectedRow.siblings('.department__abbvInfo').text(user.department__abbv);
+                            
+                        }                    
+                    
+                  }
+            }); 
+        });
+
+
+        $(window).click(function(e) {
+            document.getElementById("errorMessage").style.display="none"
+            
+        });
+
+        
+
+        </script>
+
+
+
+
+
+
+       <!--  // $('[data-toggle="tooltip"]').tooltip();
+            // var actions = $("table td:last-child").html();
+            // Append table with add row form on add new button click
+            // $(".add-new").click(function(){
+            //     $(this).attr("disabled", "disabled");
+            //     var index = $("table tbody tr:last-child").index();
+            //     var row = '<tr>' +
+            //         '<td><input type="text" class="form-control" name="lastname" id="lastname"></td>' +
+            //         '<td><input type="text" class="form-control" name="firsttname" id="lastname"></td>' +
+            //         '<td><input type="text" class="form-control" name="id" id="id"></td>' +
+            //         '<td><input type="text" class="form-control" name="college" id="college"></td>' +
+            //         '<td><input type="text" class="form-control" name="username" id="password"></td>' +
+            //         '<td><input type="text" class="form-control" name="lastlogin" id="lastlogin"></td>' +
+            //         '<td>' + manage + '</td>' +
+            //     '</tr>';
+            //     $("table").append(row);     
+            //     $("table tbody tr").eq(index + 1).find(".add, .edit").toggle();
+            //     $('[data-toggle="tooltip"]').tooltip();
+            // });
+
+
+            // Edit row on edit button click
+            //$(document).on("click", ".edit", function(){        
+            //    $(this).parents("tr").find("td:not(:last-child)").each(function(){
+            //        $(this).html('<input type="text" class="form-control" value="' + $(this).text() + '">');
+            //    });     
+            //    $(this).parents("tr").find(".add, .edit").toggle();
+            //    $(".add-new").attr("disabled", "disabled");
+            //});
+
+            // Delete row on delete button click -->

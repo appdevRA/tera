@@ -4,15 +4,14 @@ from django.http import HttpResponse, JsonResponse
 from django.views.generic import View
 from django.utils import timezone
 from .forms import *
-
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.core import serializers
 from django.db import connection
-from django.db.models import Q, Count
-
+from django.db.models import Q, Count, Max
+from datetime import datetime
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -27,19 +26,10 @@ from .links import *
 import requests
 import csv
 import io
-
-class adminIndexView(View):
-	def get(self, request):
-		
-		user= User.objects.select_related("department").values("username", "first_name", "last_name", "last_login", "department__name")
-		print(user)
-
-		context ={
-			"users": user		
-		}
-		
-		return render(request,'adminIndex.html',context)
-
+from django.db.models import DateTimeField, ExpressionWrapper, F
+from django.db.models import F, Func, Value, CharField
+import sys
+from datetime import timedelta
 
 
 class addUser(View):
@@ -50,40 +40,408 @@ class addUser(View):
 
 class adminSiteView(View):
 	def get(self, request):
-		return render(request, 'adminSite.html')
+		sites = Site.objects.all().values()
+		return render(request, 'adminSite.html', {"sites": list(sites)})
+
+	def post(self, request):
+		if request.is_ajax():
+			action = request.POST["action"]
+
+			if action == "activate":
+				Site.objects.filter(id = request.POST["siteID"]).update(is_active = True)
+			elif action == "deactivate":
+				Site.objects.filter(id = request.POST["siteID"]).update(is_active = False)
+
+			return HttpResponse("")
 
 class adminChartView(View):
 	def get(self, request):
 		return render(request, 'adminCharts.html')
 
 
+class adminIndexView(View):
+	def get(self, request):
+		
+		
+
+		if datetime.today().month <10:
+			todaysMonth = str(datetime.today().year) +"-0" + str(datetime.today().month)
+		else:
+			todaysMonth = str(datetime.today().year) +"-" + str(datetime.today().month)
 
 
+		user= User.objects.select_related("department").values("username", "first_name", "last_name", "last_login", "department__name")
 
+		activeUser= User_login.objects.filter(date__contains=todaysMonth).annotate(day=ExpressionWrapper(
+            																							Func(F('date'), 
+            																								Value('%Y-%m-%d'), 
+            																								function='DATE_FORMAT'
+            																								), 
+            																							output_field=CharField()
+        																								)
+																					).values('day').annotate(count=Count('id')).order_by("day")
+		try:
+			activeUserMax = activeUser.latest("count")["count"]
+		except:
+			activeUserMax = 0
+
+		siteAccess= UserSite_access.objects.filter(date_of_access__contains=todaysMonth).annotate(day=ExpressionWrapper(
+            																							Func(F('date_of_access'), 
+            																								Value('%Y-%m-%d'), 
+            																								function='DATE_FORMAT'
+            																								), 
+            																							output_field=CharField()
+        																								)
+																								).values('day').annotate(count=Count('id')).order_by("day")
+		try:
+			siteAccessMax = siteAccess.latest("count")["count"]
+		except:
+			siteAccessMax = 0
+			
+		colleges= User_login.objects.filter(date__contains=todaysMonth).values('user__department__abbv').annotate(count=Count('id')).order_by("user__department__abbv")
+
+		# for item in user:
+		# 		item["last_login"] = item["day"].strftime("%Y-%m-%d")
+
+		context ={
+			"users": list(user), 
+			"activeUser": list(activeUser),
+			"activeUserMax": activeUserMax,
+			"siteAccess": list(siteAccess),
+			"siteAccessMax": siteAccessMax,
+			"colleges": list(colleges)	
+
+		}
+
+		return render(request,'adminIndex.html',context)
 
 class adminActiveUserView(View):
 	def get(self, request):
-		return render(request, 'adminActiveUser.html')
+		if datetime.today().month <10:
+			todaysMonth = str(datetime.today().year) +"-0" + str(datetime.today().month)
+		else:
+			todaysMonth = str(datetime.today().year) +"-" + str(datetime.today().month)
+
+		queryset= User_login.objects.filter(date__contains=todaysMonth).annotate(day=ExpressionWrapper(
+            																							Func(F('date'), 
+            																								Value('%Y-%m-%d'), 
+            																								function='DATE_FORMAT'
+            																								), 
+            																							output_field=CharField()
+        																								)
+																					).values('day').annotate(count=Count('id')).order_by("day")
+		try:
+			maxCount = queryset.latest("count")["count"]
+		except:
+			maxCount = 0
+
+		tableData= User.objects.filter(usersite_access__date_of_access__contains=todaysMonth).annotate(
+										visitCount=Count('id')
+										).values("username","last_name", "department__name", "first_name", "visitCount").order_by("-visitCount")
+	
+
+		context ={
+			"tableData": list(tableData),
+			"data": list(queryset),
+			"maxCount": maxCount
+		}
+		return render(request, 'adminActiveUser.html', context)
+	def post(self, request):
+
+		if request.is_ajax():
+			startDate = request.POST["startDate"]
+			endDate = request.POST["endDate"]
+			
+			
+			
+			queryset= User_login.objects.filter(date__range=[startDate, endDate]).annotate(day=ExpressionWrapper(
+        																							Func(F('date'), 
+        																								Value('%Y-%m-%d'), 
+        																								function='DATE_FORMAT'
+        																								), 
+        																							output_field=CharField()
+    																								)
+																				).values('day').annotate(count=Count('id')).order_by("day")
+ 
+			try:	
+				maxCount = queryset.latest("count")["count"]
+			except:
+				maxCount = 0
+
+			tableData= User.objects.filter(usersite_access__date_of_access__range=[startDate, endDate]).annotate(
+										visitCount=Count('id')
+										).values("last_name", "student_id", "department__name", "first_name", "visitCount").order_by("-visitCount")
+
+			context ={
+				"tableData": list(tableData),
+				"data": list(queryset),
+				"maxCount": maxCount
+			}
+			return JsonResponse(context)
 
 
 
 class adminCollegesView(View):
 	def get(self, request):
-		return render(request, 'adminColleges.html')
+		if datetime.today().month <10:
+			todaysMonth = str(datetime.today().year) +"-0" + str(datetime.today().month)
+		else:
+			todaysMonth = str(datetime.today().year) +"-" + str(datetime.today().month)
 
+		queryset= User_login.objects.filter(date__contains=todaysMonth).values('user__department__abbv').annotate(count=Count('id')).order_by("user__department__abbv")
+		
+		tableData = list(Department.objects.values("abbv").annotate(registeredUser = Count("user")).annotate(activeUser= Count("user", filter= ~Q(user__last_login=None))))
+		siteVisit = UserSite_access.objects.filter(date_of_access__contains=todaysMonth).values("user__department__abbv").annotate(count = Count("id"))
+		print(list(siteVisit))
 
+		for a in tableData:
+			for innerloopIndex,b in enumerate(list(siteVisit)):
+				if a["abbv"] == b["user__department__abbv"]:
+					a["siteVisit"] = b["count"]
+					break
+
+				if innerloopIndex == len(list(siteVisit)) - 1:
+					a["siteVisit"] = 0
+
+		context ={
+			"siteVisits": siteVisit,
+			"tableData": list(tableData),
+			"data": list(queryset)
+		}
+		return render(request, 'adminColleges.html', context)
+
+	def post(self, request):
+		if request.is_ajax():
+			startDate = request.POST["startDate"]
+			endDate = request.POST["endDate"]
+
+			queryset= User_login.objects.filter(date__range=[startDate, endDate]).values('user__department__abbv').annotate(count=Count('id')).order_by("user__department__abbv")
+		
+			tableData = list(Department.objects.values("abbv").annotate(registeredUser = Count("user")).annotate(activeUser= Count("user", filter= ~Q(user__last_login=None))))
+			siteVisit = UserSite_access.objects.filter(date_of_access__range=[startDate, endDate]).values("user__department__abbv").annotate(count = Count("id"))
+			print(list(siteVisit))
+
+			i=0
+			for a in tableData:
+				for innerloopIndex,b in enumerate(list(siteVisit)):
+					if a["abbv"] == b["user__department__abbv"]:
+						a["siteVisit"] = b["count"]
+						break
+
+					if innerloopIndex == len(list(siteVisit)) - 1:
+						a["siteVisit"] = 0
+
+			context ={
+				"siteVisits": list(siteVisit),
+				"tableData": list(tableData),
+				"data": list(queryset)
+			}
+			return JsonResponse(context)
 
 class adminSiteAccessView(View):
 	def get(self, request):
-		return render(request, 'adminSiteAccess.html')
+		if datetime.today().month <10:
+			todaysMonth = str(datetime.today().year) +"-0" + str(datetime.today().month)
+		else:
+			todaysMonth = str(datetime.today().year) +"-" + str(datetime.today().month)
+
+		queryset= UserSite_access.objects.filter(
+												date_of_access__contains=todaysMonth
+												).annotate(day=ExpressionWrapper(
+																				Func(F('date_of_access'), 
+																					Value('%Y-%m-%d'), 
+																					function='DATE_FORMAT'
+																					), 
+																				output_field=CharField()
+																				)
+															).values('day').annotate(count=Count('id')).order_by("day")
+		
+		try:
+			maxCount = queryset.latest("count")["count"]
+		except:
+			maxCount = 0
+
+		tableData= Site.objects.all().annotate(
+										visitCount=Count('id', filter=Q(usersite_access__date_of_access__contains=todaysMonth))
+										).values().order_by("-visitCount")
+
+		
+		print(tableData)
+		context ={
+			"tableData": list(tableData),
+			"data": list(queryset),
+			"maxCount": maxCount
+		}
+		return render(request, 'adminSiteAccess.html', context)
+
+	def post(self, request):
+		if request.is_ajax():
+			startDate = request.POST["startDate"]
+			endDate = request.POST["endDate"]
+
+
+			queryset= UserSite_access.objects.filter(
+													date_of_access__range=[startDate, endDate]
+													).annotate(day=ExpressionWrapper(
+																					Func(F('date_of_access'), 
+																						Value('%Y-%m-%d'), 
+																						function='DATE_FORMAT'
+																						), 
+																					output_field=CharField()
+																					)
+																).values('day').annotate(
+																						count=Count('id')
+																						).order_by("day")
+				
+			try:
+				maxCount = queryset.latest("count")["count"]
+			except:
+				queryset = []
+				maxCount = 0
+
+			tableData= Site.objects.all().annotate(
+										visitCount=Count('id', filter=Q(usersite_access__date_of_access__range=[startDate, endDate]))
+										).values().order_by("-visitCount")
+
+			
+			print(tableData)
+			context ={
+				"tableData": list(tableData),
+				"data": list(queryset),
+				"maxCount": maxCount
+			}
+			return JsonResponse(context)
+
 
 class adminDissertationsView(View):
 	def get(self, request):
+
 		return render(request, 'adminDissertations.html')
 
 class adminDissertationsAccessView(View):
 	def get(self, request):
-		return render(request, 'dissertationAccess.html')
+		# Dissertation.objects.exclude(id =3).delete()
+		queryset = Dissertation.objects.select_related("department").annotate(department_name= F('department__abbv')).order_by("num_of_access")
+
+		# a = Dissertation.objects.get(id=3)
+		# json = s.serialize('python', [a], ensure_ascii=False)
+
+		# print(type(json), json)
+		
+				# json = s.serialize('python', [queryset], ensure_ascii=False)
+				
+		context ={
+			"dissertations": queryset
+		}
+		return render(request, 'dissertationAccess.html', context)
+
+	def post(self, request):
+
+		if request.is_ajax():
+			if request.POST.get("action") == "add":
+
+				title = request.POST.get("title") 
+				
+				authors = request.POST.get("authors") 
+				abstract = request.POST.get("abstract") 
+				department = request.POST.get("college") 
+				file = request.FILES.get('file')
+
+
+				if Dissertation.objects.filter(title= title).exists():
+					return JsonResponse({"didError": 1, "message": "Title already exist"})
+
+
+				print(authors, abstract, file)
+				if file == None or len(authors) == 0 or len(abstract) == 0:
+					return JsonResponse({"didError": 1, "message": "Some Fields are missing"})
+
+
+				createdObject = Dissertation.objects.create(title = title, author = authors, abstract = abstract, file = file, department = Department.objects.get(abbv = department), is_active = True)
+				
+				queryset = list(Dissertation.objects.filter(id = createdObject.id).select_related("department").annotate(department_name= F('department__abbv')).values())
+				# json = s.serialize('python', [queryset], ensure_ascii=False)
+				queryset[0]['file'] = "http://"+ request.get_host()+"/images/"+queryset[0]['file']
+				context = {
+					"didError": 0,
+					"createdObject": queryset
+				}
+				return JsonResponse(context)
+
+
+
+			elif request.POST.get("action") == "delete":
+				ID = request.POST.get("id")
+				Dissertation.objects.filter(id=ID).delete()
+				return HttpResponse("")
+
+
+
+
+			elif request.POST.get("action") == "get_row":
+				ID = request.POST.get("id") 
+				queryset = list(Dissertation.objects.filter(id = ID).select_related("department").values("title", "author", "abstract").annotate(department_name= F('department__abbv')))
+				context = {
+					"didError": 0,
+					"object": queryset
+				}
+				return JsonResponse(context)
+
+
+
+
+			elif request.POST.get("action") == "submit_edit":
+				ID = request.POST.get("id") 
+				oldTitle = request.POST.get("oldTitle") 
+				title = request.POST.get("title") 
+				
+				authors = request.POST.get("authors") 
+				abstract = request.POST.get("abstract") 
+				department = request.POST.get("college") 
+				file = request.FILES.get('file')
+				print("|"+oldTitle+"|"+title+"|")
+				
+				if oldTitle != title and Dissertation.objects.filter(title= title).exists():
+					return JsonResponse({"didError": 1, "message": "Title already exist"})
+
+				if len(authors) == 0 or len(abstract) == 0:
+					return JsonResponse({"didError": 1, "message": "Some Fields are missing"})
+
+				if file == None:
+					Dissertation.objects.filter(id = ID).update(title = title, author = authors, abstract = abstract, department = Department.objects.get(abbv = department))
+				else:
+					a = Dissertation.objects.get(id = ID)
+					a. title = title
+					a. author = authors
+					a.abstract = abstract
+					a.department = Department.objects.get(abbv = department)
+					a.file = file
+					a.save()
+				queryset = list(Dissertation.objects.filter(id = ID).select_related("department").annotate(department_name= F('department__abbv')).values())
+		
+				queryset[0]['file'] = "http://"+ request.get_host()+"/images/"+queryset[0]['file']
+				context = {
+					"didError": 0,
+					"createdObject": queryset
+				}
+				return JsonResponse(context)
+
+
+			elif request.POST.get("action") == "activate":
+				ID = request.POST.get("id").replace("switch","")
+				print(ID)
+				Dissertation.objects.filter(id = ID).update(is_active = True)
+				return HttpResponse("")
+
+
+
+			elif request.POST.get("action") == "deactivate":
+				ID = request.POST.get("id").replace("switch","")
+				print(ID)
+				Dissertation.objects.filter(id = ID).update(is_active = False)
+				return HttpResponse("")
+
+
 
 class adminUserUpdateView(View):
 	def get(self, request):
@@ -98,20 +456,23 @@ class adminUserUpdateView(View):
 class adminTableView(View):
 
 	def get(self, request):
-		user= User.objects.select_related("department").values("username", 
-																"first_name", 
-																"last_name", 
-																"last_login", 
-																"department__name",
-																"department__abbv",
-																"last_login"
+
+		user= User.objects.select_related("department").values("username", "first_name", "last_name", 
+																"last_login", "department__name",
+																"department__abbv", "last_login"
 																)
+
+
+		activeUser_perCollege =  Department.objects.select_related("user").values('name').annotate(activeCount=Count('id', filter=Q(user__last_login__contains=timezone.now().date())))
+		userSite =  Site.objects.values('name', 'url').annotate(accessCount=Count('usersite_access__id')).distinct()
+		dissertations = Dissertation.objects.select_related("department").annotate(department_name = F('department__abbv'))
 		context ={
-			"users": list(user)		
+			"users": list(user),
+			"activeUser_perCollege": list(activeUser_perCollege),
+			"siteAccess": list(userSite),
+			"dissertations": list(dissertations)		
 		}
 		return render(request, 'adminTables.html', context)
-
-
 	def post(self, request):
 		
 		if 'update' in request.POST:
@@ -122,11 +483,95 @@ class adminTableView(View):
 				firstname = request.POST['first_name']	
 				lastname = request.POST['last_name']	
 				college = request.POST['college']
+				password = request.POST['password']
 
-				User.objects.filter(username=username).update(username= username, first_name = firstname, last_name = lastname, department= Department.objects.get(abbv=college))
-				return redirect("ra:admin_tables_view")
+				
+
 			else:
-				return HttpResponse("Some fields are empty")
+				messages.success(request, form.errors)
+				return redirect("ra:admin_tables_view")
+				context = {
+					"form": form
+				}
+				return render(request, 'adminTables.html', context)
+
+		elif request.is_ajax():
+			
+			action = request.POST["action"]
+
+			if request.POST['action'] == "delete_user":
+				User.objects.filter(username = request.POST['username']).delete()
+				return HttpResponse("")
+
+			elif action =="update_user":
+				
+				firstname = request.POST["first_name"]
+				lastname = request.POST["last_name"]
+				oldUsername = request.POST["oldUsername"]
+				newUsername = request.POST["newUsername"]
+				department = request.POST["department"]
+				password = request.POST["password"]
+ 				
+				
+				
+				if newUsername == "" or firstname == "" or lastname == "":
+					return JsonResponse({"isError": 1,"errorMessage": "please fill out required fields"})
+				
+			
+				elif oldUsername != newUsername:
+					NewUsername_exist =  User.objects.filter(username = newUsername).exists()
+					if NewUsername_exist:
+						return JsonResponse({"isError": 1,"errorMessage": "username already exist"})
+					else:
+						User.objects.filter(username=oldUsername).update(username= newUsername, 
+																		first_name = firstname, 
+																		last_name = lastname, 
+																		department= Department.objects.get(abbv=department))
+
+
+						user= User.objects.select_related("department").filter(username=newUsername).values(
+																												"username", "first_name", "last_name", 
+																												"last_login", "department__name",
+																												"department__abbv", "last_login"
+																											)
+						context = {
+						"isError": 0,
+						"user": list(user)
+
+						}
+						print("success")
+						return JsonResponse(context)
+				else:
+					User.objects.filter(username=newUsername).update( 
+																		first_name = firstname, 
+																		last_name = lastname, 
+																		department= Department.objects.get(abbv=department)
+																	)
+
+
+					user= User.objects.select_related("department").filter(username=newUsername).values(
+																											"username", "first_name", "last_name", 
+																											"last_login", "department__name",
+																											"department__abbv", "last_login"
+																										)
+
+				
+
+
+					context = {
+						"isError": 0,
+						"user": list(user)
+
+					}
+					print("success")
+					return JsonResponse(context)
+				
+			# elif not user.exists() and  User.objects.filter(username=username).exists():
+			# 	return JsonResponse({"isError": 1,"errorMessage": "username already exist"})
+
+			# elif not user.exists() and  User.objects.filter(student_id=newStudent_id).exists():
+			# 	return JsonResponse({"isError": 1,"errorMessage": "id number already exist"})
+						
 
 
 class adminRegistrationView(View):
@@ -144,11 +589,13 @@ class adminRegistrationView(View):
 				first_name=request.POST['first_name']
 				last_name=request.POST['last_name']
 				department=request.POST['department']
-				user = User(username=username,
+				user = User(
+							username=username,
 							password = password,
 							first_name = first_name,
 							last_name= last_name,
-							department = Department.objects.get(abbv=department)
+							department = Department.objects.get(abbv=department),
+							last_login = None
 							)
 				user.save()
 				messages.success(request, "User added")
@@ -159,7 +606,7 @@ class adminRegistrationView(View):
 				return render(request, 'adminRegistration.html', {"form":form,"type": rtype})
 
 		if request.is_ajax():
-			print("nisulod asa ajax")
+
 			if request.POST['action'] == "register_csv":
 				users = json.loads(request.POST.get('users'))
 				didExcept = 0
@@ -170,24 +617,30 @@ class adminRegistrationView(View):
 						password=make_password(row['password']),
 						first_name= row['first_name'], 
 						last_name=row['last_name'], 
-						department =  Department.objects.get(abbv=row['department'])
+						department =  Department.objects.get(abbv=row['department']),
+						last_login = None
 						)
 					try:
 						user.save()
 					except Exception as e:
 						didExcept +=1
 						errorRows.append(row)
-
+						print(e)
 				context ={
 					"didExcept": didExcept,
 					"errorRows": errorRows,
 					"usersCount": len(users)
 				}
 				return JsonResponse(context)
+
+			
+
+
 		# elif 'readCSV' in request.POST:
 
-		try:
+		try: #read csv form
 			myfile = request.FILES['file']
+			print(myfile, type(myfile))
 			file = myfile.read().decode('utf-8')
 			dict_reader = csv.DictReader(io.StringIO(file))
 			users =  list(dict_reader)
@@ -204,23 +657,47 @@ class adminRegistrationView(View):
 class practice(View):
 	
 	def get(self, request):
-		# userBbookmarks= Bookmark.objects.filter(user=request.user).values('title')
-		
-		
-		if Bookmark.objects.filter(user=request.user).exists():
-				queryAll = Bookmark.objects.select_related("bookmark").filter(folder__isnull=True, group__isnull=True).values("bookmark__id", "bookmark__title", "user") # this retrieves all records
+		# word = "weather"
+		# response = requests.get('https://link.springer.com/search/page/'+ str(1) +'?facet-content-type=%22Book%22&query='+word, headers = headers(), timeout=2) #books
+		# soup = BeautifulSoup(response.content, 'html.parser')
 
-				recommendation = modes(list(queryAll), request.user.id)
+		# titles = soup.find_all('a', class_="title")
 
-				print(recommendation)
-				
 
-			# a = User_bookmark.objects.annotate(id=1)
-			# print("folders count: ",a.folders.all().count())
-			# print("recommended","\n",a )
-			# recommendation = list(dict.fromkeys(modes(queryAll, request.user.id) ))
+		# for i, title in enumerate(titles):
+		# 	z= []
+
+		# 	subtitle = title.findNext("p", class_="subtitle")
+		# 	p_tag__meta = title.parent.findNext("p", class_="meta")
+		# 	# print(i,p_tag__meta.span.a , p_tag__meta.findNext("span", class_="year"))
+		# 	try:
+		# 		author = p_tag__meta.span.a.text +"  " +p_tag__meta.findNext("span", class_="year").text
+		# 	except:
+		# 		author = p_tag__meta.span.span.text +"  " +p_tag__meta.findNext("span", class_="year").text
+
+		# 	print(author)
+
+		# 	z.append(title.text)
+		# 	if subtitle.text != "" and not subtitle.text.isspace() and len(subtitle.text) > 5:
+		# 	    z.append(subtitle.text)
+
+
+		# 	if author != "" or not author.isspace() or len(author) > 5:
+		# 	    z.append(author)
+
+		# 	z.append(title["href"])
+		# 	print(z)
+
+		# 	print(subtitle.text.isspace(), len(subtitle) > 5, subtitle.text != "", subtitle.text)
+
+
+		# a = User_bookmark.objects.annotate(id=1)
+		# print("folders count: ",a.folders.all().count())
+		# print("recommended","\n",a )
+		# recommendation = list(dict.fromkeys(modes(queryAll, request.user.id) ))
 		
 		# a= Department.objects.create(name='College of Computer Studies', abbv='CCS')
+
 		# User.objects.create(username='18-5126-269', password =make_password('12345'), first_name="yanni", last_name="mondejar", department=a)
 
 
@@ -229,36 +706,21 @@ class practice(View):
 		# User.objects.create(username='18-5126-271', password = make_password('12345'), first_name="ryan ", last_name="talatagod", department = a)
 		
 
-		# cursor = connection.cursor()   
-		#datetime.now().month = #get month of current time
-		# cursor.execute("SELECT b.isRemoved, COUNT(b.user_id) FROM auth_user u, bookmarks b WHERE u.id=b.user_id AND b.dateAdded LIKE '2021-11%' GROUP BY isRemoved") #| get rows of for a specific date|
-		# cursor.execute("SELECT user_id, COUNT(user_id) AS `value_occurrence` FROM Bookmarks GROUP BY user_id ORDER BY `value_occurrence` DESC LIMIT 1") # |get the most frequent user ID (top1 ky limit 1 man)|
-		# cursor.execute("Select b.* from Bookmarks b, bookmark_folders bf Where bf.user_id = "+str(request.user.id)+" AND bf.folder_id = "+ str(1)+" AND bf.bookmark_id = b.id"  ) #|for retrievving bookmarks inside a folder|
-		# row = cursor.fetchall()
-		
-		# queryset = User.objects.filter(id = Bookmarks.objects.filter(dateAdded__contains='2021-11-17').values('user_id'))   #| get rows of for a specific date|
-		# row = cursor.fetchall()
-		# print()
-
-		# cursor.execute("SELECT id, COUNT(id) FROM Bookmarks GROUP BY dateAdded LIKE '2021-11%'") # |get the most frequent user ID (top1 ky limit 1 man)|
-		# row = cursor.fetchall()
-		# print(row)
-		# queryset = User_bookmark.objects.all()
-		# a = list(queryset)
-		# context = {
-		#     "bookmark_set": queryset,
-		#     # "bookmark_list" : a 
-		# }
-		# return HttpResponse()
+		# Department.objects.create(name='College of Engineering and Architecture', abbv='CEA')
+		# Department.objects.create(name='College of Nursing and Allied Health Sciences', abbv='CNAHS')
+		# Department.objects.create(name='College of Management, Business Accountancy', abbv='CMBA')
+		# Department.objects.create(name='College of Arts, Sciences and Education', abbv='CASE')
+		# Department.objects.create(name='College of Criminal Justice', abbv='CCJ')
 
 
-		# OTL('war', 1232, 'Text book', 1)
-		# a = OER('animals', 'proxy', 'Text book', 2)
-		# for b in a:
-		# 	print(b['title'])
-		# a= OER('peace', 'Text book', 1)
+		# Site.objects.create(name ="Springeropen", url="https://Springeropen.com")
+		# Site.objects.create(name ="UNESCO Digital Library", url="https://unesdoc.unesco.org/")
+		# Site.objects.create(name ="Open Textbook Library", url="https://open.umn.edu/opentextbooks/")
+		# Site.objects.create(name ="OER_Commons", url="https://www.oercommons.org/")
 
 		
+
+
 		return render(request,'practice.html')#,context)
 
 	def post(self, request):
@@ -329,7 +791,9 @@ class TeraLoginUser(View):
 			user = authenticate(request, username=username, password=password)
 			if user is not None:
 				login(request, user)
-
+				if not User_login.objects.filter(user = request.user,date__contains=timezone.now().date()).exists():
+					User_login.objects.create(user = request.user)
+					
 				if request.session.get('previousPage') == None:
 					return redirect("ra:index_view")
 				else:
@@ -355,10 +819,14 @@ class TeraIndexView(View):
 		#	proxy =Proxies(proxy = proxy)
 		#	proxy.save()
 		
-		
+		if request.user.is_authenticated and not User_login.objects.filter(user = request.user, date__contains=timezone.now().date()).exists():
+			User_login.objects.create(user= request.user)
 
+		if request.user.is_authenticated and not User.objects.filter(id = request.user.id, last_login__contains=timezone.now().date()).exists():
+			User.objects.filter(id= request.user.id).update(last_login = timezone.now())
 		request.session['previousPage'] = 'index_view'
-		
+		# if request.user != None:
+		# 	User.objects.filter(id = request.user.id).update(last_login = timezone.now())
 		context ={
 			"user":request.user.is_authenticated
 		}
@@ -377,10 +845,8 @@ class TeraIndexView(View):
 
 		elif 'btnLogout' in request.POST:
 			proxy = request.session.get('proxy')
-
 			logout(request)
 
-			request.session['proxy'] = proxy
 			return redirect("ra:index_view")
 
 		elif 'btnSearch' in request.POST:
@@ -394,29 +860,35 @@ class TeraSearchResultsView(View):
 	
 
 	def get(self,request):
+
 		request.session['previousPage'] ='search_result_view'
 		# header = ast.literal_eval(Headers.objects.get(id=2).text)	# converting from string to dictionary
 		# header = request.session.get('header')
 		word = request.session.get('word')
 
-		
+		if request.user.is_authenticated and not User_login.objects.filter(user = request.user, date__contains=timezone.now().date()).exists():
+			User_login.objects.create(user= request.user)
+		if request.user.is_authenticated and not User.objects.filter(id = request.user.id, last_login__contains=timezone.now().date()).exists():
+			User.objects.filter(id= request.user.id).update(last_login = timezone.now())
 
 		if request.session.get('website') != None:
-			website = request.session.get('website')
+			active_site = request.session.get('website')
 		else:
-			website = "Springeropen"
+			active_site = "CIT"
 
 		if request.session.get('itemType') != None:
 			itemType = request.session.get('itemType')
 		else:
-			itemType = "article"
-						
+			itemType = "Dissertations"
+		
+		sites = Site.objects.filter(is_active=True).values("name")
 		context = {
 							'keyword': word,
-							'isGet': 0,
-							'website': website,
+							'active_site': active_site,
 							'itemType': itemType,
-							'is_authenticated': str(request.user.is_authenticated)
+							"isGet": "true",
+							'is_authenticated': str(request.user.is_authenticated),
+							'sites': list(sites)
 		}
 		
 		return render(request,'searchresults.html', context)
@@ -431,99 +903,126 @@ class TeraSearchResultsView(View):
 
 			if action == "search":
 				
-				print("is get? "+ request.POST['isGet'])
-				# print(type(request.POST['isGet']))
-				# print("search")
-				# if isGet == True:
-				# else:
-					# User_acces.objects.create()
+
 				word = request.POST['word']
 				request.session['word'] = word
-				
-
+				isGet = request.POST['isGet']
 				website = request.POST['site']
+				isSite = request.POST['isSite']
+
 				itemType = request.POST['itemType']
 				request.session['website'] =website
 				request.session['itemType'] = itemType
 
+				if website == "CIT":
 
-				a = scrape(word,itemType , website,' ', request.POST['pageNumber'])
-
-				results = a	
+					results = Dissertation.objects.filter(title= word).values()
+					context = {
+						'results': list(results),
+						'is_authenticated': request.user.is_authenticated,
+						'isGet': "false"
+					}
 				
-				print(len(results))
-				context = {
-					'results': results,
-					'is_authenticated': request.user.is_authenticated,
-					"isGet": False
-				}
+				else:
+					if isSite == "true" and isGet == "false":
+						if request.user.is_authenticated and not UserSite_access.objects.filter(user=request.user, site = Site.objects.get(name=website.replace("_"," ")), date_of_access__contains =timezone.now().date()).exists():
+							UserSite_access.objects.create(user=request.user, site = Site.objects.get(name=website.replace("_"," ")))
+						
+					results = scrape(word, itemType, website,' ', request.POST['pageNumber'])
+
+				
+					context = {
+						'results': results,
+						'is_authenticated': request.user.is_authenticated,
+						'isGet': "false"
+					}
 				return JsonResponse(context)
 					
 			elif action == "add":
 				print('bookmark button clicked')
 				keyword = request.POST['word']
 				bookmark = request.POST['bookmark']
-				siteRef = request.POST['website'] +" " +request.POST['reftype']
+				website = request.POST['website']
+				reftype = request.POST['reftype']
 				string = bookmark.split('||')
 				title = string[0].replace('\n','').replace('  ','')
-				print(string)
 				url = string[1]
 
-				# print(title, url, siteRef)
-				detail = details(url, request.session.get('proxy'),siteRef)
+				if not Bookmark.objects.filter(user = request.user, bookmark__url = url).exists():
+					if Bookmark_detail.objects.filter(url = url).exists():
+						Bookmark.objects.create(user = request.user,bookmark=Bookmark_detail.objects.get(url = url),keyword=keyword)
+						
+						return HttpResponse("")
 
-				websiteTitle = detail['websiteTitle']
-				itemType = detail['itemType']
-				author = detail['author']
-				description = detail['description']
-				journalItBelongs = detail['journalItBelongs']
-				volume = detail['volume']
-				doi = detail['doi']
-				publicationYear = detail['publishYear']
-				subtitle = detail['subtitle']
-				citation = detail['citation']
-				downloads = detail['downloads']
-				publisher = detail['publisher']
-				edition = detail['edition']
-				pages = detail['pages']
-				# author description publication volume doi
+					else:
+						
+						detail = details(url, request.session.get('proxy'),website, reftype)
+
+						websiteTitle = detail['websiteTitle']
+						itemType = detail['itemType']
+						author = detail['author']
+						description = detail['description']
+						journalItBelongs = detail['journalItBelongs']
+						volume = detail['volume']
+						doi = detail['doi']
+						publicationYear = detail['publishYear']
+						subtitle = detail['subtitle']
+						citation = detail['citation']
+						downloads = detail['downloads']
+						publisher = detail['publisher']
+						edition = detail['edition']
+						pages = detail['pages']
+						# author description publication volume doi
+						
+						
+
+						# print(websiteTitle + '\n'+itemType + '\n'+title + '\n' +link + '\n' +author+ '\n' +description+ '\n' +publication+ '\n' +volume+ '\n' +doi)
+						if request.POST['reftype'] == "article":
+							detail = Bookmark_detail.objects.create(
+								title = title,websiteTitle= websiteTitle,itemType= itemType,
+								author = author, description= description, url = url, journalItBelongs= journalItBelongs, 
+								volume = volume, DOI = doi
+								)
+							Bookmark.objects.create(user = request.user,bookmark=detail,keyword=keyword)
+
+							
+
+							
+						elif itemType == "book":
+							detail = Bookmark_detail.objects.create(title = title,websiteTitle= websiteTitle,
+								subtitle = subtitle, itemType= itemType,author = author,numOfCitation = citation,
+								numOfDownload= downloads,publisher=publisher, description= description, url = url, 
+								edition = edition,numOfPages = pages, DOI = doi)
+
+							Bookmark.objects.create(user = request.user,bookmark=detail,keyword=keyword)
+
+						
+						return HttpResponse("")
+				else:
+					return HttpResponse("")
+					
 				
 				
-				# print(websiteTitle + '\n'+itemType + '\n'+title + '\n' +link + '\n' +author+ '\n' +description+ '\n' +publication+ '\n' +volume+ '\n' +doi)
-				if request.POST['reftype'] == "article":
-					detail = Bookmark_detail.objects.create(
-						title = title,websiteTitle= websiteTitle,itemType= itemType,
-						author = author, description= description, url = url, journalItBelongs= journalItBelongs, 
-						volume = volume, DOI = doi
-						)
-					Bookmark.objects.create(user = request.user,bookmark=detail,keyword=keyword)
-					
-					
-				elif itemType == "book":
-					detail = Bookmark_detail.objects.create(title = title,websiteTitle= websiteTitle,
-						subtitle = subtitle, itemType= itemType,author = author,numOfCitation = citation,
-						numOfDownload= downloads,publisher=publisher, description= description, url = url, 
-						edition = edition,numOfPages = pages, DOI = doi)
-
-					Bookmark.objects.create(user = request.user,bookmark=detail,keyword=keyword)
-				return HttpResponse('')
 			else:
+				bookmark = request.POST['bookmark']
 				string = bookmark.split('||')
 
-				title = string[1].replace('\n','').replace('  ','')
-				User_bookmark.objects.filter(title=title).update(isRemoved=1)
+				title = string[0].replace('\n','').replace('  ','')
+				detail = Bookmark_detail.objects.get(title=title)
+				Bookmark.objects.filter(user = request.user, bookmark=detail).delete()
 				return HttpResponse('')
 
 		elif 'buttonLogin' in request.POST:
 			request.session['previousPage'] = request.POST['previousPage']
 			print(request.session.get('previousPage'))
+
 			return redirect('ra:tera_login_view')
 
 		elif 'btnLogout' in request.POST:
 			word = request.session.get('word')
 			proxy = request.session.get('proxy')
 			pp = request.session.get('previousPage')
-
+			
 			logout(request)
 			request.session['previousPage'] = pp
 			request.session['word'] = word
@@ -543,8 +1042,10 @@ class TeraDashboardView(View):
 		# Department.objects.create(abbv='CCS', name="College of Computer Studies")
 		# Group.objects.get(id=1).member.add(User.objects.get(username='mondejars'))
 		#.distinct()
-		
-		
+		if request.user.is_authenticated and not User_login.objects.filter(user = request.user, date__contains=timezone.now().date()).exists():
+			User_login.objects.create(user= request.user)
+		if request.user.is_authenticated and not User.objects.filter(id = request.user.id, last_login__contains=timezone.now().date()).exists():
+			User.objects.filter(id= request.user.id).update(last_login = timezone.now())
 		# Folder.objects.all().delete()
 		# User_bookmark.objects.all().delete()
 		request.session['previousPage'] = "tera_dashboard_view"
@@ -587,7 +1088,7 @@ class TeraDashboardView(View):
 			# a = json.dumps(a, default=str)
 			recommendation = []
 			if Bookmark.objects.filter(user=request.user).exists():
-				queryAll = Bookmark.objects.select_related("bookmark").filter(folder__isnull=True, 
+				queryAll = Bookmark.objects.select_related("bookmark_detail").filter(~Q(user__isnull=False),
 																				group__isnull=True
 																				).values("bookmark__id",
 																				"bookmark__itemType",
@@ -597,10 +1098,11 @@ class TeraDashboardView(View):
 
 				recommendation = modes(list(queryAll), request.user.id)
 				# modes(list(queryAll), request.user.id)
-			queryset = Bookmark.objects.select_related("bookmark").filter(
+
+			queryset = Bookmark.objects.select_related("bookmark_detail").filter(
 																		( Q(user=request.user) ) & 
 																		( Q(isRemoved=1) | Q(isRemoved=0) ), 
-																		folder= None, group = None
+																		group__isnull=True
 																		).values(
 																			"id", "bookmark__id", "isFavorite", "dateAccessed", "dateAdded", 
 																			"isRemoved", "date_removed",
@@ -611,7 +1113,7 @@ class TeraDashboardView(View):
 																			"bookmark__numOfCitation", "bookmark__numOfPages",
 																			"bookmark__publisher", "bookmark__publicationYear",
 																			"bookmark__DOI", "bookmark__ISSN", "bookmark__edition", "bookmark__numOfDownload"
-																				).distinct()
+																				).order_by("dateAdded")
 											
 
 
@@ -652,7 +1154,7 @@ class TeraDashboardView(View):
 			word = request.session.get('word')
 			prevPage = request.session.get('previousPage')
 			proxy = request.session.get('proxy')
-
+			
 			logout(request)
 
 			request.session['word'] = word
@@ -669,36 +1171,191 @@ class TeraDashboardView(View):
 
 			
 			if action == 'addFav':
-				Bookmark.objects.filter(bookmark_id=request.POST['bID'], user= request.user, group = None).update(isFavorite=1)
+				print("olok")
+				Bookmark.objects.filter(id=request.POST['b_id'], user= request.user, group = None).update(isFavorite=1)
 				return HttpResponse('')
 			elif action == 'remFav':
-				Bookmark.objects.filter(bookmark_id=request.POST['bID'], user= request.user, group = None).update(isFavorite=0)
+				Bookmark.objects.filter(id=request.POST['b_id'], user= request.user, group = None).update(isFavorite=0)
 				return HttpResponse('')
+
+
 			elif action == 'trashItem':
-				Bookmark.objects.filter(bookmark_id=request.POST['bID'], user= request.user, group = None).update(isRemoved=1, date_removed= timezone.now())
-				# print('len of trash item', Bookmark.objects.filter(bookmark_id=request.POST['bID'], user= request.user).count())
-				return HttpResponse('')
+				tab = request.POST['tab']
+				bookmark_id = request.POST['b_id']
+				print(tab)
+				if tab != "folders" and tab != "groups":
+					print("nisulod")
+					Bookmark.objects.filter(id=bookmark_id, user= request.user, group = None).update(isRemoved=1, date_removed= timezone.now())
+					return HttpResponse('')
+
+				elif tab == "folders":
+					faction_id = request.POST['faction_id']
+					bookmark_id = request.POST['b_id']
+					instance = Bookmark.objects.get(
+											id=bookmark_id,
+											user= request.user
+											 )
+					instance.folders.remove(Folder.objects.get(id = faction_id))
+					return HttpResponse("")
+
+
 			elif action == 'unTrashItem':
-				Bookmark.objects.filter(bookmark_id=request.POST['bID'], user= request.user, group = None).update(isRemoved=0,date_removed= None)
+				Bookmark.objects.filter(id=request.POST['bID'], user= request.user, group = None).update(isRemoved=0,date_removed= None)
 				return HttpResponse('')
+
+
 			elif action == 'deleteItem':
-				Bookmark.objects.filter(bookmark_id=request.POST['bID'], user= request.user, group = None).update(isRemoved=2, date_removed= timezone.now())
+				Bookmark.objects.filter(id=request.POST['bID'], user= request.user, group = None).update(isRemoved=2, date_removed= timezone.now())
 				return HttpResponse('')
+
+
+			elif action == 'get_bookmarks':
+				tab = request.POST['tab']
+
+				if tab == "all":
+					queryset = Bookmark.objects.select_related("bookmark_detail").filter(
+																		user=request.user,
+																		isRemoved=False, 
+																		group__isnull=True
+																		).values(
+																			"id", "bookmark__id", "isFavorite", "dateAccessed", "dateAdded", 
+																			"isRemoved", "date_removed",
+																			"bookmark__websiteTitle", "bookmark__itemType",
+																			"bookmark__url", "bookmark__title"
+																				).order_by("dateAdded")
+					print("post")
+					return JsonResponse({"bookmarks": list(queryset)})
+				elif tab == "recentlyAdded":
+					time = timezone.now().date() - timedelta(days=7)
+					queryset = Bookmark.objects.select_related("bookmark_detail").filter(
+																		user=request.user,
+																		isRemoved=False, 
+																		group__isnull=True,
+																		dateAdded__gte=time
+																		).values(
+																			"id", "bookmark__id", "isFavorite", "dateAccessed", "dateAdded", 
+																			"isRemoved", "date_removed",
+																			"bookmark__websiteTitle", "bookmark__itemType",
+																			"bookmark__url", "bookmark__title"
+																				).order_by("dateAdded")
+					print("post")
+					return JsonResponse({"bookmarks": list(queryset)})
+
+				elif tab == "recentlyRead":
+					time = timezone.now().date() - timedelta(days=3)
+					queryset = Bookmark.objects.select_related("bookmark_detail").filter(
+																		user=request.user,
+																		isRemoved=False, 
+																		group__isnull=True,
+																		dateAccessed__gte=time
+																		).values(
+																			"id", "bookmark__id", "isFavorite", "dateAccessed", "dateAdded", 
+																			"isRemoved", "date_removed",
+																			"bookmark__websiteTitle", "bookmark__itemType",
+																			"bookmark__url", "bookmark__title"
+																				).order_by("dateAdded")
+					print("post")
+					return JsonResponse({"bookmarks": list(queryset)})
+
+				elif tab == "favorite":
+					time = timezone.now().date() - timedelta(days=3)
+					queryset = Bookmark.objects.select_related("bookmark_detail").filter(
+																		user=request.user,
+																		isRemoved=False, 
+																		group__isnull=True,
+																		isFavorite=True
+																		).values(
+																			"id", "bookmark__id", "isFavorite", "dateAccessed", "dateAdded", 
+																			"isRemoved", "date_removed",
+																			"bookmark__websiteTitle", "bookmark__itemType",
+																			"bookmark__url", "bookmark__title"
+																				).order_by("dateAdded")
+					print("post")
+					return JsonResponse({"bookmarks": list(queryset)})
+
+				elif tab == "trash":
+					time = timezone.now().date() - timedelta(days=3)
+					queryset = Bookmark.objects.select_related("bookmark_detail").filter(
+																		user=request.user,
+																		isRemoved=True, 
+																		group__isnull=True,
+																		).values(
+																			"id", "bookmark__id", "isFavorite", "dateAccessed", "dateAdded", 
+																			"isRemoved", "date_removed",
+																			"bookmark__websiteTitle", "bookmark__itemType",
+																			"bookmark__url", "bookmark__title"
+																				).order_by("dateAdded")
+					print("post")
+					return JsonResponse({"bookmarks": list(queryset)})
+
+				elif tab =="folders":
+					# return HttpResponse("")
+					fID = request.POST['faction_id']
+					a= []
+					if Bookmark.objects.filter( folders__id=fID, user=request.user, isRemoved=0).exists():
+						queryset = Bookmark.objects.select_related("bookmark").filter(
+																				folders__id=fID, user=request.user, isRemoved=0
+																				).values(
+																					"id", "bookmark__id", "isFavorite", "dateAccessed", "dateAdded", 
+																					"isRemoved", "date_removed",
+																					"bookmark__websiteTitle", "bookmark__itemType",
+																					"bookmark__url", "bookmark__title", "bookmark__subtitle",
+																					"bookmark__subtitle", "bookmark__author", "bookmark__description",
+																					"bookmark__journalItBelongs", "bookmark__volume",
+																					"bookmark__numOfCitation", "bookmark__numOfPages",
+																					"bookmark__publisher", "bookmark__publicationYear",
+																					"bookmark__DOI", "bookmark__ISSN", "bookmark__edition",
+																					 "bookmark__numOfDownload"
+																						)
+						a = list(queryset)
+					context = {
+				    "bookmarks": a
+					}
+					
+					return JsonResponse(context)
+
+
+				elif tab =="groups":
+					return HttpResponse("")
+					fID = request.POST['faction_id']
+					a= []
+					if Bookmark.objects.filter( folders__id=fID, user=request.user, isRemoved=0).exists():
+						queryset = Bookmark.objects.select_related("bookmark").filter(
+																				folders__id=fID, user=request.user, isRemoved=0
+																				).values(
+																					"id", "bookmark__id", "isFavorite", "dateAccessed", "dateAdded", 
+																					"isRemoved", "date_removed",
+																					"bookmark__websiteTitle", "bookmark__itemType",
+																					"bookmark__url", "bookmark__title", "bookmark__subtitle",
+																					"bookmark__subtitle", "bookmark__author", "bookmark__description",
+																					"bookmark__journalItBelongs", "bookmark__volume",
+																					"bookmark__numOfCitation", "bookmark__numOfPages",
+																					"bookmark__publisher", "bookmark__publicationYear",
+																					"bookmark__DOI", "bookmark__ISSN", "bookmark__edition",
+																					 "bookmark__numOfDownload"
+																						)
+						a = list(queryset)
+					print(a)
+					context = {
+				    "bookmarks": a
+					}
+					
+					return JsonResponse(context)
 
 			elif action == 'add_bookmark_to_faction':
 				factionID = request.POST['faction_id']
-				bdID = request.POST['bID']
+				bookmarkID = request.POST['b_id']
 				faction = request.POST['faction']
 				
 				if faction =="folder":
 					print('yes folder')
-					if Bookmark.objects.filter(folder__id= factionID,bookmark__id=bdID, isRemoved=0).exists():
-						return HttpResponse('')
-					else:
-						Bookmark.objects.create(user=request.user, 
-													folder=Folder.objects.get(id=factionID), 
-													bookmark = Bookmark_detail.objects.get(id=bdID)
-													)
+					
+					instance = Bookmark.objects.get(id = bookmarkID)
+					instance.folders.add(Folder.objects.get(id= factionID))
+						# Bookmark.objects.create(user=request.user, 
+						# 							folder=Folder.objects.get(id=factionID), 
+						# 							bookmark = Bookmark_detail.objects.get(id=bookmarkID)
+						# 							)
 					# User_bookmark.objects
 					# Bookmark_folder.objects.create(user=request.user, folder=Folder.objects.get(id=ID), bookmark = User_bookmark.objects.get(id=bID) )
 					print("bookmark folder added")
@@ -706,12 +1363,12 @@ class TeraDashboardView(View):
 
 				elif faction =="groups":
 					# bookmark = User_bookmark.objects.get(id=bID)
-					if Bookmark.objects.filter(group__id= factionID,bookmark__id=bdID, isRemoved=0).exists():
+					if Bookmark.objects.filter(group__id= factionID,bookmark__id=bookmarkID, isRemoved=0).exists():
 						return HttpResponse('')
 					else:
-						Bookmark.objects.create(user=request.user, 
+						Bookmark.objects.create(
 												group=Group.objects.get(id=factionID), 
-												bookmark = Bookmark_detail.objects.get(id=bdID) 
+												bookmark = Bookmark_detail.objects.get(id=bookmarkID) 
 												)
 						# print("bookmark added to group")
 						return HttpResponse('')
@@ -722,15 +1379,15 @@ class TeraDashboardView(View):
 
 			elif action == 'add_folder':
 				name = request.POST['name']
-				did_exist = Folder.objects.filter(user_id = request.user, name = name, is_removed=0).exists()
+				folder_exist = Folder.objects.filter(user = request.user, name = name, is_removed=0).exists()
 				
-				if did_exist == False:
-					Folder.objects.create(user=request.user, name = name)
-					folders = Folder.objects.filter(user=request.user).values()
+				if folder_exist == False:
+					folder = Folder.objects.create(user=request.user, name = name)
+					folders = Folder.objects.filter(id=folder.id).values()
 					a = list(folders)	
-				
+					print(a)
 					context = {
-				    "folder_list": a,
+				    "createdFolder": a,
 				    "did_exist": False
 					}
 				else:
@@ -762,9 +1419,9 @@ class TeraDashboardView(View):
 			elif action == 'get_folder_bookmarks':
 				fID = request.POST['fID']
 				a= []
-				if Bookmark.objects.filter( folder__id=fID, user=request.user, isRemoved=0).exists():
+				if Bookmark.objects.filter( folders__id=fID, user=request.user, isRemoved=0).exists():
 					queryset = Bookmark.objects.select_related("bookmark").filter(
-																			folder__id=fID, user=request.user, isRemoved=0
+																			folders__id=fID, user=request.user, isRemoved=0
 																			).values(
 																				"id", "bookmark__id", "isFavorite", "dateAccessed", "dateAdded", 
 																				"isRemoved", "date_removed",
@@ -778,12 +1435,6 @@ class TeraDashboardView(View):
 																				 "bookmark__numOfDownload"
 																					)
 					a = list(queryset)
-
-
-				# cursor = connection.cursor()   
-				# cursor.execute("SELECT bf.id AS bf_ID, b.* FROM User_bookmark b, Bookmark_folder bf WHERE bf.folder_id = "+ str(fID)+" AND bf.bookmark_id = b.id AND bf.user_id = "+ str(request.user.id)+" AND bf.is_removed = 0 AND b.isRemoved = 0") #| get rows of for a specific date|
-				# a = dictfetchall(cursor)
-				# print(a)
 				
 				context = {
 			    "bookmarks": a
@@ -794,7 +1445,7 @@ class TeraDashboardView(View):
 			elif action == 'get_group_bookmarks':
 				groupID= request.POST['gID']
 				a= []
-				if Bookmark.objects.filter( group__id=groupID, user=request.user, isRemoved=0).exists():
+				if Bookmark.objects.filter( Q(group__owner= request.user) |Q(group__member=request.user), isRemoved=0).exists():
 					bookmarks = Bookmark.objects.select_related("bookmark").filter(
 																			group__id=request.POST['gID'], isRemoved=0
 																			).values(
@@ -824,42 +1475,35 @@ class TeraDashboardView(View):
 				return JsonResponse(context)
 
 			elif action == 'remove_from_faction':
-				faction_id = request.POST['faction_id']
-				bookmark_id = request.POST['b_id']
-
-				if request.POST['faction_type'] == 'folders':
-	
-					Bookmark.objects.filter(bookmark_id=bookmark_id,
-											 user= request.user, 
-											 folder__id=faction_id
-											 ).update(isRemoved=1,
-											 			date_removed= timezone.now()
-											 			)
+				
+											 # ).update(isRemoved=1,
+											 # 			date_removed= timezone.now()
+											 # 			)
 					
-					queryset = Bookmark.objects.select_related("bookmark").filter(
-																		folder__id=faction_id, user=request.user, isRemoved=0
-																		).values(
-																			"id", "bookmark__id", "isFavorite", "dateAccessed", "dateAdded", 
-																			"isRemoved", "date_removed",
-																			"bookmark__websiteTitle", "bookmark__itemType",
-																			"bookmark__url", "bookmark__title", "bookmark__subtitle",
-																			"bookmark__subtitle", "bookmark__author", "bookmark__description",
-																			"bookmark__journalItBelongs", "bookmark__volume",
-																			"bookmark__numOfCitation", "bookmark__numOfPages",
-																			"bookmark__publisher", "bookmark__publicationYear",
-																			"bookmark__DOI", "bookmark__ISSN", "bookmark__edition",
-																			 "bookmark__numOfDownload"
-																				)
+					# queryset = Bookmark.objects.select_related("bookmark").filter(
+					# 													folder__id=faction_id, user=request.user, isRemoved=0
+					# 													).values(
+					# 														"id", "bookmark__id", "isFavorite", "dateAccessed", "dateAdded", 
+					# 														"isRemoved", "date_removed",
+					# 														"bookmark__websiteTitle", "bookmark__itemType",
+					# 														"bookmark__url", "bookmark__title", "bookmark__subtitle",
+					# 														"bookmark__subtitle", "bookmark__author", "bookmark__description",
+					# 														"bookmark__journalItBelongs", "bookmark__volume",
+					# 														"bookmark__numOfCitation", "bookmark__numOfPages",
+					# 														"bookmark__publisher", "bookmark__publicationYear",
+					# 														"bookmark__DOI", "bookmark__ISSN", "bookmark__edition",
+					# 														 "bookmark__numOfDownload"
+					# 															)
 
-					a = list(queryset)
-					print(len(a))
-					context = {
-				    "bookmarks": a
-					}
+					# a = list(queryset)
+					# print(len(a))
+					# context = {
+				 #    "bookmarks": a
+					# }
 					
-					return JsonResponse(context)
+					# return JsonResponse(context)
 
-				if request.POST['faction_type'] == 'groups':
+				if request.POST['tab'] == 'groups':
 					print("bbokmark id: ", bookmark_id)
 					print("folder id: ", faction_id)
 					Bookmark.objects.filter(group__id=faction_id,
@@ -867,28 +1511,8 @@ class TeraDashboardView(View):
 											 ).update(isRemoved=1,
 											 			date_removed= timezone.now()
 											 			)
-					queryset = Bookmark.objects.select_related("bookmark").filter(
-																		group__id=faction_id, isRemoved=0
-																		).values(
-																			"id", "bookmark__id", "isFavorite", "dateAccessed", "dateAdded", 
-																			"isRemoved", "date_removed",
-																			"bookmark__websiteTitle", "bookmark__itemType",
-																			"bookmark__url", "bookmark__title", "bookmark__subtitle",
-																			"bookmark__subtitle", "bookmark__author", "bookmark__description",
-																			"bookmark__journalItBelongs", "bookmark__volume",
-																			"bookmark__numOfCitation", "bookmark__numOfPages",
-																			"bookmark__publisher", "bookmark__publicationYear",
-																			"bookmark__DOI", "bookmark__ISSN", "bookmark__edition",
-																			 "bookmark__numOfDownload"
-																				)
-
-					a = list(queryset)
-					print(len(a))
-					context = {
-				    "bookmarks": a
-					}
+					return HttpResponse("")
 					
-					return JsonResponse(context)
 
 				# if request.POST['faction_type'] == 'trash':
 				# 	# print(type(request.POST['action_type']))

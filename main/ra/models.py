@@ -12,7 +12,6 @@ class Department (models.Model):
 		db_table = "Department"
 
 class User (AbstractUser):
-
 	department= models.ForeignKey(Department, null = False, blank = False, on_delete = models.CASCADE)
 
 	REQUIRED_FIELDS = ['first_name', 'last_name','department','password']
@@ -22,7 +21,7 @@ class User (AbstractUser):
 
 class Admin (models.Model):
 	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
-	department_id= models.ForeignKey(Department, null = False, blank = False, on_delete = models.CASCADE)
+	department= models.ForeignKey(Department, null = False, blank = False, on_delete = models.CASCADE)
 	class Meta:
 		db_table = "Admin"
 
@@ -50,8 +49,8 @@ class Bookmark_detail (models.Model):
 	numOfDownload = models.CharField(max_length = 1000,blank= True)
 	numOfPages = models.CharField(max_length = 1000,blank= True)
 	edition =models.CharField(max_length = 20,blank= True)
-	publisher = models.CharField(max_length = 1000, blank= True)
-	publicationYear = models.CharField(max_length= 20,blank= True)
+	publisher = models.CharField(max_length = 1000)
+	publicationYear = models.CharField(max_length= 20)
 	DOI = models.CharField(max_length = 200,blank= True)	
 	ISSN = models.CharField(max_length = 100,blank= True)
 
@@ -68,7 +67,7 @@ class Bookmark_detail (models.Model):
 		return self
 
 class Group(models.Model):
-	name = models.CharField(max_length=50) #add not null and not blank here
+	name = models.CharField(max_length=50, null = False, blank = False) #add not null and not blank here
 	owner = models.ForeignKey(User, related_name='User', on_delete = models.CASCADE)
 	date_created = models.DateTimeField(auto_now_add= True)
 	is_removed = models.IntegerField(default=0)
@@ -85,8 +84,8 @@ class Group(models.Model):
 
 class Bookmark(models.Model):
 	user = models.ForeignKey(User, null = True, blank = True, on_delete = models.CASCADE)
+	owner = models.ForeignKey(User,null = True, blank = True, related_name='owner', on_delete = models.CASCADE)
 	group = models.ForeignKey(Group, null = True, blank = True, on_delete = models.CASCADE)
-	folder = models.ForeignKey(Folder, null = True, blank = True, on_delete = models.CASCADE)
 	bookmark = models.ForeignKey(Bookmark_detail, null = False, blank = False, on_delete = models.CASCADE)
 	isFavorite = models.BooleanField(default=False)
 	dateAccessed = models.DateTimeField(default = timezone.now)
@@ -94,13 +93,17 @@ class Bookmark(models.Model):
 	isRemoved = models.IntegerField(default = 0)	
 	date_removed = models.DateTimeField(null = True)
 	keyword= models.CharField(max_length = 200,blank= False, null=False, default="")
-
+	folders = models.ManyToManyField(Folder)
 
 class Dissertation(models.Model):
-	title = models.CharField(max_length=1000)
-	abstract = models.CharField(max_length=2000)
-	author = models.CharField(max_length=200)
-
+	title = models.CharField(max_length=1000, null = False, blank = False)
+	abstract = models.CharField(max_length=2000, null = False, blank = False)
+	author = models.CharField(max_length=200, null = False, blank = False)
+	date_published = models.DateTimeField(auto_now_add = True )
+	num_of_access = models.IntegerField(default = 0)
+	is_active = models.BooleanField(default = False)
+	department = models.ForeignKey(Department, null = False, blank = False, on_delete = models.CASCADE) #edit null to False
+	file = models.FileField(upload_to ='dissertation/', blank = False, null = False, default = 'setting.MEDIA_ROOT/teralogo.png')
 	class Meta:
 		db_table = "Dissertation"
 
@@ -110,14 +113,6 @@ class Dissertation(models.Model):
 
 # 	class Meta:
 # 		db_table = "Dissertation_authors"
-
-
-class User_file(models.Model):
-	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
-	file = models.FileField(upload_to ='media', null = False)
-	class Meta:
-		db_table = "User_files"
-
 
 
 
@@ -139,28 +134,38 @@ class User_file(models.Model):
 class Site (models.Model):
 	name = models.CharField(max_length= 100)
 	url= models.CharField(max_length= 300)
-	added_by = models.ForeignKey(Admin, null = False, blank = False, on_delete = models.DO_NOTHING)
-	date_added = models.DateTimeField(auto_now_add=True)
+	is_active = models.BooleanField(default=False)
 
 	class Meta:
 		db_table = "Site"	
 
 
-class User_access (models.Model):
-	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
-	department = models.ForeignKey(Department, null = False, blank = False, on_delete = models.CASCADE)
+class UserSite_access(models.Model):
+	user = models.ForeignKey(User, null = True, blank = True, on_delete = models.CASCADE)
 	site = models.ForeignKey(Site, null = False, blank = False, on_delete = models.CASCADE)
 	date_of_access = models.DateTimeField(auto_now_add=True)
 
 	class Meta:
-		db_table = "User_access"	
+		db_table = "UserSite_access"	
 
-
-class Headers (models.Model):
-	text = models.CharField(max_length = 5000)
-
+class User_login(models.Model):
+	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
+	date = models.DateTimeField(default=timezone.now)
+	# department = models.ForeignKey(Department, null = True, blank = False, on_delete = models.CASCADE) #change null to True
 	class Meta:
-		db_table = "Headers"
+		db_table = "User_login"	
+
+
+# class Site_exception(models.Model):
+# 	description = models.CharField(max_length= 100)
+# 	filename = models.CharField(max_length= 100)
+# 	line_number = models.CharField(max_length= 100)
+# 	site = models.CharField(max_length= 100)
+# 	date = models.DateTimeField(auto_now_add=True)
+# 	search_keyword = models.CharField(max_length= 400) 
+# 	link = models.CharField(max_length = 2000)
+# 	class Meta:
+# 		db_table = "Site_exception"	
 
 
 # class Practice (models.Model):

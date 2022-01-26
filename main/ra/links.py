@@ -5,25 +5,24 @@
         #
 import bs4
 from bs4 import BeautifulSoup
-import os
+import os, sys
 import requests
 from requests import ReadTimeout, ConnectTimeout, HTTPError, Timeout, ConnectionError
 import random
 import time
-from django.http import JsonResponse
+from django.http import HttpResponse
 import json
 from fake_useragent import UserAgent
 from requests_html import HTMLSession
 from threading import Thread
-
-
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
 import numpy as np
 import statistics
-
+import requests
 session= HTMLSession()
+from .models import *
 
 def modes(allBookmarks,userID):
     empty =[]
@@ -101,7 +100,7 @@ def recommend(bookmarkFrame, title):
 
 
     metadata = bookmarkFrame
-    print(metadata)
+    # print(metadata)
 
     tfidf = TfidfVectorizer(stop_words='english')
 
@@ -118,7 +117,7 @@ def recommend(bookmarkFrame, title):
 
         idx = indices[title[0].replace("'","")]
        
-    print(idx)
+    # print(idx)
     # Get the pairwsie similarity scores of all movies with that movie
     try:
         sim_scores = list(enumerate(cosine_sim[idx[0]]))
@@ -150,12 +149,8 @@ def recommend(bookmarkFrame, title):
 
 def scrape(word, refType, site, header, pageNumber):
     
-    # print(site, refType)
-              
-              
-              
+  
     if site == 'Springeropen':
-        
         return springer(word, refType,pageNumber)
     elif site == 'UNESCO_Digital_Library':
         return UNESCO(word, refType, pageNumber)
@@ -165,16 +160,20 @@ def scrape(word, refType, site, header, pageNumber):
     elif site == 'OER_Commons':
         return OER(word, refType, pageNumber)
 
-def render_html():
-    url = 'https://ocw.mit.edu/search/ocwsearch.htm?q=war'
-    r = session.get(url,headers=headers())
-    r.html.render(sleep=1,keep_page=True)
-    soup = BeautifulSoup(r.html.html, 'html.parser')
-    title = soup.findAll('div', class_='gsc-cursor-page', attrs={'class':'gsc-cursor-page', 'aria-label':'Page 3'})
-    title.click()
-    print(title)
-    # for i,a in enumerate(title):
-    #     print(a.text, i)
+
+
+
+
+# def render_html():
+#     url = 'https://ocw.mit.edu/search/ocwsearch.htm?q=war'
+#     r = session.get(url,headers=headers())
+#     r.html.render(sleep=1,keep_page=True)
+#     soup = BeautifulSoup(r.html.html, 'html.parser')
+#     title = soup.findAll('div', class_='gsc-cursor-page', attrs={'class':'gsc-cursor-page', 'aria-label':'Page 3'})
+#     title.click()
+#     print(title)
+#     # for i,a in enumerate(title):
+#     #     print(a.text, i)
 
 
 
@@ -227,6 +226,7 @@ def UNESCO(word, refType, pageNumber):
     response = requests.post('https://unesdoc.unesco.org/in/rest/api/search', headers=headers, data=data)
     b = response.json()
 
+    
     for c in b['resultSet']:
         z=[]
         array = []
@@ -422,7 +422,7 @@ def OTL(word, refType, pageNumber): # pagination starts with index 1 diri
         for row in rowsss:
             z=[]
             title = row.h2.text #title
-            link = row.h2.a['href']
+            link = "https://open.umn.edu"+row.h2.a['href']
             author = row.p.text.replace('\n','  ') # 
             publisher = row.p.find_next().text.replace('\n','  ')
             description = row.p.find_next().find_next().text.replace('\n','  ')
@@ -527,8 +527,7 @@ def springer(word,refType, pageNumber): # INDEX 1 STARTING SA PAGINATION DIRI
             if refType == 'article':
                 response = requests.get('https://www.springeropen.com/search?searchType=publisherSearch&sort=Relevance&query=' + word +'&page='+ str(pageNumber), headers = headers(), timeout=2) #articles         
             elif refType == 'book':
-                response = requests.get('https://www.springer.com/gp/search?dnc=true&facet-type=type__book&page='+ str(pageNumber) +'&query='+ word+'&submit=Submit', headers = headers(), timeout=2) #books
-            
+                response = requests.get('https://link.springer.com/search/page/'+ str(1) +'?facet-content-type=%22Book%22&query='+word, headers = headers(), timeout=2) #books
             x = True
         except ConnectionError:
             print('Connection Error')
@@ -563,64 +562,61 @@ def springer(word,refType, pageNumber): # INDEX 1 STARTING SA PAGINATION DIRI
                     z.append(div.p.text) # store description of link to list
                     div2 = article.find('div',class_='c-meta')
                     z.append(div2.text) # store date&type to list
-                    z.append(a.a['href'])
+                    z.append("https:"+a.a['href'])
                    # extract link and store to list
                     
                     springers.append(z)
         return springers
     elif refType == 'book':
+        # response = requests.get(' https://link.springer.com/search/page/'+ str(pageNumber) +'?query='+ word, headers = headers(), timeout=2) #books
         soup = BeautifulSoup(response.content, 'html.parser')
-        rows = soup.find('div', id='result-list')
+        title = soup.findAll('a', class_="title")
         
-        if rows != None:
+        titles = soup.find_all('a', class_="title")
 
-            for a in range(22):
-                z = []
-                books1 = rows.find('div', class_='result-item result-item-' + str(a) + ' result-type-book')
-                books2 = rows.find('div', class_='result-item result-item-' + str(a) + ' result-type-book last')
-                editorial = rows.find('div', class_='result-item result-item-' + str(a) + ' result-type-editorial')
+        
+        for title in titles:
+            z= []
+            
+            subtitle = title.findNext("p", class_="subtitle")
+            p_tag__meta = title.parent.findNext("p", class_="meta")
+            # print(i,p_tag__meta.span.a , p_tag__meta.findNext("span", class_="year"))
 
-                if editorial != None:
-                    z.append(editorial.h4.a.text) #title
-                    z.append(editorial.div.text) #desicription
-                    z.append(editorial.h4.a['href'])
+            try:
+                author = p_tag__meta.span.a.text +"  " +p_tag__meta.findNext("span", class_="year").text
+            except:
+                author = p_tag__meta.span.span.text +"  " +p_tag__meta.findNext("span", class_="year").text
 
-                elif books1 != None:
-                    
-                    z.append(books1.h4.a.text) #title
-                    z.append(books1.p.text) #author
-                    z.append(books1.div.text) #desicription
-                    z.append(books1.find('p', class_='format').text) #format
-                    #z.append(books1.find('p', class_='price-container price-loaded').span.text) #price
-                    z.append('https://www.springer.com' +books1.h4.a['href'])
-     
-                elif books2 != None:
-                    z.append(books2.h4.a.text) #title
-                    z.append(books2.p.text) #author
-                    z.append(books2.div.text) #desicription
-                    z.append(books2.find('p', class_='format').text) #format
-                    #z.append(books2.find('p', class_='price-container price-loaded').text) #price
-                    z.append('https://www.springer.com' +books2.h4.a['href'])
+            z.append(title.text)
+            if subtitle.text != "" and not subtitle.text.isspace() and len(subtitle.text) > 5:
+                z.append(subtitle.text)
 
-                springers.append(z)
+            
+            if author != "" or not author.isspace() or len(author) > 5:
+                z.append(author)
+            
+            z.append("https://link.springer.com"+title["href"])
 
-    
-            return springers
 
-def details(link, proxy, refType ):
+            springers.append(z)
+
+            print(len(z), z)
+        return springers
+
+def details(link, proxy,website, refType ):
     print(refType)
     ref = refType.split(' ')
 
-    if refType == 'Springeropen article':
+    if website == "Springeropen" and refType == 'article':
         # with open ('C:/Users/Valued Client/Desktop/html/sprigner DETAILS.html', 'r', errors='ignore') as html_file:
         #     content = html_file.read()
             # soup = BeautifulSoup(content, 'html.parser')
         
         # reference = refType.split(' ')
         try:
-            response = requests.get('https:'+link,headers=headers(), proxies={'https:': proxy})
+            response = requests.get('https:'+link,headers=headers())
         except:
-            response = requests.get(link,headers=headers(), proxies={'https:': proxy})
+            response = requests.get(link,headers=headers())
         soup = BeautifulSoup(response.content, 'html.parser')
         descrip = soup.find('div', class_='c-article-section__content').p.text
         description = descrip[:500]
@@ -628,16 +624,19 @@ def details(link, proxy, refType ):
         # if len(description) > 1000:
         #     a = soup.find('h3', text='Conclusion')
         #     print(a.next)
+        abbr_tag = soup.find('abbr', text = "DOI")
+        doi = abbr_tag.findNext('span', class_="c-bibliographic-information__value").text
+
         
         details={
-            'websiteTitle': ref[0],
-            'itemType': ref[1],
+            'websiteTitle': website,
+            'itemType': refType,
             'author': soup.find('div', class_='c-article-header').find('ul', class_='c-article-author-list js-etal-collapsed').text,
             'description': description,
             'journalItBelongs': soup.find('i', attrs={'data-test':'journal-title'}).text,
             'volume': soup.find('b', attrs={'data-test':'journal-volume'}).text[7:],
             'publishYear': soup.find('span', class_="c-bibliographic-information__value").text,
-            'doi': soup.find('a', attrs={'data-track-action':'view doi'}).text, 
+            'doi': doi, 
             'subtitle':'',
             'citation':'',
             'downloads':'',
@@ -654,7 +653,8 @@ def details(link, proxy, refType ):
         
         return details
 
-    elif refType == 'Springeropen book':
+
+    elif website == "Springeropen" and refType == 'book':
         response = requests.get(link + '#about',headers=headers(), proxies={'https:': proxy})
         soup = BeautifulSoup(response.content, 'html.parser')
 
