@@ -25,39 +25,28 @@ session= HTMLSession()
 from .models import *
 
 def modes(allBookmarks,userID):
-    empty =[]
     title = ""
     userBookmarks = []
 
+  
+    allBookmarksdf = pd.DataFrame(allBookmarks)
+    maxCount= allBookmarksdf["count"].max()
 
-    i=0
-    while i < len(allBookmarks):
-        didDelete= False
-        if allBookmarks[i]['user'] == userID:
-            
-            userBookmarks.append(allBookmarks[i])
-            del allBookmarks[i]
-            didDelete =True
+    mode = allBookmarksdf[allBookmarksdf["count"] == maxCount]
 
-        if not didDelete:
-            i +=1
+    
 
-
-
-    if len(allBookmarks) == 0:
-        return empty
-
-    metadata = pd.DataFrame(userBookmarks)
-    modes =  metadata.mode(axis=0)
-    if len(modes) > 1:
+    print("all: ", allBookmarksdf)
+    return []
+    if len(mode.index) > 1:
         # print("modes", modes)
         highest = -1
         tfidf = TfidfVectorizer(stop_words='english')
-        modes['bookmark__title'] = modes['bookmark__title'].fillna('')
-        tfidf_matrix = tfidf.fit_transform(modes['bookmark__title'])
+        # mode['title'] = mode['title'].fillna('')
+        tfidf_matrix = tfidf.fit_transform(mode['title'])
         cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
-
-
+        print("matrix:", tfidf_matrix)
+        return []
         for i, row in enumerate(cosine_sim):
             summ=0
             for column in row:
@@ -69,39 +58,35 @@ def modes(allBookmarks,userID):
             if average >= highest:
                 highest = average
                 indexOfHighest_cosinesim = i
+                print(indexOfHighest_cosinesim)
 
 
-
+        # print("mode.iloc: ",mode.iloc[indexOfHighest_cosinesim])
         # for i, item in enumerate(modes['bookmark__title']):
-        for i in range(len(modes)):
-            if i == indexOfHighest_cosinesim:
-                title = modes.iloc[i]
-               
-                break
+        title = mode.iloc[indexOfHighest_cosinesim]
 
-        print("to find recommendation: (multiple  mode)", type(title["bookmark__title"]),title["bookmark__title"])
+        print("to find recommendation: (multiple  mode)", type(title["title"]),title["title"])
     else:
-        title = modes
-        print("to find recommendation: (single mode)", title["bookmark__title"].to_string())
+        title = mode
+        print("to find recommendation: (single mode)", title["title"].to_string())
 
 
-    a = pd.DataFrame(allBookmarks) 
-    b= a.append(metadata)
-    c = b.drop_duplicates('bookmark__title', keep='last')
-    d = c.iloc[:-len(metadata) , :]
+    a = allBookmarksdf 
+    b= a.append(mode)
+    c = b.drop_duplicates('title', keep='last')
+    d = c.iloc[:-len(mode) , :]
     e= d.append(title)
-    # print(e,"\n\n", title["bookmark__title"].to_dict()[0])
-    # print(a,"\n\n\n",b,"\n\n\n", c,"\n\n\n", d,"\n\n\n", e)
-    # print(e)
-    # print(title)
-    return recommend(e, title)
+    # print("b:",b)
+    # print("c:",c)
+
+    listFormat = e.to_dict('records')
+
+    # return recommend(listFormat, title)
 
 def recommend(bookmarkFrame, title):
 
-
-    metadata = bookmarkFrame
-    # print(metadata)
-
+    metadata = pd.DataFrame(bookmarkFrame) 
+    # print(bookmarkFrame)
     tfidf = TfidfVectorizer(stop_words='english')
 
     tfidf_matrix = tfidf.fit_transform(metadata['bookmark__title'])
@@ -117,7 +102,6 @@ def recommend(bookmarkFrame, title):
 
         idx = indices[title[0].replace("'","")]
        
-    # print(idx)
     # Get the pairwsie similarity scores of all movies with that movie
     try:
         sim_scores = list(enumerate(cosine_sim[idx[0]]))
@@ -126,21 +110,25 @@ def recommend(bookmarkFrame, title):
 
     # # Sort the movies based on the similarity scores
     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
-
-    # Get the scores of the 10 most similar movies
+    # Get top 5 similarity scores
     sim_scores = sim_scores[0:5]
+    dataframe = pd.DataFrame(sim_scores)
 
+    removeLowScores = dataframe[dataframe[1] != 0]
+    cleanScores  = removeLowScores[removeLowScores[1] >= .95].values.tolist()
+    # print(cleanScores)
     # Get the movie indices
-    movie_indices = [i[0] for i in sim_scores]
+    # print("dataframe",dataframe)
 
+    # print("cleanScores:", cleanScores)
+    movie_indices = [i[0] for i in cleanScores]
     meta = metadata.iloc[movie_indices]
-    # z = meta.drop()
-    indexes = meta[ (meta['bookmark__title'] == title["bookmark__title"]) ].index
-    meta.drop(indexes,inplace=True)
-
+    # print("metadata:", metadata)
+    # print("movie_indices:",movie_indices)
+    # print(meta)
 
     return meta.to_dict("records")
-    # return metadata.iloc[movie_indices].to_dict("records") 
+
 
 
 

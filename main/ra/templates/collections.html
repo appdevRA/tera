@@ -147,7 +147,7 @@ tr:hover {
                 </div>
                 </div>
 
-                 <!-- Collab Modal -->
+<!-- Collab Modal -->
                   <div class="modal fade" id="addtoGroupModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
                   <div class="modal-dialog" role="document">
                     <div class="modal-content">
@@ -167,8 +167,7 @@ tr:hover {
                             
                             <input type="text" placeholder="Enter Collection Name" style="width: 80%" id="groupname_input" value="My group" required>
                            <br>
-                            <a id="" style="color: red; visibility: hidden">Group name already exist</a>
-
+                            <a id="add_group_error" style="color: red; visibility: hidden">Group name already exist</a>
                            <br><br><br>
 
                    
@@ -179,7 +178,7 @@ tr:hover {
                                 </div>
                                 
                                 <div class="form-group col-md-6"> 
-                                    <button type="submit" name="buttonLogin"class="buttonlogout"   onclick="create_folder('groups')" data-dismiss="modal"> Create</button>
+                                    <button type="submit" name="buttonLogin"class="buttonlogout"   onclick="create_folder('groups')"> Create</button>
                                 </div> 
                          </div>
                       </center>
@@ -212,9 +211,8 @@ tr:hover {
                             
                             <input type="text" placeholder="18-5126-269" style="width: 80%" id="idNumber_input" value="" required><br>
                           <center>
-                            <a id="user_does_not_exist" style="color: red; display: none">User does not exist</a>
-                            <a id="user_already_member" style="color: red; display: none">User already a member</a>
-                            <a id="user_is_owner" style="color: red; display: none">User is the owner</a>
+                            <a id="error_message" style="color: red; ">asd</a>
+                            
                           </center>
                            <br><br><br>
                        
@@ -226,7 +224,7 @@ tr:hover {
                                 </div>
                               
                                 <div class="form-group col-md-6"> 
-                                    <button type="submit" name="buttonLogin"class="buttonlogout"   onclick="add_member()"> Add</button>
+                                    <button id="add_member" type="submit" name="buttonLogin"class="buttonlogout"  > Add</button>
                                 </div> 
                          </div>
                       </center>
@@ -262,7 +260,7 @@ tr:hover {
                       
                     </ul>
                                
-                <li id="groups" class="collapsible menu-item" onclick="display_dropdown('groups')"><i class="fa fa-folder"></i>&nbsp; &nbsp;&nbsp; &nbsp;  <b>Private Groups </b> <button  style="font-size: 140%;border: solid #f1f1f1; color: red; font-weight:bold; margin-left: 16%" name="addgroup" href="#addtoFoldaddtoGroupModalerModal" data-toggle='modal' data-target='#addtoGroupModal'> + </button></li> 
+                <li id="groups" class="collapsible menu-item" onclick="display_dropdown('groups')"><i class="fa fa-group"></i>&nbsp; &nbsp;&nbsp; &nbsp;  <b>Private Groups </b> <button  style="font-size: 140%;border: solid #f1f1f1; color: red; font-weight:bold; margin-left: 16%" name="addgroup" href="#addtoFoldaddtoGroupModalerModal" data-toggle='modal' data-target='#addtoGroupModal'> + </button></li> 
                 
                     <ul id="mygroup_ul" style="display: none">
                       
@@ -293,11 +291,17 @@ tr:hover {
                 <br> 
               
                    <table id="itemTable"  class="table">
+                    <col width="11%" />
+                    <col width="7%" />
+                    <col width="35%" />
+                    <col width="15%" />
+
+
                     <thead>
                       
                         <th >Site</th>
                         <th onclick="sort(1)" style="cursor: pointer">Type</th>
-                        <th onclick="sort(2)" style="cursor: pointer">Title</th>
+                        <th onclick="sort(2)" style="cursor: pointer;">Title</th>
                         <th onclick="sort(3)"style="cursor: pointer">Date Added</th>
                         <th onclick="sort(4)"style="cursor: pointer">Date Accessed</th>
                         <th></th>
@@ -307,7 +311,27 @@ tr:hover {
                         
                     </thead>
                     <tbody id="itemArea">
-                      
+                      <td></td>
+                        <td><a href='' target='_blank'><span  class='open_link' style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link()'></span></a></td>
+
+                        <td></td>
+                        <td class='dateAccessed'></td>
+                        <td id='' class='fas fa-info-circle fa-lg' style='cursor: pointer' ></i></td>
+
+
+                         <td><i   class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>
+                         <div id='folderList_dropdown"+i+"' class='dropdown-content' style='min-width: 15%; margin-left: -8% '>
+                         <ul id='add_to_folderList_ul"+i+"'>
+                     
+                              
+                          "</ul> </div> </td>
+
+
+
+
+                         
+                        <td id='"+markers[i].id+"' class='trash'> </td>
+                       
                     </tbody>
                   </table>
                 </div>
@@ -336,7 +360,6 @@ tr:hover {
               <th ></th>
               <th ></th>
               <th ></th>
-               <th ></th>
               <th ></th>
               <th ></th>
 
@@ -348,7 +371,7 @@ tr:hover {
               <td><img class='logo-style' src="{% static 'images/springerLogo.PNG' %}" style='height: 15px;'></td>"
               {% endif %} 
               <td>{{item.bookmark__itemType}}</td>
-              <td id = "recommendation{{item.bookmark__id}}" style="max-width: 40ch; white-space: nowrap;overflow: hidden;text-overflow: ellipsis;"> {{item.bookmark__title}} </td>
+              <td> <a id = "recommendation{{item.bookmark__id}}" style="max-width: 40ch; white-space: nowrap;overflow: hidden;text-overflow: ellipsis;" href="{{item.bookmark__url}}" target='_blank'> {{item.bookmark__title}} </a> </td>
 
               <td></td>
               <td></td>
@@ -356,8 +379,7 @@ tr:hover {
               <td></td>
               <td></td>
               <td></td>
-              <td id="bookmarkID{{item.bookmark__id}}" onclick="(addRecommended(this.id))" style="cursor: pointer;"><i class='fa fa-bookmark' ></i></td>
-              <td style="cursor: pointer;"><i class='fas fa-trash'></i></td>
+              <td id="bookmarkID{{item.bookmark__id}}" onclick="(addRecommended(this.id))" style="cursor: pointer;"><i class='fa fa-bookmark' style="color:red" ></i></td>
 
               </tr>
               {% endfor %}
@@ -402,21 +424,21 @@ tr:hover {
 <script type="text/javascript">
    var markers= {{bookmark_list | safe}}
 
-   var folders ={{folder_list | safe}}
+   var folders = []
   
-   var groups = {{group_list | safe}}
+   var groups = []
     tab = 'all'
     // var folders
     var bookmark_folder
-    var faction_id
+    var faction_id = 1
     var faction_markers
     var group_id
 
 $(document).ready(function($) {
  // console.log(typeof(markers))
  // alert(typeof(markers))
- 
-  showRows('all', markers)
+  
+  get_bookmarks('all', 0,true)
   // $('#addtoFolderModal').modal('show') 
   // $('#addtoFolderModal').modal('hide') 
 
@@ -473,99 +495,55 @@ function addRecommended(clicked_id){
                       success: function(response){
                         markers.push(response.addedBookmark[0])
                         // console.log("add recommend "+" "+ markers.length)
-                        showRows("all")
+                        showRows("all", markers)
                       }
         }); 
 }
 
-function permanentdelete_item(clicked_id){
-  
-   
-   // for(i=0; i< markers.length;i++){
-   //    if(markers[i].id == clicked_id ){
-   //      markers[i].isRemoved = 3;
-   //      $.ajax({
-   //                    type:"POST",
-   //                    url:"",
 
-   //                    data:{
-   //                      action: 'deleteItem',
-   //                      bID: clicked_id,
-   //                      csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
-   //                    }
-   //      }); 
-   //      break;
 
-   //    } 
-   // }
-   
-   // showRows(tab)
-  
+function get_bookmarks(tab_name, folder_id, isGet){
     
-}
 
-function delete_item(clicked_id, i, action_type){
-  
-   // alert(i+"  "+ action_type)
-   
-   //    if(action_type == 1){
-   //      markers[i].isRemoved = 1;
-   //       markers[i].date_removed = new Date()
-   //      // a = new Date()
-   //      // markers[i]['fields']['date_removed'] = a.toDateString().slice(3,) +"  "+ a.toTimeString().slice(0,13);
-   //      $.ajax({
-   //                    type:"POST",
-   //                    url:"",
+        if(isGet){
+          showRows(tab_name, markers, folder_id, true)
 
-   //                    data:{
-   //                      action: 'trashItem',
-   //                      bID: clicked_id,
-   //                      csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
-   //                    }
-   //      }); 
-
-   //    }else{
-   //      markers[i].isRemoved = 0;
-   //      markers[i].date_removed =null;
-   //      $.ajax({
-   //                    type:"POST",
-   //                    url:"",
-
-   //                    data:{
-   //                      action: 'unTrashItem',
-   //                      bID: clicked_id,
-   //                      csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
-   //                    }
-   //      }); 
-   //    }
-      
-   
-   
-   // showRows(tab)
-  
+          if(tab_name != "folders" & tab_name != "groups"){
+              document.getElementById(tab_name).style.backgroundColor= "#c9c9c9";
+              document.getElementById(tab_name).style.color= "#800000";
+              document.getElementById(tab_name+'Icon').style.color= "#800000";
+          }else{
+              document.getElementById(folder_id).style.backgroundColor= "#c9c9c9";
+              document.getElementById(folder_id).style.color= "#800000";
+          }
+          
+        }
     
-}
-
-
-
-
-
-
-
-function get_bookmarks(tab_name){
-
+        else{
+          $("#detailArea").empty();
+          clearStyle();
+          $("#itemArea").empty();
+          
           if(tab_name.includes("folder")){
               tab = "folders"
-              faction_id = tab_name.slice(6,)
+              folder_id = tab_name.slice(6,)
+              faction_id = folder_id
+              document.getElementById(tab_name).style.backgroundColor= "#c9c9c9";
+              document.getElementById(tab_name).style.color= "#800000";
           }else if(tab_name.includes("groups")){
               tab = "groups"
-              faction_id = tab_name.slice(6,)
-          }
-          else{
+              folder_id = tab_name.slice(6,)
+              faction_id = folder_id
+              document.getElementById(tab_name).style.backgroundColor= "#c9c9c9";
+              document.getElementById(tab_name).style.color= "#800000";
+                
+          }else{
               tab = tab_name
-              faction_id = ""
+              folder_id = ""
+              document.getElementById(tab_name).style.backgroundColor= "#c9c9c9";
+              document.getElementById(tab_name).style.color= "#800000";
+              document.getElementById(tab_name+'Icon').style.color= "#800000";
           }
-            console.log(tab, faction_id)
                 $.ajax({
                         type:"POST",
                         url:"",
@@ -573,14 +551,42 @@ function get_bookmarks(tab_name){
                         data:{
                           action: 'get_bookmarks',
                           tab: tab,
-                          faction_id: faction_id,
+                          faction_id: folder_id,
                           csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
                         }, success: function(response){
 
                            markers = response.bookmarks
-                           console.log(markers)
-                            if(tab_name.includes("folder") | tab_name.includes("groups"))
+                           
+                            if(tab_name.includes("folder") | tab_name.includes("groups")){
+
+                                if(tab_name.includes("groups")){
+                                      members = response.member
+                                      console.log(members)
+                                      $("#group_detail_ul").empty();
+   
+                                      for(i=0;i< groups.length;i++){
+                                        if(groups[i].id == folder_id){
+
+                                           date = new Date(groups[i].date_created)
+                                         $('#group_detail_ul').append("<br><div><b>Group name:</b> &nbsp; "+groups[i].name+"</div> "+
+                                          // "<br><div><b>Description:</b>&nbsp; "+group[0]['description']+"</div>" +
+                                          "<br><div><b>Owner:</b> &nbsp; "+groups[i].owner__first_name+" "+groups[i].owner__last_name +"</div>" + 
+                                          "<br><div><b>Date created:</b>  &nbsp;"+ date.toDateString().slice(3,)+" "+date.toTimeString().slice(0,5)+"</div>" + 
+                                          "<br><div style='margin-left:-5%'><i class='fas fa-user-plus' style='font-size:90%; cursor:pointer;' href='#addMemberModal' data-toggle='modal' data-target='#addMemberModal'></i> &nbsp; <b>Member(s)</b>: </div>"
+                                        ); 
+
+                                        }
+                                      }
+                                       
+                                        for(i=0;i<members.length;i++){
+                                            $('#group_detail_ul').append(
+                                                      "<div class='member' style='margin-left:25%'> "+ members[i].first_name+" "+ members[i].last_name +" </div>"  
+                                                      );
+                                          }
+                               
+                                  }
                               showRows(tab, markers, tab_name)
+                            }
                             else
                               showRows(tab, markers)
 
@@ -590,30 +596,24 @@ function get_bookmarks(tab_name){
 
                        
                 }); 
-          
+        }
       
 }
-function showRows(rowType, markers, faction_id){
+function showRows(rowType, markers, folder_id, isRefresh){
    document.getElementById("recommendation").style.display = "none"
-    // clearRow("detailTable")
+
+    if(isRefresh == true){
       $("#detailArea").empty();
       clearStyle();
       $("#itemArea").empty();
-
-      // clearRow('itemTable');
-    // alert(faction_id)
-      // tab = rowType;
-      // markers = []
-      // if(!isGet){
-      //   markers = get_bookmarks()
-      // }
-      
+    }
+    
 
     if(rowType == 'all'){
       $("#group_detail_ul").empty();
-      document.getElementById(rowType).style.backgroundColor= "#c9c9c9";
-      document.getElementById(rowType).style.color= "#800000";
-      document.getElementById('allIcon').style.color= "#800000";
+      // document.getElementById(rowType).style.backgroundColor= "#c9c9c9";
+      // document.getElementById(rowType).style.color= "#800000";
+      // document.getElementById('allIcon').style.color= "#800000";
 
             for(i=0; i< markers.length;i++){
              
@@ -681,20 +681,20 @@ function showRows(rowType, markers, faction_id){
             if( markers[i].isRemoved == 1){
                 date_acc= new Date(markers[i].dateAccessed)
                 date_removed= new Date(markers[i].date_removed)
-              // } 
               if(markers[i].bookmark__websiteTitle == "Springeropen"){
-                          sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
-                        } else if(markers[i].bookmark__websiteTitle == "Sciencedirect"){
-                          sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 25px;'></td>"
-                        } 
-                   
+                sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
+              } else if(markers[i].bookmark__websiteTitle == "Sciencedirect"){
+                sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 25px;'></td>"
+              } 
+         
 
               $('#itemArea').append(
-                "<tr class='clickable-row' data-href='" + + "'>" +
+                "<tr >" +
 
                 sitelogo+
                 "<td>"+ markers[i].bookmark__itemType +  "</td>"+
-                "<td><a  target='_blank'><span id="+ markers[i].id +" class='open_link' style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' "+ markers[i].bookmark__title +  "</span></a></td>"+
+
+                "<td><a  target='_blank'><span id="+ markers[i].id +" class='open_link' style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' >"+ markers[i].bookmark__title +  "</span></a></td>"+
 
                 "<td>" +  date_removed.toDateString().slice(3,)+" "+date_removed.toTimeString().slice(0,5)  + "</td>" +
                "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
@@ -720,49 +720,7 @@ function showRows(rowType, markers, faction_id){
          
         }
 
-      //   $.ajax({
-      //                 type:"POST",
-      //                 url:"",
-
-      //                 data:{
-      //                   action: 'get_folder_trash',
-      //                   csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
-      //                 }, 
-      //                 success: function(response){
-      //                   array = response.bookmarks
-                       
-      //                   for(i=0; i< markers.length;i++){
-      //                       for(ii=0; ii < array.length;ii++){
-      //                         if( markers[i].id == array[ii].b_ID){
-                                
-
-      //                                 if(markers[i].websiteTitle == "Springeropen.com"){
-      //                                   sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
-      //                                 } else if(markers[i].websiteTitle == "Sciencedirect.com"){
-      //                                   sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 25px;'></td>"
-      //                                 } 
-
-      //                           $('#itemArea').append(
-      //                             "<tr class='clickable-row' data-href='" + markers[i].url + "'>" +
-
-      //                             sitelogo+
-      //                             "<td>"+ markers[i].itemType +  "</td>"+
-      //                             "<td><a href='"+ markers[i].url+ "' target='_blank'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link("+ markers[i].id +","+i+")'>" + markers[i].title +  "</span></a></td>"+
-      //                             "<td>" +  new Date(array[ii].date+'Z').toDateString().slice(3,)+" "+new Date(array[ii].date+'Z').toTimeString().slice(0,5)+ "</td>" +
-      //                             "<td>" +  new Date(markers[i].dateAccessed).toDateString().slice(3,)+" "+new Date(markers[i].dateAccessed).toTimeString().slice(0,5)+ "</td>" +
-                                  
-
-      //                             "<td><i id='"+ array[ii].BF_ID+"' class='fas fa-undo' style='cursor: pointer' onclick='remove_from_faction(this.id,1)'></i></td>" +
-      //                             "<td><i id='"+ array[ii].BF_ID+"' class='fas fa-trash-alt' style='cursor: pointer' onclick='remove_from_faction(this.id,2)'></i></td>" +
-
-      //                            "</tr>"
-
-      //                             );  
-      //                         }
-      //                       }
-      //                   }                    
-      // }
-      //           }); 
+      
     } else if(rowType =='recentlyAdded'){
           $("#group_detail_ul").empty();
           document.getElementById(rowType).style.backgroundColor= "#c9c9c9";
@@ -933,8 +891,7 @@ function showRows(rowType, markers, faction_id){
     } else if(rowType =='folders'){
 
         $("#group_detail_ul").empty();
-        document.getElementById(faction_id).style.backgroundColor= "#c9c9c9";
-        document.getElementById(faction_id).style.color= "#800000";
+       
         // document.getElementById('allIcon').style.color= "#800000";
         for(i=0;i < markers.length;i++){
         
@@ -944,9 +901,9 @@ function showRows(rowType, markers, faction_id){
 
                       sitelogo=""
                       if( markers[i].isFavorite == false | markers[i].isFavorite == 0){
-                        favorite ="<td class='favorite'><i id='"+i+"|" +markers[i].id+"|" +faction_id+"' class='far fa-star' style='cursor: pointer' ></i></td>"
+                        favorite ="<td class='favorite'><i id='"+i+"|" +markers[i].id+"|" +folder_id+"' class='far fa-star' style='cursor: pointer' ></i></td>"
                       }else{
-                        favorite ="<td class='favorite'><i id='"+i+"|" +markers[i].id+"|" +faction_id+"' class='fas fa-star' style='cursor: pointer; color:red' ></i></td>"
+                        favorite ="<td class='favorite'><i id='"+i+"|" +markers[i].id+"|" +folder_id+"' class='fas fa-star' style='cursor: pointer; color:red' ></i></td>"
                       }
                       if(markers[i].bookmark__websiteTitle == "Springeropen"){
                           sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
@@ -957,7 +914,7 @@ function showRows(rowType, markers, faction_id){
                         "<tr>"+
                         sitelogo +
                         "<td>"+ markers[i].bookmark__itemType +  "</td>"+
-                       "<td><a href='"+ markers[i].bookmark__url+ "' target='_blank'><span id="+ markers[i].id +"|"+faction_id+" class='open_link' style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' >" + markers[i].bookmark__title +  "</span></a></td>"+
+                       "<td><a href='"+ markers[i].bookmark__url+ "' target='_blank'><span id="+ markers[i].id +"|"+folder_id+" class='open_link' style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' >" + markers[i].bookmark__title +  "</span></a></td>"+
 
                         "<td>" + date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5) + "</td>" +
                         "<td class='dateAccessed'>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
@@ -975,7 +932,7 @@ function showRows(rowType, markers, faction_id){
 
 
 
-                        "<td id='"+faction_id+"|"+markers[i].id+"' class='trash'><i id='"+ markers[i].id+"' class='fas fa-trash' style='color:#a71f1f;cursor: pointer; font-size: 90%'></i></td>" +
+                        "<td id='"+folder_id+"|"+markers[i].id+"' class='trash'><i id='"+ markers[i].id+"' class='fas fa-trash' style='color:#a71f1f;cursor: pointer; font-size: 90%'></i></td>" +
                        
 
                        "</tr>"
@@ -987,8 +944,7 @@ function showRows(rowType, markers, faction_id){
       }
     } else if(rowType =='groups'){
       // group_id = faction_id
-      document.getElementById(faction_id).style.backgroundColor= "#c9c9c9";
-      document.getElementById(faction_id).style.color= "#800000";
+     
       for(i=0;i < markers.length;i++){
 
                   date_add= new Date(markers[i].dateAdded)
@@ -997,9 +953,9 @@ function showRows(rowType, markers, faction_id){
                         sitlogo=""
                       if( markers[i].isFavorite == 0){
 
-                        favorite ="<td class='favorite'><i id='"+i+"|" +markers[i].id+"|" +faction_id+"' class='far fa-star' style='cursor: pointer' ></i></td>"
+                        favorite ="<td class='favorite'><i id='"+i+"|" +markers[i].id+"|" +folder_id+"' class='far fa-star' style='cursor: pointer' ></i></td>"
                       }else{
-                        favorite ="<td class='favorite'><i id='"+i+"|" +markers[i].id+"|" +faction_id+"' class='fas fa-star' style='cursor: pointer; color:red' ></i></td>"
+                        favorite ="<td class='favorite'><i id='"+i+"|" +markers[i].id+"|" +folder_id+"' class='fas fa-star' style='cursor: pointer; color:red' ></i></td>"
                       }
 
                       if(markers[i].bookmark__websiteTitle == "Springeropen"){
@@ -1011,7 +967,7 @@ function showRows(rowType, markers, faction_id){
                         "<tr>"+
                         sitelogo +
                         "<td>"+ markers[i].bookmark__itemType +  "</td>"+
-                       "<td><a href='"+ markers[i].bookmark__url+ "' target='_blank'><span id="+ markers[i].id +"|"+faction_id+" class='open_link' style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i].bookmark__title +  "</span></a></td>"+
+                       "<td><a href='"+ markers[i].bookmark__url+ "' target='_blank'><span id="+ markers[i].id +"|"+folder_id+" class='open_link' style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;'>" + markers[i].bookmark__title +  "</span></a></td>"+
 
                         "<td>" + date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5) + "</td>" +
                         "<td class='dateAccessed'>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
@@ -1029,7 +985,7 @@ function showRows(rowType, markers, faction_id){
 
 
 
-                        "<td id='"+faction_id+"|"+markers[i].id+"' class='trash'> <i id='' class='fas fa-trash' style='color:#a71f1f;cursor: pointer; font-size: 90%'></i></td>" +
+                        "<td id='"+folder_id+"|"+markers[i].id+"' class='trash'> <i id='' class='fas fa-trash' style='color:#a71f1f;cursor: pointer; font-size: 90%'></i></td>" +
                        
 
                        "</tr>"
@@ -1079,7 +1035,6 @@ $(document).on("click", ".untrash", function(){
       selectedRow = $(this).parents("tr")
 
       id = $(this).attr("id")
-      console.log(id)
         $.ajax({
                       type:"POST",
                       url:"",
@@ -1113,14 +1068,14 @@ $(document).on("click", ".trash", function(){
           action = "trashItem"
 
             if(tab == "folders" | tab == "groups"){
-                faction_id = id.split("|")[0].replace("folder","").replace("groups","")
+                folder_id = id.split("|")[0].replace("folder","").replace("groups","")
                 bookmark_id = id.split("|")[1]
             }else if(tab == "favorite"){
                 action = "remFav"
                 bookmark_id = id
             } else{
               bookmark_id = id
-              faction_id = ""
+              folder_id = ""
             }
 
                 $.ajax({
@@ -1130,7 +1085,8 @@ $(document).on("click", ".trash", function(){
                       data:{
                         action: action,
                         tab: tab,
-                        faction_id: faction_id,
+                        faction_id: folder_id
+                        ,
                         b_id: bookmark_id,
                         csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
                       }, 
@@ -1153,6 +1109,7 @@ $(document).on("click", ".trash", function(){
 
 
 $(document).on("click", ".favorite", function(){
+
       rowID = $(this).children().attr("id")
       i = rowID.split("|")[0] //row index
       clicked_id = rowID.split("|")[1] //bookmark id
@@ -1163,15 +1120,17 @@ $(document).on("click", ".favorite", function(){
           markers[i].isFavorite = true;  
           // clearRow('itemArea')
           if(tab=='folders'){
+
             markers[i].isFavorite = true
-            showRows(tab,markers, rowID.split("|")[2])
+            get_bookmarks(tab, rowID.split("|")[2],true)
 
           }else if(tab=='groups'){
             markers[i].isFavorite = true
-            showRows(tab,markers, rowID.split("|")[2])
+            get_bookmarks(tab, rowID.split("|")[2],true)
             group_id = rowID.split("|")[2].replace("groups","")
           }else{
-            showRows(tab, markers)
+            get_bookmarks(tab,0,true)
+
           } 
               $.ajax({
                           type:"POST",
@@ -1190,14 +1149,14 @@ $(document).on("click", ".favorite", function(){
           markers[i].isFavorite = 0;  
            if(tab=='folders'){
             markers[i].isFavorite = false
-            showRows(tab,markers, rowID.split("|")[2])
+            get_bookmarks(tab, rowID.split("|")[2],true)
             
           } else if(tab=='groups'){
             markers[i].isFavorite = false
-            showRows(tab,markers, rowID.split("|")[2])
+            get_bookmarks(tab, rowID.split("|")[2],true)
             group_id = rowID.split("|")[2].replace("groups","")
           }else{
-            showRows(tab, markers)
+            get_bookmarks(tab, 0,true)
           } 
             $.ajax({
                       type:"POST",
@@ -1248,7 +1207,8 @@ $(document).on("click", ".open_link", function(){
 })
 
 $(document).on("click", ".get_detail", function(){
-      detailID = $(this).attr("id")
+    detailID = $(this).attr("id")
+    console.log(faction_id)
 
 
         $.ajax({
@@ -1263,12 +1223,12 @@ $(document).on("click", ".get_detail", function(){
                  $("#detailArea").empty();
 
                 detail = response.detail
-                console.log(detail)
+                // console.log(detail)
                   var added = new Date( detail[0].dateAdded);
                   var accessed = new Date( detail[0].dateAccessed);
                     $('#detailArea').append("<tr ><td style='text-align: right; vertical-align:top'> Website: </td>"+ "<td> <a href='https://"+detail[0].websiteTitle+ "'>"+ detail[0].websiteTitle +  "</a></td></tr>" );  
                     $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Item type: </td>"+ "<td>"+ detail[0].itemType +  "</td></tr>" );  
-                    $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> URL: </td>"+ "<td><a href='"+detail[0].url+"' target='_blank'>"+ detail[0].bookmark__url +  "</td></tr>" );  
+                    $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> URL: </td>"+ "<td><a href='"+detail[0].url+"' target='_blank'>"+ detail[0].url +  "</td></tr>" );  
                     $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Title: </td>"+ "<td>"+ detail[0].title +  "</td></tr>" );  
                     $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Author: </td>"+ "<td>"+ detail[0].author +  "</td></tr>" );  
                     $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Abstract: </td>"+ "<td>"+ detail[0].description +  "</td></tr>" );  
@@ -1282,11 +1242,9 @@ $(document).on("click", ".get_detail", function(){
                      "<tr><td style='text-align: right; vertical-align:top'> Downloads: </td>"+ "<td>"+ detail[0].numOfDownload +  "</td></tr>" +
                      "<tr><td style='text-align: right; vertical-align:top'> Pages: </td>"+ "<td>"+ detail[0].numOfPages +  "</td></tr>" +
                      "<tr><td style='text-align: right; vertical-align:top'> DOI: </td>"+ "<td>"+ detail[0].DOI +  "</td></tr>" +
-                     "<tr><td style='text-align: right; vertical-align:top'> ISSN: </td>"+ "<td>"+ detail[0].ISSN +  "</td></tr>" +
+                     "<tr><td style='text-align: right; vertical-align:top'> ISSN: </td>"+ "<td>"+ detail[0].ISSN +  "</td></tr>" 
                      
-                     "<tr><td style='text-align: right; vertical-align:top'> Date added: </td>"+ "<td>"+ added.toDateString().slice(3,)+" "+added.toTimeString().slice(0,5) +  "</td></tr>"+
-                     "<tr><td style='text-align: right; vertical-align:top'> Date Accessed: </td>"+ "<td>"+ accessed.toDateString().slice(3,)+" "+accessed.toTimeString().slice(0,5) +  "</td></tr>" 
-             
+           
              
              
                      );  
@@ -1296,6 +1254,53 @@ $(document).on("click", ".get_detail", function(){
 
 })
 
+$(document).on("click", "#add_member", function(){
+      username = document.getElementById('idNumber_input').value
+    console.log(faction_id)
+        $.ajax({
+              type:"POST",
+              url:"",
+
+              data:{
+                action: 'add_member',
+                id: username,
+                gID: faction_id,
+                csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+              }, 
+
+              success: function(response){
+                result = response.result
+                member = response.member
+               
+                if(result == 'member'){
+                  document.getElementById('error_message').innerHTML ="User is already a member"
+
+                }
+                else if(result == 'owner')
+                  document.getElementById('error_message').innerHTML ="User is the owner "
+                else if(result == 'added'){
+                  document.getElementById('dismiss-modal_member').click()
+                  alert("User Added")
+
+                  $('#group_detail_ul').append(
+                  "<div class='member' style='margin-left:25%'> "+ member[0].first_name+" "+ member[0].last_name +" </div>"  
+                  );
+                }
+                  
+                  
+                
+              },
+              error: function(){
+                document.getElementById('error_message').innerHTML =""
+
+              }
+        }); 
+
+
+})
+function add_member(){
+    
+}
 
 function clearStyle(){
   var table = document.getElementsByClassName("menu-item");
@@ -1319,106 +1324,9 @@ function clearStyle(){
     document.getElementById('recentlyAddedIcon').style.color= "grey";
     document.getElementById('recentlyReadIcon').style.color= "grey";
     document.getElementById('favoriteIcon').style.color= "grey";
-    // document.getElementById('collections').style.color= "grey";
-    // document.getElementById('groups').style.color= "grey";
-    // document.getElementById('favoriteIcon').style.color= "grey";
-    // document.getElementById('recentAddedIcon').style.color= "grey";
-    // document.getElementById('recentReadIcon').style.color= "grey";
-}
-function get_detail(clicked_id, isGroup_detail, members){
-    var id = parseInt(clicked_id);
-    $("#group_detail_ul").empty();
     
-
-    
-
-   if(isGroup_detail == true){
-
-          for(i=0;i< groups.length;i++){
-            if(groups[i].id == clicked_id){
-
-               date = new Date(groups[i].date_created)
-             $('#group_detail_ul').append("<br><div><b>Group name:</b> &nbsp; "+groups[i].name+"</div> "+
-              // "<br><div><b>Description:</b>&nbsp; "+group[0]['description']+"</div>" +
-              "<br><div><b>Owner:</b> &nbsp; "+groups[i].owner__first_name+" "+groups[i].owner__last_name +"</div>" + 
-              "<br><div><b>Date created:</b>  &nbsp;"+ date.toDateString().slice(3,)+" "+date.toTimeString().slice(0,5)+"</div>" + 
-              "<br><div style='margin-left:-5%'><i class='fas fa-user-plus' style='font-size:90%; cursor:pointer;' href='#addMemberModal' data-toggle='modal' data-target='#addMemberModal'></i> &nbsp; <b>Member(s)</b>: </div>"
- 
-
-            ); 
-
-            }
-          }
-           
-            for(i=0;i<members.length;i++){
-                $('#group_detail_ul').append(
-                          "<div class='member' style='margin-left:25%'> "+ members[i].first_name+" "+ members[i].last_name +" </div>"  
-                          );
-              }
-            
-                
-      
-        
-
-
-   }
-    else if(tab != 'groups'){
-      $("#group_detail_ul").empty();
-      for(i=0; i< markers.length;i++){
-         if(markers[i].bookmark__id == id){
-             
-             var added = new Date( markers[i].dateAdded);
-             var accessed = new Date( markers[i].dateAccessed);
-              
-              
-          
-   
-          break;
-         }
-     } 
-   }else {
-     
-      faction_markers= array
-      for(i=0; i< faction_markers.length;i++){
-        if(faction_markers[i].id == id){
-
-
-            var added = new Date( faction_markers[i].dateAdded);
-             var accessed = new Date( faction_markers[i].dateAccessed);
-              
-              
-          $('#detailArea').append("<tr ><td style='text-align: right; vertical-align:top'> Website: </td>"+ "<td> <a href='https://"+faction_markers[i].bookmark__websiteTitle+ "'>"+ faction_markers[i].bookmark__websiteTitle +  "</a></td></tr>" );  
-          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Item type: </td>"+ "<td>"+ faction_markers[i].bookmark__itemType +  "</td></tr>" );  
-          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> URL: </td>"+ "<td><a href='"+faction_markers[i].bookmark__url+"' target='_blank'>"+ faction_markers[i].bookmark__url +  "</td></tr>" );  
-          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Title: </td>"+ "<td>"+ faction_markers[i].bookmark__title +  "</td></tr>" );  
-          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Author: </td>"+ "<td>"+ faction_markers[i].bookmark__author +  "</td></tr>" );  
-          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Abstract: </td>"+ "<td>"+ faction_markers[i].bookmark__description +  "</td></tr>" );  
-          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Collection: </td>"+ "<td>"+ faction_markers[i].bookmark__journalItBelongs +  "</td></tr>" );  
-          $('#detailArea').append("<tr><td style='text-align: right; vertical-align:top'> Publication Year: </td>"+ "<td>"+ faction_markers[i].bookmark__publicationYear +  "</td></tr>" );  
-          $('#detailArea').append(
-           "<tr><td style='text-align: right; vertical-align:top'> Publisher: </td>"+ "<td>"+ faction_markers[i].bookmark__publisher +  "</td></tr>" +
-           "<tr><td style='text-align: right; vertical-align:top'> Volume: </td>"+ "<td>"+ faction_markers[i].bookmark__volume +  "</td></tr>" +
-           "<tr><td style='text-align: right; vertical-align:top'> Edition: </td>"+ "<td>"+ faction_markers[i].bookmark__edition +  "</td></tr>" +
-           "<tr><td style='text-align: right; vertical-align:top'> Citation: </td>"+ "<td>"+ faction_markers[i].bookmark__numOfCitation +  "</td></tr>" +
-           "<tr><td style='text-align: right; vertical-align:top'> Downloads: </td>"+ "<td>"+ faction_markers[i].bookmark__numOfDownload +  "</td></tr>" +
-           "<tr><td style='text-align: right; vertical-align:top'> Pages: </td>"+ "<td>"+ faction_markers[i].bookmark__numOfPages +  "</td></tr>" +
-           "<tr><td style='text-align: right; vertical-align:top'> DOI: </td>"+ "<td>"+ faction_markers[i].bookmark__DOI +  "</td></tr>" +
-           "<tr><td style='text-align: right; vertical-align:top'> ISSN: </td>"+ "<td>"+ faction_markers[i].bookmark__ISSN +  "</td></tr>" +
-           
-           "<tr><td style='text-align: right; vertical-align:top'> Date added: </td>"+ "<td>"+ added.toDateString().slice(3,)+" "+added.toTimeString().slice(0,5) +  "</td></tr>"+
-           "<tr><td style='text-align: right; vertical-align:top'> Date Accessed: </td>"+ "<td>"+ accessed.toDateString().slice(3,)+" "+accessed.toTimeString().slice(0,5) +  "</td></tr>" 
-   
-   
-   
-           );  
-
-         break;
-        }
-      } 
-    }
-  
-  
 }
+
 
 
 function sort(n){
@@ -1478,7 +1386,7 @@ function sort(n){
   }
 }    
 
-// function addfolder
+
 
 function bookmarkToFolder_dropdown(clicked_id, detail_id) {
   $("#add_to_folderList_ul"+clicked_id).empty();
@@ -1524,7 +1432,6 @@ function bookmarkToFolder_dropdown(clicked_id, detail_id) {
       
   document.getElementById("folderList_dropdown"+ clicked_id).classList.toggle("show");
   // alert(clicked_id)
-      console.log(markers.length)
 
 }
 
@@ -1534,7 +1441,6 @@ function submit_add_folder(folder_id, bookmark_id){
   id = folder_id.slice(6,)
   faction =folder_id.slice(0,6)
   // tab
-  console.log(bookmark_id, id, faction, tab)
 
   $.ajax({
                       type:"POST",
@@ -1547,7 +1453,7 @@ function submit_add_folder(folder_id, bookmark_id){
                         faction: faction,
                         csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
                       }
-        }); 
+  }); 
 }
 function add_folder_button() {
   document.getElementById("dropdown-content_input").classList.toggle("show");
@@ -1560,44 +1466,106 @@ function functionCollapse() {
 
 
 function display_dropdown(dropdown_type) {
-        if(dropdown_type == 'folders' ){
 
+  
+        if(dropdown_type == 'folders' ){
                 $("#mycollection_ul").empty();
 
-                    for(i=0;i< folders.length;i++){
-                          folders[i].name
-                           $('#mycollection_ul').append(
-                          "<li id='folder"+folders[i].id+"' style='padding-left:20%;padding-bottom: 3%;padding-top: 3%; cursor:pointer' onclick='get_bookmarks(this.id)' class='faction_dropdown' oncontextmenu='delete_folder_rightClick(this.id, event)'>"+folders[i].name+"</li>"+
-                          "<center><div id='folder"+folders[i].id+"_dropdown' class='dropdown-content' style='min-width: 50%; margin-left: 40%; cursor: pointer; margin-top: -8%; z-index:1 ' onclick='delete_faction(this.id,"+i+")'>"+
-                         "<ul style='padding-top:7%;padding-bottom:7%'>"+
-                            "<div>delete</div>"+
+            if(folders.length == 0){
+                  $.ajax({
+                        type:"POST",
+                        url:"",
+
+                        data:{
+                          action: 'get_folders',
+                          csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                        }, success: function(response){
+                           folders = response.list
+
+                           for(i=0;i< folders.length;i++){
+                          
+                                 $('#mycollection_ul').append(
+                                "<li id='folder"+folders[i].id+"' style='padding-left:20%;padding-bottom: 3%;padding-top: 3%; cursor:pointer' onclick='get_bookmarks(this.id)' class='faction_dropdown' oncontextmenu='delete_folder_rightClick(this.id, event)'>"+folders[i].name+"</li>"+
+                                "<center><div id='folder"+folders[i].id+"_dropdown' class='dropdown-content' style='min-width: 50%; margin-left: 40%; cursor: pointer; margin-top: -8%; z-index:1 ' onclick='delete_faction(this.id,"+i+")'>"+
+                               "<ul style='padding-top:7%;padding-bottom:7%'>"+
+                                  "<div>delete</div>"+
+                                    
+                                "</ul> </div></center>");
                               
-                          "</ul> </div></center>");
-                        
-                    }
+                          }
+                        }
+                  }); 
+              } else{
+                        for(i=0;i< folders.length;i++){
+                          
+                                 $('#mycollection_ul').append(
+                                "<li id='folder"+folders[i].id+"' style='padding-left:20%;padding-bottom: 3%;padding-top: 3%; cursor:pointer' onclick='get_bookmarks(this.id)' class='faction_dropdown' oncontextmenu='delete_folder_rightClick(this.id, event)'>"+folders[i].name+"</li>"+
+                                "<center><div id='folder"+folders[i].id+"_dropdown' class='dropdown-content' style='min-width: 50%; margin-left: 40%; cursor: pointer; margin-top: -8%; z-index:1 ' onclick='delete_faction(this.id,"+i+")'>"+
+                               "<ul style='padding-top:7%;padding-bottom:7%'>"+
+                                  "<div>delete</div>"+
+                                    
+                                "</ul> </div></center>");
+                              
+                          }
+              }
+
+                    
          
         } else if(dropdown_type == 'groups'){
          
 
               $("#mygroup_ul").empty();
-            
-                  for(i=0;i< groups.length;i++){
-                    
+              
+              if(groups.length == 0){
+                   $.ajax({
+                        type:"POST",
+                        url:"",
+
+                        data:{
+                          action: 'get_groups',
+                          csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                        }, success: function(response){
+                            groups = response.list
+
+                            for(i=0;i< groups.length;i++){
                    
-                           $('#mygroup_ul').append(
-                          "<li id='groups"+groups[i].id+"' style='padding-left:20%;padding-bottom: 3%;padding-top: 3%; cursor:pointer' onclick='get_bookmarks(this.id)' class='faction_dropdown' oncontextmenu='delete_folder_rightClick(this.id, event)'>"+groups[i].name+"</li>"+
-                          "<center><div id='groups"+groups[i].id+"_dropdown' class='dropdown-content' style='min-width: 50%; margin-left: 40%; cursor: pointer; margin-top: -8%; z-index:1' onclick='delete_faction(this.id,"+i+")'>"+
-                         "<ul style='padding-top:7%;padding-bottom:7%'>"+
-                            "<div>delete</div>"+
-                              
-                          "</ul> </div></center>");
-                        try{
-                          if(groups[i].id == groups[i+1].id )
-                              i++
-                        } catch{
-                          
-                        } 
-                  }
+                                   $('#mygroup_ul').append(
+                                  "<li id='groups"+groups[i].id+"' style='padding-left:20%;padding-bottom: 3%;padding-top: 3%; cursor:pointer' onclick='get_bookmarks(this.id)' class='faction_dropdown' oncontextmenu='delete_folder_rightClick(this.id, event)'>"+groups[i].name+"</li>"+
+                                  "<center><div id='groups"+groups[i].id+"_dropdown' class='dropdown-content' style='min-width: 50%; margin-left: 40%; cursor: pointer; margin-top: -8%; z-index:1' onclick='delete_faction(this.id,"+i+")'>"+
+                                 "<ul style='padding-top:7%;padding-bottom:7%'>"+
+                                    "<div>delete</div>"+
+                                      
+                                  "</ul> </div></center>");
+                                try{
+                                  if(groups[i].id == groups[i+1].id )
+                                      i++
+                                } catch{
+                                  
+                                } 
+                            }
+                        }
+                  });
+
+              } else{
+
+                            for(i=0;i< groups.length;i++){
+                   
+                                   $('#mygroup_ul').append(
+                                  "<li id='groups"+groups[i].id+"' style='padding-left:20%;padding-bottom: 3%;padding-top: 3%; cursor:pointer' onclick='get_bookmarks(this.id)' class='faction_dropdown' oncontextmenu='delete_folder_rightClick(this.id, event)'>"+groups[i].name+"</li>"+
+                                  "<center><div id='groups"+groups[i].id+"_dropdown' class='dropdown-content' style='min-width: 50%; margin-left: 40%; cursor: pointer; margin-top: -8%; z-index:1' onclick='delete_faction(this.id,"+i+")'>"+
+                                 "<ul style='padding-top:7%;padding-bottom:7%'>"+
+                                    "<div>delete</div>"+
+                                      
+                                  "</ul> </div></center>");
+                                try{
+                                  if(groups[i].id == groups[i+1].id )
+                                      i++
+                                } catch{
+                                  
+                                } 
+                            }
+              }
+                  
           } 
 
    
@@ -1609,7 +1577,7 @@ function delete_faction(clicked_id, i){
   faction = clicked_id.slice(0,6)
   if(faction == 'folder'){
 
-        faction_id = clicked_id.replace('folder','').replace('_dropdown','')
+        folder_id = clicked_id.replace('folder','').replace('_dropdown','')
                 $.ajax({
 
                     type:"POST",
@@ -1618,7 +1586,7 @@ function delete_faction(clicked_id, i){
                     data:{
                       action: 'delete_faction',
                       faction_type: faction,
-                      id: faction_id,
+                      id: folder_id,
                       
                       csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
                     },
@@ -1628,7 +1596,7 @@ function delete_faction(clicked_id, i){
   }
     
   else if(faction == 'groups'){
-        faction_id = clicked_id.replace('groups','').replace('_dropdown','')
+        folder_id = clicked_id.replace('groups','').replace('_dropdown','')
                 $.ajax({
 
                     type:"POST",
@@ -1637,7 +1605,7 @@ function delete_faction(clicked_id, i){
                     data:{
                       action: 'delete_faction',
                       faction_type: faction,
-                      id: faction_id,
+                      id: folder_id,
                       
                       csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
                     },
@@ -1645,8 +1613,6 @@ function delete_faction(clicked_id, i){
         groups.splice(i,1)
         display_dropdown('groups')
   }
-    
-// alert(i)
 
 }
 function delete_folder_rightClick(clicked_id, event){
@@ -1656,43 +1622,40 @@ function delete_folder_rightClick(clicked_id, event){
 
 
 
-  function create_folder(create_type){
-    
-      
-
+function create_folder(create_type){
 
             if(create_type == 'folders'){
               fname = document.getElementById('foldername_input').value
                 $.ajax({
+                      type:"POST",
+                      url:"",
 
-                          type:"POST",
-                          url:"",
+                      data:{
+                        action: 'add_folder',
+                        name: fname,
+                        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                      },
 
-                          data:{
-                            action: 'add_folder',
-                            name: fname,
-                            csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
-                          },
+                      success: function(response){
+                         if( response.did_exist == true){
+                              document.getElementById("add_folder_error").style.visibility ="visible";
+                         }else{
+                                document.getElementById("dismiss-modal_folder").click()
+                                createdFolder = response.createdFolder
+                                folders.push(createdFolder[0])
+                                $('#mycollection_ul').append(
+                                "<li id='folder"+createdFolder[0].id+"' style='padding-left:20%;padding-bottom: 3%;padding-top: 3%; cursor:pointer' onclick='get_bookmarks(this.id)' class='faction_dropdown' oncontextmenu='delete_folder_rightClick(this.id, event)'>"+createdFolder[0].name+"</li>"+
+                                "<center><div id='folder"+createdFolder[0].id+"_dropdown' class='dropdown-content' style='min-width: 50%; margin-left: 40%; cursor: pointer; margin-top: -8%; z-index:1 ' onclick='delete_faction(this.id,"+i+")'>"+
+                               "<ul style='padding-top:7%;padding-bottom:7%'>"+
+                                  "<div>delete</div>"+
+                                    
+                                "</ul> </div></center>");
+                         }
 
-                          success: function(response){
-                             // folders = response.folder_list
-                             if( response.did_exist == true){
-                                  document.getElementById("add_folder_error").style.visibility ="visible";
-                             }else{
-                                    document.getElementById("dismiss-modal_folder").click()
-                                    console.log(response.createdFolder)
-
-                                    folders.push(response.createdFolder[0])
-                                    console.log(folders)
-                                    display_dropdown('folders')
-                             }
-
-                          }
-                          
-
-
-                      
+                      }
+          
                 }); 
+
             } else if(create_type == 'groups'){
               gname = document.getElementById('groupname_input').value
                 $.ajax({
@@ -1707,10 +1670,22 @@ function delete_folder_rightClick(clicked_id, event){
                           },
 
                           success: function(response){
-                             groups = response.group_list
-                            
+                             groups = response.createdGroup
+                            if( response.did_exist == true){
+                                  document.getElementById("add_group_error").style.visibility ="visible";
+                             }else{
+                                    document.getElementById("dismiss-modal_group").click()
+                                    createdFolder = response.createdFolder
+                                    groups.push(createdFolder[0])
+                                    $('#mycollection_ul').append(
+                                    "<li id='folder"+createdFolder[0].id+"' style='padding-left:20%;padding-bottom: 3%;padding-top: 3%; cursor:pointer' onclick='get_bookmarks(this.id)' class='faction_dropdown' oncontextmenu='delete_folder_rightClick(this.id, event)'>"+createdFolder[0].name+"</li>"+
+                                    "<center><div id='groups"+createdFolder[0].id+"_dropdown' class='dropdown-content' style='min-width: 50%; margin-left: 40%; cursor: pointer; margin-top: -8%; z-index:1 ' onclick='delete_faction(this.id,"+i+")'>"+
+                                   "<ul style='padding-top:7%;padding-bottom:7%'>"+
+                                      "<div>delete</div>"+
+                                        
+                                    "</ul> </div></center>");
+                             }
                              
-                          display_dropdown('groups')
                         }
 
                       
@@ -1719,74 +1694,6 @@ function delete_folder_rightClick(clicked_id, event){
   }
 
 
-function display_faction_bookmarks(clicked_id, event){
-  faction = clicked_id.slice(0,6)
-
-      if(typeof(clicked_id) == 'string'){
-          ID = clicked_id.replace("folder",'').replace('groups','')  
-        } else{
-          ID = clicked_id
-        }
-        faction_id = ID
-          if(faction == 'folder'){
-            tab = "folders"
-                $.ajax({
-
-                          type:"POST",
-                          url:"",
-
-                          data:{
-                            action: 'get_folder_bookmarks',
-                            fID: ID,
-                            
-                            csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
-                          },
-
-                          success: function(response){
-                              array = response.bookmarks
-                             
-                              showRows('folders', array, ID)
-                              
-                              try{
-                                  document.getElementById(clicked_id).style.backgroundColor= "#c9c9c9";
-                                  document.getElementById(clicked_id).style.color= "#800000";
-                              } catch{
-                                  document.getElementById('folder'+clicked_id).style.backgroundColor= "#c9c9c9";
-                                  document.getElementById('folder'+clicked_id).style.color= "#800000";
-                              }
-                          }
-
-                }); 
-          } else if(faction == 'groups'){
-                $.ajax({
-                          type:"POST",
-                          url:"",
-
-                          data:{
-                            action: 'get_group_bookmarks',
-                            gID: ID,
-                            
-                            csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
-                          },
-                          success: function(response){
-                              array = response.bookmarks
-                              members = response.member
-                              $("#detailArea").empty();
-                              showRows('groups', array, ID)
-                              get_detail(faction_id, true, members)
-                              try{
-                                  document.getElementById(clicked_id).style.backgroundColor= "#c9c9c9";
-                                  document.getElementById(clicked_id).style.color= "#800000";
-                              } catch{
-                                  document.getElementById('group'+clicked_id).style.backgroundColor= "#c9c9c9";
-                                  document.getElementById('group'+clicked_id).style.color= "#800000";
-                              }
-                          }
-                }); 
-          }
-  
-  
-}
 
 
 
@@ -1799,46 +1706,7 @@ function hide_errorMessage(){
   document.getElementById('add_folder_error').style.visibility="hidden"
                            
 }
-function add_member(){
-    username = document.getElementById('idNumber_input').value
 
-        $.ajax({
-              type:"POST",
-              url:"",
-
-              data:{
-                action: 'add_member',
-                id: username,
-                gID: faction_id,
-                csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
-              }, 
-
-              success: function(response){
-                result = response.result
-
-                document.getElementById('user_already_member').style.display='none'
-                document.getElementById('user_does_not_exist').style.display='none'
-                document.getElementById('user_is_owner').style.display='none'
-                if(result == 'member')
-                  document.getElementById('user_already_member').style.display='block'
-                else if(result == 'owner')
-                  document.getElementById('user_is_owner').style.display='block'
-                else if(result == 'added'){
-                  document.getElementById('dismiss-modal_member').click()
-                  alert("User Added")
-                }
-                  
-                  
-                
-              },
-              error: function(){
-                document.getElementById('user_already_member').style.display='none'
-                document.getElementById('user_does_not_exist').style.display='none'
-                document.getElementById('user_is_owner').style.display='none'
-                document.getElementById('user_does_not_exist').style.display='block'
-              }
-        }); 
-}
 
 </script> 
 

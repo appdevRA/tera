@@ -315,14 +315,34 @@
                  
              
             </div>  
-          </div>
+      <!--     </div>
       </div>
-    </div>
 
+    </div> -->
+<center><ul class="pagination">
+      <li class="previous"style="cursor: pointer;">
+        <a class="page-link" >Previous</a>
+      </li>
+      <li  id="1" class="page-item active"><a class="page-link" >1</a></li>
+      <li id="2" class="page-item "><a class="page-link" >2</a></li>
+      <li id="3" class="page-item "><a class="page-link" >3</a></li>
+      <li  id="4" class="page-item "><a class="page-link" >4</a></li>
+      <li  id="5" class="page-item "><a class="page-link" >5</a></li>
+      <li  id="6" class="page-item "><a class="page-link" >6</a></li>
+      <li  id="7" class="page-item "><a class="page-link" >7</a></li>
+      <li  id="8" class="page-item "><a class="page-link" >8</a></li>
+      <li  id="9" class="page-item "><a class="page-link" >9</a></li>
+      <li  id="10" class="page-item "><a class="page-link" >10</a></li>
+
+      <li class="next" style="cursor: pointer;">
+        <a class="page-link" >Next</a>
+      </li>
+    </ul>
     <div class="right-tab" style="border-left:2px"></div>
+</center>
+    
 
-
-        <!-- <div class="header">All</div> -->
+<!-- <div class="header">All</div> -->
         
     </div>
 
@@ -371,13 +391,14 @@
 
 
 <script type="text/javascript">
-  
+  host = "{{host}}"
  user_id = "{{is_authenticated}}"
  website = "{{active_site}}"
  type = "{{itemType}}"
  isGet = "{{isGet}}"
  keyword = "{{keyword}}"
- 
+ source = ""
+ pageNumber=1
   $(document).ready(function($) {
      // showRows()
      search(website,'site')
@@ -393,18 +414,120 @@
 
 });
 
+function ajax(keyword,website, type, isSite, isPage, pageNumber){
+  if(isPage == true){
+        $.ajax({
+              type:"POST",
+              url:"",
 
+              data:{
+                action: "search",
+                pageNumber: pageNumber,
+                isPage: true,
+                isGet: isGet,
+                isSite: false,
+                csrfmiddlewaretoken: "{{csrf_token}}"
+              },
+              success: function(response){
+                markers = response.results
+                console.log(markers)
+          
+                showRows(markers)
+                user_id = response.is_authenticated
+                isGet = response.isGet
+                document.getElementById('displayWord').innerHTML = keyword
+                document.getElementById('displayWord').style.display ="inline"
+                
+           
+              }, error: function(response){
+                alert("Something went wrong, site cannot be searched as of the moment.\n\n Please bear with us")
+              }
+        }); 
+  } else{
+    $.ajax({
+                type:"POST",
+                url:"",
+
+                data:{
+                  action: "search",
+                  word: keyword,
+                  site: website,
+                  itemType: type,
+                  isGet: isGet,
+                  isSite: true,
+                  isPage: false,
+                  csrfmiddlewaretoken: "{{csrf_token}}"
+
+                }, success: function(response){
+                  // if(a=0){
+                    markers = response.results
+                  // }
+                  if(markers!= null)
+                    showRows(markers)
+                  user_id = response.is_authenticated
+                  isGet = response.isGet
+                  document.getElementById('displayWord').innerHTML = keyword
+                  document.getElementById('displayWord').style.display ="inline"
+                  
+                
+                }, error: function(response){
+                  alert("Something went wrong, site cannot be searched as of the moment.\n\n Please bear with us")
+                }
+
+
+
+          }); 
+  }
+  
+}
+$(document).on("click", ".page-item", function(){
+      a = $('ul.pagination').find('li.active')
+      $("#itemArea").empty()
+      a.removeClass('active')
+      $(this).addClass("active")
+      pageNumber = $(this).attr("id")
+      document.getElementById('displayWord').style.display ="none"
+      
+      ajax("","","",false,true, pageNumber)
+      // alert("olok")
+})
+
+$(document).on("click", ".next", function(){
+      a = $('ul.pagination').find('li.active')
+      $("#itemArea").empty()
+
+      if(a.next().attr("class") !="next"){
+          a.removeClass('active')
+          currentPage = a.next()
+          currentPage.addClass("active")
+          ajax("","","",false,true, currentPage.attr("id"))
+      }
+     
+      // alert("olok")
+})
+
+$(document).on("click", ".previous", function(){
+      a = $('ul.pagination').find('li.active')
+      $("#itemArea").empty()
+
+      if(a.prev().attr("class") !="previous"){
+          a.removeClass('active')
+          currentPage = a.prev()
+          currentPage.addClass("active")
+          ajax("","","",false,true, currentPage.attr("id"))
+      }
+      // alert("olok")
+})
 function showRows(markers, links){
-  console.log(markers.length)
-  for(i=0; i< markers.length;i++){
-                    console.log("length: " ,markers[i].length)
-    
+
+  if(website != "CIT"){
+      for(i=0; i< markers.length;i++){
     
           if(markers[i].length == 2){
                         if(user_id == 'True' | user_id == true){
                           $('#itemArea').append(
                                 "<tr> " +
-                           "<td><a href='"+ markers[i][markers[i].length-1]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;font-size: 115%'><strong>" +
+                           "<td><a  href='"+ markers[i][markers[i].length-1]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;font-size: 115%'><strong>" +
                                 markers[i][0] + "</strong></span></a><br>" +
 
                                 " <em>"+ markers[i][1]+"</em><br><br></td>" +
@@ -623,60 +746,64 @@ function showRows(markers, links){
 
                                   "<td><a class='btnBookmark' >  <i href='#modalLogoutForm' data-toggle='modal' data-target='#modalLogoutForm'style='color: red;cursor: pointer'class='fa fa-bookmark'></i></a> </td>"+ "</tr> <br><br>" );  
                         }
-            }            
-  }
+            }  
+            }          
+      
+  } else{     
+              for(i=0; i< markers.length;i++){
+                date = new Date(markers[i].date_published)
+                console.log("https://"+host+"/images/"+markers[i]['file'])
+                  $('#itemArea').append(  "<tr> " +
+                           "<td><a id ='"+markers[i].id+"' class ='open' href='//"+host+"/images/"+markers[i]['file']+"'><span"+
+                           "style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;'><strong>" +
+                                markers[i].title + "</strong></span></a><br>" +
+
+                               " <area style=' font-size: 120%;  max-width: 60ch;'>"+ markers[i].abstract+"</area><br><br>" +
+                                 "<area>  Authors: &nbsp; <em>"+ markers[i].author+"</em> </area><br>" +
+                                " <area> Date published: &nbsp; <em>"+ date.toDateString().slice(3,)+"</em></area><br></td>" +
+                                
+
+                                 "<td>  <a class='btnBookmark' > <i id='"+markers[i].id+"' class='fa fa-bookmark' style='color: red; cursor: pointer' onClick='reply_click(this.id)'></i></a> </td>"+ "</tr>" );   
+              }
+                      
+      }
+  
 }
 
+$(document).on("click", ".open", function(){
+    id = $(this).attr("id")
+    alert(id)
+    $.ajax({
+            type:"POST",
+            url:"",
 
-function clearRow(tableName){
-  var table = document.getElementById(tableName);
-    //or use :  var table = document.all.tableid;
-    
-    for(var i = table.rows.length - 1; i > 0; i--)
-    {
-        table.deleteRow(i);
-    }
+            data:{
+              action: 'increment_access',
+              id: id,
+              csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+            },
+            success: function(response){
+              }
+              
+         
+    }); 
+})
 
-}
+
 
 
 function search(clicked_id, searchType){
+  $("#itemArea").empty()
+
     if (isGet == "false"){
       keyword = document.getElementById('input').value
     }
-    clearRow("itemTable")
-
+    
     if(searchType == 'search'){ 
       
         document.getElementById('displayWord').style.display ="none"
-        $.ajax({
-                type:"POST",
-                url:"",
-
-                data:{
-                  action: "search",
-                  word: keyword,
-                  site: website,
-                  itemType: type,
-                  pageNumber: 1,
-                  isGet: isGet,
-                  isSite: false,
-                  csrfmiddlewaretoken: "{{csrf_token}}"
-                },
-                success: function(response){
-                  markers = response.results
-                  
-                  links = response.links
-                  showRows(markers)
-                  user_id = response.is_authenticated
-                  isGet = response.isGet
-                  
-                  document.getElementById('displayWord').innerHTML = keyword
-                  document.getElementById('displayWord').style.display ="inline"
-                  
-             
-                }
-          }); 
+        ajax(keyword,website, type, false, false, 0)
+       
       // document.getElementById('articlehr').style.display = "block";
 
     } else if( searchType == 'itemType'){
@@ -684,45 +811,8 @@ function search(clicked_id, searchType){
         
         document.getElementById('displayWord').style.display ="none"
         navhr(type)
-        $.ajax({
-                type:"POST",
-                url:"",
+        ajax(keyword,website, type, false, false, 0)
 
-                data:{
-                  action: "search",
-                  word: keyword,
-                  site: website,
-                  itemType: type,
-                  pageNumber: 1,
-                  isGet: isGet,
-                  isSite: false,
-                  csrfmiddlewaretoken: "{{csrf_token}}"
-                },
-                success: function(response){
-                  markers = response.results
-                  
-            
-                  showRows(markers)
-                  user_id = response.is_authenticated
-                  isGet = response.isGet
-                  document.getElementById('displayWord').innerHTML = keyword
-                  document.getElementById('displayWord').style.display ="inline"
-                  
-             
-                }, error: function(response){
-                  markers = response.results
-                  
-            
-                  showRows(markers)
-                  user_id = response.is_authenticated
-                  isGet = response.isGet
-                  document.getElementById('displayWord').innerHTML = keyword
-                  document.getElementById('displayWord').style.display ="inline"
-                  
-             
-                }
-          }); 
-        
     } else if( searchType == 'site'){
      document.getElementById(clicked_id).checked = true
       website = clicked_id
@@ -762,6 +852,8 @@ function search(clicked_id, searchType){
         document.getElementById('book').style.display="inline"
         document.getElementById('book|').style.display="none"
         document.getElementById('dissertation').style.display="none"
+        document.getElementById('Text_book').style.display="none"
+        document.getElementById('Text_book|').style.display="none"
         navhr(type)
       }else if(clicked_id == 'UNESCO_Digital_Library'){
         if(type != 'article' & type != 'book' & type != 'Programme_and_meeting_document'){
@@ -769,7 +861,7 @@ function search(clicked_id, searchType){
         }
         document.getElementById('journal').style.display="none"
         document.getElementById('journal|').style.display="none"
-         document.getElementById('Text_book').style.display="none"
+        document.getElementById('Text_book').style.display="none"
         document.getElementById('Text_book|').style.display="none"
         document.getElementById('Programme_and_meeting_document').style.display="inline"
         document.getElementById('article').style.display="inline"
@@ -831,72 +923,11 @@ function search(clicked_id, searchType){
       //   navhr(type)
 
       // }
+        ajax(keyword,website, type, true, false)
+
       
-      $.ajax({
-                type:"POST",
-                url:"",
-
-                data:{
-                  action: "search",
-                  word: keyword,
-                  site: website,
-                  itemType: type,
-                  pageNumber: 1,
-                  isGet: isGet,
-                  isSite: true,
-                  csrfmiddlewaretoken: "{{csrf_token}}"
-
-                }, success: function(response){
-                  // if(a=0){
-                    markers = response.results
-                  // }
-                  if(markers!= null)
-                    showRows(markers)
-                  user_id = response.is_authenticated
-                  isGet = response.isGet
-                  document.getElementById('displayWord').innerHTML = keyword
-                  document.getElementById('displayWord').style.display ="inline"
-                  
-                
-                }, error: function(response){
-                    $.ajax({
-                          type:"POST",
-                          url:"",
-
-                          data:{
-                            action: "search",
-                            word: keyword,
-                            site: website,
-                            itemType: type,
-                            pageNumber: 1,
-                            isGet: isGet,
-                            isSite: true,
-                            csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
-                          },
-                          success: function(response){
-                            // if(a=0){
-                              markers = response.results
-                            // }
-                            
-                            // console.log(markers)
-                            showRows(markers)
-                            user_id = response.is_authenticated
-                            isGet = response.isGet
-                            document.getElementById('displayWord').innerHTML = keyword
-                            document.getElementById('displayWord').style.display ="inline"
-                            
-                       
-                          },  error: function(){
-                            alert("Please reload page")
-                          }
-
-                    }); 
-                }
-
-
-
-          }); 
-    }
+      
+    } 
     
         
 }

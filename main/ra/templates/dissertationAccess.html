@@ -47,9 +47,9 @@
           height: 2.3em;
         }
        
-       td{
+      /* td{
         text-align: center;
-       }
+       }*/
         
         </style>
 
@@ -185,8 +185,8 @@
 
                                       
                                         <tr id="row{{item.id}}">
-                                            <td  class="title" style="overflow: hidden;text-overflow: ellipsis; max-width: 50ch;text-align: center;">{{item.title}} </td>
-                                            <td class="author" style="overflow: hidden;text-overflow: ellipsis; max-width: 50ch;;text-align: center;">{{item.author}}</td>
+                                            <td  class="title" style="overflow: hidden;text-overflow: ellipsis; max-width: 50ch;text-align: justify;">{{item.title}} </td>
+                                            <td class="author" style="overflow: hidden;text-overflow: ellipsis; max-width: 50ch;;text-align: justify;">{{item.author}}</td>
                                             <td class="college" style="text-align: center">{{item.department_name}}</td>
                                             <!-- <td>olok</td> -->
                                             <td id="{{item.file.url}}" class="file" > <a href= "{{item.file.url}}"  > file</a>   </td>
@@ -256,7 +256,7 @@
                                 <div class="form-group row">
                                     <label for="last_name" class="col-md-4 col-form-label text-md-right"><a style="color: red">* &nbsp;</a>Abstract</label>
                                     <div class="col-md-6">
-                                        <textarea id="abstract" name="abstract" rows="9" cols="50" maxlength="300"></textarea>
+                                        <textarea id="abstract" name="abstract" rows="9" cols="50" maxlength="400"></textarea>
                                     </div>
                                 </div>
 
@@ -339,7 +339,7 @@
                                 <div class="form-group row">
                                     <label for="last_name" class="col-md-4 col-form-label text-md-right"><a style="color: red">* &nbsp;</a>Abstract</label>
                                     <div class="col-md-6">
-                                        <textarea id="abstract_field" name="abstract" rows="9" cols="50" maxlength="300"></textarea>
+                                        <textarea id="abstract_field" name="abstract" rows="9" cols="50" maxlength="400"></textarea>
                                     </div>
                                 </div>
 
