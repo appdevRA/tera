@@ -293,7 +293,7 @@ tr:hover {
                    <table id="itemTable"  class="table">
                     <col width="11%" />
                     <col width="7%" />
-                    <col width="35%" />
+                    <col width="36%" />
                     <col width="15%" />
 
 
@@ -301,7 +301,7 @@ tr:hover {
                       
                         <th >Site</th>
                         <th onclick="sort(1)" style="cursor: pointer">Type</th>
-                        <th onclick="sort(2)" style="cursor: pointer;">Title</th>
+                        <th  style="cursor: pointer;">Title</th>
                         <th onclick="sort(3)"style="cursor: pointer">Date Added</th>
                         <th onclick="sort(4)"style="cursor: pointer">Date Accessed</th>
                         <th></th>
@@ -351,27 +351,27 @@ tr:hover {
               <div class="header" >
               <br>
 
-              <table id="itemTable" class="table">
+              <table id="recommendationTable" class="table">
               <thead>
 
               <th >Site</th>
+              <th >Item type</th>
               <th >Title</th>
               <th ></th>
               <th ></th>
               <th ></th>
               <th ></th>
               <th ></th>
-              <th ></th>
 
-
+              <tbody id="recommendationArea">
               </thead>
               {% for item in recommendation %}
               <tr>
-              {% if item.websiteTitle == Springeropen %}
+              {% if item.websiteTitle == "Springeropen" %}
               <td><img class='logo-style' src="{% static 'images/springerLogo.PNG' %}" style='height: 15px;'></td>"
               {% endif %} 
-              <td>{{item.bookmark__itemType}}</td>
-              <td> <a id = "recommendation{{item.bookmark__id}}" style="max-width: 40ch; white-space: nowrap;overflow: hidden;text-overflow: ellipsis;" href="{{item.bookmark__url}}" target='_blank'> {{item.bookmark__title}} </a> </td>
+              <td>{{item.itemType}}</td>
+              <td> <a id = "recommendation{{item.id}}" style="max-width: 40ch; white-space: nowrap;overflow: hidden;text-overflow: ellipsis;" href="{{item.url}}" target='_blank'> {{item.title}} </a> </td>
 
               <td></td>
               <td></td>
@@ -379,10 +379,11 @@ tr:hover {
               <td></td>
               <td></td>
               <td></td>
-              <td id="bookmarkID{{item.bookmark__id}}" onclick="(addRecommended(this.id))" style="cursor: pointer;"><i class='fa fa-bookmark' style="color:red" ></i></td>
+              <td id="addRecommended{{item.id}}" class="bookmark_recommended"style="cursor: pointer;"><i class='fa fa-bookmark' style="color:red" ></i></td>
 
               </tr>
               {% endfor %}
+              </tbody>
               </table>
               </div>
               </div>
@@ -482,22 +483,8 @@ $(document).ready(function($) {
 });
 
 function addRecommended(clicked_id){
-   $.ajax({
-                      type:"POST",
-                      url:"",
 
-                      data:{
-                        action: 'add_recommended',
-                        bID: clicked_id,
-                        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
-
-                      },
-                      success: function(response){
-                        markers.push(response.addedBookmark[0])
-                        // console.log("add recommend "+" "+ markers.length)
-                        showRows("all", markers)
-                      }
-        }); 
+   
 }
 
 
@@ -603,7 +590,6 @@ function showRows(rowType, markers, folder_id, isRefresh){
    document.getElementById("recommendation").style.display = "none"
 
     if(isRefresh == true){
-      $("#detailArea").empty();
       clearStyle();
       $("#itemArea").empty();
     }
@@ -630,17 +616,19 @@ function showRows(rowType, markers, folder_id, isRefresh){
                       }else{
                         favorite ="<td class='favorite'><i id='"+i+"|" + markers[i].id+"' class='fas fa-star' style='cursor: pointer; color:red' ></i></td>"
                       }
-
                       if(markers[i].bookmark__websiteTitle == "Springeropen"){
-                          sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
-                        } else if(markers[i].bookmark__websiteTitle == "Sciencedirect"){
-                          sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 25px;'></td>"
-                        } 
+                        sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
+                      } else if(markers[i].bookmark__websiteTitle == "UNESCO Digital Library"){
+                        sitelogo =  "<td><img class='logo-style' src='{% static 'images/unescoLogo.PNG' %}' style='height: 18px;'></td>"
+                      } else if(markers[i].bookmark__websiteTitle == "Open Textbook Library"){
+                        sitelogo =  "<td><img class='logo-style' src='{% static 'images/otlLogo.PNG' %}' style='height: 14px;'></td>"
+                      } 
+                      
 
                        $('#itemArea').append(
                         "<tr>"+
                         sitelogo +
-                        "<td>"+ markers[i].bookmark__itemType +  "</td>"+
+                        "<td style='overflow: hidden;text-overflow: ellipsis; max-width: 50ch;text-align: justify;' >"+ markers[i].bookmark__itemType +  "</td>"+
                         "<td><a href='"+ markers[i].bookmark__url+ "' target='_blank'><span id="+ markers[i].id +" class='open_link' style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 40ch;' onclick='open_link()'>" + markers[i].bookmark__title +  "</span></a></td>"+
 
                         "<td>" + date_add.toDateString().slice(3,)+" "+date_add.toTimeString().slice(0,5) + "</td>" +
@@ -672,9 +660,9 @@ function showRows(rowType, markers, folder_id, isRefresh){
 
     } else if(rowType =='trash'){
       $("#group_detail_ul").empty();
-      document.getElementById(rowType).style.backgroundColor= "#c9c9c9";
-      document.getElementById(rowType).style.color= "#800000";
-      document.getElementById('trashIcon').style.color= "#800000";
+      // document.getElementById(rowType).style.backgroundColor= "#c9c9c9";
+      // document.getElementById(rowType).style.color= "#800000";
+      // document.getElementById('trashIcon').style.color= "#800000";
 
         for(i=0; i< markers.length;i++){
 
@@ -683,8 +671,10 @@ function showRows(rowType, markers, folder_id, isRefresh){
                 date_removed= new Date(markers[i].date_removed)
               if(markers[i].bookmark__websiteTitle == "Springeropen"){
                 sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
-              } else if(markers[i].bookmark__websiteTitle == "Sciencedirect"){
-                sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 25px;'></td>"
+              } else if(markers[i].bookmark__websiteTitle == "UNESCO Digital Library"){
+                sitelogo =  "<td><img class='logo-style' src='{% static 'images/unescoLogo.PNG' %}' style='height: 18px;'></td>"
+              } else if(markers[i].bookmark__websiteTitle == "Open Textbook Library"){
+                sitelogo =  "<td><img class='logo-style' src='{% static 'images/otlLogo.PNG' %}' style='height: 14;'></td>"
               } 
          
 
@@ -723,9 +713,9 @@ function showRows(rowType, markers, folder_id, isRefresh){
       
     } else if(rowType =='recentlyAdded'){
           $("#group_detail_ul").empty();
-          document.getElementById(rowType).style.backgroundColor= "#c9c9c9";
-          document.getElementById(rowType).style.color= "#800000";
-          document.getElementById('recentlyAddedIcon').style.color= "#800000";
+          // document.getElementById(rowType).style.backgroundColor= "#c9c9c9";
+          // document.getElementById(rowType).style.color= "#800000";
+          // document.getElementById('recentlyAddedIcon').style.color= "#800000";
 
            // month is zero based
           now  = new Date;               // no arguments -> current date
@@ -748,10 +738,12 @@ function showRows(rowType, markers, folder_id, isRefresh){
                       }
 
                       if(markers[i].bookmark__websiteTitle == "Springeropen"){
-                          sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
-                        } else if(markers[i].bookmark__websiteTitle == "Sciencedirect"){
-                          sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 25px;'></td>"
-                        } 
+                        sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
+                      } else if(markers[i].bookmark__websiteTitle == "UNESCO Digital Library"){
+                        sitelogo =  "<td><img class='logo-style' src='{% static 'images/unescoLogo.PNG' %}' style='height: 18px;'></td>"
+                      } else if(markers[i].bookmark__websiteTitle == "Open Textbook Library"){
+                        sitelogo =  "<td><img class='logo-style' src='{% static 'images/otlLogo.PNG' %}' style='height: 14px;'></td>"
+                      } 
 
                        $('#itemArea').append(
                         "<tr>"+
@@ -786,9 +778,9 @@ function showRows(rowType, markers, folder_id, isRefresh){
           }
     } else if(rowType =='recentlyRead'){
           $("#group_detail_ul").empty();
-          document.getElementById(rowType).style.backgroundColor= "#c9c9c9";
-          document.getElementById(rowType).style.color= "#800000";
-          document.getElementById('recentlyReadIcon').style.color= "#800000";
+          // document.getElementById(rowType).style.backgroundColor= "#c9c9c9";
+          // document.getElementById(rowType).style.color= "#800000";
+          // document.getElementById('recentlyReadIcon').style.color= "#800000";
           now  = new Date;
           for(i=0; i< markers.length;i++){
                 var then = new Date(markers[i].dateAccessed), // month is zero based
@@ -808,10 +800,12 @@ function showRows(rowType, markers, folder_id, isRefresh){
                       }
 
                       if(markers[i].bookmark__websiteTitle == "Springeropen"){
-                          sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
-                        } else if(markers[i].bookmark__websiteTitle == "Sciencedirect"){
-                          sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 25px;'></td>"
-                        } 
+                        sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
+                      } else if(markers[i].bookmark__websiteTitle == "UNESCO Digital Library"){
+                        sitelogo =  "<td><img class='logo-style' src='{% static 'images/unescoLogo.PNG' %}' style='height: 18px;'></td>"
+                      } else if(markers[i].bookmark__websiteTitle == "Open Textbook Library"){
+                        sitelogo =  "<td><img class='logo-style' src='{% static 'images/otlLogo.PNG' %}' style='height: 14px;'></td>"
+                      }  
 
                        $('#itemArea').append(
                         "<tr>"+
@@ -847,9 +841,9 @@ function showRows(rowType, markers, folder_id, isRefresh){
 
     } else if(rowType =='favorite'){
           $("#group_detail_ul").empty();
-          document.getElementById(rowType).style.backgroundColor= "#c9c9c9";
-          document.getElementById(rowType).style.color= "#800000";
-          document.getElementById('favoriteIcon').style.color= "#800000";
+          // document.getElementById(rowType).style.backgroundColor= "#c9c9c9";
+          // document.getElementById(rowType).style.color= "#800000";
+          // document.getElementById('favoriteIcon').style.color= "#800000";
           for(i=0; i< markers.length;i++){
             
             if( markers[i].isFavorite == 1 & markers[i].isRemoved == 0){
@@ -858,10 +852,12 @@ function showRows(rowType, markers, folder_id, isRefresh){
                    
 
                     if(markers[i].bookmark__websiteTitle == "Springeropen"){
-                          sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
-                        } else if(markers[i].bookmark__websiteTitle == "Sciencedirect"){
-                          sitelogo =  "<td><img class='logo-style' src='{% static 'images/science direct.PNG' %}' style='height: 25px;'></td>"
-                        } 
+                        sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
+                      } else if(markers[i].bookmark__websiteTitle == "UNESCO Digital Library"){
+                        sitelogo =  "<td><img class='logo-style' src='{% static 'images/unescoLogo.PNG' %}' style='height: 18px;'></td>"
+                      } else if(markers[i].bookmark__websiteTitle == "Open Textbook Library"){
+                        sitelogo =  "<td><img class='logo-style' src='{% static 'images/otlLogo.PNG' %}' style='height: 14px;'></td>"
+                      } 
               $('#itemArea').append(
                 "<tr>"+
                 sitelogo +
@@ -879,7 +875,7 @@ function showRows(rowType, markers, folder_id, isRefresh){
                               
                           "</ul> </div> </td>" +
 
-                          "<td id='"+markers[i].id+"' class='trash'><i id='"+ markers[i].id+"' class='fas fa-trash' style='color:#a71f1f;cursor: pointer; font-size: 90%'  ></i></td>" +
+                          "<td class='favorite'><i id='"+i+"|" +markers[i].id+"' class='fas fa-trash' style='color:#a71f1f;cursor: pointer; font-size: 90%'  ></i></td>" +
                "</tr>"
 
 
@@ -906,10 +902,12 @@ function showRows(rowType, markers, folder_id, isRefresh){
                         favorite ="<td class='favorite'><i id='"+i+"|" +markers[i].id+"|" +folder_id+"' class='fas fa-star' style='cursor: pointer; color:red' ></i></td>"
                       }
                       if(markers[i].bookmark__websiteTitle == "Springeropen"){
-                          sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
-                        } else if(array[i].bookmark__websiteTitle == "Sciencedirect.com"){
-                          sitelogo =  "<td><img class='logo-style' src='{% static 'images/science direct.PNG' %}' style='height: 25px;'></td>"
-                        } 
+                        sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
+                      } else if(markers[i].bookmark__websiteTitle == "UNESCO Digital Library"){
+                        sitelogo =  "<td><img class='logo-style' src='{% static 'images/unescoLogo.PNG' %}' style='height: 18px;'></td>"
+                      } else if(markers[i].bookmark__websiteTitle == "Open Textbook Library"){
+                        sitelogo =  "<td><img class='logo-style' src='{% static 'images/otlLogo.PNG' %}' style='height: 14px;'></td>"
+                      } 
                        $('#itemArea').append(
                         "<tr>"+
                         sitelogo +
@@ -959,10 +957,12 @@ function showRows(rowType, markers, folder_id, isRefresh){
                       }
 
                       if(markers[i].bookmark__websiteTitle == "Springeropen"){
-                          sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
-                        } else if(markers[i].bookmark__websiteTitle == "Sciencedirect.com"){
-                          sitelogo =  "<td><img class='logo-style' src='{% static 'images/science direct.PNG' %}' style='height: 25px;'></td>"
-                        } 
+                        sitelogo =  "<td><img class='logo-style' src='{% static 'images/springerLogo.PNG' %}' style='height: 15px;'></td>"
+                      } else if(markers[i].bookmark__websiteTitle == "UNESCO Digital Library"){
+                        sitelogo =  "<td><img class='logo-style' src='{% static 'images/unescoLogo.PNG' %}' style='height: 18px;'></td>"
+                      } else if(markers[i].bookmark__websiteTitle == "Open Textbook Library"){
+                        sitelogo =  "<td><img class='logo-style' src='{% static 'images/otlLogo.PNG' %}' style='height: 14px;'></td>"
+                      } 
                        $('#itemArea').append(
                         "<tr>"+
                         sitelogo +
@@ -1001,6 +1001,29 @@ function showRows(rowType, markers, folder_id, isRefresh){
 
 }
 
+$(document).on("click", ".bookmark_recommended", function(){
+    id = $(this).attr("id").replace("addRecommended","")
+    selectedRow = $(this).parents("tr")
+    $.ajax({
+              type:"POST",
+              url:"",
+
+              data:{
+                action: 'add_recommended',
+                detailID: id,
+                csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+
+              },
+              success: function(response){
+                markers.push(response.addedBookmark[0])
+                // console.log("add recommend "+" "+ markers.length)
+                
+                $("#recommendationArea").append(selectedRow)
+                selectedRow.remove()
+                get_bookmarks("all", 0,true)
+              }
+    }); 
+})
 $(document).on("click", ".delete", function(){
      
       didConfirm = confirm("Do you really want to delete this bookmark?")
@@ -1256,7 +1279,7 @@ $(document).on("click", ".get_detail", function(){
 
 $(document).on("click", "#add_member", function(){
       username = document.getElementById('idNumber_input').value
-    console.log(faction_id)
+      console.log(faction_id)
         $.ajax({
               type:"POST",
               url:"",

@@ -29,7 +29,7 @@ import io
 from django.db.models import DateTimeField, ExpressionWrapper, F, Count, Case, When, Value, CharField, IntegerField, Func
 import sys
 from datetime import timedelta
-
+import re
 class addUser(View):
 	def get(self, request):
 		print('olok')
@@ -655,38 +655,20 @@ class adminRegistrationView(View):
 class practice(View):
 	
 	def get(self, request):
-		# word = "weather"
-		# response = requests.get('https://link.springer.com/search/page/'+ str(1) +'?facet-content-type=%22Book%22&query='+word, headers = headers(), timeout=2) #books
-		# soup = BeautifulSoup(response.content, 'html.parser')
+		response = requests.get("https://open.umn.edu/opentextbooks/textbooks/introduction-to-philosophy-epistemology",headers=headers())
+		soup = BeautifulSoup(response.content, 'html.parser')
+		description = soup.find('section', id = "AboutBook").p.text
+		author = ""
+		if soup.find('section', id = "Contributors") != None:
+			authors = soup.find('section', id = "Contributors").find_all("strong")
+			for a in authors:
+				author = author + ", "+a.text
+		print(author)
 
-		# titles = soup.find_all('a', class_="title")
+		year = soup.find('p', text = re.compile("Copyright Year"))
+		ISSN = soup.find('p', text = re.compile("ISBN 13"))
 
-
-		# for i, title in enumerate(titles):
-		# 	z= []
-
-		# 	subtitle = title.findNext("p", class_="subtitle")
-		# 	p_tag__meta = title.parent.findNext("p", class_="meta")
-		# 	# print(i,p_tag__meta.span.a , p_tag__meta.findNext("span", class_="year"))
-		# 	try:
-		# 		author = p_tag__meta.span.a.text +"  " +p_tag__meta.findNext("span", class_="year").text
-		# 	except:
-		# 		author = p_tag__meta.span.span.text +"  " +p_tag__meta.findNext("span", class_="year").text
-
-		# 	print(author)
-
-		# 	z.append(title.text)
-		# 	if subtitle.text != "" and not subtitle.text.isspace() and len(subtitle.text) > 5:
-		# 	    z.append(subtitle.text)
-
-
-		# 	if author != "" or not author.isspace() or len(author) > 5:
-		# 	    z.append(author)
-
-		# 	z.append(title["href"])
-		# 	print(z)
-
-		# 	print(subtitle.text.isspace(), len(subtitle) > 5, subtitle.text != "", subtitle.text)
+		
 
 
 		# a = User_bookmark.objects.annotate(id=1)
@@ -925,7 +907,7 @@ class TeraSearchResultsView(View):
 				if website == "CIT":
 
 					results = Dissertation.objects.filter(Q(title__iregex=r"[[:<:]]"+word+"[[:>:]]") | Q(author__iregex=r"[[:<:]]"+word+"[[:>:]]") | Q(department__name__iregex=r"[[:<:]]"+word+"[[:>:]]") | Q(department__abbv__iregex=r"[[:<:]]"+word+"[[:>:]]"), is_active= True).order_by("num_of_access").values()
-					print(list(results))
+					# print(list(results))
 					context = {
 						'results': list(results),
 						'is_authenticated': request.user.is_authenticated,
@@ -956,9 +938,10 @@ class TeraSearchResultsView(View):
 				website = request.POST['website']
 				reftype = request.POST['reftype']
 				string = bookmark.split('||')
-				title = string[0].replace('\n','').replace('  ','')
+				# print(string[1])
+				title = string[0]
 				url = string[1]
-
+				# return HttpResponse("")
 				if not Bookmark.objects.filter(user = request.user, bookmark__url = url).exists():
 					if Bookmark_detail.objects.filter(url = url).exists():
 						Bookmark.objects.create(user = request.user,bookmark=Bookmark_detail.objects.get(url = url),keyword=keyword)
@@ -968,7 +951,7 @@ class TeraSearchResultsView(View):
 					else:
 						
 						detail = details(url, request.session.get('proxy'),website, reftype)
-
+						# return HttpResponse("")
 						websiteTitle = detail['websiteTitle']
 						itemType = detail['itemType']
 						author = detail['author']
@@ -983,17 +966,23 @@ class TeraSearchResultsView(View):
 						publisher = detail['publisher']
 						edition = detail['edition']
 						pages = detail['pages']
+						try:
+							ISSN = detail['ISSN']
+						except:
+							pass
+
 						# author description publication volume doi
 						
 						
-
+						print(reftype)
 						# print(websiteTitle + '\n'+itemType + '\n'+title + '\n' +link + '\n' +author+ '\n' +description+ '\n' +publication+ '\n' +volume+ '\n' +doi)
-						if request.POST['reftype'] == "article":
+						if reftype == "article" or reftype == "Programme_and_meeting_document":
 							detail = Bookmark_detail.objects.create(
 								title = title,websiteTitle= websiteTitle,itemType= itemType,
 								author = author, description= description, url = url, journalItBelongs= journalItBelongs, 
-								volume = volume, DOI = doi
+								volume = volume, DOI = doi,publicationYear = publicationYear
 								)
+							print("create article")
 							Bookmark.objects.create(user = request.user,bookmark=detail,keyword=keyword)
 
 							
@@ -1007,7 +996,14 @@ class TeraSearchResultsView(View):
 
 							Bookmark.objects.create(user = request.user,bookmark=detail,keyword=keyword)
 
-						
+						elif itemType == "Text_book":
+							detail = Bookmark_detail.objects.create(title = title,websiteTitle= websiteTitle,
+								itemType= "text book",author = author,
+								 description= description, url = url, 
+								publicationYear = publicationYear,ISSN = ISSN)
+
+							Bookmark.objects.create(user = request.user,bookmark=detail,keyword=keyword)
+
 						return HttpResponse("")
 				else:
 					return HttpResponse("")
@@ -1114,22 +1110,25 @@ class TeraDashboardView(View):
 			if Bookmark.objects.filter(user=request.user).exists():
 				recommendationQuery= Bookmark_detail.objects.select_related("bookmark").filter(bookmark__user__isnull=False,
 																								bookmark__group__isnull=True, 
-																								bookmark__isRemoved= False
+																								
 																								).annotate(count=Count(Case(
 																												        When(Q(bookmark__isRemoved=False) 
 																												        	& Q(bookmark__group__isnull=True) 
 																												        	& Q(bookmark__user__isnull=False), 
 																												        	then=Value(1)),
 																												    	))
-																											).annotate(userID = F("bookmark__user__id")
-																														).annotate(isOwn = Case(
-																																		        When(Q(bookmark__user= request.user), 
-																																		        then=Value(1)),
-																																		    	)
-																																	).order_by("-count").values("id",
-																																		"title", "url" ,"itemType",
-																																		"websiteTitle", 
-																																		 "isOwn", "count")
+																								).annotate(isOwn = Count(Case(
+																												        When(Q(bookmark__user= request.user) & Q(bookmark__isRemoved= False), 
+																												        then=Value(1)),
+																												    	))
+																								).annotate(isMyRemoved = Count(Case(
+																									        When(Q(bookmark__user= request.user) & (Q(bookmark__isRemoved = 1) | Q(bookmark__isRemoved=2)), 
+																									        then=Value(1)),
+																									    	))
+																								).order_by("-count").values("id",
+																									"title", "url" ,"itemType",
+																									"websiteTitle", 
+																									 "isOwn", "count", "isMyRemoved")
 				
 				recommendation = modes(list(recommendationQuery), request.user.id)
 
@@ -1152,7 +1151,7 @@ class TeraDashboardView(View):
 
                
 			folders =	Folder.objects.filter(user_id=request.user, is_removed = 0).values()
-			groups= Group.objects.select_related("member").filter((Q(owner= request.user) | Q(member=request.user)),
+			groups= Group.objects.select_related("owner").filter((Q(owner= request.user) | Q(member=request.user)),
 																			 is_removed=0).values(
 																			 						"id","name", "date_created",
 																			 						"owner__first_name",
@@ -1556,21 +1555,18 @@ class TeraDashboardView(View):
 					return JsonResponse(context)
 
 			elif action == "add_recommended":
-				bookmarkID = request.POST['bID']
-				a = Bookmark.objects.create(user= request.user, bookmark= Bookmark_detail.objects.get(id= bookmarkID.replace("bookmarkID","")))
+				detailID = request.POST['detailID']
+				a = Bookmark.objects.create(user= request.user, bookmark= Bookmark_detail.objects.get(id= detailID))
 				addedBookmark = Bookmark.objects.select_related("bookmark").filter(
-																		id=a.id
-																		).values(
-																			"id", "bookmark__id", "isFavorite", "dateAccessed", "dateAdded", 
-																			"isRemoved", "date_removed",
-																			"bookmark__websiteTitle", "bookmark__itemType",
-																			"bookmark__url", "bookmark__title", "bookmark__subtitle",
-																			"bookmark__subtitle", "bookmark__author", "bookmark__description",
-																			"bookmark__journalItBelongs", "bookmark__volume",
-																			"bookmark__numOfCitation", "bookmark__numOfPages",
-																			"bookmark__publisher", "bookmark__publicationYear",
-																			"bookmark__DOI", "bookmark__ISSN", "bookmark__edition", "bookmark__numOfDownload"
-																				)
+																					id=a.id
+																					).values(
+																						"id", "bookmark__id", 
+																						"isFavorite", "dateAccessed", 
+																						"dateAdded", "isRemoved",
+																						"date_removed", "bookmark__websiteTitle", 
+																						"bookmark__itemType", "bookmark__url", 
+																						"bookmark__title"
+																							)
 				
 				return JsonResponse({"addedBookmark":list(addedBookmark)})
 

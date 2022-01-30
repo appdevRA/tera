@@ -226,9 +226,9 @@
                         <div >
                               <br><br> <br>    
                             
-                            <input id="input" type="text" placeholder="" name="search" class="input" value="{{ keyword }}" style="width: 20%; margin-left: -1%; border-color: #f3f3f3; background-color: #f3f3f3">
-                            <button id="searchButton" class="btn"  style="position: static;  border: 0; margin-top: -6%; margin-left:  45% ;background: none" name="" id="btnSearchbar"  onclick="search('','search')"> 
-                              <i class="fa fa-search" aria-hidden="true" style="color: #800000; font-size: 150%; margin-left: 30%"></i></button>
+                            <input id="input" type="text" placeholder="" name="search" class="input" value="{{ keyword }}" style="width: 48%; margin-left: -1%; border-color: #f3f3f3; background-color: #f3f3f3">
+                            <button id="searchButton" class="btn"  style="position: static;  border: 0; margin-top: -6%; margin-left:  46.5% ;background: none" name="" id="btnSearchbar"  onclick="search('','search')"> 
+                              <i class="fa fa-search" aria-hidden="true" style="color: #800000; font-size: 150%; margin-left: 0%"></i></button>
                               <br><hr style="width: 50%;  height: 1px; background-color: #6b6b6c; margin-top: -1.8%; margin-left: 1%" >
                            
 
@@ -435,7 +435,7 @@ function ajax(keyword,website, type, isSite, isPage, pageNumber){
                 showRows(markers)
                 user_id = response.is_authenticated
                 isGet = response.isGet
-                document.getElementById('displayWord').innerHTML = keyword
+                // document.getElementById('displayWord').innerHTML = keyword
                 document.getElementById('displayWord').style.display ="inline"
                 
            
@@ -500,6 +500,7 @@ $(document).on("click", ".next", function(){
           a.removeClass('active')
           currentPage = a.next()
           currentPage.addClass("active")
+          document.getElementById('displayWord').style.display ="none"
           ajax("","","",false,true, currentPage.attr("id"))
       }
      
@@ -520,55 +521,44 @@ $(document).on("click", ".previous", function(){
 })
 function showRows(markers, links){
 
+  
   if(website != "CIT"){
+
       for(i=0; i< markers.length;i++){
-    
+          if(user_id == 'True' | user_id == true){
+            console.log(markers[i][markers[i].length-1])
+          bookmarkButton = "<td><a class='bookmark' > <i id='"+markers[i][0]+"||"+markers[i][markers[i].length-1]+"' class='fa fa-bookmark' style='color: red; cursor:pointer' ></i></a> </td>"
+          } else{
+             bookmarkButton=  "<td><a class='btnBookmark' style='cursor:pointer' >  <i href='#modalLogoutForm' data-toggle='modal' data-target='#modalLogoutForm'style='color: red;'class='fa fa-bookmark'></i></a> </td><br><br>"
+          }
           if(markers[i].length == 2){
-                        if(user_id == 'True' | user_id == true){
+
                           $('#itemArea').append(
                                 "<tr> " +
                            "<td><a  href='"+ markers[i][markers[i].length-1]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;font-size: 115%'><strong>" +
                                 markers[i][0] + "</strong></span></a><br>" +
 
                                 " <em>"+ markers[i][1]+"</em><br><br></td>" +
+                                  bookmarkButton
+                                  + "</tr>" );  
+                        
 
-                                  "<td><a class='btnBookmark' > <i id='"+markers[i][0]+"||"+markers[i][markers[i].length-1]+"' class='fa fa-bookmark' style='color: red;' onClick='reply_click(this.id)'></i></a> </td>"+ "</tr>" );  
-                        } else{
-                          $('#itemArea').append(
-                                "<tr> " +
-                           "<td><a href='"+ markers[i][markers[i].length-1]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;'><strong>" +
-                                markers[i][0] + "</strong></span></a><br>" +
-
-                                " <em>"+ markers[i][1]+"</em><br><br></td>" +
-
-                                  "<td><a class='btnBookmark' >  <i href='#modalLogoutForm' data-toggle='modal' data-target='#modalLogoutForm'style='color: red;'class='fa fa-bookmark'></i></a> </td><br><br>  "+ "</tr>" );  
-                        }
+                        
 
             } else if(markers[i].length == 3 ){
               
-                        if(user_id == 'True' | user_id == true){
                           $('#itemArea').append(
                                 "<tr> " +
                            "<td><a href='"+ markers[i][markers[i].length-1]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;font-size: 120%'><strong>" +
                                 markers[i][0] + "</strong></span></a><br>" +
 
                                 " <area>"+ markers[i][1]+"</area><br>" +
-
-                                  "<td><a class='btnBookmark' cursor: pointer > <i id='"+markers[i][0]+"||"+markers[i][markers[i].length-1]+"' class='fa fa-bookmark' style='color: red;' onClick='reply_click(this.id)'></i></a> </td>"+ "</tr>" );  
-                        } else{
-                          $('#itemArea').append(
-                                "<tr> " +
-                           "<td><a href='"+ markers[i][markers[i].length-1]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;font-size: 120%'><strong>" +
-                                markers[i][0] + "</strong></span></a><br>" +
-
-                                " <em>"+ markers[i][1]+"</em><br><br><br><br>" +
-
-                                  "<td><a class='btnBookmark' >  <i href='#modalLogoutForm' data-toggle='modal' data-target='#modalLogoutForm'style='color: red; cursor: pointer' class='fa fa-bookmark'></i></a> </td></tr>" );  
-                        }
+                                  bookmarkButton
+                                  + "</tr>" );  
+                          
 
             }  else if(markers[i].length == 4){
                 
-                        if(user_id == 'True' | user_id == true){
                           
                           $('#itemArea').append(
                                 "<tr> " +
@@ -577,23 +567,11 @@ function showRows(markers, links){
 
                                 " <area style=' font-size: 120%;  max-width: 60ch;'>"+ markers[i][1]+"</area><br>" +
                                  " <em>"+ markers[i][2]+"</em><br><br>" +
-
-                                   "<td><a class='btnBookmark' > <i id='"+markers[i][0]+"||"+markers[i][markers[i].length-1]+"' class='fa fa-bookmark' style='color: red; cursor: pointer' onClick='reply_click(this.id)'></i></a> </td>"+ "</tr>" );  
-                        } else{
-                          $('#itemArea').append(
-                                "<tr> " +
-                           "<td><a href='"+ links[i]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;'><strong>" +
-                                markers[i][0] + "</strong></span></a><br>" +
-
-                               " <area style=' font-size: 120%;  max-width: 60ch;'>"+ markers[i][1]+"</area><br>" +
-                                 " <em>"+ markers[i][2]+"</em><br><br>" +
-
-                                  "<td><a class='btnBookmark' >  <i href='#modalLogoutForm' data-toggle='modal' data-target='#modalLogoutForm'style='color: red;cursor: pointer'class='fa fa-bookmark'></i></a> </td>"+ "</tr> <br><br>" );  
-                        }
+                                 bookmarkButton +
+                                    "</tr>" );  
+                         
             }  else if(markers[i].length == 5){
                 
-                        if(user_id == 'True' | user_id == true){
-                          
                           $('#itemArea').append(
                                 "<tr> " +
                            "<td ><a href='"+ markers[i][markers[i].length-1]+"' ><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 80ch; font-size: 120%; '><b>" +
@@ -603,25 +581,11 @@ function showRows(markers, links){
                                  " <em>"+ markers[i][2]+"</em><br>" +
                                  " <area>"+ markers[i][3]+"</area><br></td>" +
                                  " <area>"+ markers[i][4]+"</area><br><br><br><br></td>" +
-
-                                   "<td><a class='btnBookmark' > <i id='"+markers[i][0]+"||"+markers[i][markers[i].length-1]+"' class='fa fa-bookmark' style='color: red; cursor: pointer' onClick='reply_click(this.id)'></i></a> </td>"+ "</tr>" );  
-                        } else{
-                          $('#itemArea').append(
-                                "<tr> " +
-                           "<td><a href='"+ markers[i][markers[i].length-1]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;'><strong>" +
-                                markers[i][0] + "</strong></span></a><br>" +
-
-                               " <area style=' font-size: 120%;  max-width: 60ch;'>"+ markers[i][1]+"</area><br>" +
-                                 " <em>"+ markers[i][2]+"</em><br>" +
-                                " <area>"+ markers[i][3]+"</area><br></td>" +
-                                 " <area>"+ markers[i][4]+"</area><br><br><br><br></td>" +
-
-                                  "<td><a class='btnBookmark' >  <i href='#modalLogoutForm' data-toggle='modal' data-target='#modalLogoutForm'style='color: red;cursor: pointer'class='fa fa-bookmark'></i></a> </td>"+ "</tr> <br><br>" );  
-                        }
+                                 bookmarkButton +
+                                  "</tr>" );  
+                        
             }  else if(markers[i].length == 6){
                 
-                        if(user_id == 'True' | user_id == true){
-                          
                           $('#itemArea').append(
                                 "<tr> " +
                            "<td ><a href='"+ markers[i][markers[i].length-1]+"' ><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 80ch; font-size: 120%; '><b>" +
@@ -632,26 +596,11 @@ function showRows(markers, links){
                                  " <area>"+ markers[i][3]+"</area><br></td>" +
                                  " <area>"+ markers[i][4]+"</area><br></td>" +
                                  " <area>"+ markers[i][5]+"</area><br><br><br><br></td>" +
-
-                                   "<td><a class='btnBookmark' > <i id='"+markers[i][0]+"||"+ markers[i][markers[i].length-1]+"' class='fa fa-bookmark' style='color: red; cursor: pointer' onClick='reply_click(this.id)'></i></a> </td>"+ "</tr>" );  
-                        } else{
-                          $('#itemArea').append(
-                                "<tr> " +
-                           "<td><a href='"+ markers[i][markers[i].length-1]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;'><strong>" +
-                                markers[i][0] + "</strong></span></a><br>" +
-
-                               " <area style=' font-size: 120%;  max-width: 60ch;'>"+ markers[i][1]+"</area><br>" +
-                                 " <em>"+ markers[i][2]+"</em><br>" +
-                                " <area>"+ markers[i][3]+"</area><br></td>" +
-                                 " <area>"+ markers[i][4]+"</area><br></td>" +
-                                 " <area>"+ markers[i][5]+"</area><br><br><br><br></td>" +
-
-                                  "<td><a class='btnBookmark' >  <i href='#modalLogoutForm' data-toggle='modal' data-target='#modalLogoutForm'style='color: red;cursor: pointer'class='fa fa-bookmark'></i></a> </td>"+ "</tr> <br><br>" );  
-                        }
+                                   bookmarkButton +
+                                    "</tr>" );  
+                        
              }  else if(markers[i].length == 7){
                 
-                        if(user_id == 'True' | user_id == true){
-                          
                           $('#itemArea').append(
                                 "<tr> " +
                            "<td ><a href='"+ markers[i][markers[i].length-1]+"' ><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 80ch; font-size: 120%; '><b>" +
@@ -663,27 +612,11 @@ function showRows(markers, links){
                                  " <area>"+ markers[i][4]+"</area><br></td>" +
                                  " <area>"+ markers[i][5]+"</area><br></td>" +
                                  " <area>"+ markers[i][6]+"</area><br><br><br><br></td>" +
-
-                                   "<td><a class='btnBookmark' > <i id='"+markers[i][0]+"||"+ markers[i][markers[i].length-1]+"' class='fa fa-bookmark' style='color: red; cursor: pointer' onClick='reply_click(this.id)'></i></a> </td>"+ "</tr>" );  
-                        } else{
-                          $('#itemArea').append(
-                                "<tr> " +
-                           "<td><a href='"+ markers[i][markers[i].length-1]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;'><strong>" +
-                                markers[i][0] + "</strong></span></a><br>" +
-
-                               " <area style=' font-size: 120%;  max-width: 60ch;'>"+ markers[i][1]+"</area><br>" +
-                                 " <em>"+ markers[i][2]+"</em><br>" +
-                                " <area>"+ markers[i][3]+"</area><br></td>" +
-                                 " <area>"+ markers[i][4]+"</area><br></td>" +
-                                 " <area>"+ markers[i][5]+"</area><br></td>" +
-                                 " <area>"+ markers[i][6]+"</area><br><br><br><br></td>" +
-
-                                  "<td><a class='btnBookmark' >  <i href='#modalLogoutForm' data-toggle='modal' data-target='#modalLogoutForm'style='color: red;cursor: pointer'class='fa fa-bookmark'></i></a> </td>"+ "</tr> <br><br>" );  
-                        }
+                                   bookmarkButton +
+                                    "</tr>" );  
+                       
             } else if(markers[i].length == 8){
                 
-                        if(user_id == 'True' | user_id == true){
-                          
                           $('#itemArea').append(
                                 "<tr> " +
                            "<td ><a href='"+ markers[i][markers[i].length-1]+"' ><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 80ch; font-size: 120%; '><b>" +
@@ -695,28 +628,12 @@ function showRows(markers, links){
                                  " <area>"+ markers[i][4]+"</area><br></td>" +
                                  " <area>"+ markers[i][5]+"</area><br></td>" +
                                  " <area>"+ markers[i][6]+"</area><br><br><br><br></td>" +
+                                   bookmarkButton +
 
-                                   "<td><a class='btnBookmark' > <i id='"+markers[i][0]+"||"+ markers[i][markers[i].length-1]+"' class='fa fa-bookmark' style='color: red; cursor: pointer' onClick='reply_click(this.id)'></i></a> </td>"+ "</tr>" );  
-                        } else{
-                          $('#itemArea').append(
-                                "<tr> " +
-                           "<td><a href='"+ markers[i][markers[i].length-1]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;'><strong>" +
-                                markers[i][0] + "</strong></span></a><br>" +
-
-                               " <area style=' font-size: 120%;  max-width: 60ch;'>"+ markers[i][1]+"</area><br>" +
-                                 " <em>"+ markers[i][2]+"</em><br>" +
-                                " <area>"+ markers[i][3]+"</area><br></td>" +
-                                 " <area>"+ markers[i][4]+"</area><br></td>" +
-                                 " <area>"+ markers[i][5]+"</area><br></td>" +
-                                  " <area>"+ markers[i][6]+"</area><br></td>" +
-                                 " <area>"+ markers[i][7]+"</area><br><br><br><br></td>" +
-
-                                  "<td><a class='btnBookmark' >  <i href='#modalLogoutForm' data-toggle='modal' data-target='#modalLogoutForm'style='color: red;cursor: pointer'class='fa fa-bookmark'></i></a> </td>"+ "</tr> <br><br>" );  
-                        }
+                                    "</tr>" );  
+                       
             } else if(markers[i].length == 9){
                 
-                        if(user_id == 'True' | user_id == true){
-                          
                           $('#itemArea').append(
                                 "<tr> " +
                            "<td ><a href='"+ markers[i][markers[i].length-1]+"' ><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 80ch; font-size: 120%; '><b>" +
@@ -727,27 +644,11 @@ function showRows(markers, links){
                                  " <area>"+ markers[i][3]+"</area><br></td>" +
                                  " <area>"+ markers[i][4]+"</area><br></td>" +
                                  " <area>"+ markers[i][5]+"</area><br><br><br><br></td>" +
-
-                                   "<td><a class='btnBookmark' > <i id='"+markers[i][0]+"||"+ markers[i][markers[i].length-1]+"' class='fa fa-bookmark' style='color: red; cursor: pointer' onClick='reply_click(this.id)'></i></a> </td>"+ "</tr>" );  
-                        } else{
-                          $('#itemArea').append(
-                                "<tr> " +
-                           "<td><a href='"+ markers[i][markers[i].length-1]+"'><span style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;'><strong>" +
-                                markers[i][0] + "</strong></span></a><br>" +
-
-                               " <area style=' font-size: 120%;  max-width: 60ch;'>"+ markers[i][1]+"</area><br>" +
-                                 " <em>"+ markers[i][2]+"</em><br>" +
-                                " <area>"+ markers[i][3]+"</area><br></td>" +
-                                 " <area>"+ markers[i][4]+"</area><br></td>" +
-                                 " <area>"+ markers[i][5]+"</area><br></td>" +
-                                  " <area>"+ markers[i][6]+"</area><br></td>" +
-                                  " <area>"+ markers[i][7]+"</area><br></td>" +
-                                 " <area>"+ markers[i][8]+"</area><br><br><br><br></td>" +
-
-                                  "<td><a class='btnBookmark' >  <i href='#modalLogoutForm' data-toggle='modal' data-target='#modalLogoutForm'style='color: red;cursor: pointer'class='fa fa-bookmark'></i></a> </td>"+ "</tr> <br><br>" );  
-                        }
+                                   bookmarkButton +
+                                    "</tr>" );  
+                        
             }  
-            }          
+      }          
       
   } else{     
               for(i=0; i< markers.length;i++){
@@ -766,13 +667,12 @@ function showRows(markers, links){
                                  "<td>  <a class='btnBookmark' > <i id='"+markers[i].id+"' class='fa fa-bookmark' style='color: red; cursor: pointer' onClick='reply_click(this.id)'></i></a> </td>"+ "</tr>" );   
               }
                       
-      }
+    }
   
 }
 
 $(document).on("click", ".open", function(){
     id = $(this).attr("id")
-    alert(id)
     $.ajax({
             type:"POST",
             url:"",
@@ -783,13 +683,43 @@ $(document).on("click", ".open", function(){
               csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
             },
             success: function(response){
-              }
+            }
               
          
     }); 
 })
 
+$(document).on("click", ".bookmark", function(){
+  id = $(this).children().attr("id")
+  console.log(id)
+  keyword = document.getElementById('input').value
+      
+      if(document.getElementById(id).style.color == "red"){
+        document.getElementById(id).style.color = "#e07878";
+        action = "add"
+      }else{
+        document.getElementById(id).style.color = "red";
+        action = "remove"
+      }
 
+        // console.log(clicked_id)
+        $.ajax({
+              type:"POST",
+              url:"",
+              
+              data:{
+                action: action,
+                reftype: type, 
+                website: website,
+                bookmark: id,
+                word: keyword,
+                csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+              }, error: function(response){
+                  alert("Something went, item cannot be bookmarked")
+           
+              }
+        });      
+})
 
 
 function search(clicked_id, searchType){
@@ -803,23 +733,34 @@ function search(clicked_id, searchType){
       
         document.getElementById('displayWord').style.display ="none"
         ajax(keyword,website, type, false, false, 0)
-       
-      // document.getElementById('articlehr').style.display = "block";
+        a = $('ul.pagination').find('li.active')
+        a.removeClass('active')
+        $("#1").addClass("active")
+        // document.getElementById('articlehr').style.display = "block";
 
     } else if( searchType == 'itemType'){
         type = clicked_id
         
         document.getElementById('displayWord').style.display ="none"
         navhr(type)
+
+        a = $('ul.pagination').find('li.active')
+        a.removeClass('active')
+        $("#1").addClass("active")
+
         ajax(keyword,website, type, false, false, 0)
 
+        
     } else if( searchType == 'site'){
-     document.getElementById(clicked_id).checked = true
+      
+      document.getElementById(clicked_id).checked = true
       website = clicked_id
       document.getElementById('displayWord').style.display ="none"
-
+      a = $('ul.pagination').find('li.active')
+      a.removeClass('active')
+      $("#1").addClass("active")
       if(clicked_id == 'CIT'){
-        
+         
         if(type != 'Dissertations' ){
           type = 'dissertation'
         }
@@ -835,10 +776,10 @@ function search(clicked_id, searchType){
         document.getElementById('Text_book|').style.display="none"
         document.getElementById('dissertation').style.display="inline"
         navhr(type)
-      }
-     else if(clicked_id == 'Springeropen'){
+      } else if(clicked_id == 'Springeropen'){
+      
           
-          if(type != 'article' & type != 'book'){
+        if(type != 'article' & type != 'book'){
 
           type = 'article'
         
@@ -855,6 +796,7 @@ function search(clicked_id, searchType){
         document.getElementById('Text_book').style.display="none"
         document.getElementById('Text_book|').style.display="none"
         navhr(type)
+
       }else if(clicked_id == 'UNESCO_Digital_Library'){
         if(type != 'article' & type != 'book' & type != 'Programme_and_meeting_document'){
           type = 'article'
@@ -864,6 +806,8 @@ function search(clicked_id, searchType){
         document.getElementById('Text_book').style.display="none"
         document.getElementById('Text_book|').style.display="none"
         document.getElementById('Programme_and_meeting_document').style.display="inline"
+        document.getElementById('Programme_and_meeting_document|').style.display="none"
+
         document.getElementById('article').style.display="inline"
         document.getElementById('article|').style.display="inline"
         document.getElementById('book').style.display="inline"
@@ -908,21 +852,7 @@ function search(clicked_id, searchType){
 
         navhr(type)
       }
-      // } else if(clicked_id == 'Tandfonline.com'){
-      //   if(type != 'article' & type != 'journal' & type != 'database'){
-      //     type = 'article'
-      //   }
-      //   document.getElementById('book').style.display="none"
-      //   document.getElementById('book|').style.display="none"
-      //   document.getElementById('journal').style.display="inline"
-      //   document.getElementById('journal|').style.display="inline"
-      //   document.getElementById('article').style.display="inline"
-      //   document.getElementById('article|').style.display="inline"
-      //   document.getElementById('database').style.display="inline"
-      //   document.getElementById('database|').style.display="inline"
-      //   navhr(type)
-
-      // }
+   
         ajax(keyword,website, type, true, false)
 
       
@@ -934,53 +864,33 @@ function search(clicked_id, searchType){
 
 
 
-function reply_click(clicked_id){
-      keyword = document.getElementById('input').value
-      if(document.getElementById(clicked_id).style.color == "red"){
-        document.getElementById(clicked_id).style.color = "#e07878";
-        $.ajax({
-                      type:"POST",
-                      url:"",
+// function reply_click(clicked_id){
+//        else{
+//          $.ajax({
+//                       type:"POST",
+//                       url:"",
                       
-                      data:{
-                        action: "add",
-                        reftype: type, 
-                        website: website,
-                        bookmark: clicked_id,
-                        word: keyword,
-                        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
-                      }, error: function(response){
-                          alert("Something went, item cannot be bookmarked")
-                   
-                      }
-        });      
-      } else{
-        document.getElementById(clicked_id).style.color = "red";
-         $.ajax({
-                      type:"POST",
-                      url:"",
-                      
-                      data:{
-                        action: "remove",
-                        bookmark: clicked_id,
-                        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
-                      }, error: function(response){
-                        markers = response.results
+//                       data:{
+//                         action: "remove",
+//                         bookmark: clicked_id,
+//                         csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+//                       }, error: function(response){
+//                         markers = response.results
                         
                   
-                        showRows(markers)
-                        user_id = response.is_authenticated
-                        isGet = response.isGet
-                        document.getElementById('displayWord').innerHTML = keyword
-                        document.getElementById('displayWord').style.display ="inline"
+//                         showRows(markers)
+//                         user_id = response.is_authenticated
+//                         isGet = response.isGet
+//                         document.getElementById('displayWord').innerHTML = keyword
+//                         document.getElementById('displayWord').style.display ="inline"
                         
                    
-                      }
-        });      
-      }
+//                       }
+//         });      
+//       }
 
         
-}
+// }
 
 
 

@@ -507,30 +507,30 @@ $(document).ready(function(){
 });
 
 
-        $(document).on("change", ".input-switch", function(){
-            action =""
-            if ($(this).is(':checked')) {
-                action = "activate"
-            }
-            else {
-                action = "deactivate"
+$(document).on("change", ".input-switch", function(){
+    action =""
+    if ($(this).is(':checked')) {
+        action = "activate"
+    }
+    else {
+        action = "deactivate"
 
-            }
-            $.ajax({
-                  type:"POST",
-                  url:"",
+    }
+    $.ajax({
+          type:"POST",
+          url:"",
 
-                  data:{
-                    action: action,
-                    id: $(this).attr("id"),
-                    csrfmiddlewaretoken:"{{csrf_token}}"
+          data:{
+            action: action,
+            id: $(this).attr("id"),
+            csrfmiddlewaretoken:"{{csrf_token}}"
 
-                  },
-              
-            });
-     
+          },
+      
+    });
 
-        });
+
+});
 
 
 document.getElementById("add").onclick = function(e) {

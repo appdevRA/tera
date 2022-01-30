@@ -21,32 +21,40 @@ from sklearn.metrics.pairwise import linear_kernel
 import numpy as np
 import statistics
 import requests
-session= HTMLSession()
-from .models import *
-
+# session= HTMLSession()
+# from .models import *
+import re
 def modes(allBookmarks,userID):
     title = ""
-    userBookmarks = []
+   
 
   
     allBookmarksdf = pd.DataFrame(allBookmarks)
-    maxCount= allBookmarksdf["count"].max()
+    notOwnedBookmarks = allBookmarksdf[allBookmarksdf["isOwn"] == 0]
+    notOwnedBookmarks = notOwnedBookmarks[notOwnedBookmarks["isMyRemoved"] == 0]
+    ownedBookmarks = allBookmarksdf[allBookmarksdf["isOwn"] == 1 ]
 
-    mode = allBookmarksdf[allBookmarksdf["count"] == maxCount]
+    maxCount= ownedBookmarks["count"].max()
+    mode = ownedBookmarks[ownedBookmarks["count"] == maxCount]
+    print(allBookmarksdf)
 
-    
+    if len(notOwnedBookmarks.index) == 0:
+        print("empty not owned bookmarks")
+        return []
+    if len(mode.index) == 0:
+        print("nothing  mode")
+        return []
 
-    print("all: ", allBookmarksdf)
-    return []
-    if len(mode.index) > 1:
+    elif len(mode.index) > 1:
         # print("modes", modes)
         highest = -1
         tfidf = TfidfVectorizer(stop_words='english')
         # mode['title'] = mode['title'].fillna('')
         tfidf_matrix = tfidf.fit_transform(mode['title'])
         cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
-        print("matrix:", tfidf_matrix)
-        return []
+
+        
+        # return []
         for i, row in enumerate(cosine_sim):
             summ=0
             for column in row:
@@ -61,47 +69,50 @@ def modes(allBookmarks,userID):
                 print(indexOfHighest_cosinesim)
 
 
-        # print("mode.iloc: ",mode.iloc[indexOfHighest_cosinesim])
         # for i, item in enumerate(modes['bookmark__title']):
         title = mode.iloc[indexOfHighest_cosinesim]
 
         print("to find recommendation: (multiple  mode)", type(title["title"]),title["title"])
     else:
         title = mode
-        print("to find recommendation: (single mode)", title["title"].to_string())
+        print("to find recommendation: (single mode)", title["title"])
 
 
-    a = allBookmarksdf 
-    b= a.append(mode)
-    c = b.drop_duplicates('title', keep='last')
-    d = c.iloc[:-len(mode) , :]
-    e= d.append(title)
-    # print("b:",b)
-    # print("c:",c)
+    # a = allBookmarksdf 
+    # b= a.append(mode)
+    # c = b.drop_duplicates('title', keep='last')
+    # d = c.iloc[:-len(mode) , :]
+    # e= d.append(title)
+    # # print("b:",b)
+    # # print("c:",c)
+    # print(e)
+    # listFormat = e.to_dict('records')
+    notOwnedBookmarks = notOwnedBookmarks.append(title)
+    listFormat = notOwnedBookmarks.to_dict('records')
+    bookmarks = pd.DataFrame(listFormat)
 
-    listFormat = e.to_dict('records')
+    return recommend(bookmarks, title)
 
-    # return recommend(listFormat, title)
+def recommend(metadata, title):
 
-def recommend(bookmarkFrame, title):
-
-    metadata = pd.DataFrame(bookmarkFrame) 
+    # metadata = bookmarkFrame 
     # print(bookmarkFrame)
+    print(metadata)
     tfidf = TfidfVectorizer(stop_words='english')
 
-    tfidf_matrix = tfidf.fit_transform(metadata['bookmark__title'])
+    tfidf_matrix = tfidf.fit_transform(metadata['title'])
   
+
     cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
     
-    indices = pd.Series(metadata.index, index=metadata['bookmark__title'])
-
+    indices = pd.Series(metadata.index, index=metadata['title'])
+    
     try:
-        idx = indices[title["bookmark__title"]]
+        idx = indices[title["title"]]
+        print("not dict")
     except:
-        title = title["bookmark__title"].to_dict()
-
-        idx = indices[title[0].replace("'","")]
-       
+        idx = indices[title["title"].to_dict()]
+        print("to dict")
     # Get the pairwsie similarity scores of all movies with that movie
     try:
         sim_scores = list(enumerate(cosine_sim[idx[0]]))
@@ -111,16 +122,16 @@ def recommend(bookmarkFrame, title):
     # # Sort the movies based on the similarity scores
     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
     # Get top 5 similarity scores
-    sim_scores = sim_scores[0:5]
     dataframe = pd.DataFrame(sim_scores)
 
-    removeLowScores = dataframe[dataframe[1] != 0]
-    cleanScores  = removeLowScores[removeLowScores[1] >= .95].values.tolist()
+    removeLowScores = dataframe[dataframe[1] > .20]
+
+    cleanScores  = removeLowScores[removeLowScores[1] <= 0.80].values.tolist()
     # print(cleanScores)
     # Get the movie indices
     # print("dataframe",dataframe)
 
-    # print("cleanScores:", cleanScores)
+    print("cleanScores:", cleanScores)
     movie_indices = [i[0] for i in cleanScores]
     meta = metadata.iloc[movie_indices]
     # print("metadata:", metadata)
@@ -190,13 +201,17 @@ def UNESCO(word, refType, pageNumber):
     }
     x= False
     data = {}
+    # print(refType)
+    # return []
     while(x == False):
         try:
             if refType == 'article':
                 data = '{"includeFacets":true,"order":"score_DESC;id_DESC","query":["'+word+'"],"queryid":"eecdadaf-edec-4c69-bc64-a5cd63ad754c","sf":"+TypeOfDocumentFacet:UnescoPhysicalDocument","mappedFQ":{"ZMATFacet":{"SER":false,"BKP":false,"STI":false,"ISS":false,"BKS":false,"DGN":false,"CIR":false,"PGD":false,"DEP":false,"MOV":false}},"pageNo":'+ str(pageNumber)+',"locale":"en"}'
             elif refType == 'book':
                 data = '{"includeFacets":true,"order":"score_DESC;id_DESC","query":["'+word+'"],"queryid":"eecdadaf-edec-4c69-bc64-a5cd63ad754c","sf":"+TypeOfDocumentFacet:UnescoPhysicalDocument","mappedFQ":{"ZMATFacet":{"SER":false,"ART":false,"BKP":false,"STI":false,"ISS":false,"DGN":false,"CIR":false,"PGD":false,"DEP":false,"MOV":false}},"pageNo":'+ str(pageNumber)+',"locale":"en"}'
-            elif refType == 'event_document':
+            elif refType == 'Programme_and_meeting_document':
+                print("nisulod")
+                # data = '{includeFacets:true,order:score_DESC;id_DESC,query:['+word+'],queryid:50276496-3adb-4f23-b494-df651f82d88d,sf:+TypeOfDocumentFacet:UnescoPhysicalDocument,mappedFQ:{ZMATFacet:{SER:false,ART:false,BKP:false,STI:false,ISS:false,BKS:false,DGN:false,CIR:false,DEP:false,MOV:false}},pageNo:'+ str(pageNumber)+',locale:en}'
                 data = '{"includeFacets":true,"order":"score_DESC;id_DESC","query":["'+word+'"],"queryid":"eecdadaf-edec-4c69-bc64-a5cd63ad754c","sf":"+TypeOfDocumentFacet:UnescoPhysicalDocument","mappedFQ":{"ZMATFacet":{"SER":false,"ART":false,"BKP":false,"STI":false,"ISS":false,"BKS":false,"DGN":false,"CIR":false,"DEP":false,"MOV":false}},"pageNo":'+ str(pageNumber)+',"locale":"en"}'
             
             x = True
@@ -214,7 +229,10 @@ def UNESCO(word, refType, pageNumber):
     response = requests.post('https://unesdoc.unesco.org/in/rest/api/search', headers=headers, data=data)
     b = response.json()
 
-    
+    # for x in b:
+    #     print(x,"\n\n\n")
+    # # print(b['resultSet'])
+    # return []
     for c in b['resultSet']:
         z=[]
         array = []
@@ -288,7 +306,7 @@ def UNESCO(word, refType, pageNumber):
                         isbn = isbn+", "+ d['value']
                 else:
                      isbn = isbn + d['value']
-            except KeyError:
+            except:
                 try:
                     isbn = "Document Code:  "
                     if len(c['meta']['callnumber']) > 1:
@@ -588,43 +606,151 @@ def springer(word,refType, pageNumber): # INDEX 1 STARTING SA PAGINATION DIRI
 
             springers.append(z)
 
-            print(len(z), z)
         return springers
 
 def details(link, proxy,website, refType ):
-    print(refType)
-    ref = refType.split(' ')
+   
 
-    if website == "Springeropen" and refType == 'article':
+    if website == "Springeropen":
         # with open ('C:/Users/Valued Client/Desktop/html/sprigner DETAILS.html', 'r', errors='ignore') as html_file:
         #     content = html_file.read()
             # soup = BeautifulSoup(content, 'html.parser')
+        if refType == 'article':
+            try:
+                response = requests.get('https://'+link, headers=headers())
+            except:
+                response = requests.get(link, headers=headers())
+
+            soup = BeautifulSoup(response.content, 'html.parser')
+            descrip = soup.find('div', class_='c-article-section__content').p.text
+            description = descrip[:500]
+            # print(len(description))
+            # if len(description) > 1000:
+            #     a = soup.find('h3', text='Conclusion')
+            #     print(a.next)
+            abbr_tag = soup.find('abbr', text = "DOI")
+            doi = abbr_tag.findNext('span', class_="c-bibliographic-information__value").text
+
+            
+            details={
+                'websiteTitle': website,
+                'itemType': refType,
+                'author': soup.find('div', class_='c-article-header').find('ul', class_='c-article-author-list js-etal-collapsed').text,
+                'description': description,
+                'journalItBelongs': soup.find('i', attrs={'data-test':'journal-title'}).text,
+                'volume': soup.find('b', attrs={'data-test':'journal-volume'}).text[7:],
+                'publishYear': soup.find('span', class_="c-bibliographic-information__value").text,
+                'doi': doi, 
+                'subtitle':'',
+                'citation':'',
+                'downloads':'',
+                'publisher':'',
+                'edition':'',
+                'pages':''
+                
+            }
+            
+
+                
+            # websiteTitle = refType[0]
+            # itemType = refType[1]
+            
+            return details
+
+
+        elif refType == 'book':
+            response = requests.get(link + '#about',headers=headers())
+            soup = BeautifulSoup(response.content, 'html.parser')
+
+
+            if soup.find('div', class_='unique-selling-points unique-selling-points--collapsed u-mb-36') == None:
+                description = ''
+            else:
+                description = soup.find('div', class_='unique-selling-points unique-selling-points--collapsed u-mb-36').text
+
+            if soup.find('span', id='bookcitations-count-number') == None:
+                cite = ''
+            else:
+                cite = soup.find('span', id='bookcitations-count-number').text
+            
+            if soup.find('h2', class_='page-title__subtitle') == None:
+                subtitle = ''
+            else:
+                subtitle = soup.find('h2', class_='page-title__subtitle').text
+
+            if soup.find('h1', attrs={"itemprop":"name"}) == None:
+                if soup.find('h1', class_='app-journal-header__title') == None:
+                    title = ''
+                else:
+                    title= soup.find('h1', class_='app-journal-header__title').text
+            else:
+                title= soup.find('h1', attrs={"itemprop":"name"}).text
+            details={
+                'websiteTitle': website,
+                'itemType': refType,
+                'title': title,
+                'subtitle': subtitle,
+                'description': description,
+                'citation': cite,
+                'downloads': soup.find('span', class_='test-metric-count article-metrics__views').text,
+                'author': soup.find('ul', class_='test-contributor-names').text,
+                'publisher': soup.find('span', attrs={"itemprop":"name"}).text,
+                'edition': soup.find('span', id='edition-number').text,
+                'pages': soup.find('span', id='number-of-pages').text,
+                'doi': soup.find('span', id='doi-url').text,
+                'journalItBelongs': '',
+                'volume': '',
+                'publishYear': '',
+            }
+
+            return details
+
+   
+    elif website == "UNESCO_Digital_Library":
+        cookies = {
+            '_ga': 'GA1.2.1337792028.1638176102',
+            'JSESSIONID': 'F458670F72A749861CFD2B7ED4F08D6E',
+            '_gid': 'GA1.2.682840214.1643440906',
+        }
+
         
-        # reference = refType.split(' ')
+
+        params = (
+            ('ark', link.replace("https://unesdoc.unesco.org","")),
+            ('_', '1643445318321'),
+        )
+
+        response = requests.get('https://unesdoc.unesco.org/in/rest/api/resolveArk', headers=headers(), params=params, cookies=cookies)
+        responseData = response.json()
+        detail = responseData["collectionData"]
+        author = ""
+        # if refType == "Programme_and_meeting_document":
         try:
-            response = requests.get('https:'+link,headers=headers())
+            author = detail["authorCorporate"]
         except:
-            response = requests.get(link,headers=headers())
-        soup = BeautifulSoup(response.content, 'html.parser')
-        descrip = soup.find('div', class_='c-article-section__content').p.text
-        description = descrip[:500]
-        # print(len(description))
-        # if len(description) > 1000:
-        #     a = soup.find('h3', text='Conclusion')
-        #     print(a.next)
-        abbr_tag = soup.find('abbr', text = "DOI")
-        doi = abbr_tag.findNext('span', class_="c-bibliographic-information__value").text
+            try:
+                author = detail["authorPerson"]["Answer"]
+            except:
+                pass
+
+        try:
+            abstract = detail["abstract"]
+        except:
+            try:
+                abstract = detail["noteGeneral"]
+            except:
+                abstract = ""
 
         
         details={
-            'websiteTitle': website,
-            'itemType': refType,
-            'author': soup.find('div', class_='c-article-header').find('ul', class_='c-article-author-list js-etal-collapsed').text,
-            'description': description,
-            'journalItBelongs': soup.find('i', attrs={'data-test':'journal-title'}).text,
-            'volume': soup.find('b', attrs={'data-test':'journal-volume'}).text[7:],
-            'publishYear': soup.find('span', class_="c-bibliographic-information__value").text,
-            'doi': doi, 
+            'websiteTitle': website.replace("_", " "),
+            'itemType': refType.replace("Programme_and_meeting_", " "),
+            'author': author,
+            'description': abstract,
+            'journalItBelongs': '',
+            'volume': '',
+            'publishYear': detail["dateYear"],
+            'doi': detail["identifierILS"], 
             'subtitle':'',
             'citation':'',
             'downloads':'',
@@ -633,64 +759,39 @@ def details(link, proxy,website, refType ):
             'pages':''
             
         }
-        
-
-            
-        # websiteTitle = refType[0]
-        # itemType = refType[1]
-        
         return details
 
-
-    elif website == "Springeropen" and refType == 'book':
-        response = requests.get(link + '#about',headers=headers(), proxies={'https:': proxy})
+    elif website == "Open_Textbook_Library":
+        response = requests.get(link,headers=headers())
         soup = BeautifulSoup(response.content, 'html.parser')
 
-        if soup.find('div', class_='unique-selling-points unique-selling-points--collapsed u-mb-36') == None:
-            description = ''
-        else:
-            description = soup.find('div', class_='unique-selling-points unique-selling-points--collapsed u-mb-36').text
+        description = soup.find('section', id = "AboutBook").p.text
+        author = ""
+        # if soup.find('section', id = "Contributors") != None:
+        authors = soup.find('section', id = "Contributors").find_all("strong")
+        for a in authors:
+            author = author + ", "+a.text
+        print(author)
 
-        if soup.find('span', id='bookcitations-count-number') == None:
-            cite = ''
-        else:
-            cite = soup.find('span', id='bookcitations-count-number').text
-        
-        if soup.find('h2', class_='page-title__subtitle') == None:
-            subtitle = ''
-        else:
-            subtitle = soup.find('h2', class_='page-title__subtitle').text
-
-        if soup.find('h1', attrs={"itemprop":"name"}) == None:
-            if soup.find('h1', class_='app-journal-header__title') == None:
-                title = ''
-            else:
-                title= soup.find('h1', class_='app-journal-header__title').text
-        else:
-            title= soup.find('h1', attrs={"itemprop":"name"}).text
         details={
-            'websiteTitle': ref[0],
-            'itemType': ref[1],
-            'title': title,
-            'subtitle': subtitle,
-            'description': description,
-            'citation': cite,
-            'downloads': soup.find('span', class_='test-metric-count article-metrics__views').text,
-            'author': soup.find('ul', class_='test-contributor-names').text,
-            'publisher': soup.find('span', attrs={"itemprop":"name"}).text,
-            'edition': soup.find('span', id='edition-number').text,
-            'pages': soup.find('span', id='number-of-pages').text,
-            'doi': soup.find('span', id='doi-url').text,
-            'journalItBelongs': '',
-            'volume': '',
-            'publishYear': '',
-
-
-            
-        }
+                'websiteTitle': website.replace("_"," "),
+                'itemType': refType,
+                'subtitle': "",
+                'description': description,
+                'citation': '',
+                'downloads': '',
+                'author': author,
+                'publisher': '',
+                'edition': '',
+                'pages': '',
+                'doi': '',
+                'journalItBelongs': '',
+                'volume': '',
+                'publishYear': soup.find('p', text = re.compile("Copyright Year")).text.replace("Copyright Year:",""),
+                'ISSN': soup.find('p', text = re.compile("ISBN 13")).text.replace("ISBN 13:","")
+            }
 
         return details
-
 
 def scienceDirect(word,proxy, refType, pageNumber, header):
     scienceDirects = []
