@@ -31,13 +31,8 @@
       <ul>   
       
       {% if user == False %}
-      <li id="login">
+        <li><a href="{% url 'ra:tera_login_view'%}">Login</a></li>  
         
-      <button type="submit" class="button" name="buttonLogin" id="buttonLogin"  > <a href="{% url 'ra:tera_login_view' %}" style="margin-top: 150%; font-size: 20px;cursor: pointer; ">Login</a>  </button>
-
-       
-
-      </li>
       {% endif %}
         
       {% if user == True %}
@@ -49,12 +44,8 @@
                 <ul>
                 <li><a href="{% url 'ra:tera_dashboard_view'%}">Collections</a></li>  
                 <li><a href="{% url 'ra:tera_account_settings'%}">Settings</a></li>
-                <li>
-                  <form  action = "" method = "POST" autocomplete = "off" enctype="multipart/form-data">
-                    {% csrf_token %}
-                  <button type="submit" class="btn" name="btnLogout" style="color:#800000; font-size: 18px">Logout </button>
-                  </form>
-                </li>
+                <li><a href="{% url 'ra:tera_logout_view'%}">Logout</a></li>
+                
                 </ul>
       </li>
       {% endif %}
@@ -62,9 +53,7 @@
   </nav>
   
 
-    {% for x in a %}
-      <div>{{x}}</div>
-      {% endfor %}
+    
     <div class="content">
       <header>Exclusive Research Assistant</header>
       <p>for Technologians</p>

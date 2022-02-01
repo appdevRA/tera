@@ -469,7 +469,7 @@ def OER(word, refType, pageNumber): # paginattion diri ky sumpay walay page-page
     x = False
     while(x == False):
         try:
-            response = requests.get('https://www.oercommons.org/search?batch_size='+str(batch_size)+'&batch_start='+str(batch_start)+'&sort_by=search&view_mode=summary&f.search='+ word+'&f.sublevel=college-upper-division&f.sublevel=graduate-professional&f.sublevel=career-technical&f.sublevel=community-college-lower-division&f.sublevel=adult-education', headers=headers(), timeout=3)
+            response = requests.get('https://www.oercommons.org/search?batch_size='+str(batch_size)+'&batch_start='+str(batch_start)+'&sort_by=search&view_mode=summary&f.search='+ word+'&f.material_types=textbook&f.sublevel=college-upper-division&f.sublevel=graduate-professional&f.sublevel=career-technical&f.sublevel=community-college-lower-division', headers=headers(), timeout=3)
             x = True
             
         except ConnectionError:
@@ -772,7 +772,10 @@ def details(link, proxy,website, refType ):
         for a in authors:
             author = author + ", "+a.text
         print(author)
-
+        try:
+            isbn = soup.find('p', text = re.compile("ISBN 13:")).text.replace("ISBN 13:","")
+        except:
+            isbn = ""
         details={
                 'websiteTitle': website.replace("_"," "),
                 'itemType': refType,
@@ -788,11 +791,41 @@ def details(link, proxy,website, refType ):
                 'journalItBelongs': '',
                 'volume': '',
                 'publishYear': soup.find('p', text = re.compile("Copyright Year")).text.replace("Copyright Year:",""),
-                'ISSN': soup.find('p', text = re.compile("ISBN 13")).text.replace("ISBN 13:","")
+                'ISSN': isbn
             }
 
         return details
+    elif website == "OER_Commons":
+        response = requests.get(link,headers=headers())
+        soup = BeautifulSoup(response.content, 'html.parser')
 
+        description = soup.find("dl", class_="materials-details-abstract").dd
+
+        all__dd_tag = soup.find("dl", class_="materials-details-first-part").find_all("dd")
+        # subtitle = dl_tag.dd
+        subtitle = all__dd_tag[0].text
+        author = all__dd_tag[3].text
+        print(website)
+
+        details={
+                'websiteTitle': website.replace("_"," "),
+                'itemType': refType,
+                'subtitle': subtitle,
+                'description': description.text,
+                'citation': '',
+                'downloads': '',
+                'author': author,
+                'publisher': '',
+                'edition': '',
+                'pages': '',
+                'doi': '',
+                'journalItBelongs': '',
+                'volume': '',
+                'publishYear': '' ,
+                'ISSN': ''
+            }
+
+        return details
 def scienceDirect(word,proxy, refType, pageNumber, header):
     scienceDirects = []
     scienceLinks = []

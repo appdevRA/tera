@@ -6,6 +6,7 @@ urlpatterns = [
 	
 			path('', views.TeraIndexView.as_view(), name="index_view"),
 			path('login', views.TeraLoginUser.as_view(), name='tera_login_view'),
+			path('logout', views.TeraLogoutView, name='tera_logout_view'),
 			path('dashboard',views.TeraDashboardView.as_view(), name="tera_dashboard_view"),
 			path('accountsettings', views.TeraAccountSettingsView, name='tera_account_settings'),
 			path('search',views.TeraSearchResultsView.as_view(), name="search_result_view"),

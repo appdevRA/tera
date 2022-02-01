@@ -12,7 +12,7 @@ class Department (models.Model):
 		db_table = "Department"
 
 class User (AbstractUser):
-	department= models.ForeignKey(Department, null = False, blank = False, on_delete = models.CASCADE)
+	department= models.ForeignKey(Department, null = True, blank = True, on_delete = models.CASCADE)
 
 	REQUIRED_FIELDS = ['first_name', 'last_name','department','password']
 	class Meta:

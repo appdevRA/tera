@@ -552,8 +552,6 @@ document.getElementById("add").onclick = function(e) {
         alert("File must not be empty")
     else{
 
-
-
         form_data.append("action", "add")
         form_data.append("title", title)
         form_data.append("college", college)
@@ -572,6 +570,7 @@ document.getElementById("add").onclick = function(e) {
             processData: false,
             data: form_data,
             success: function (response) { 
+                console.log(response.createdObject[0])
                 if (response.didError == 1)
                     alert(response.message)
                 else{

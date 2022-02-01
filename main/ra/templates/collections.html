@@ -94,11 +94,7 @@ tr:hover {
                 <ul style="z-index: 1">
                 <li><a href="{% url 'ra:search_result_view' %}">Search</a></li>  
                   <li><a href="{% url 'ra:tera_account_settings' %}">Settings</a></li>  
-                <li>
-                  <form  action = "" method = "POST" autocomplete = "off" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <button type="submit" class="btn " name="btnLogout" style="background-color: white; font-size: 18px"> &nbsp;Logout </button>
-                  </form>
+                  <li><a href="{% url 'ra:tera_logout_view' %}">Logout</a></li>  
                 </li>
                 </ul>
       </li>
@@ -211,7 +207,7 @@ tr:hover {
                             
                             <input type="text" placeholder="18-5126-269" style="width: 80%" id="idNumber_input" value="" required><br>
                           <center>
-                            <a id="error_message" style="color: red; ">asd</a>
+                            <a id="error_message" style="color: red; "></a>
                             
                           </center>
                            <br><br><br>
@@ -292,7 +288,7 @@ tr:hover {
               
                    <table id="itemTable"  class="table">
                     <col width="11%" />
-                    <col width="7%" />
+                    <col width="8%" />
                     <col width="36%" />
                     <col width="15%" />
 
@@ -482,10 +478,7 @@ $(document).ready(function($) {
 
 });
 
-function addRecommended(clicked_id){
 
-   
-}
 
 
 
@@ -622,6 +615,8 @@ function showRows(rowType, markers, folder_id, isRefresh){
                         sitelogo =  "<td><img class='logo-style' src='{% static 'images/unescoLogo.PNG' %}' style='height: 18px;'></td>"
                       } else if(markers[i].bookmark__websiteTitle == "Open Textbook Library"){
                         sitelogo =  "<td><img class='logo-style' src='{% static 'images/otlLogo.PNG' %}' style='height: 14px;'></td>"
+                      } else if(markers[i].bookmark__websiteTitle == "OER Commons"){
+                        sitelogo =  "<td><img class='logo-style' src='{% static 'images/oerLogo.PNG' %}' style='height: 17px;'></td>"
                       } 
                       
 
@@ -636,7 +631,7 @@ function showRows(rowType, markers, folder_id, isRefresh){
                         "<td id="+ markers[i].bookmark__id +" class='get_detail'><i id='"+ markers[i].id +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' ></i></td>" +
 
 
-                         "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ markers[i].id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
+                         "<td><i  onclick='getFolders("+ i + ","+ markers[i].id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
                          "<div id='folderList_dropdown"+i+"' class='dropdown-content' style='min-width: 15%; margin-left: -8% '>"+
                          "<ul id='add_to_folderList_ul"+i+"'>"+
                      
@@ -674,7 +669,9 @@ function showRows(rowType, markers, folder_id, isRefresh){
               } else if(markers[i].bookmark__websiteTitle == "UNESCO Digital Library"){
                 sitelogo =  "<td><img class='logo-style' src='{% static 'images/unescoLogo.PNG' %}' style='height: 18px;'></td>"
               } else if(markers[i].bookmark__websiteTitle == "Open Textbook Library"){
-                sitelogo =  "<td><img class='logo-style' src='{% static 'images/otlLogo.PNG' %}' style='height: 14;'></td>"
+                sitelogo =  "<td><img class='logo-style' src='{% static 'images/otlLogo.PNG' %}' style='height: 14px;'></td>"
+              } else if(markers[i].bookmark__websiteTitle == "OER Commons"){
+                sitelogo =  "<td><img class='logo-style' src='{% static 'images/oerLogo.PNG' %}' style='height: 17px;'></td>"
               } 
          
 
@@ -743,8 +740,9 @@ function showRows(rowType, markers, folder_id, isRefresh){
                         sitelogo =  "<td><img class='logo-style' src='{% static 'images/unescoLogo.PNG' %}' style='height: 18px;'></td>"
                       } else if(markers[i].bookmark__websiteTitle == "Open Textbook Library"){
                         sitelogo =  "<td><img class='logo-style' src='{% static 'images/otlLogo.PNG' %}' style='height: 14px;'></td>"
+                      } else if(markers[i].bookmark__websiteTitle == "OER Commons"){
+                        sitelogo =  "<td><img class='logo-style' src='{% static 'images/oerLogo.PNG' %}' style='height: 17px;'></td>"
                       } 
-
                        $('#itemArea').append(
                         "<tr>"+
                         sitelogo +
@@ -756,7 +754,7 @@ function showRows(rowType, markers, folder_id, isRefresh){
                         "<td id="+ markers[i].bookmark__id +" class='get_detail'><i id='"+ markers[i].id +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' ></i></td>" +
 
 
-                         "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ markers[i].id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
+                         "<td><i  onclick='getFolders("+ i + ","+ markers[i].id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
                          "<div id='folderList_dropdown"+i+"' class='dropdown-content' style='min-width: 15%; margin-left: -8% '>"+
                          "<ul id='add_to_folderList_ul"+i+"'>"+
                      
@@ -805,7 +803,9 @@ function showRows(rowType, markers, folder_id, isRefresh){
                         sitelogo =  "<td><img class='logo-style' src='{% static 'images/unescoLogo.PNG' %}' style='height: 18px;'></td>"
                       } else if(markers[i].bookmark__websiteTitle == "Open Textbook Library"){
                         sitelogo =  "<td><img class='logo-style' src='{% static 'images/otlLogo.PNG' %}' style='height: 14px;'></td>"
-                      }  
+                      } else if(markers[i].bookmark__websiteTitle == "OER Commons"){
+                        sitelogo =  "<td><img class='logo-style' src='{% static 'images/oerLogo.PNG' %}' style='height: 17px;'></td>"
+                      } 
 
                        $('#itemArea').append(
                         "<tr>"+
@@ -818,7 +818,7 @@ function showRows(rowType, markers, folder_id, isRefresh){
                         "<td id="+ markers[i].bookmark__id +" class='get_detail'><i id='"+ markers[i].id +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' ></i></td>" +
 
 
-                         "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ markers[i].id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
+                         "<td><i  onclick='getFolders("+ i + ","+ markers[i].id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
                          "<div id='folderList_dropdown"+i+"' class='dropdown-content' style='min-width: 15%; margin-left: -8% '>"+
                          "<ul id='add_to_folderList_ul"+i+"'>"+
                      
@@ -857,6 +857,8 @@ function showRows(rowType, markers, folder_id, isRefresh){
                         sitelogo =  "<td><img class='logo-style' src='{% static 'images/unescoLogo.PNG' %}' style='height: 18px;'></td>"
                       } else if(markers[i].bookmark__websiteTitle == "Open Textbook Library"){
                         sitelogo =  "<td><img class='logo-style' src='{% static 'images/otlLogo.PNG' %}' style='height: 14px;'></td>"
+                      } else if(markers[i].bookmark__websiteTitle == "OER Commons"){
+                        sitelogo =  "<td><img class='logo-style' src='{% static 'images/oerLogo.PNG' %}' style='height: 17px;'></td>"
                       } 
               $('#itemArea').append(
                 "<tr>"+
@@ -868,7 +870,7 @@ function showRows(rowType, markers, folder_id, isRefresh){
                         "<td>" + date_acc.toDateString().slice(3,)+" "+date_acc.toTimeString().slice(0,5) + "</td>" +
               "<td id="+ markers[i].bookmark__id +" class='get_detail'><i id='"+ markers[i].id +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' ></i></td>" +
                            
-                          "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ markers[i].id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
+                          "<td><i  onclick='getFolders("+ i + ","+ markers[i].id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
                          "<div id='folderList_dropdown"+i+"' class='dropdown-content' style='min-width: 15%; margin-left: -8% '>"+
                          "<ul id='add_to_folderList_ul"+i+"'>"+
                      
@@ -907,6 +909,8 @@ function showRows(rowType, markers, folder_id, isRefresh){
                         sitelogo =  "<td><img class='logo-style' src='{% static 'images/unescoLogo.PNG' %}' style='height: 18px;'></td>"
                       } else if(markers[i].bookmark__websiteTitle == "Open Textbook Library"){
                         sitelogo =  "<td><img class='logo-style' src='{% static 'images/otlLogo.PNG' %}' style='height: 14px;'></td>"
+                      } else if(markers[i].bookmark__websiteTitle == "OER Commons"){
+                        sitelogo =  "<td><img class='logo-style' src='{% static 'images/oerLogo.PNG' %}' style='height: 17px;'></td>"
                       } 
                        $('#itemArea').append(
                         "<tr>"+
@@ -919,7 +923,7 @@ function showRows(rowType, markers, folder_id, isRefresh){
                         "<td id="+ markers[i].bookmark__id +" class='get_detail'><i id='"+ markers[i].id +"' class='fas fa-info-circle fa-lg' style='cursor: pointer' ></i></td>" +
 
 
-                         "<td><i  onclick='bookmarkToFolder_dropdown("+ i + ","+ markers[i].id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
+                         "<td><i  onclick='getFolders("+ i + ","+ markers[i].id+")' class='fa fa-plus' style='cursor:pointer; font-size: 80%'></i>" +
                          "<div id='folderList_dropdown"+i+"' class='dropdown-content' style='min-width: 15%; margin-left: -8% '>"+
                          "<ul id='add_to_folderList_ul"+i+"'>"+
                      
@@ -962,6 +966,8 @@ function showRows(rowType, markers, folder_id, isRefresh){
                         sitelogo =  "<td><img class='logo-style' src='{% static 'images/unescoLogo.PNG' %}' style='height: 18px;'></td>"
                       } else if(markers[i].bookmark__websiteTitle == "Open Textbook Library"){
                         sitelogo =  "<td><img class='logo-style' src='{% static 'images/otlLogo.PNG' %}' style='height: 14px;'></td>"
+                      } else if(markers[i].bookmark__websiteTitle == "OER Commons"){
+                        sitelogo =  "<td><img class='logo-style' src='{% static 'images/oerLogo.PNG' %}' style='height: 17px;'></td>"
                       } 
                        $('#itemArea').append(
                         "<tr>"+
@@ -1321,9 +1327,7 @@ $(document).on("click", "#add_member", function(){
 
 
 })
-function add_member(){
-    
-}
+
 
 function clearStyle(){
   var table = document.getElementsByClassName("menu-item");
@@ -1411,33 +1415,78 @@ function sort(n){
 
 
 
+function getFolders(clicked_id, detail_id){
+  action = "none"
+  if(folders.length == 0 & groups.length == 0){
+    action = "get_factions"
+
+  }
+  else if(folders.length == 0){
+    action =  "get_folders"
+
+  }
+  else if(groups.length == 0){
+    action = "get_groups"
+  }
+  else{
+    bookmarkToFolder_dropdown(clicked_id, detail_id, folders, groups)
+  }
+
+  if(action != "none"){
+      $.ajax({
+        type:"POST",
+        url:"",
+
+        data:{
+          action: action,
+          csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+        }, success: function(response){
+        
+          if(action == "get_factions"){
+              folders = response.folders
+              groups = response.groups
+          } else if(action == "get_folders"){
+              folders = response.list
+
+          } else if(action == "get_groups"){
+              groups = response.list
+          } 
+          // console.log(folders, groups)
+           bookmarkToFolder_dropdown(clicked_id, detail_id)
+
+        }
+      });  
+  }
+  
+
+}
 function bookmarkToFolder_dropdown(clicked_id, detail_id) {
   $("#add_to_folderList_ul"+clicked_id).empty();
-
-
-            if(folders.length >= 1){
+      fold = folders
+      grou = groups           
+            if(fold.length >= 1){
               $('#add_to_folderList_ul'+clicked_id).append("<li style='padding-left:3%;'>Folders:</li>");
 
-            for(i=0;i< folders.length;i++){
+            for(i=0;i< fold.length;i++){
               
                 $('#add_to_folderList_ul'+clicked_id).append(
-                "<li id='folder"+folders[i].id+"' style='padding-left:20%; cursor:pointer' onclick='submit_add_folder(this.id,"+detail_id+")'>"+folders[i].name+"</li>");
+                "<li id='folder"+fold[i].id+"' style='padding-left:20%; cursor:pointer' onclick='submit_add_folder(this.id,"+detail_id+")'>"+fold[i].name+"</li>");
               
               
             }
             $('#add_to_folderList_ul'+clicked_id).append("<br>");
             }
 
-            if(groups.length >= 1){
+            if(grou.length >= 1){
              
               $('#add_to_folderList_ul'+clicked_id).append("<li style='padding-left:3%;'>Groups:</li>");
-            for(i=0;i< groups.length;i++){
+            for(i=0;i< grou.length;i++){
               
               
                 $('#add_to_folderList_ul'+clicked_id).append(
-                "<li id='groups"+groups[i].id+"' style='padding-left:20%; cursor:pointer' onclick='submit_add_folder(this.id,"+detail_id+")'>"+groups[i].name+"</li>");
+                "<li id='groups"+grou[i].id+"' style='padding-left:20%; cursor:pointer' onclick='submit_add_folder(this.id,"+detail_id+")'>"+grou[i].name+"</li>");
                 try{
-                  if(groups[i].id == groups[i+1].id )
+                  if(grou[i].id == grou[i+1].id )
                     i++
                 } catch{
                   
@@ -1489,10 +1538,8 @@ function functionCollapse() {
 
 
 function display_dropdown(dropdown_type) {
-
-  
         if(dropdown_type == 'folders' ){
-                $("#mycollection_ul").empty();
+            $("#mycollection_ul").empty();
 
             if(folders.length == 0){
                   $.ajax({
@@ -1535,7 +1582,8 @@ function display_dropdown(dropdown_type) {
                     
          
         } else if(dropdown_type == 'groups'){
-         
+              console.log(groups)
+          
 
               $("#mygroup_ul").empty();
               
@@ -1660,11 +1708,12 @@ function create_folder(create_type){
                       },
 
                       success: function(response){
+                        createdFolder = response.createdFolder
                          if( response.did_exist == true){
                               document.getElementById("add_folder_error").style.visibility ="visible";
                          }else{
                                 document.getElementById("dismiss-modal_folder").click()
-                                createdFolder = response.createdFolder
+                                
                                 folders.push(createdFolder[0])
                                 $('#mycollection_ul').append(
                                 "<li id='folder"+createdFolder[0].id+"' style='padding-left:20%;padding-bottom: 3%;padding-top: 3%; cursor:pointer' onclick='get_bookmarks(this.id)' class='faction_dropdown' oncontextmenu='delete_folder_rightClick(this.id, event)'>"+createdFolder[0].name+"</li>"+
@@ -1693,15 +1742,15 @@ function create_folder(create_type){
                           },
 
                           success: function(response){
-                             groups = response.createdGroup
+                            createdFolder = response.createdGroup
                             if( response.did_exist == true){
                                   document.getElementById("add_group_error").style.visibility ="visible";
-                             }else{
+                            }else{
                                     document.getElementById("dismiss-modal_group").click()
-                                    createdFolder = response.createdFolder
+                                    
                                     groups.push(createdFolder[0])
-                                    $('#mycollection_ul').append(
-                                    "<li id='folder"+createdFolder[0].id+"' style='padding-left:20%;padding-bottom: 3%;padding-top: 3%; cursor:pointer' onclick='get_bookmarks(this.id)' class='faction_dropdown' oncontextmenu='delete_folder_rightClick(this.id, event)'>"+createdFolder[0].name+"</li>"+
+                                    $('#mygroups_ul').append(
+                                    "<li id='groups"+createdFolder[0].id+"' style='padding-left:20%;padding-bottom: 3%;padding-top: 3%; cursor:pointer' onclick='get_bookmarks(this.id)' class='faction_dropdown' oncontextmenu='delete_folder_rightClick(this.id, event)'>"+createdFolder[0].name+"</li>"+
                                     "<center><div id='groups"+createdFolder[0].id+"_dropdown' class='dropdown-content' style='min-width: 50%; margin-left: 40%; cursor: pointer; margin-top: -8%; z-index:1 ' onclick='delete_faction(this.id,"+i+")'>"+
                                    "<ul style='padding-top:7%;padding-bottom:7%'>"+
                                       "<div>delete</div>"+
@@ -1723,10 +1772,9 @@ function create_folder(create_type){
 
 
 function hide_errorMessage(){
-  document.getElementById('user_is_owner').style.display="none"
-  document.getElementById('user_already_member').style.display="none"
-  document.getElementById('user_does_not_exist').style.display="none"
+  document.getElementById('error_message').style.display="none"
   document.getElementById('add_folder_error').style.visibility="hidden"
+  document.getElementById("add_group_error").style.visibility ="hidden";
                            
 }
 

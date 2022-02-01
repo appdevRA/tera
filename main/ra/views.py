@@ -30,6 +30,7 @@ from django.db.models import DateTimeField, ExpressionWrapper, F, Count, Case, W
 import sys
 from datetime import timedelta
 import re
+from django.core.paginator import Paginator
 class addUser(View):
 	def get(self, request):
 		print('olok')
@@ -38,6 +39,15 @@ class addUser(View):
 
 class adminSiteView(View):
 	def get(self, request):
+		if not request.user.is_authenticated:
+			return redirect("ra:tera_login_view")
+		if not request.user.is_staff:
+			try:
+				return redirect("ra:"+ request.session.get("previousPage"))
+			except:
+				logout(request)
+				return redirect("ra:tera_login_view")
+
 		sites = Site.objects.all().values()
 		return render(request, 'adminSite.html', {"sites": list(sites)})
 
@@ -61,6 +71,14 @@ class adminIndexView(View):
 	def get(self, request):
 		
 		
+		if not request.user.is_authenticated:
+			return redirect("ra:tera_login_view")
+		if not request.user.is_staff:
+			try:
+				return redirect("ra:"+ request.session.get("previousPage"))
+			except:
+				logout(request)
+				return redirect("ra:tera_login_view")
 
 		if datetime.today().month <10:
 			todaysMonth = str(datetime.today().year) +"-0" + str(datetime.today().month)
@@ -68,9 +86,9 @@ class adminIndexView(View):
 			todaysMonth = str(datetime.today().year) +"-" + str(datetime.today().month)
 
 
-		user= User.objects.select_related("department").values("username", "first_name", "last_name", "last_login", "department__name")
+		user= User.objects.select_related("department").filter(is_staff= False).values("username", "first_name", "last_name", "last_login", "department__name")
 
-		activeUser= User_login.objects.filter(date__contains=todaysMonth).annotate(day=ExpressionWrapper(
+		activeUser= User_login.objects.filter(date__contains=todaysMonth, user__is_staff= False).annotate(day=ExpressionWrapper(
             																							Func(F('date'), 
             																								Value('%Y-%m-%d'), 
             																								function='DATE_FORMAT'
@@ -96,8 +114,8 @@ class adminIndexView(View):
 		except:
 			siteAccessMax = 0
 			
-		colleges= User_login.objects.filter(date__contains=todaysMonth).values('user__department__abbv').annotate(count=Count('id')).order_by("user__department__abbv")
-
+		colleges= User_login.objects.select_related("user__department").filter(date__contains=todaysMonth, user__is_staff= False).values('user__department__abbv').annotate(count=Count('id')).order_by("user__department__abbv")
+		print(colleges)
 		# for item in user:
 		# 		item["last_login"] = item["day"].strftime("%Y-%m-%d")
 
@@ -115,12 +133,23 @@ class adminIndexView(View):
 
 class adminActiveUserView(View):
 	def get(self, request):
+
+		if not request.user.is_authenticated:
+			return redirect("ra:tera_login_view")
+		if not request.user.is_staff:
+			try:
+				return redirect("ra:"+ request.session.get("previousPage"))
+			except:
+				logout(request)
+				return redirect("ra:tera_login_view")
+
+
 		if datetime.today().month <10:
 			todaysMonth = str(datetime.today().year) +"-0" + str(datetime.today().month)
 		else:
 			todaysMonth = str(datetime.today().year) +"-" + str(datetime.today().month)
 
-		queryset= User_login.objects.filter(date__contains=todaysMonth).annotate(day=ExpressionWrapper(
+		queryset= User_login.objects.filter(date__contains=todaysMonth, user__is_staff= False).annotate(day=ExpressionWrapper(
             																							Func(F('date'), 
             																								Value('%Y-%m-%d'), 
             																								function='DATE_FORMAT'
@@ -133,7 +162,7 @@ class adminActiveUserView(View):
 		except:
 			maxCount = 0
 
-		tableData= User.objects.filter(usersite_access__date_of_access__contains=todaysMonth).annotate(
+		tableData= User.objects.filter(usersite_access__date_of_access__contains=todaysMonth, user__is_staff= False).annotate(
 										visitCount=Count('id')
 										).values("username","last_name", "department__name", "first_name", "visitCount").order_by("-visitCount")
 	
@@ -166,7 +195,7 @@ class adminActiveUserView(View):
 			except:
 				maxCount = 0
 
-			tableData= User.objects.filter(usersite_access__date_of_access__range=[startDate, endDate]).annotate(
+			tableData= User.objects.filter(usersite_access__date_of_access__range=[startDate, endDate], user__is_staff= False).annotate(
 										visitCount=Count('id')
 										).values("last_name", "student_id", "department__name", "first_name", "visitCount").order_by("-visitCount")
 
@@ -181,6 +210,17 @@ class adminActiveUserView(View):
 
 class adminCollegesView(View):
 	def get(self, request):
+
+		if not request.user.is_authenticated:
+			return redirect("ra:tera_login_view")
+		if not request.user.is_staff:
+			try:
+				return redirect("ra:"+ request.session.get("previousPage"))
+			except:
+				logout(request)
+				return redirect("ra:tera_login_view")
+
+
 		if datetime.today().month <10:
 			todaysMonth = str(datetime.today().year) +"-0" + str(datetime.today().month)
 		else:
@@ -213,11 +253,10 @@ class adminCollegesView(View):
 			startDate = request.POST["startDate"]
 			endDate = request.POST["endDate"]
 
-			queryset= User_login.objects.filter(date__range=[startDate, endDate]).values('user__department__abbv').annotate(count=Count('id')).order_by("user__department__abbv")
+			queryset= User_login.objects.select_related("user__department").filter(date__range=[startDate, endDate]).values('user__department__abbv').annotate(count=Count('id')).order_by("user__department__abbv")
 		
 			tableData = list(Department.objects.values("abbv").annotate(registeredUser = Count("user")).annotate(activeUser= Count("user", filter= ~Q(user__last_login=None))))
-			siteVisit = UserSite_access.objects.filter(date_of_access__range=[startDate, endDate]).values("user__department__abbv").annotate(count = Count("id"))
-			print(list(siteVisit))
+			siteVisit = UserSite_access.objects.select_related("user__department").filter(date_of_access__range=[startDate, endDate]).values("user__department__abbv").annotate(count = Count("id"))
 
 			i=0
 			for a in tableData:
@@ -238,6 +277,17 @@ class adminCollegesView(View):
 
 class adminSiteAccessView(View):
 	def get(self, request):
+
+		if not request.user.is_authenticated:
+			return redirect("ra:tera_login_view")
+		if not request.user.is_staff:
+			try:
+				return redirect("ra:"+ request.session.get("previousPage"))
+			except:
+				logout(request)
+				return redirect("ra:tera_login_view")
+
+
 		if datetime.today().month <10:
 			todaysMonth = str(datetime.today().year) +"-0" + str(datetime.today().month)
 		else:
@@ -318,6 +368,16 @@ class adminDissertationsView(View):
 
 class adminDissertationsAccessView(View):
 	def get(self, request):
+		if not request.user.is_authenticated:
+			return redirect("ra:tera_login_view")
+		if not request.user.is_staff:
+			try:
+				return redirect("ra:"+ request.session.get("previousPage"))
+			except:
+				logout(request)
+				return redirect("ra:tera_login_view")
+
+				
 		# Dissertation.objects.exclude(id =3).delete()
 		queryset = Dissertation.objects.select_related("department").annotate(department_name= F('department__abbv')).order_by("num_of_access")
 
@@ -397,7 +457,6 @@ class adminDissertationsAccessView(View):
 				abstract = request.POST.get("abstract") 
 				department = request.POST.get("college") 
 				file = request.FILES.get('file')
-				print("|"+oldTitle+"|"+title+"|")
 				
 				if oldTitle != title and Dissertation.objects.filter(title= title).exists():
 					return JsonResponse({"didError": 1, "message": "Title already exist"})
@@ -416,7 +475,7 @@ class adminDissertationsAccessView(View):
 					a.file = file
 					a.save()
 				queryset = list(Dissertation.objects.filter(id = ID).select_related("department").annotate(department_name= F('department__abbv')).values())
-		
+				
 				queryset[0]['file'] = "http://"+ request.get_host()+"/images/"+queryset[0]['file']
 				context = {
 					"didError": 0,
@@ -455,13 +514,23 @@ class adminTableView(View):
 
 	def get(self, request):
 
-		user= User.objects.select_related("department").values("username", "first_name", "last_name", 
+		if not request.user.is_authenticated:
+			return redirect("ra:tera_login_view")
+		if not request.user.is_staff:
+			try:
+				return redirect("ra:"+ request.session.get("previousPage"))
+			except:
+				logout(request)
+				return redirect("ra:tera_login_view")
+
+				
+		user= User.objects.select_related("department").filter(is_staff= False).values("username", "first_name", "last_name", 
 																"last_login", "department__name",
 																"department__abbv", "last_login"
 																)
 
 
-		activeUser_perCollege =  Department.objects.select_related("user").values('name').annotate(activeCount=Count('id', filter=Q(user__last_login__contains=timezone.now().date())))
+		activeUser_perCollege =  Department.objects.values('name').annotate(activeCount=Count('id', filter=Q(user__last_login__contains=timezone.now().date())))
 		userSite =  Site.objects.values('name', 'url').annotate(accessCount=Count('usersite_access__id')).distinct()
 		dissertations = Dissertation.objects.select_related("department").annotate(department_name = F('department__abbv'))
 		context ={
@@ -497,7 +566,7 @@ class adminTableView(View):
 			
 			action = request.POST["action"]
 
-			if request.POST['action'] == "delete_user":
+			if action == "delete_user":
 				User.objects.filter(username = request.POST['username']).delete()
 				return HttpResponse("")
 
@@ -511,7 +580,6 @@ class adminTableView(View):
 				password = request.POST["password"]
  				
 				
-				
 				if newUsername == "" or firstname == "" or lastname == "":
 					return JsonResponse({"isError": 1,"errorMessage": "please fill out required fields"})
 				
@@ -521,16 +589,24 @@ class adminTableView(View):
 					if NewUsername_exist:
 						return JsonResponse({"isError": 1,"errorMessage": "username already exist"})
 					else:
-						User.objects.filter(username=oldUsername).update(username= newUsername, 
-																		first_name = firstname, 
-																		last_name = lastname, 
-																		department= Department.objects.get(abbv=department))
+						if password == "":
+
+							User.objects.filter(username=oldUsername).update(username= newUsername, 
+																			first_name = firstname, 
+																			last_name = lastname, 
+																			department= Department.objects.get(abbv=department))
+						else:
+							User.objects.filter(username=oldUsername).update(username= newUsername, 
+																			first_name = firstname, 
+																			last_name = lastname, 
+																			department= Department.objects.get(abbv=department),
+																			password = make_password(password))
 
 
 						user= User.objects.select_related("department").filter(username=newUsername).values(
-																												"username", "first_name", "last_name", 
-																												"last_login", "department__name",
-																												"department__abbv", "last_login"
+																											"username", "first_name", "last_name", 
+																											"last_login", "department__name",
+																											"department__abbv", "last_login"
 																											)
 						context = {
 						"isError": 0,
@@ -540,13 +616,19 @@ class adminTableView(View):
 						print("success")
 						return JsonResponse(context)
 				else:
-					User.objects.filter(username=newUsername).update( 
-																		first_name = firstname, 
-																		last_name = lastname, 
-																		department= Department.objects.get(abbv=department)
-																	)
-
-
+					if password == "":
+						User.objects.filter(username=newUsername).update( 
+																			first_name = firstname, 
+																			last_name = lastname, 
+																			department= Department.objects.get(abbv=department)
+																		)
+					else:
+						User.objects.filter(username=newUsername).update( 
+																			first_name = firstname, 
+																			last_name = lastname, 
+																			department= Department.objects.get(abbv=department),
+																			password= make_password(password)
+																		)
 					user= User.objects.select_related("department").filter(username=newUsername).values(
 																											"username", "first_name", "last_name", 
 																											"last_login", "department__name",
@@ -575,6 +657,16 @@ class adminTableView(View):
 class adminRegistrationView(View):
 	def get(self, request, rtype):
 
+		if not request.user.is_authenticated:
+			return redirect("ra:tera_login_view")
+		if not request.user.is_staff:
+			try:
+				return redirect("ra:"+ request.session.get("previousPage"))
+			except:
+				logout(request)
+				return redirect("ra:tera_login_view")
+
+				
 		return render(request, 'adminRegistration.html',{"type": rtype})#, context)
 	def post(self, request, rtype):
 		
@@ -589,7 +681,7 @@ class adminRegistrationView(View):
 				department=request.POST['department']
 				user = User(
 							username=username,
-							password = password,
+							password = make_password(password),
 							first_name = first_name,
 							last_name= last_name,
 							department = Department.objects.get(abbv=department),
@@ -655,18 +747,19 @@ class adminRegistrationView(View):
 class practice(View):
 	
 	def get(self, request):
-		response = requests.get("https://open.umn.edu/opentextbooks/textbooks/introduction-to-philosophy-epistemology",headers=headers())
+		response = requests.get("https://www.oercommons.org/courses/sounds-of-war-aesthetics-emotions-and-chechnya",headers=headers())
 		soup = BeautifulSoup(response.content, 'html.parser')
-		description = soup.find('section', id = "AboutBook").p.text
-		author = ""
-		if soup.find('section', id = "Contributors") != None:
-			authors = soup.find('section', id = "Contributors").find_all("strong")
-			for a in authors:
-				author = author + ", "+a.text
-		print(author)
 
-		year = soup.find('p', text = re.compile("Copyright Year"))
-		ISSN = soup.find('p', text = re.compile("ISBN 13"))
+		description = soup.find("dl", class_="materials-details-abstract").dd
+
+		all__dd_tag = soup.find("dl", class_="materials-details-first-part").find_all("dd")
+		# subtitle = dl_tag.dd
+		subtitle = all__dd_tag[0].text
+		author = all__dd_tag[3].text
+
+		print(subtitle.rstrip(), author.rstrip())
+		# print(dl_tag)
+		
 
 		
 
@@ -678,7 +771,8 @@ class practice(View):
 		
 		# a= Department.objects.create(name='College of Computer Studies', abbv='CCS')
 
-		# User.objects.create(username='18-5126-269', password =make_password('12345'), first_name="yanni", last_name="mondejar", department=a)
+		# # User.objects.create(username='18-5126-269', password =make_password('12345'), first_name="yanni", last_name="mondejar", department=a)
+		# User.objects.create(username='admin', password =make_password('teraadmin2022'), first_name="admin1", last_name="admin1", department= None, is_staff = True)
 
 
 		# User.objects.create(username='18-5126-270', password =make_password('12345'), first_name="jarry", last_name="emorecha", department=a)
@@ -696,7 +790,7 @@ class practice(View):
 		# Site.objects.create(name ="Springeropen", url="https://Springeropen.com")
 		# Site.objects.create(name ="UNESCO Digital Library", url="https://unesdoc.unesco.org/")
 		# Site.objects.create(name ="Open Textbook Library", url="https://open.umn.edu/opentextbooks/")
-		# Site.objects.create(name ="OER_Commons", url="https://www.oercommons.org/")
+		# Site.objects.create(name ="OER Commons", url="https://www.oercommons.org/")
 
 		
 
@@ -746,13 +840,16 @@ class TeraLoginUser(View):
 			
 		# 	proxy = Proxies(proxy = proxy)
 		# 	proxy.save()
-		
+
 		if( request.user.id != None):
-			try:
-				return redirect("ra:" + request.session.get('previousPage'))
-			except:
-				request.session['previousPage'] = 'index_view'
-				return redirect("ra:index_view")
+			if request.user.is_staff == True:
+				return redirect("ra:admin_index_view")
+			else:
+				try:
+					return redirect("ra:" + request.session.get('previousPage'))
+				except:
+					request.session['previousPage'] = 'index_view'
+					return redirect("ra:index_view")
 		else:
 			
 			return render(request,'login.html')	
@@ -773,11 +870,15 @@ class TeraLoginUser(View):
 				login(request, user)
 				if not User_login.objects.filter(user = request.user,date__contains=timezone.now().date()).exists():
 					User_login.objects.create(user = request.user)
-					
-				if request.session.get('previousPage') == None:
-					return redirect("ra:index_view")
+				
+				if request.user.is_staff == True:
+					return redirect("ra:admin_index_view")
+
 				else:
-					return redirect('ra:'+ request.session.get('previousPage'))
+					if request.session.get('previousPage') == None:
+						return redirect("ra:index_view")
+					else:
+						return redirect('ra:'+ request.session.get('previousPage'))
 			else:
 				messages.success(request, "Invalid Username or password")
 				return redirect('ra:tera_login_view')
@@ -791,13 +892,7 @@ class TeraLoginUser(View):
 			
 class TeraIndexView(View):
 	def get(self, request):
-		# User_bookmark.objects.exclude(id=6).delete()
-		# logout(request)
-		#proxies = proxy_generator2() #/ generating free proxies /
-		#for proxy in proxies:  #/ saving proxies to db /
-			
-		#	proxy =Proxies(proxy = proxy)
-		#	proxy.save()
+
 		
 		if request.user.is_authenticated and not User_login.objects.filter(user = request.user, date__contains=timezone.now().date()).exists():
 			User_login.objects.create(user= request.user)
@@ -905,9 +1000,11 @@ class TeraSearchResultsView(View):
 					isSite = request.POST['isSite']
 
 				if website == "CIT":
-
-					results = Dissertation.objects.filter(Q(title__iregex=r"[[:<:]]"+word+"[[:>:]]") | Q(author__iregex=r"[[:<:]]"+word+"[[:>:]]") | Q(department__name__iregex=r"[[:<:]]"+word+"[[:>:]]") | Q(department__abbv__iregex=r"[[:<:]]"+word+"[[:>:]]"), is_active= True).order_by("num_of_access").values()
+		
+					disser = Dissertation.objects.filter(Q(title__iregex=r"[[:<:]]"+word+"[[:>:]]") | Q(author__iregex=r"[[:<:]]"+word+"[[:>:]]") | Q(department__name__iregex=r"[[:<:]]"+word+"[[:>:]]") | Q(department__abbv__iregex=r"[[:<:]]"+word+"[[:>:]]"), is_active= True).order_by("num_of_access").values()
 					# print(list(results))
+					p = Paginator(disser,10)
+					results = p.page(page)
 					context = {
 						'results': list(results),
 						'is_authenticated': request.user.is_authenticated,
@@ -938,7 +1035,7 @@ class TeraSearchResultsView(View):
 				website = request.POST['website']
 				reftype = request.POST['reftype']
 				string = bookmark.split('||')
-				# print(string[1])
+				print(string)
 				title = string[0]
 				url = string[1]
 				# return HttpResponse("")
@@ -951,11 +1048,9 @@ class TeraSearchResultsView(View):
 					else:
 						
 						detail = details(url, request.session.get('proxy'),website, reftype)
-						# return HttpResponse("")
-						websiteTitle = detail['websiteTitle']
 						itemType = detail['itemType']
 						author = detail['author']
-						description = detail['description']
+						description = detail['description'][0:995]
 						journalItBelongs = detail['journalItBelongs']
 						volume = detail['volume']
 						doi = detail['doi']
@@ -969,16 +1064,16 @@ class TeraSearchResultsView(View):
 						try:
 							ISSN = detail['ISSN']
 						except:
-							pass
+							ISSN = ""
 
 						# author description publication volume doi
 						
 						
-						print(reftype)
+						print(title,website, author, description, url, publicationYear, ISSN)
 						# print(websiteTitle + '\n'+itemType + '\n'+title + '\n' +link + '\n' +author+ '\n' +description+ '\n' +publication+ '\n' +volume+ '\n' +doi)
 						if reftype == "article" or reftype == "Programme_and_meeting_document":
 							detail = Bookmark_detail.objects.create(
-								title = title,websiteTitle= websiteTitle,itemType= itemType,
+								title = title,websiteTitle= website.replace("_"," "),itemType= itemType,
 								author = author, description= description, url = url, journalItBelongs= journalItBelongs, 
 								volume = volume, DOI = doi,publicationYear = publicationYear
 								)
@@ -989,7 +1084,7 @@ class TeraSearchResultsView(View):
 
 							
 						elif itemType == "book":
-							detail = Bookmark_detail.objects.create(title = title,websiteTitle= websiteTitle,
+							detail = Bookmark_detail.objects.create(title = title,websiteTitle= website.replace("_"," "),
 								subtitle = subtitle, itemType= itemType,author = author,numOfCitation = citation,
 								numOfDownload= downloads,publisher=publisher, description= description, url = url, 
 								edition = edition,numOfPages = pages, DOI = doi)
@@ -997,7 +1092,7 @@ class TeraSearchResultsView(View):
 							Bookmark.objects.create(user = request.user,bookmark=detail,keyword=keyword)
 
 						elif itemType == "Text_book":
-							detail = Bookmark_detail.objects.create(title = title,websiteTitle= websiteTitle,
+							detail = Bookmark_detail.objects.create(title = title,websiteTitle= website.replace("_"," "),
 								itemType= "text book",author = author,
 								 description= description, url = url, 
 								publicationYear = publicationYear,ISSN = ISSN)
@@ -1027,23 +1122,10 @@ class TeraSearchResultsView(View):
 				return HttpResponse('')
 
 
-		elif 'buttonLogin' in request.POST:
-			request.session['previousPage'] = request.POST['previousPage']
-			print(request.session.get('previousPage'))
+	
 
-			return redirect('ra:tera_login_view')
 
-		elif 'btnLogout' in request.POST:
-			word = request.session.get('word')
-			proxy = request.session.get('proxy')
-			pp = request.session.get('previousPage')
 			
-			logout(request)
-			request.session['previousPage'] = pp
-			request.session['word'] = word
-			request.session['proxy'] = proxy
-
-			return redirect("ra:search_result_view")
 			
 
 
@@ -1072,65 +1154,35 @@ class TeraDashboardView(View):
 
 
 
-		if request.user.id != None:
-
-			# userBookmarks= User_bookmark.objects.filter(user=request.user).values('title')
-			# recommendation = []
-			
-			# # if userBookmarks.exists():
-			# # 	queryAll= list(User_bookmark.objects.values('id','title','user_id')
-			# # 										.annotate(folder_count=Count('folders'))
-			# # 										.order_by("-folder_count"))
-			# # recommendation = modes(queryAll, request.user.id).to_dict("records") 												
+		if request.user.is_authenticated:
 
 			
-			
-			# query_group = Group.objects.filter((Q(owner= request.user) | Q(member=request.user)), is_removed=0)
-			# groups = list(query_group.values())
-			# for b in groups:
-			# 	b['owner_id']= list(User.objects.filter(id=b['owner_id']).values('first_name',"last_name"))
-			# 	c = User_group.objects.get(id=b['id'])
-			# 	b['members']= list(c.member.values('first_name','last_name'))
-
-			
-			# g = Group.objects.get(id=3)
-			# g.member.remove(User.objects.get(id=2))
-			
-			# 	print(b['owner_id'])
-			# cursor = connection.cursor()   
-			# cursor.execute()
-			# a = dictfetchall(cursor)
-			# a = json.dumps(a, default=str)
-			# Q(bookmark__group__isnull=True),Q(bookmark__isRemoved=False)
-			
-			
-			# for a in b:
-			# 	print(a)
 			recommendation = []
 			if Bookmark.objects.filter(user=request.user).exists():
-				recommendationQuery= Bookmark_detail.objects.select_related("bookmark").filter(bookmark__user__isnull=False,
-																								bookmark__group__isnull=True, 
-																								
-																								).annotate(count=Count(Case(
-																												        When(Q(bookmark__isRemoved=False) 
-																												        	& Q(bookmark__group__isnull=True) 
-																												        	& Q(bookmark__user__isnull=False), 
-																												        	then=Value(1)),
-																												    	))
-																								).annotate(isOwn = Count(Case(
-																												        When(Q(bookmark__user= request.user) & Q(bookmark__isRemoved= False), 
-																												        then=Value(1)),
-																												    	))
-																								).annotate(isMyRemoved = Count(Case(
-																									        When(Q(bookmark__user= request.user) & (Q(bookmark__isRemoved = 1) | Q(bookmark__isRemoved=2)), 
-																									        then=Value(1)),
-																									    	))
-																								).order_by("-count").values("id",
-																									"title", "url" ,"itemType",
-																									"websiteTitle", 
-																									 "isOwn", "count", "isMyRemoved")
-				
-				recommendation = modes(list(recommendationQuery), request.user.id)
+				if Bookmark_detail.objects.filter(~Q(bookmark__user = request.user),bookmark__group__isnull=True).exists():
+					recommendationQuery= Bookmark_detail.objects.select_related("bookmark").filter(bookmark__user__isnull=False,
+																									bookmark__group__isnull=True, 
+																									
+																									).annotate(count=Count(Case(
+																													        When(Q(bookmark__isRemoved=False) 
+																													        	& Q(bookmark__group__isnull=True) 
+																													        	& Q(bookmark__user__isnull=False), 
+																													        	then=Value(1)),
+																													    	))
+																									).annotate(isOwn = Count(Case(
+																													        When(Q(bookmark__user= request.user) & Q(bookmark__isRemoved= False), 
+																													        then=Value(1)),
+																													    	))
+																									).annotate(isMyRemoved = Count(Case(
+																										        When(Q(bookmark__user= request.user) & (Q(bookmark__isRemoved = 1) | Q(bookmark__isRemoved=2)), 
+																										        then=Value(1)),
+																										    	))
+																									).order_by("-count").values("id",
+																										"title", "url" ,"itemType",
+																										"websiteTitle", 
+																										 "isOwn", "count", "isMyRemoved")
+					
+					recommendation = modes(list(recommendationQuery), request.user.id)
 
 				# modes(list(queryAll), request.user.id)
 				# print(recommendation)
@@ -1365,6 +1417,7 @@ class TeraDashboardView(View):
 					# return HttpResponse("")
 					gID = request.POST['faction_id']
 					a= []
+					m= []
 					if Bookmark.objects.filter(group__id = gID, isRemoved=0).exists():
 						queryset = Bookmark.objects.select_related("bookmark").filter(
 																				group__id=gID, isRemoved=0
@@ -1382,6 +1435,7 @@ class TeraDashboardView(View):
 
 					context = {
 				    "bookmarks": a,
+
 				    "member": m
 					}
 					
@@ -1391,6 +1445,7 @@ class TeraDashboardView(View):
 			
 			elif action == 'get_folders':
 				folders =	Folder.objects.filter(user=request.user, is_removed = 0).values()
+				print("get folders")
 				return JsonResponse( { "list": list(folders) } )
 
 			elif action == 'get_groups':
@@ -1400,7 +1455,20 @@ class TeraDashboardView(View):
 																				 						"owner__first_name",
 																				 						"owner__last_name"
 																				 						)
+				print("get groups")
+				
 				return JsonResponse( { "list": list(groups) } )
+
+			elif action == 'get_factions':
+				folders =	Folder.objects.filter(user=request.user, is_removed = 0).values()
+				groups= Group.objects.select_related("owner").filter((Q(owner= request.user) | Q(member=request.user)),
+																				 is_removed=0).values(
+																				 						"id","name", "date_created",
+																				 						"owner__first_name",
+																				 						"owner__last_name"
+																				 						)
+				print("get factions")
+				return JsonResponse( { "folders": list(folders), "groups": list(groups) } )
 
 			elif action == "get_detail":
 				detailID = request.POST['detailID']
@@ -1473,7 +1541,7 @@ class TeraDashboardView(View):
 			elif action == 'add_group':
 				name = request.POST['name']
 
-				if not Group.objects.filter(owner=request.user, name = name).exists():
+				if not Group.objects.filter(owner=request.user, name = name, is_removed=False).exists():
 					group = Group.objects.create(owner=request.user, name = name)
 					query_group = Group.objects.select_related("owner").filter(id = group.id).values(
 																				 						"id","name", "date_created",
@@ -1573,8 +1641,19 @@ class TeraDashboardView(View):
 
 
 
-
-							
+def TeraLogoutView(request):
+	if request.user.is_staff == True:
+		logout(request)
+		return redirect("ra:tera_login_view")							
+	else:
+		word = request.session.get('word')
+		proxy = request.session.get('proxy')
+		pp = request.session.get('previousPage')
+		logout(request)
+		request.session['previousPage'] = pp
+		request.session['word'] = word
+		request.session['proxy'] = proxy
+		return redirect("ra:"+pp)							
 
 def TeraAccountSettingsView(request):
 	if request.method == 'POST':
@@ -1601,37 +1680,37 @@ def TeraAccountSettingsView(request):
 
 
 
-		# elif 'readCSVForm' in request.POST:
+			# elif 'readCSVForm' in request.POST:
 
-		# 	return HttpResponse('olok')
+			# 	return HttpResponse('olok')
 
-			
+				
 
-		# elif request.is_ajax():
-		# 	action = request.POST['action']
+			# elif request.is_ajax():
+			# 	action = request.POST['action']
 
-		# 	if action =='read':
-		# 		myfile = request.FILES['file']
+			# 	if action =='read':
+			# 		myfile = request.FILES['file']
 
-		# 		file = myfile.read().decode('utf-8')
-		# 		dict_reader = csv.DictReader(io.StringIO(file))
+			# 		file = myfile.read().decode('utf-8')
+			# 		dict_reader = csv.DictReader(io.StringIO(file))
 
-		# 		print(list(dict_reader))
+			# 		print(list(dict_reader))
 
-# elif form.is_valid():
-		# 	folder = request.POST.get("foldername")
-		# 	form = Folders(foldername = folder)
-		# 	form.save()
+	# elif form.is_valid():
+			# 	folder = request.POST.get("foldername")
+			# 	form = Folders(foldername = folder)
+			# 	form.save()
 
-		# 	return redirect('ra:tera_dashboard_view')
+			# 	return redirect('ra:tera_dashboard_view')
 
-		# elif request.method == 'POST':
-		# 	if 'btnDelete' in request.POST:
-		# 		print('delete button clicked')
-		# 		fid = request.POST.get("folder-id")
-		# 		fldr = Folders.objects.filter(id=fid).delete()
-		# 		print('Recorded Deleted')
-		# 		return redirect('ra:tera_dashboard_view')
+			# elif request.method == 'POST':
+			# 	if 'btnDelete' in request.POST:
+			# 		print('delete button clicked')
+			# 		fid = request.POST.get("folder-id")
+			# 		fldr = Folders.objects.filter(id=fid).delete()
+			# 		print('Recorded Deleted')
+			# 		return redirect('ra:tera_dashboard_view')
 
 
 class FolderViewSet(
