@@ -747,52 +747,28 @@ class adminRegistrationView(View):
 class practice(View):
 	
 	def get(self, request):
-		response = requests.get("https://www.oercommons.org/courses/sounds-of-war-aesthetics-emotions-and-chechnya",headers=headers())
-		soup = BeautifulSoup(response.content, 'html.parser')
+		a= Department.objects.create(name='College of Computer Studies', abbv='CCS')
 
-		description = soup.find("dl", class_="materials-details-abstract").dd
+		User.objects.create(username='18-5126-269', password =make_password('12345'), first_name="yanni", last_name="mondejar", department=a)
+		User.objects.create(username='admin', password =make_password('teraadmin2022'), first_name="admin1", last_name="admin1", department= None, is_staff = True)
 
-		all__dd_tag = soup.find("dl", class_="materials-details-first-part").find_all("dd")
-		# subtitle = dl_tag.dd
-		subtitle = all__dd_tag[0].text
-		author = all__dd_tag[3].text
 
-		print(subtitle.rstrip(), author.rstrip())
-		# print(dl_tag)
+		User.objects.create(username='18-5126-270', password =make_password('12345'), first_name="jarry", last_name="emorecha", department=a)
+
+		User.objects.create(username='18-5126-271', password = make_password('12345'), first_name="ryan ", last_name="talatagod", department = a)
 		
 
-		
+		Department.objects.create(name='College of Engineering and Architecture', abbv='CEA')
+		Department.objects.create(name='College of Nursing and Allied Health Sciences', abbv='CNAHS')
+		Department.objects.create(name='College of Management, Business Accountancy', abbv='CMBA')
+		Department.objects.create(name='College of Arts, Sciences and Education', abbv='CASE')
+		Department.objects.create(name='College of Criminal Justice', abbv='CCJ')
 
 
-		# a = User_bookmark.objects.annotate(id=1)
-		# print("folders count: ",a.folders.all().count())
-		# print("recommended","\n",a )
-		# recommendation = list(dict.fromkeys(modes(queryAll, request.user.id) ))
-		
-		# a= Department.objects.create(name='College of Computer Studies', abbv='CCS')
-
-		# # User.objects.create(username='18-5126-269', password =make_password('12345'), first_name="yanni", last_name="mondejar", department=a)
-		# User.objects.create(username='admin', password =make_password('teraadmin2022'), first_name="admin1", last_name="admin1", department= None, is_staff = True)
-
-
-		# User.objects.create(username='18-5126-270', password =make_password('12345'), first_name="jarry", last_name="emorecha", department=a)
-
-		# User.objects.create(username='18-5126-271', password = make_password('12345'), first_name="ryan ", last_name="talatagod", department = a)
-		
-
-		# Department.objects.create(name='College of Engineering and Architecture', abbv='CEA')
-		# Department.objects.create(name='College of Nursing and Allied Health Sciences', abbv='CNAHS')
-		# Department.objects.create(name='College of Management, Business Accountancy', abbv='CMBA')
-		# Department.objects.create(name='College of Arts, Sciences and Education', abbv='CASE')
-		# Department.objects.create(name='College of Criminal Justice', abbv='CCJ')
-
-
-		# Site.objects.create(name ="Springeropen", url="https://Springeropen.com")
-		# Site.objects.create(name ="UNESCO Digital Library", url="https://unesdoc.unesco.org/")
-		# Site.objects.create(name ="Open Textbook Library", url="https://open.umn.edu/opentextbooks/")
-		# Site.objects.create(name ="OER Commons", url="https://www.oercommons.org/")
-
-		
+		Site.objects.create(name ="Springeropen", url="https://Springeropen.com", active = True)
+		Site.objects.create(name ="UNESCO Digital Library", url="https://unesdoc.unesco.org/", active = True)
+		Site.objects.create(name ="Open Textbook Library", url="https://open.umn.edu/opentextbooks/", active = True)
+		Site.objects.create(name ="OER Commons", url="https://www.oercommons.org/", active = True)
 
 
 		return render(request,'practice.html')#,context)
@@ -1136,23 +1112,14 @@ class TeraSearchResultsView(View):
 class TeraDashboardView(View):
 
 	def get(self,request):
-		# Department.objects.create(abbv='CCS', name="College of Computer Studies")
-		# Group.objects.get(id=1).member.add(User.objects.get(username='mondejars'))
-		#.distinct()
-		if request.user.is_authenticated and not User_login.objects.filter(user = request.user, date__contains=timezone.now().date()).exists():
+
+		if request.user.is_authenticated and request.user.is_staff == 0 and not User_login.objects.filter(user = request.user, date__contains=timezone.now().date()).exists():
 			User_login.objects.create(user= request.user)
-		if request.user.is_authenticated and not User.objects.filter(id = request.user.id, last_login__contains=timezone.now().date()).exists():
+		if request.user.is_authenticated and request.user.is_staff == 0 and not User.objects.filter(id = request.user.id, last_login__contains=timezone.now().date()).exists():
 			User.objects.filter(id= request.user.id).update(last_login = timezone.now())
-		# Folder.objects.all().delete()
-		# User_bookmark.objects.all().delete()
+
 		request.session['previousPage'] = "tera_dashboard_view"
-		# try:
-			# cursor = connection.cursor()   
-			# cursor.execute("SELECT f.*, b.* FROM User_bookmark b, Folders f WHERE f.user_id = "+ request.user.id+" AND f.bookmark_id == b.id OR") #| get rows of for a specific date|
-			# row = cursor.fetchall()
-
-
-
+	
 
 		if request.user.is_authenticated:
 
@@ -1184,8 +1151,7 @@ class TeraDashboardView(View):
 					
 					recommendation = modes(list(recommendationQuery), request.user.id)
 
-				# modes(list(queryAll), request.user.id)
-				# print(recommendation)
+			
 			queryset = Bookmark.objects.select_related("bookmark__detail").filter(
 																		( Q(user=request.user) ) & 
 																		( Q(isRemoved=1) | Q(isRemoved=0) ), 
@@ -1209,7 +1175,6 @@ class TeraDashboardView(View):
 																			 						"owner__first_name",
 																			 						"owner__last_name"
 																			 						)
-			# print("len of bookmark: ", len(queryset))																 
 			a = json.dumps(list(queryset), default=str)
 			folder_list = json.dumps(list(folders), default=str)
 			group_list = json.dumps(list(groups), default=str)
@@ -1225,9 +1190,6 @@ class TeraDashboardView(View):
 		else:
 			return redirect('ra:tera_login_view')
 
-		# except:
-		# 	request.session['previousPage'] = 'tera_dashboard_view'
-		# 	return redirect('ra:tera_login_view')
 
 	def post(self, request):
 
@@ -1616,7 +1578,7 @@ class TeraDashboardView(View):
 					"result":"not exist",
 					}
 					return JsonResponse(context)
-					
+
 				elif User.objects.filter(username=username).exists():
 					Group.objects.get(id=gID).member.add(User.objects.get(username=username))
 					member= User.objects.filter(username=username).values("first_name", "last_name")
