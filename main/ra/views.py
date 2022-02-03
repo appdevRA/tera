@@ -31,6 +31,8 @@ import sys
 from datetime import timedelta
 import re
 from django.core.paginator import Paginator
+from django.db.models.functions import Concat
+
 class addUser(View):
 	def get(self, request):
 		print('olok')
@@ -1414,11 +1416,15 @@ class TeraDashboardView(View):
 
 			elif action == 'get_groups':
 				groups= Group.objects.select_related("owner").filter((Q(owner= request.user) | Q(member=request.user)),
-																				 is_removed=0).values(
-																				 						"id","name", "date_created",
-																				 						"owner__first_name",
-																				 						"owner__last_name"
-																				 						).distinct()
+																				 is_removed=0).annotate(
+																				 						 ownerName = Concat('owner__first_name',
+																				 						 					Value(' '), 
+																				 						 					'owner__last_name',
+																				 						 					output_field=CharField()
+																				 						 					)
+																				 						 ).values(
+																						 						"id","name", "date_created", "ownerName"
+																						 						).distinct()
 				print(groups)
 				
 				return JsonResponse( { "list": list(groups) } )

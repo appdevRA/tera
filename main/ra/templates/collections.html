@@ -545,11 +545,10 @@ function get_bookmarks(tab_name, folder_id, isGet){
    
                                       for(i=0;i< groups.length;i++){
                                         if(groups[i].id == folder_id){
-                                            console.log(groups[i])
                                            date = new Date(groups[i].date_created)
                                          $('#group_detail_ul').append("<br><div><b>Group name:</b> &nbsp; "+groups[i].name+"</div> "+
                                           // "<br><div><b>Description:</b>&nbsp; "+group[0]['description']+"</div>" +
-                                          "<br><div><b>Owner:</b> &nbsp; "+groups[i].owner__first_name+" "+groups[i].owner__last_name +"</div>" + 
+                                          "<br><div><b>Owner:</b> &nbsp; "+groups[i].ownerName +"</div>" + 
                                           "<br><div><b>Date created:</b>  &nbsp;"+ date.toDateString().slice(3,)+" "+date.toTimeString().slice(0,5)+"</div>" + 
                                           "<br><div style='margin-left:-5%'><i class='fas fa-user-plus' style='font-size:90%; cursor:pointer;' href='#addMemberModal' data-toggle='modal' data-target='#addMemberModal'></i> &nbsp; <b>Member(s)</b>: </div>"
                                         ); 
@@ -1236,7 +1235,6 @@ $(document).on("click", ".open_link", function(){
 
 $(document).on("click", ".get_detail", function(){
     detailID = $(this).attr("id")
-    console.log(faction_id)
 
 
         $.ajax({
@@ -1284,7 +1282,6 @@ $(document).on("click", ".get_detail", function(){
 
 $(document).on("click", "#add_member", function(){
       username = document.getElementById('idNumber_input').value
-      console.log(faction_id)
         $.ajax({
               type:"POST",
               url:"",
@@ -1451,6 +1448,7 @@ function getFolders(clicked_id, detail_id){
 
           } else if(action == "get_groups"){
               groups = response.list
+
           } 
           // console.log(folders, groups)
            bookmarkToFolder_dropdown(clicked_id, detail_id)
@@ -1583,7 +1581,6 @@ function display_dropdown(dropdown_type) {
                     
          
         } else if(dropdown_type == 'groups'){
-              console.log(groups)
           
 
               $("#mygroup_ul").empty();
