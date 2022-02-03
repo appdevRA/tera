@@ -197,7 +197,7 @@ class adminActiveUserView(View):
 
 			tableData= User.objects.filter(usersite_access__date_of_access__range=[startDate, endDate], user__is_staff= False).annotate(
 										visitCount=Count('id')
-										).values("last_name", "student_id", "department__name", "first_name", "visitCount").order_by("-visitCount")
+										).values("last_name", "department__name", "first_name", "visitCount").order_by("-visitCount")
 
 			context ={
 				"tableData": list(tableData),
@@ -765,10 +765,12 @@ class practice(View):
 		Department.objects.create(name='College of Criminal Justice', abbv='CCJ')
 
 
-		Site.objects.create(name ="Springeropen", url="https://Springeropen.com", active = True)
-		Site.objects.create(name ="UNESCO Digital Library", url="https://unesdoc.unesco.org/", active = True)
-		Site.objects.create(name ="Open Textbook Library", url="https://open.umn.edu/opentextbooks/", active = True)
-		Site.objects.create(name ="OER Commons", url="https://www.oercommons.org/", active = True)
+		Site.objects.create(name ="Springeropen", url="https://Springeropen.com", is_active = True)
+		Site.objects.create(name ="UNESCO Digital Library", url="https://unesdoc.unesco.org/", is_active = True)
+		Site.objects.create(name ="Open Textbook Library", url="https://open.umn.edu/opentextbooks/", is_active = True)
+		Site.objects.create(name ="OER Commons", url="https://www.oercommons.org/", is_active = True)
+
+		
 
 
 		return render(request,'practice.html')#,context)
