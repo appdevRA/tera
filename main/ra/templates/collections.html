@@ -541,12 +541,11 @@ function get_bookmarks(tab_name, folder_id, isGet){
 
                                 if(tab_name.includes("groups")){
                                       members = response.member
-                                      console.log(members)
                                       $("#group_detail_ul").empty();
    
                                       for(i=0;i< groups.length;i++){
                                         if(groups[i].id == folder_id){
-
+                                            console.log(groups[i])
                                            date = new Date(groups[i].date_created)
                                          $('#group_detail_ul').append("<br><div><b>Group name:</b> &nbsp; "+groups[i].name+"</div> "+
                                           // "<br><div><b>Description:</b>&nbsp; "+group[0]['description']+"</div>" +

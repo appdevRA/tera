@@ -162,7 +162,7 @@ class adminActiveUserView(View):
 		except:
 			maxCount = 0
 
-		tableData= User.objects.filter(usersite_access__date_of_access__contains=todaysMonth, user__is_staff= False).annotate(
+		tableData= User.objects.filter(usersite_access__date_of_access__contains=todaysMonth, is_staff= False).annotate(
 										visitCount=Count('id')
 										).values("username","last_name", "department__name", "first_name", "visitCount").order_by("-visitCount")
 	
@@ -1418,8 +1418,8 @@ class TeraDashboardView(View):
 																				 						"id","name", "date_created",
 																				 						"owner__first_name",
 																				 						"owner__last_name"
-																				 						)
-				print("get groups")
+																				 						).distinct()
+				print(groups)
 				
 				return JsonResponse( { "list": list(groups) } )
 
