@@ -1603,16 +1603,20 @@ class TeraDashboardView(View):
 					context={
 					"result":"member"
 					}
-					print('member')
 					return JsonResponse(context)
 
 				elif Group.objects.filter(id = gID,owner__username= username).exists():
 					context={
 					"result":"owner"
 					}
-					print('owner')		
 					return JsonResponse(context)
 
+				elif not User.objects.filter(username=username).exists():
+					context={
+					"result":"not exist",
+					}
+					return JsonResponse(context)
+					
 				elif User.objects.filter(username=username).exists():
 					Group.objects.get(id=gID).member.add(User.objects.get(username=username))
 					member= User.objects.filter(username=username).values("first_name", "last_name")
@@ -1621,6 +1625,8 @@ class TeraDashboardView(View):
 					"member": list(member)
 					}
 					return JsonResponse(context)
+
+				
 
 			elif action == "add_recommended":
 				detailID = request.POST['detailID']
@@ -1715,11 +1721,10 @@ def TeraAccountSettingsView(request):
 
 class FolderViewSet(
     mixins.ListModelMixin,
-    mixins.CreateModelMixin,
     mixins.RetrieveModelMixin,
     mixins.UpdateModelMixin,
-    viewsets.GenericViewSet,):
-
+    viewsets.GenericViewSet,
+):
     queryset = Folder.objects.all()
     serializer_class = serializers.FolderModelSerializer
 
@@ -1729,67 +1734,72 @@ class FolderViewSet(
 
         return super().get_serializer_class()
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        serializer = serializers.FolderQuerySerializer(data=self.request.query_params)
 
-class UserBookmarkViewSet(
+        if not serializer.is_valid():
+            return queryset
+
+        user = serializer.validated_data.get("user")
+        if user:
+            queryset = queryset.filter(user=user)
+
+        return queryset.order_by("name")
+
+
+class BookmarkViewSet(
     mixins.ListModelMixin,
     mixins.CreateModelMixin,
     mixins.RetrieveModelMixin,
     mixins.UpdateModelMixin,
     mixins.DestroyModelMixin,
-    viewsets.GenericViewSet,):
-
+    viewsets.GenericViewSet,
+):
     queryset = Bookmark.objects.all()
-    serializer_class = serializers.UserBookmarkModelSerializer
+    serializer_class = serializers.BookmarkModelSerializer
 
     def get_queryset(self):
         queryset = super().get_queryset()
 
-        serializer = serializers.UserBookmarkQuerySerializer(data=self.request.query_params)
+        # return all rows of Bookmark if no query params
+        if not len(self.request.query_params):
+            return queryset
+
+        serializer = serializers.BookmarkQuerySerializer(data=self.request.query_params)
 
         if not serializer.is_valid():
-            return queryset.removed(False)
+            return queryset
 
-        removed = serializer.validated_data.get("removed")
-
-        if removed:
-            return queryset.removed()
-
-        queryset = queryset.removed(False)
-
+        user = serializer.validated_data.get("user")
+        if user:
+            queryset = queryset.user(user)
 
         recently_added = serializer.validated_data.get("recently_added")
         if recently_added:
             queryset = queryset.recently_added()
 
-
         recently_read = serializer.validated_data.get("recently_read")
         if recently_read:
             queryset = queryset.recently_read()
-
 
         favorite = serializer.validated_data.get("favorite")
         if favorite is not None:
             queryset = queryset.favorites(favorite)
 
+        groups_only = serializer.validated_data.get("groups_only")
+        if groups_only is not None:
+            queryset = queryset.groups_only(groups_only)
 
+        removed = serializer.validated_data.get("removed")
+        queryset = queryset.removed() if removed else queryset.unarchived()
+
+        group = serializer.validated_data.get("group")
         folder = serializer.validated_data.get("folder")
-        if folder is not None:
-            queryset = queryset.folder(folder)
+        if group or folder:
+            queryset = queryset.group(group) if group else queryset.folder(folder)
 
         return queryset
-
-    # def list(self, request, *args, **kwargs):
-    # 	queryset = self.filter_queryset(self.get_queryset())
-
-    # 	page = self.paginate_queryset(queryset)
-
-    # 	if page is not None:
-    # 		serializer = self.get_serializer(page, many=True)
-    # 		return self.get_paginated_response(serializer.data)
-
-    # 	serializer = self.get_serializer(queryset, many=True)
-    # 	return Response(serializer.data)
-
 
     @action(methods=["POST"], detail=True, url_path="toggle-favorite")
     def toggle_favorite(self, *args, **kwargs):
@@ -1799,3 +1809,108 @@ class UserBookmarkViewSet(
         instance.save()
 
         return Response(status=status.HTTP_200_OK)
+
+    @action(methods=["POST"], detail=True)
+    def unarchive(self, *args, **kwargs):
+        instance = self.get_object()
+        instance.unarchive()
+        return Response(status=status.HTTP_200_OK)
+
+
+class UserViewSet(
+    mixins.RetrieveModelMixin,
+    viewsets.GenericViewSet,
+):
+    queryset = User.objects.all()
+    serializer_class = serializers.UserModelSerializer
+
+    @action(
+        methods=["POST"],
+        detail=False,
+        serializer_class=serializers.LoginRequestSerializer,
+    )
+    def login(self, *args, **kwargs):
+        request_serializer = self.get_serializer(data=self.request.data)
+
+        if not request_serializer.is_valid():
+            return Response(request_serializer.errors, 400)
+
+        username = request_serializer.validated_data.get("username")
+        password = request_serializer.validated_data.get("password")
+        user = authenticate(username=username, password=password)
+        if user:
+            return Response(serializers.UserModelSerializer(user).data)
+        return Response("Incorrect username or password.", 401)
+
+    @action(
+        methods=["POST"],
+        detail=True,
+        url_path="change-password",
+        serializer_class=serializers.ChangePasswordRequestSerializer,
+    )
+    def change_password(self, *args, **kwargs):
+        serializer = self.get_serializer(data=self.request.data)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, 400)
+
+        password = serializer.validated_data.get("password")
+
+        user = self.get_object()
+        user.set_password(password)
+        user.save()
+
+        return Response(status=200)
+
+
+class GroupViewSet(
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    viewsets.GenericViewSet,
+):
+    queryset = Group.objects.all()
+    serializer_class = serializers.GroupModelSerializer
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        serializer = serializers.GroupQuerySerializer(data=self.request.query_params)
+        if not serializer.is_valid():
+            return queryset
+
+        bookmark_id = serializer.validated_data.get("available_for_bookmark_detail")
+        if bookmark_id:
+            queryset = queryset.available_for_bookmark_detail(bookmark_id)
+
+        user_id = serializer.validated_data.get("for_user")
+        if user_id:
+            queryset = queryset.for_user(user_id)
+
+        return queryset.order_by("name")
+
+
+class BookmarkDetailViewSet(viewsets.GenericViewSet):
+    queryset = Bookmark_detail.objects.all()
+    serializer_class = serializers.BookmarkDetailModelSerializer
+
+    @action(
+        methods=["POST"],
+        detail=True,
+        url_path="add-to-group",
+        serializer_class=serializers.AddToGroupRequestSerializer,
+    )
+    def add_to_group(self, *args, **kwargs):
+        instance = self.get_object()
+
+        serializer = self.get_serializer(data=self.request.data)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, 400)
+
+        Bookmark.objects.create(
+            user_id=serializer.validated_data.get("user_id"),
+            group=Group.objects.get(id=serializer.validated_data.get("group_id")),
+            bookmark=Bookmark_detail.objects.get(id=instance.id),
+        )
+
+        return Response(status=200)

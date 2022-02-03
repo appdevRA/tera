@@ -2,8 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone
 
-from .managers import UserBookmarkQuerySet
-
+from .managers import BookmarkQuerySet, GroupQuerySet
 
 class Department (models.Model):
 	abbv = models.CharField(max_length=50, null = False, blank= False, default='')
@@ -15,13 +14,16 @@ class User (AbstractUser):
 	department= models.ForeignKey(Department, null = True, blank = True, on_delete = models.CASCADE)
 
 	REQUIRED_FIELDS = ['first_name', 'last_name','department','password']
+	
+	def __str__(self) -> str:
+		return f"{self.id} / {self.username}"
+
 	class Meta:
 		db_table = "User"
 
 
 class Admin (models.Model):
 	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
-	department= models.ForeignKey(Department, null = False, blank = False, on_delete = models.CASCADE)
 	class Meta:
 		db_table = "Admin"
 
@@ -54,17 +56,11 @@ class Bookmark_detail (models.Model):
 	DOI = models.CharField(max_length = 200,blank= True)	
 	ISSN = models.CharField(max_length = 100,blank= True)
 
-	objects = UserBookmarkQuerySet.as_manager()
 
 	class Meta:
 		db_table = "Bookmark_detail"
 
-	def delete(self):
-		self.isRemoved = 1
-		self.date_removed = timezone.now()
-		self.save()
 
-		return self
 
 class Group(models.Model):
 	name = models.CharField(max_length=50, null = False, blank = False) #add not null and not blank here
@@ -72,6 +68,9 @@ class Group(models.Model):
 	date_created = models.DateTimeField(auto_now_add= True)
 	is_removed = models.IntegerField(default=0)
 	member = models.ManyToManyField(User)
+	
+	objects = GroupQuerySet.as_manager()
+	
 	class Meta:
 		db_table = "Group"
 
@@ -86,14 +85,37 @@ class Bookmark(models.Model):
 	user = models.ForeignKey(User, null = True, blank = True, on_delete = models.CASCADE)
 	owner = models.ForeignKey(User,null = True, blank = True, related_name='owner', on_delete = models.CASCADE)
 	group = models.ForeignKey(Group, null = True, blank = True, on_delete = models.CASCADE)
-	bookmark = models.ForeignKey(Bookmark_detail, null = False, blank = False, on_delete = models.CASCADE)
+	bookmark = models.ForeignKey(Bookmark_detail, null = False, blank = False, on_delete = models.CASCADE) #add related_name="bookmarks", before null
 	isFavorite = models.BooleanField(default=False)
 	dateAccessed = models.DateTimeField(default = timezone.now)
 	dateAdded = models.DateTimeField(auto_now_add = True )
 	isRemoved = models.IntegerField(default = 0)	
 	date_removed = models.DateTimeField(null = True)
 	keyword= models.CharField(max_length = 200,blank= False, null=False, default="")
-	folders = models.ManyToManyField(Folder)
+	folders = models.ManyToManyField(Folder, blank=True)
+
+	class Meta:
+		db_table = "Bookmark"
+
+	objects = BookmarkQuerySet.as_manager()
+
+	def archive(self):
+		self.isRemoved = 1
+		self.date_removed = timezone.now()
+		self.save()
+		return self
+
+	def unarchive(self):
+		self.isRemoved = 0
+		self.date_removed = None
+		self.save()
+		return self
+
+	def delete(self):
+		self.isRemoved = 2
+		self.date_removed = timezone.now()
+		self.save()
+		return self
 
 class Dissertation(models.Model):
 	title = models.CharField(max_length=1000, null = False, blank = False)
@@ -103,7 +125,14 @@ class Dissertation(models.Model):
 	num_of_access = models.IntegerField(default = 0)
 	is_active = models.BooleanField(default = False)
 	department = models.ForeignKey(Department, null = False, blank = False, on_delete = models.CASCADE) #edit null to False
-	file = models.FileField(upload_to ='dissertation/', blank = False, null = False, default = 'setting.MEDIA_ROOT/teralogo.png')
+	file = models.FileField(
+		upload_to ='dissertation/', 
+		blank = False, 
+		null = False, 
+		default = 'setting.MEDIA_ROOT/teralogo.png'
+		)
+
+	
 	class Meta:
 		db_table = "Dissertation"
 

@@ -23,8 +23,10 @@ from rest_framework.routers import DefaultRouter
 ROUTER = DefaultRouter()
 
 ROUTER.register("folders", views.FolderViewSet)
-ROUTER.register("user-bookmarks", views.UserBookmarkViewSet)
-
+ROUTER.register("bookmarks", views.BookmarkViewSet)
+ROUTER.register("users", views.UserViewSet)
+ROUTER.register("groups", views.GroupViewSet)
+ROUTER.register("bookmark-details", views.BookmarkDetailViewSet)
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("tera/", include("ra.urls", namespace="ra")),

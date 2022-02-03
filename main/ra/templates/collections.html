@@ -202,7 +202,7 @@ tr:hover {
                          <center> 
                        
                           {% csrf_token %}
-                            <p style="font-size: 25px; color: #800000">Enter Student ID</p>
+                            <p style="font-size: 25px; color: #800000">Enter username</p>
                             
                             
                             <input type="text" placeholder="18-5126-269" style="width: 80%" id="idNumber_input" value="" required><br>
@@ -1306,7 +1306,9 @@ $(document).on("click", "#add_member", function(){
 
                 }
                 else if(result == 'owner')
-                  document.getElementById('error_message').innerHTML ="User is the owner "
+                  document.getElementById('error_message').innerHTML ="User is the owner"
+                else if(result == 'not exist')
+                  document.getElementById('error_message').innerHTML ="User does not exist"
                 else if(result == 'added'){
                   document.getElementById('dismiss-modal_member').click()
                   alert("User Added")
