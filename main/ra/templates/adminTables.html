@@ -430,7 +430,6 @@ $(document).ready(function(){
             didConfirm = confirm("Do you really want to delete this user?")
             if(didConfirm){
                 selectedRow.remove()
-                console.log($(this).attr("id"))
                 $.ajax({
                   type:"POST",
                   url:"",
@@ -455,18 +454,13 @@ $(document).ready(function(){
             first_name = selectedRow.siblings('.first_nameInfo').text()
             department = selectedRow.siblings('.department__abbvInfo').text().replace(" ", "").replace(" ", "")
             oldUsername = username
-            // if(a.length == 5)
-            //     department = a.slice(1, -1)
-            // else
-            //     department = a
-            // .siblings('#first_name').val(first_name) 
+           
+           
             document.getElementById("first_name").value = $.trim(first_name)
             document.getElementById("last_name").value = $.trim(last_name)
            
             document.getElementById("username").value = $.trim(oldUsername)
             $('#college').val(department)
-            // console.log($("#editModal_body").siblings('#first_name'))
-            // alert(username)
         });
 
 
