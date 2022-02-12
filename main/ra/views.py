@@ -32,7 +32,7 @@ from datetime import timedelta
 import re
 from django.core.paginator import Paginator
 from django.db.models.functions import Concat
-
+import calendar
 
 class adminSiteView(View):
 	def get(self, request):
@@ -147,6 +147,7 @@ class adminActiveUserView(View):
 		else:
 			todaysMonth = str(datetime.today().year) +"-" + str(datetime.today().month)
 
+
 		queryset= User_login.objects.filter(date__contains=todaysMonth, user__is_staff= False).annotate(day=ExpressionWrapper(
             																							Func(F('date'), 
             																								Value('%Y-%m-%d'), 
@@ -161,8 +162,8 @@ class adminActiveUserView(View):
 			maxCount = 0
 
 
-		tableData= User.objects.select_related("department").filter(usersite_access__date_of_access__contains=todaysMonth, is_staff= False).annotate(
-										visitCount=Count('id')
+		tableData= User.objects.select_related("department").filter(user_login__date__contains=todaysMonth, is_staff= False).annotate(
+										visitCount=Count('user_login')
 										).values("username", "last_name", "department__name", "first_name", "visitCount").order_by("-visitCount")
 	
 
@@ -177,11 +178,9 @@ class adminActiveUserView(View):
 		if request.is_ajax():
 			startDate = request.POST["startDate"]
 			endDate = request.POST["endDate"]
-			start_dt = datetime(int(startDate.split("-")[0]), int(startDate.split("-")[1]), int(startDate.split("-")[2]))
-			end_dt = datetime(int(endDate.split("-")[0]), int(endDate.split("-")[1]), int(endDate.split("-")[2]))
-			
-			
-			queryset= User_login.objects.filter(date__gte=start_dt, date__lte=end_dt, user__is_staff= False).annotate(day=ExpressionWrapper(
+			# start_dt = datetime(int(startDate.split("-")[0]), int(startDate.split("-")[1]), int(startDate.split("-")[2]))
+			# end_dt = datetime(int(endDate.split("-")[0]), int(endDate.split("-")[1]), int(endDate.split("-")[2]))
+			queryset= User_login.objects.filter(date__range= [startDate, endDate], user__is_staff= False).annotate(day=ExpressionWrapper(
         																							Func(F('date'), 
         																								Value('%Y-%m-%d'), 
         																								function='DATE_FORMAT'
@@ -196,8 +195,8 @@ class adminActiveUserView(View):
 			except:
 				maxCount = 0
 
-			tableData= User.objects.select_related("department").filter(usersite_access__date_of_access__gte=start_dt, usersite_access__date_of_access__lte=end_dt, is_staff= False).annotate(
-										visitCount=Count('usersite_access')
+			tableData= User.objects.select_related("department").filter(user_login__date__range= [startDate, endDate], is_staff= False).annotate(
+										visitCount=Count('user_login')
 										).values("username","last_name", "department__name", "first_name", "visitCount").order_by("-visitCount")
 
 			context ={
@@ -227,8 +226,9 @@ class adminCollegesView(View):
 		else:
 			todaysMonth = str(datetime.today().year) +"-" + str(datetime.today().month)
 
-		queryset = list(Department.objects.values("abbv").annotate(count= Count("user", filter= Q(user__user_login__date__contains=todaysMonth))))
-		tableData = list(Department.objects.values("abbv").annotate(registeredUser = Count("user")).annotate(activeUser= Count("user", filter= ~Q(user__last_login=None))))
+		queryset = list(Department.objects.values("abbv").annotate(count= Count("user__user_login", filter= Q(user__user_login__date__contains=todaysMonth))))
+		tableData = list(Department.objects.values("abbv").annotate(registeredUser = Count("user")).annotate(activeUser= Count("user", filter= Q(user__user_login__date__contains=todaysMonth) ))  )
+		
 		siteVisit = UserSite_access.objects.select_related("user__department").filter(date_of_access__contains=todaysMonth, user__is_staff = False).values("user__department__abbv").annotate(count = Count("id"))
 		
 		for a in tableData:
@@ -251,13 +251,12 @@ class adminCollegesView(View):
 		if request.is_ajax():
 			startDate = request.POST["startDate"]
 			endDate = request.POST["endDate"]
-			start_dt = datetime(int(startDate.split("-")[0]), int(startDate.split("-")[1]), int(startDate.split("-")[2]))
-			end_dt = datetime(int(endDate.split("-")[0]), int(endDate.split("-")[1]), int(endDate.split("-")[2]))
+			
 
-			queryset = list(Department.objects.values("abbv").annotate(count= Count("user", filter= Q(user__user_login__date__gte=start_dt, user__user_login__date__lte=end_dt))))
+			queryset = list(Department.objects.values("abbv").annotate(count= Count("user__user_login", filter= Q(user__user_login__date__range=[startDate, endDate]))))
 
-			tableData = list(Department.objects.values("abbv").annotate(registeredUser = Count("user")).annotate(activeUser= Count("user", filter= Q(user__user_login__date__gte=start_dt, user__user_login__date__lte=end_dt) ))  )
-			siteVisit = UserSite_access.objects.select_related("user__department").filter(date_of_access__gte=start_dt, date_of_access__lte=end_dt  , user__is_staff = False).values("user__department__abbv").annotate(count = Count("id"))
+			tableData = list(Department.objects.values("abbv").annotate(registeredUser = Count("user")).annotate(activeUser= Count("user", filter= Q(user__user_login__date__range=[startDate, endDate]) ))  )
+			siteVisit = UserSite_access.objects.select_related("user__department").filter(date_of_access__range=[startDate, endDate], user__is_staff = False).values("user__department__abbv").annotate(count = Count("id"))
 			
 			for a in tableData:
 				if len(list(siteVisit)) == 0:
@@ -318,7 +317,6 @@ class adminSiteAccessView(View):
 										).values().order_by("-visitCount")
 
 		
-		print(tableData)
 		context ={
 			"tableData": list(tableData),
 			"data": list(queryset),
@@ -356,7 +354,6 @@ class adminSiteAccessView(View):
 										).values().order_by("-visitCount")
 
 			
-			print(tableData)
 			context ={
 				"tableData": list(tableData),
 				"data": list(queryset),
@@ -739,13 +736,13 @@ class practice(View):
 	def get(self, request):
 		a= Department.objects.create(name='College of Computer Studies', abbv='CCS')
 
-		User.objects.create(username='18-5126-269', password =make_password('12345'), first_name="yanni", last_name="mondejar", department=a)
+		# User.objects.create(username='18-5126-269', password =make_password('12345'), first_name="yanni", last_name="mondejar", department=a)
 		User.objects.create(username='admin', password =make_password('teraadmin2022'), first_name="admin1", last_name="admin1", department= None, is_staff = True)
 
 
-		User.objects.create(username='18-5126-270', password =make_password('12345'), first_name="jarry", last_name="emorecha", department=a)
+		# User.objects.create(username='18-5126-270', password =make_password('12345'), first_name="jarry", last_name="emorecha", department=a)
 
-		User.objects.create(username='18-5126-271', password = make_password('12345'), first_name="ryan ", last_name="talatagod", department = a)
+		# User.objects.create(username='18-5126-271', password = make_password('12345'), first_name="ryan ", last_name="talatagod", department = a)
 		
 
 		Department.objects.create(name='College of Engineering and Architecture', abbv='CEA')
@@ -760,9 +757,6 @@ class practice(View):
 		Site.objects.create(name ="Open Textbook Library", url="https://open.umn.edu/opentextbooks/", is_active = True)
 		Site.objects.create(name ="OER Commons", url="https://www.oercommons.org/", is_active = True)
 
-		
-
-
 		return render(request,'practice.html')#,context)
 
 	def post(self, request):
@@ -771,25 +765,6 @@ class practice(View):
 		myfile = request.FILES['file']
 		file = myfile.read().decode('utf-8')
 		dict_reader = csv.DictReader(io.StringIO(file))
-
-		# a_csv_file = open(a,'r')
-		# dict_reader = csv.DictReader(a_csv_file)
-		# for i, a in enumerate(list(dict_reader)):
-		# 	ordered_dict_from_csv = a
-		# 	row = dict(ordered_dict_from_csv)
-		# 	print(a)
-
-			# user = User(
-			# 	username = row['username'], 
-			# 	password=make_password(row['password']),
-			# 	first_name= row['first_name'], 
-			# 	last_name=row['last_name'], 
-			# 	department =  Department.objects.get(abbv=row['department'])
-			# 	)
-			# try:
-			# 	user.save()
-			# except Exception as e:
-			# 	print(str(e).replace("(","").replace(")",""), "at line ", i+2)
 			
 		return HttpResponse('practice post')
 		
@@ -801,11 +776,6 @@ class practice(View):
 class TeraLoginUser(View): 
 
 	def get(self,request):
-		# proxies = proxy_generator2() #/ generating free proxies /
-		# for proxy in proxies:  #/ saving proxies to db /
-			
-		# 	proxy = Proxies(proxy = proxy)
-		# 	proxy.save()
 
 		if( request.user.id != None):
 			if request.user.is_staff == True:
@@ -865,15 +835,13 @@ class TeraIndexView(View):
 		if request.user.is_authenticated and not User.objects.filter(id = request.user.id, last_login__contains=timezone.now().date()).exists():
 			User.objects.filter(id= request.user.id).update(last_login = timezone.now())
 		request.session['previousPage'] = 'index_view'
-		# if request.user != None:
-		# 	User.objects.filter(id = request.user.id).update(last_login = timezone.now())
+	
 		context ={
 			"user":request.user.is_authenticated
 		}
 		
 	
 		
-		#x = Proxies.objects.filter(id = proxyID.id).update(isUsed = 1)
 		return render(request,'landingpage.html',context)
 
 	def post(self, request):
@@ -896,12 +864,7 @@ class TeraIndexView(View):
 
 
 class TeraSearchResultsView(View):
-	
-
 	def get(self,request):
-
-		
-
 		if request.user.is_authenticated and not User_login.objects.filter(user = request.user, date__contains=timezone.now().date()).exists():
 			User_login.objects.create(user= request.user)
 		if request.user.is_authenticated and not User.objects.filter(id = request.user.id, last_login__contains=timezone.now().date()).exists():
@@ -937,9 +900,6 @@ class TeraSearchResultsView(View):
 	def post(self, request):
 		
 		if request.method == 'POST' and request.is_ajax():
-			
-			
-			
 			action = request.POST['action']
 
 			if action == "search":
@@ -989,8 +949,6 @@ class TeraSearchResultsView(View):
 						'isGet': "false"
 					}
 				return JsonResponse(context)
-			
-
 
 			elif action == "add":
 				keyword = request.POST['word']
@@ -1028,10 +986,7 @@ class TeraSearchResultsView(View):
 						except:
 							ISSN = ""
 
-						# author description publication volume doi
 						
-						
-						# print(websiteTitle + '\n'+itemType + '\n'+title + '\n' +link + '\n' +author+ '\n' +description+ '\n' +publication+ '\n' +volume+ '\n' +doi)
 						if reftype == "article" or reftype == "Programme_and_meeting_document":
 							detail = Bookmark_detail.objects.create(
 								title = title,websiteTitle= website.replace("_"," "),itemType= itemType,
@@ -1062,8 +1017,6 @@ class TeraSearchResultsView(View):
 						return HttpResponse("")
 				else:
 					return HttpResponse("")
-					
-				
 				
 			elif action == "increment_access":
 				ID = request.POST["id"]
@@ -1081,16 +1034,6 @@ class TeraSearchResultsView(View):
 				return HttpResponse('')
 
 
-	
-
-
-			
-			
-
-
-		
-
-		
 
 class TeraDashboardView(View):
 
@@ -1164,7 +1107,6 @@ class TeraDashboardView(View):
 
 			context = {
 				"bookmark_list": a,
-				# "folder_set": folders,
 			    "folder_list": folder_list,
 			    "group_list":group_list,
 			    "recommendation": recommendation
@@ -1176,28 +1118,9 @@ class TeraDashboardView(View):
 
 	def post(self, request):
 
-	 	# form = CreateFolderForm(request.POST)
-
-		if 'btnLogout' in request.POST:
-			word = request.session.get('word')
-			prevPage = request.session.get('previousPage')
-			proxy = request.session.get('proxy')
-			
-			logout(request)
-
-			request.session['word'] = word
-			request.session['previousPage'] = prevPage
-			request.session['proxy'] = proxy
-
-			return redirect("ra:" + request.session.get('previousPage'))
-
-		
-
-		elif request.method == 'POST' and request.is_ajax():
-				
+		if request.method == 'POST' and request.is_ajax():
 			action = request.POST['action']
 
-			
 			if action == 'addFav':
 				tab = request.POST['tab']
 				b_id = request.POST['b_id']
