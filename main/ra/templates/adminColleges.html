@@ -59,10 +59,7 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#!">Settings</a></li>
-                        <li><a class="dropdown-item" href="#!">Activity Log</a></li>
-                        <li><hr class="dropdown-divider" /></li>
-                        <li><a class="dropdown-item" href="#!">Logout</a></li>
+                        <li><a class="dropdown-item" href="{% url 'ra:tera_logout_view' %}">Logout</a></li>
                     </ul>
                 </li>
             </ul>
@@ -248,7 +245,7 @@ var data = {{ data |safe }}
         maxDate = new Date()
         maxDate.setDate(start.getDate() + 31)
         document.getElementById("endDate").setAttribute("max", getDateValue(maxDate))
-        setData(start, end)
+        setData(data)
         $("#datatablesSimple").DataTable()
 
   });
@@ -281,7 +278,6 @@ var data = {{ data |safe }}
   
 
   document.getElementById("submit").onclick = function(e) {
-
     startDate = new Date(document.getElementById("startDate").value)
     endDate = new Date(document.getElementById("endDate").value)
 
@@ -309,10 +305,8 @@ var data = {{ data |safe }}
 
           },
           success: function(response){
-            setData(startDate, endDate)
             tableData = response.tableData
             data = response.data
-            
             $('#datatablesSimple').DataTable().destroy();
             $('#datatablesSimple tbody').empty();
             var table = $('#datatablesSimple').DataTable({ 
@@ -335,7 +329,7 @@ var data = {{ data |safe }}
          
             }
 
-            chart.update()
+            setData(data)
           }
     });
 
@@ -372,25 +366,25 @@ function getDateValue(d){
 
 
   
-function setData(startDate, endDate){
+function setData(da){
     startss = startDate
     ends = endDate
     yData.splice(0,yData.length)
-    
+    console.log(da)
     
     for( i=0;i < 6;i++){
-        for(ii=0; ii< data.length; ii++){
+        for(ii=0; ii< da.length; ii++){
 
-            if(data[ii].user__department__abbv == chartLabels[i]){
-                yData.push(data[ii].count)    
+            if(da[ii].abbv == chartLabels[i]){
+                yData.push(da[ii].count)    
                 break
             } 
-            if(ii == data.length-1)
+            if(ii == da.length-1)
                 yData.push(0)
         }
     }
 
-    chart.data.datasets[0].data = yData
+    chart.data.datasets.data = yData
     chart.update() 
 }
 

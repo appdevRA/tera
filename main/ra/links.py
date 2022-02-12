@@ -10,11 +10,8 @@ import requests
 from requests import ReadTimeout, ConnectTimeout, HTTPError, Timeout, ConnectionError
 import random
 import time
-from django.http import HttpResponse
 import json
 from fake_useragent import UserAgent
-from requests_html import HTMLSession
-from threading import Thread
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel

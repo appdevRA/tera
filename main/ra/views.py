@@ -98,7 +98,7 @@ class adminIndexView(View):
 		except:
 			activeUserMax = 0
 
-		siteAccess= UserSite_access.objects.filter(date_of_access__contains=todaysMonth).annotate(day=ExpressionWrapper(
+		siteAccess= UserSite_access.objects.filter(date_of_access__contains=todaysMonth, user__is_staff = False).annotate(day=ExpressionWrapper(
             																							Func(F('date_of_access'), 
             																								Value('%Y-%m-%d'), 
             																								function='DATE_FORMAT'
@@ -160,9 +160,10 @@ class adminActiveUserView(View):
 		except:
 			maxCount = 0
 
+
 		tableData= User.objects.select_related("department").filter(usersite_access__date_of_access__contains=todaysMonth, is_staff= False).annotate(
 										visitCount=Count('id')
-										).values("username","last_name", "department__name", "first_name", "visitCount").order_by("-visitCount")
+										).values("username", "last_name", "department__name", "first_name", "visitCount").order_by("-visitCount")
 	
 
 		context ={
@@ -176,10 +177,11 @@ class adminActiveUserView(View):
 		if request.is_ajax():
 			startDate = request.POST["startDate"]
 			endDate = request.POST["endDate"]
+			start_dt = datetime(int(startDate.split("-")[0]), int(startDate.split("-")[1]), int(startDate.split("-")[2]))
+			end_dt = datetime(int(endDate.split("-")[0]), int(endDate.split("-")[1]), int(endDate.split("-")[2]))
 			
 			
-			
-			queryset= User_login.objects.filter(date__range=[startDate, endDate]).annotate(day=ExpressionWrapper(
+			queryset= User_login.objects.filter(date__gte=start_dt, date__lte=end_dt, user__is_staff= False).annotate(day=ExpressionWrapper(
         																							Func(F('date'), 
         																								Value('%Y-%m-%d'), 
         																								function='DATE_FORMAT'
@@ -188,14 +190,15 @@ class adminActiveUserView(View):
     																								)
 																				).values('day').annotate(count=Count('id')).order_by("day")
  
+			
 			try:	
 				maxCount = queryset.latest("count")["count"]
 			except:
 				maxCount = 0
 
-			tableData= User.objects.select_related("department").filter(usersite_access__date_of_access__range=[startDate, endDate], user__is_staff= False).annotate(
-										visitCount=Count('id')
-										).values("last_name", "department__name", "first_name", "visitCount").order_by("-visitCount")
+			tableData= User.objects.select_related("department").filter(usersite_access__date_of_access__gte=start_dt, usersite_access__date_of_access__lte=end_dt, is_staff= False).annotate(
+										visitCount=Count('usersite_access')
+										).values("username","last_name", "department__name", "first_name", "visitCount").order_by("-visitCount")
 
 			context ={
 				"tableData": list(tableData),
@@ -224,12 +227,10 @@ class adminCollegesView(View):
 		else:
 			todaysMonth = str(datetime.today().year) +"-" + str(datetime.today().month)
 
-		queryset= User_login.objects.select_related("user__department").filter(date__contains=todaysMonth).values('user__department__abbv').annotate(count=Count('id')).order_by("user__department__abbv")
-		
+		queryset = list(Department.objects.values("abbv").annotate(count= Count("user", filter= Q(user__user_login__date__contains=todaysMonth))))
 		tableData = list(Department.objects.values("abbv").annotate(registeredUser = Count("user")).annotate(activeUser= Count("user", filter= ~Q(user__last_login=None))))
-		siteVisit = UserSite_access.objects.select_related("user__department").filter(date_of_access__contains=todaysMonth).values("user__department__abbv").annotate(count = Count("id"))
+		siteVisit = UserSite_access.objects.select_related("user__department").filter(date_of_access__contains=todaysMonth, user__is_staff = False).values("user__department__abbv").annotate(count = Count("id"))
 		
-
 		for a in tableData:
 			for innerloopIndex,b in enumerate(list(siteVisit)):
 				if a["abbv"] == b["user__department__abbv"]:
@@ -250,14 +251,18 @@ class adminCollegesView(View):
 		if request.is_ajax():
 			startDate = request.POST["startDate"]
 			endDate = request.POST["endDate"]
+			start_dt = datetime(int(startDate.split("-")[0]), int(startDate.split("-")[1]), int(startDate.split("-")[2]))
+			end_dt = datetime(int(endDate.split("-")[0]), int(endDate.split("-")[1]), int(endDate.split("-")[2]))
 
-			queryset= User_login.objects.select_related("user__department").filter(date__range=[startDate, endDate]).values('user__department__abbv').annotate(count=Count('id')).order_by("user__department__abbv")
-		
-			tableData = list(Department.objects.values("abbv").annotate(registeredUser = Count("user")).annotate(activeUser= Count("user", filter= ~Q(user__last_login=None))))
-			siteVisit = UserSite_access.objects.select_related("user__department").filter(date_of_access__range=[startDate, endDate]).values("user__department__abbv").annotate(count = Count("id"))
+			queryset = list(Department.objects.values("abbv").annotate(count= Count("user", filter= Q(user__user_login__date__gte=start_dt, user__user_login__date__lte=end_dt))))
 
-			i=0
+			tableData = list(Department.objects.values("abbv").annotate(registeredUser = Count("user")).annotate(activeUser= Count("user", filter= Q(user__user_login__date__gte=start_dt, user__user_login__date__lte=end_dt) ))  )
+			siteVisit = UserSite_access.objects.select_related("user__department").filter(date_of_access__gte=start_dt, date_of_access__lte=end_dt  , user__is_staff = False).values("user__department__abbv").annotate(count = Count("id"))
+			
 			for a in tableData:
+				if len(list(siteVisit)) == 0:
+					a["siteVisit"] = 0
+
 				for innerloopIndex,b in enumerate(list(siteVisit)):
 					if a["abbv"] == b["user__department__abbv"]:
 						a["siteVisit"] = b["count"]
@@ -265,6 +270,7 @@ class adminCollegesView(View):
 
 					if innerloopIndex == len(list(siteVisit)) - 1:
 						a["siteVisit"] = 0
+
 
 			context ={
 				"siteVisits": list(siteVisit),
@@ -293,7 +299,7 @@ class adminSiteAccessView(View):
 
 		queryset= UserSite_access.objects.filter(
 												date_of_access__contains=todaysMonth
-												).annotate(day=ExpressionWrapper(
+												, user__is_staff = False).annotate(day=ExpressionWrapper(
 																				Func(F('date_of_access'), 
 																					Value('%Y-%m-%d'), 
 																					function='DATE_FORMAT'
@@ -328,7 +334,7 @@ class adminSiteAccessView(View):
 
 			queryset= UserSite_access.objects.filter(
 													date_of_access__range=[startDate, endDate]
-													).annotate(day=ExpressionWrapper(
+													, user__is_staff = False).annotate(day=ExpressionWrapper(
 																					Func(F('date_of_access'), 
 																						Value('%Y-%m-%d'), 
 																						function='DATE_FORMAT'
@@ -827,7 +833,7 @@ class TeraLoginUser(View):
 			user = authenticate(request, username=username, password=password)
 			if user is not None:
 				login(request, user)
-				if not User_login.objects.filter(user = request.user,date__contains=timezone.now().date()).exists():
+				if not User_login.objects.filter(user = request.user,date__contains=timezone.now().date()).exists() and request.user.is_staff == False:
 					User_login.objects.create(user = request.user)
 				
 				if request.user.is_staff == True:
