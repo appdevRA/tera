@@ -274,25 +274,17 @@
                                             <th>Title</th>
                                             <th>Authors</th>
                                             <th>College</th>
-                                            <th>Status</th>
-                                            <th colspan="2">Manage</th>
-                                        </tr>
-                                    </thead>
-                                    <tfoot>
-                                        <tr>
-                                            <th>Title</th>
-                                            <th>Authors</th>
-                                            <th>College</th>
                                             <th>Visibility</th>
                                             <th > Total number of user access</th>
                                         </tr>
-                                    </tfoot>
+                                    </thead>
+                                    
                                     <tbody>
                                         {% for d in dissertations %}
                                         <tr id ="{{d.author}}">
                                             <td>{{d.title}}</td>
                                             <td>{{d.author}}</td>
-                                            <td>{{d.department__name}}</td>
+                                            <td>{{d.department_name}}</td>
                                             <td> {{d.is_active}}</td>
                                             <td> {{d.num_of_access}}</td>
 
