@@ -432,17 +432,9 @@ tr:hover {
     var group_id
 
 $(document).ready(function($) {
- // console.log(typeof(markers))
- // alert(typeof(markers))
   
   get_bookmarks('all', 0,true)
-  // $('#addtoFolderModal').modal('show') 
-  // $('#addtoFolderModal').modal('hide') 
 
-    // document.getElementById("folderList_dropdown1").classList.toggle("hide");
-    //      $(".clickable-row").click(function() {
-    //         window.location = $(this).data("href");
-    //     });
 
 
         var coll = document.getElementsByClassName("collapsible");
@@ -1019,7 +1011,6 @@ $(document).on("click", ".bookmark_recommended", function(){
               },
               success: function(response){
                 markers.push(response.addedBookmark[0])
-                // console.log("add recommend "+" "+ markers.length)
                 
                 $("#recommendationArea").append(selectedRow)
                 selectedRow.remove()
@@ -1248,7 +1239,7 @@ $(document).on("click", ".get_detail", function(){
                  $("#detailArea").empty();
 
                 detail = response.detail
-                // console.log(detail)
+
                   var added = new Date( detail[0].dateAdded);
                   var accessed = new Date( detail[0].dateAccessed);
                     $('#detailArea').append("<tr ><td style='text-align: right; vertical-align:top'> Website: </td>"+ "<td> <a href='https://"+detail[0].websiteTitle+ "'>"+ detail[0].websiteTitle +  "</a></td></tr>" );  
@@ -1456,7 +1447,6 @@ function getFolders(clicked_id, detail_id){
               groups = response.list
 
           } 
-          // console.log(folders, groups)
            bookmarkToFolder_dropdown(clicked_id, detail_id)
 
         }

@@ -75,7 +75,7 @@ class Group(models.Model):
 		db_table = "Group"
 
 	def get_members(self):
-		member_list = self.member.all().values("username", "first_name","last_name")
+		member_list = self.member.all().values("first_name","last_name")
 
 		return member_list
 

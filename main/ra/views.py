@@ -32,16 +32,7 @@ from datetime import timedelta
 import re
 from django.core.paginator import Paginator
 from django.db.models.functions import Concat
-<<<<<<< HEAD
 import calendar
-=======
-
-class addUser(View):
-	def get(self, request):
-		print('olok')
-		
-		return render(request,'addUser.html')
->>>>>>> parent of 5a219b6 (chore : clean up)
 
 class adminSiteView(View):
 	def get(self, request):
@@ -121,7 +112,6 @@ class adminIndexView(View):
 			siteAccessMax = 0
 			
 		colleges= User_login.objects.select_related("user__department").filter(date__contains=todaysMonth, user__is_staff= False).values('user__department__abbv').annotate(count=Count('id')).order_by("user__department__abbv")
-		print(colleges)
 		# for item in user:
 		# 		item["last_login"] = item["day"].strftime("%Y-%m-%d")
 
@@ -136,6 +126,8 @@ class adminIndexView(View):
 		}
 
 		return render(request,'adminIndex.html',context)
+
+
 
 class adminActiveUserView(View):
 	def get(self, request):
@@ -169,16 +161,10 @@ class adminActiveUserView(View):
 		except:
 			maxCount = 0
 
-<<<<<<< HEAD
 
 		tableData= User.objects.select_related("department").filter(user_login__date__contains=todaysMonth, is_staff= False).annotate(
 										visitCount=Count('user_login')
 										).values("username", "last_name", "department__name", "first_name", "visitCount").order_by("-visitCount")
-=======
-		tableData= User.objects.filter(usersite_access__date_of_access__contains=todaysMonth, is_staff= False).annotate(
-										visitCount=Count('id')
-										).values("username","last_name", "department__name", "first_name", "visitCount").order_by("-visitCount")
->>>>>>> parent of 5a219b6 (chore : clean up)
 	
 
 		context ={
@@ -209,15 +195,9 @@ class adminActiveUserView(View):
 			except:
 				maxCount = 0
 
-<<<<<<< HEAD
 			tableData= User.objects.select_related("department").filter(user_login__date__range= [startDate, endDate], is_staff= False).annotate(
 										visitCount=Count('user_login')
 										).values("username","last_name", "department__name", "first_name", "visitCount").order_by("-visitCount")
-=======
-			tableData= User.objects.filter(usersite_access__date_of_access__range=[startDate, endDate], user__is_staff= False).annotate(
-										visitCount=Count('id')
-										).values("last_name", "department__name", "first_name", "visitCount").order_by("-visitCount")
->>>>>>> parent of 5a219b6 (chore : clean up)
 
 			context ={
 				"tableData": list(tableData),
@@ -246,20 +226,11 @@ class adminCollegesView(View):
 		else:
 			todaysMonth = str(datetime.today().year) +"-" + str(datetime.today().month)
 
-<<<<<<< HEAD
 		queryset = list(Department.objects.values("abbv").annotate(count= Count("user__user_login", filter= Q(user__user_login__date__contains=todaysMonth))))
 		tableData = list(Department.objects.values("abbv").annotate(registeredUser = Count("user")).annotate(activeUser= Count("user", filter= Q(user__user_login__date__contains=todaysMonth) ))  )
 		
 		siteVisit = UserSite_access.objects.select_related("user__department").filter(date_of_access__contains=todaysMonth, user__is_staff = False).values("user__department__abbv").annotate(count = Count("id"))
 		
-=======
-		queryset= User_login.objects.filter(date__contains=todaysMonth).values('user__department__abbv').annotate(count=Count('id')).order_by("user__department__abbv")
-		
-		tableData = list(Department.objects.values("abbv").annotate(registeredUser = Count("user")).annotate(activeUser= Count("user", filter= ~Q(user__last_login=None))))
-		siteVisit = UserSite_access.objects.filter(date_of_access__contains=todaysMonth).values("user__department__abbv").annotate(count = Count("id"))
-		print(list(siteVisit))
-
->>>>>>> parent of 5a219b6 (chore : clean up)
 		for a in tableData:
 			for innerloopIndex,b in enumerate(list(siteVisit)):
 				if a["abbv"] == b["user__department__abbv"]:
@@ -391,10 +362,6 @@ class adminSiteAccessView(View):
 			return JsonResponse(context)
 
 
-class adminDissertationsView(View):
-	def get(self, request):
-
-		return render(request, 'adminDissertations.html')
 
 class adminDissertationsAccessView(View):
 	def get(self, request):
@@ -406,17 +373,10 @@ class adminDissertationsAccessView(View):
 			except:
 				logout(request)
 				return redirect("ra:tera_login_view")
-
 				
-		# Dissertation.objects.exclude(id =3).delete()
 		queryset = Dissertation.objects.select_related("department").annotate(department_name= F('department__abbv')).order_by("num_of_access")
 
-		# a = Dissertation.objects.get(id=3)
-		# json = s.serialize('python', [a], ensure_ascii=False)
-
-		# print(type(json), json)
 		
-				# json = s.serialize('python', [queryset], ensure_ascii=False)
 				
 		context ={
 			"dissertations": queryset
@@ -719,10 +679,8 @@ class adminRegistrationView(View):
 							)
 				user.save()
 				messages.success(request, "User added")
-				print("success", rtype)
 				return redirect('ra:admin_registration_view',  rtype=rtype)
 			else:
-				print("error")
 				return render(request, 'adminRegistration.html', {"form":form,"type": rtype})
 
 		if request.is_ajax():
@@ -745,7 +703,7 @@ class adminRegistrationView(View):
 					except Exception as e:
 						didExcept +=1
 						errorRows.append(row)
-						print(e)
+
 				context ={
 					"didExcept": didExcept,
 					"errorRows": errorRows,
@@ -760,7 +718,6 @@ class adminRegistrationView(View):
 
 		try: #read csv form
 			myfile = request.FILES['file']
-			print(myfile, type(myfile))
 			file = myfile.read().decode('utf-8')
 			dict_reader = csv.DictReader(io.StringIO(file))
 			users =  list(dict_reader)
@@ -806,32 +763,8 @@ class practice(View):
 		
 		
 		myfile = request.FILES['file']
-		print(type(myfile))
 		file = myfile.read().decode('utf-8')
 		dict_reader = csv.DictReader(io.StringIO(file))
-<<<<<<< HEAD
-=======
-
-		# a_csv_file = open(a,'r')
-		# dict_reader = csv.DictReader(a_csv_file)
-		print(list(dict_reader))
-		# for i, a in enumerate(list(dict_reader)):
-		# 	ordered_dict_from_csv = a
-		# 	row = dict(ordered_dict_from_csv)
-		# 	print(a)
-
-			# user = User(
-			# 	username = row['username'], 
-			# 	password=make_password(row['password']),
-			# 	first_name= row['first_name'], 
-			# 	last_name=row['last_name'], 
-			# 	department =  Department.objects.get(abbv=row['department'])
-			# 	)
-			# try:
-			# 	user.save()
-			# except Exception as e:
-			# 	print(str(e).replace("(","").replace(")",""), "at line ", i+2)
->>>>>>> parent of 5a219b6 (chore : clean up)
 			
 		return HttpResponse('practice post')
 		
@@ -864,7 +797,6 @@ class TeraLoginUser(View):
 	
 		
 		if 'buttonlogin' in request.POST:
-			print('Login Button CLiked!')
 			username = request.POST.get('username')
 			password = request.POST.get('password')
 
@@ -916,7 +848,6 @@ class TeraIndexView(View):
 
 		if 'buttonLogin' in request.POST:
 			request.session['previousPage'] = request.POST['previousPage']
-			print(request.session.get('previousPage'))
 			return redirect('ra:tera_login_view')
 
 		elif 'btnLogout' in request.POST:
@@ -934,15 +865,6 @@ class TeraIndexView(View):
 
 class TeraSearchResultsView(View):
 	def get(self,request):
-<<<<<<< HEAD
-=======
-
-		request.session['previousPage'] ='search_result_view'
-		# header = ast.literal_eval(Headers.objects.get(id=2).text)	# converting from string to dictionary
-		# header = request.session.get('header')
-		word = request.session.get('word')
-
->>>>>>> parent of 5a219b6 (chore : clean up)
 		if request.user.is_authenticated and not User_login.objects.filter(user = request.user, date__contains=timezone.now().date()).exists():
 			User_login.objects.create(user= request.user)
 		if request.user.is_authenticated and not User.objects.filter(id = request.user.id, last_login__contains=timezone.now().date()).exists():
@@ -958,6 +880,10 @@ class TeraSearchResultsView(View):
 		else:
 			itemType = "Dissertations"
 		
+		request.session['previousPage'] ='search_result_view'
+		word = request.session.get('word')
+
+
 		sites = Site.objects.filter(is_active=True).values("name")
 		context = {
 							"host": request.get_host(),
@@ -1001,7 +927,6 @@ class TeraSearchResultsView(View):
 				if website == "CIT":
 		
 					disser = Dissertation.objects.filter(Q(title__iregex=r"[[:<:]]"+word+"[[:>:]]") | Q(author__iregex=r"[[:<:]]"+word+"[[:>:]]") | Q(department__name__iregex=r"[[:<:]]"+word+"[[:>:]]") | Q(department__abbv__iregex=r"[[:<:]]"+word+"[[:>:]]"), is_active= True).order_by("num_of_access").values()
-					# print(list(results))
 					p = Paginator(disser,10)
 					results = p.page(page)
 					context = {
@@ -1026,13 +951,11 @@ class TeraSearchResultsView(View):
 				return JsonResponse(context)
 
 			elif action == "add":
-				print('bookmark button clicked')
 				keyword = request.POST['word']
 				bookmark = request.POST['bookmark']
 				website = request.POST['website']
 				reftype = request.POST['reftype']
 				string = bookmark.split('||')
-				print(string)
 				title = string[0]
 				url = string[1]
 				# return HttpResponse("")
@@ -1064,18 +987,12 @@ class TeraSearchResultsView(View):
 							ISSN = ""
 
 						
-<<<<<<< HEAD
-=======
-						print(title,website, author, description, url, publicationYear, ISSN)
-						# print(websiteTitle + '\n'+itemType + '\n'+title + '\n' +link + '\n' +author+ '\n' +description+ '\n' +publication+ '\n' +volume+ '\n' +doi)
->>>>>>> parent of 5a219b6 (chore : clean up)
 						if reftype == "article" or reftype == "Programme_and_meeting_document":
 							detail = Bookmark_detail.objects.create(
 								title = title,websiteTitle= website.replace("_"," "),itemType= itemType,
 								author = author, description= description, url = url, journalItBelongs= journalItBelongs, 
 								volume = volume, DOI = doi,publicationYear = publicationYear
 								)
-							print("create article")
 							Bookmark.objects.create(user = request.user,bookmark=detail,keyword=keyword)
 
 							
@@ -1106,7 +1023,6 @@ class TeraSearchResultsView(View):
 				instance = Dissertation.objects.get(id = ID)
 				instance.num_of_access = F("num_of_access") + 1
 				instance.save()
-				print(instance)
 				return HttpResponse("")
 			else:
 				bookmark = request.POST['bookmark']
@@ -1162,7 +1078,7 @@ class TeraDashboardView(View):
 					recommendation = modes(list(recommendationQuery), request.user.id)
 
 			
-			queryset = Bookmark.objects.select_related("bookmark__detail").filter(
+			queryset = Bookmark.objects.select_related("bookmark").filter(
 																		( Q(user=request.user) ) & 
 																		( Q(isRemoved=1) | Q(isRemoved=0) ), 
 																		group__isnull=True
@@ -1232,7 +1148,6 @@ class TeraDashboardView(View):
 				bookmark_id = request.POST['b_id']
 
 				if tab != "folders" and tab != "groups":
-					print("nisulod")
 					Bookmark.objects.filter(id=bookmark_id, user= request.user, group = None).update(isRemoved=1, date_removed= timezone.now())
 					return HttpResponse('')
 
@@ -1280,7 +1195,6 @@ class TeraDashboardView(View):
 																			"bookmark__websiteTitle", "bookmark__itemType",
 																			"bookmark__url", "bookmark__title"
 																				).order_by("dateAdded")
-					print("post")
 					return JsonResponse({"bookmarks": list(queryset)})
 				elif tab == "recentlyAdded":
 					time = timezone.now().date() - timedelta(days=7)
@@ -1295,7 +1209,6 @@ class TeraDashboardView(View):
 																			"bookmark__websiteTitle", "bookmark__itemType",
 																			"bookmark__url", "bookmark__title"
 																				).order_by("dateAdded")
-					print("post")
 					return JsonResponse({"bookmarks": list(queryset)})
 
 				elif tab == "recentlyRead":
@@ -1311,7 +1224,6 @@ class TeraDashboardView(View):
 																			"bookmark__websiteTitle", "bookmark__itemType",
 																			"bookmark__url", "bookmark__title"
 																				).order_by("dateAdded")
-					print("post")
 					return JsonResponse({"bookmarks": list(queryset)})
 
 				elif tab == "favorite":
@@ -1327,7 +1239,6 @@ class TeraDashboardView(View):
 																			"bookmark__websiteTitle", "bookmark__itemType",
 																			"bookmark__url", "bookmark__title"
 																				).order_by("dateAdded")
-					print("post")
 					return JsonResponse({"bookmarks": list(queryset)})
 
 				elif tab == "trash":
@@ -1342,7 +1253,6 @@ class TeraDashboardView(View):
 																			"bookmark__websiteTitle", "bookmark__itemType",
 																			"bookmark__url", "bookmark__title"
 																				).order_by("dateAdded")
-					print("post")
 					return JsonResponse({"bookmarks": list(queryset)})
 
 				elif tab =="folders":
@@ -1397,7 +1307,6 @@ class TeraDashboardView(View):
 			
 			elif action == 'get_folders':
 				folders =	Folder.objects.filter(user=request.user, is_removed = 0).values()
-				print("get folders")
 				return JsonResponse( { "list": list(folders) } )
 
 			elif action == 'get_groups':
@@ -1411,7 +1320,6 @@ class TeraDashboardView(View):
 																				 						 ).values(
 																						 						"id","name", "date_created", "ownerName"
 																						 						).distinct()
-				print(groups)
 				
 				return JsonResponse( { "list": list(groups) } )
 
@@ -1423,7 +1331,6 @@ class TeraDashboardView(View):
 																				 						"owner__first_name",
 																				 						"owner__last_name"
 																				 						)
-				print("get factions")
 				return JsonResponse( { "folders": list(folders), "groups": list(groups) } )
 
 			elif action == "get_detail":
@@ -1447,12 +1354,10 @@ class TeraDashboardView(View):
 				faction = request.POST['faction']
 				
 				if faction =="folder":
-					print('yes folder')
 					
 					instance = Bookmark.objects.get(id = bookmarkID)
 					instance.folders.add(Folder.objects.get(id= factionID))
 					
-					print("bookmark folder added")
 					return HttpResponse('')
 
 				elif faction =="groups":
@@ -1548,26 +1453,18 @@ class TeraDashboardView(View):
 				if faction_type == 'folder':
 					ID = request.POST['id']
 					Folder.objects.filter(id = ID).update(is_removed = 1)
-					print('folder deleted')
 					return HttpResponse('')
 
 				elif faction_type == 'groups':
 					ID = request.POST['id']
 					Group.objects.filter(id = ID).update(is_removed = 1)
-					print('group deleted')
 					return HttpResponse('')
 
 			elif action == 'add_member':
 				username = request.POST['id']
 				gID = request.POST['gID']
-<<<<<<< HEAD
 
 				if not User.objects.filter(username=username).exists():
-=======
-				print(gID)
-				
-				if Group.objects.filter(id = gID,member__username= username).exists():
->>>>>>> parent of 5a219b6 (chore : clean up)
 					context={
 					"result":"not exist"
 					}
@@ -1650,43 +1547,6 @@ def TeraAccountSettingsView(request):
 	    'form': form})
 
 
-
-
-
-
-
-
-			# elif 'readCSVForm' in request.POST:
-
-			# 	return HttpResponse('olok')
-
-				
-
-			# elif request.is_ajax():
-			# 	action = request.POST['action']
-
-			# 	if action =='read':
-			# 		myfile = request.FILES['file']
-
-			# 		file = myfile.read().decode('utf-8')
-			# 		dict_reader = csv.DictReader(io.StringIO(file))
-
-			# 		print(list(dict_reader))
-
-	# elif form.is_valid():
-			# 	folder = request.POST.get("foldername")
-			# 	form = Folders(foldername = folder)
-			# 	form.save()
-
-			# 	return redirect('ra:tera_dashboard_view')
-
-			# elif request.method == 'POST':
-			# 	if 'btnDelete' in request.POST:
-			# 		print('delete button clicked')
-			# 		fid = request.POST.get("folder-id")
-			# 		fldr = Folders.objects.filter(id=fid).delete()
-			# 		print('Recorded Deleted')
-			# 		return redirect('ra:tera_dashboard_view')
 
 
 class FolderViewSet(

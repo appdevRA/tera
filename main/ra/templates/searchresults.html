@@ -449,7 +449,6 @@ function ajax(keyword,website, type, isSite, isPage, pageNumber){
               },
               success: function(response){
                 markers = response.results
-                console.log(markers)
           
                 showRows(markers)
                 user_id = response.is_authenticated
@@ -544,7 +543,7 @@ function showRows(markers, links){
 
       for(i=0; i< markers.length;i++){
           if(user_id == 'True' | user_id == true){
-            console.log(markers[i][markers[i].length-1])
+
           bookmarkButton = "<td><a class='bookmark' > <i id='"+markers[i][0]+"||"+markers[i][markers[i].length-1]+"' class='fa fa-bookmark' style='color: red; cursor:pointer' ></i></a> </td>"
           } else{
              bookmarkButton=  "<td><a class='btnBookmark' style='cursor:pointer' >  <i href='#modalLogoutForm' data-toggle='modal' data-target='#modalLogoutForm'style='color: red;'class='fa fa-bookmark'></i></a> </td><br><br>"
@@ -671,7 +670,6 @@ function showRows(markers, links){
   } else{     
               for(i=0; i< markers.length;i++){
                 date = new Date(markers[i].date_published)
-                console.log("https://"+host+"/images/"+markers[i]['file'])
                   $('#itemArea').append(  "<tr> " +
                            "<td><a id ='"+markers[i].id+"' class ='open' href='//"+host+"/images/"+markers[i]['file']+"'><span"+
                            "style='display:inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width: 70ch;'><strong>" +
@@ -709,7 +707,6 @@ $(document).on("click", ".open", function(){
 
 $(document).on("click", ".bookmark", function(){
   id = $(this).children().attr("id")
-  console.log(id)
   keyword = document.getElementById('input').value
       
       if(document.getElementById(id).style.color == "red"){
@@ -720,7 +717,6 @@ $(document).on("click", ".bookmark", function(){
         action = "remove"
       }
 
-        // console.log(clicked_id)
         $.ajax({
               type:"POST",
               url:"",

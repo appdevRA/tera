@@ -73,10 +73,8 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#!">Settings</a></li>
-                        <li><a class="dropdown-item" href="#!">Activity Log</a></li>
-                        <li><hr class="dropdown-divider" /></li>
-                        <li><a class="dropdown-item" href="#!">Logout</a></li>
+                        <li><a class="dropdown-item" href="{% url 'ra:tera_logout_view' %}">Logout</a></li>
+                       
                     </ul>
                 </li>
             </ul>
@@ -570,7 +568,6 @@ document.getElementById("add").onclick = function(e) {
             processData: false,
             data: form_data,
             success: function (response) { 
-                console.log(response.createdObject[0])
                 if (response.didError == 1)
                     alert(response.message)
                 else{
@@ -622,7 +619,6 @@ document.getElementById("submit").onclick = function(e) {
     authors = document.getElementById("authors_field").value
     abstract = document.getElementById("abstract_field").value
     college = document.getElementById("college_field").value
-    console.log(oldTitle, title)
     if(title.length == 0)
         alert("Title must not be empty")
     else if(authors.length == 0)
@@ -657,9 +653,7 @@ document.getElementById("submit").onclick = function(e) {
                     alert(response.message)
                 else{
                                 tableData = response.createdObject
-                                console.log(tableData)
                                 document.getElementById("dismissModaledit").click()
-                                console.log(tableData[0].file)
                                 if(tableData[0].is_active)
                                     switchStatus = "checked"
                                 else
