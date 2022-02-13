@@ -28,10 +28,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 AUTH_USER_MODEL = "ra.User"
-STATICFILES_DIRS = [
-    # "C:/Users/carme/OneDrive/Documents/GitHub/tera/main/ra",
-    "C:/Users/Valued Client/Desktop/tera/main/static",
-]
+# STATICFILES_DIRS = [
+#     # "C:/Users/carme/OneDrive/Documents/GitHub/tera/main/ra",
+#     "C:/Users/Valued Client/Desktop/tera/main/static",
+# ]
 
 # Application definition
 
@@ -129,7 +129,7 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
-
+STATICFILES_DIRS = [BASE_DIR / "static/"]
 STATIC_URL = "/static/"
 
 MEDIA_URL = "/images/"
