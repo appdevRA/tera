@@ -959,10 +959,10 @@ class TeraSearchResultsView(View):
 				title = string[0]
 				url = string[1]
 				# return HttpResponse("")
-				if not Bookmark.objects.filter(user = request.user, bookmark__url = url).exists():
+				if not Bookmark.objects.filter(user = request.user, bookmark__url = url, isRemoved = 0).exists() and not Bookmark.objects.filter(user = request.user, bookmark__url = url, isRemoved = 1).exists():
 					if Bookmark_detail.objects.filter(url = url).exists():
 						Bookmark.objects.create(user = request.user,bookmark=Bookmark_detail.objects.get(url = url),keyword=keyword)
-						
+						print("diri")
 						return HttpResponse("")
 
 					else:
@@ -1101,6 +1101,7 @@ class TeraDashboardView(View):
 																			 						"owner__first_name",
 																			 						"owner__last_name"
 																			 						)
+			print(queryset)
 			a = json.dumps(list(queryset), default=str)
 			folder_list = json.dumps(list(folders), default=str)
 			group_list = json.dumps(list(groups), default=str)
@@ -1110,6 +1111,7 @@ class TeraDashboardView(View):
 			    "folder_list": folder_list,
 			    "group_list":group_list,
 			    "recommendation": recommendation
+
 			}
 			return render(request,'collections.html', context)
 		else:
@@ -1404,10 +1406,17 @@ class TeraDashboardView(View):
 
 				if not Group.objects.filter(owner=request.user, name = name, is_removed=False).exists():
 					group = Group.objects.create(owner=request.user, name = name)
-					query_group = Group.objects.select_related("owner").filter(id = group.id).values(
-																				 						"id","name", "date_created",
-																				 						"owner__first_name",
-																				 						"owner__last_name").distinct()
+					query_group= Group.objects.select_related("owner").filter(id = group.id,
+																				 ).annotate(
+																				 						 ownerName = Concat('owner__first_name',
+																				 						 					Value(' '), 
+																				 						 					'owner__last_name',
+																				 						 					output_field=CharField()
+																				 						 					)
+																				 						 ).values(
+																						 						"id","name", "date_created", "ownerName"
+																						 						).distinct()
+					
 					
 
 					context = {
@@ -1456,8 +1465,15 @@ class TeraDashboardView(View):
 			elif action == 'add_member':
 				username = request.POST['id']
 				gID = request.POST['gID']
-				
-				if Group.objects.filter(id = gID,member__username= username).exists():
+
+				if not User.objects.filter(username=username).exists():
+					context={
+					"result":"not exist"
+					}
+					print("nisulod")
+					return JsonResponse(context)
+
+				elif Group.objects.filter(id = gID,member__username= username).exists():
 					context={
 					"result":"member"
 					}
@@ -1469,11 +1485,7 @@ class TeraDashboardView(View):
 					}
 					return JsonResponse(context)
 
-				elif not User.objects.filter(username=username).exists():
-					context={
-					"result":"not exist",
-					}
-					return JsonResponse(context)
+				
 
 				elif User.objects.filter(username=username).exists():
 					Group.objects.get(id=gID).member.add(User.objects.get(username=username))
