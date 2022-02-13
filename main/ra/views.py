@@ -1470,7 +1470,6 @@ class TeraDashboardView(View):
 					context={
 					"result":"not exist"
 					}
-					print("nisulod")
 					return JsonResponse(context)
 
 				elif Group.objects.filter(id = gID,member__username= username).exists():
