@@ -1101,7 +1101,6 @@ class TeraDashboardView(View):
 																			 						"owner__first_name",
 																			 						"owner__last_name"
 																			 						)
-			print(queryset)
 			a = json.dumps(list(queryset), default=str)
 			folder_list = json.dumps(list(folders), default=str)
 			group_list = json.dumps(list(groups), default=str)
@@ -1293,10 +1292,9 @@ class TeraDashboardView(View):
 																						)
 						a = list(queryset)
 
-						group =Group.objects.get(id=gID)
-						members = group.get_members()
-						m = list(members)
-
+					group =Group.objects.get(id=gID)
+					members = group.get_members()
+					m = list(members)
 					context = {
 				    "bookmarks": a,
 
