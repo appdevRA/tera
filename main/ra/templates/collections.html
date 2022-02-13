@@ -1286,7 +1286,6 @@ $(document).on("click", "#add_member", function(){
               success: function(response){
                 result = response.result
                 
-                console.log(result)
                 if(result == 'member'){
                   document.getElementById('error_message').style.display = "inline"
                   document.getElementById('error_message').innerHTML ="User is already a member"
@@ -1300,12 +1299,10 @@ $(document).on("click", "#add_member", function(){
                 else if(result == 'not exist'){
                   document.getElementById('error_message').style.display = "inline"
                   document.getElementById('error_message').innerHTML ="User does not exist"
-                console.log(document.getElementById('error_message'))
                   
                 }
                 else if(result == 'added'){
                   member = response.member
-                  console.log(member)
                   document.getElementById('dismiss-modal_member').click()
                   alert("User Added")
 
