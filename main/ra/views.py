@@ -227,7 +227,7 @@ class adminCollegesView(View):
 			todaysMonth = str(datetime.today().year) +"-" + str(datetime.today().month)
 
 		queryset = list(Department.objects.values("abbv").annotate(count= Count("user__user_login", filter= Q(user__user_login__date__contains=todaysMonth))))
-		tableData = list(Department.objects.values("abbv").annotate(registeredUser = Count("user")).annotate(activeUser= Count("user", filter= Q(user__user_login__date__contains=todaysMonth) ))  )
+		tableData = list(Department.objects.annotate(registeredUser = Count("user__id", filter= ~Q(user__last_login = None) & Q(user__is_staff = False))).annotate(activeUser= Count("user", filter= Q(user__user_login__date__contains=todaysMonth) )).values("abbv", "registeredUser", "activeUser")  )
 		
 		siteVisit = UserSite_access.objects.select_related("user__department").filter(date_of_access__contains=todaysMonth, user__is_staff = False).values("user__department__abbv").annotate(count = Count("id"))
 		
